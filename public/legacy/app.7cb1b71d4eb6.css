@@ -4189,7 +4189,7 @@ body.practice-mode #taskTitle{scroll-margin-top:12px}
   align-items:center;gap:6px 8px!important;position:sticky;bottom:0;
   background:#fff;padding-top:9px;margin-top:7px;
 }
-#guidedTour #tourBack{grid-column:1;min-width:0}
+#guidedTour #tourBack{grid-column:1;min-width:0;min-height:42px}
 #guidedTour #tourNext{grid-column:2;min-width:0;min-height:42px}
 #guidedTour #tourSkip{
   grid-column:1/-1;justify-self:center;min-height:29px!important;
