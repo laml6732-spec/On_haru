@@ -1,0 +1,316 @@
+<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="c38f886b8997"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="512x512" href="./icons/onharu-512.png"><link rel="apple-touch-icon" href="./icons/onharu-512.png"><title>On_Haru</title><meta name="description" content="Kona Days &amp; Moments — plan, capture, focus, reflect.">
+<!-- Use local/system fonts so an unreachable font CDN cannot hold up the first render. -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta id="dts-remove-wrap"><meta id="kx-compact">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&amp;family=Fredoka:wght@600&amp;family=Gaegu&amp;family=Manrope:wght@300&amp;family=Nunito:wght@400;600;700&amp;family=Pacifico&amp;display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
+<link rel="stylesheet" href="./app.7cb1b71d4eb6.css"></head>
+<body>
+<div id="launchScreen" role="status" aria-label="On_Haru"><img id="launchArt" alt="On_Haru" fetchpriority="high"></div>
+<script>
+(function(){
+ const screen=document.getElementById('launchScreen'),art=document.getElementById('launchArt'),started=Date.now();
+ art.src='./assets/onharu-welcome.png';
+ let finished=false;function close(){if(finished)return;finished=true;screen.classList.add('is-ready');setTimeout(()=>screen.remove(),220)}
+ window.konaLaunchReady=()=>setTimeout(close,Math.max(0,900-(Date.now()-started)));
+ screen.addEventListener('click',close);art.addEventListener('error',close);setTimeout(close,5000);
+})();
+</script>
+
+
+<div class="app">
+ <header class="pagehead">
+  <div class="brand"><button id="brandName" class="brand-name" aria-label="Edit app name" title="Edit app name">On_HARU</button><svg class="island-mark" viewBox="0 0 40 40" aria-hidden="true"><circle cx="29" cy="12" r="7" fill="#F5CB45"></circle><path d="M20 35Q23 23 16 12" fill="none" stroke="#1F3A2C" stroke-width="2.5"></path><path d="M16 12Q3 6 2 19Q9 13 16 12M16 12Q22 0 31 7Q22 7 16 12" fill="#1F3A2C"></path><path d="M16 12Q29 10 35 22Q26 16 16 12M16 12Q10 0 5 5Q11 7 16 12" fill="#4A8359"></path></svg></div>
+  <div class="headright">
+   <button id="zoneChip" class="zonechip" type="button" aria-label="Current time. Double-tap to change country and time zone." title="Hawaii, USA · Double-tap to change country">8:17 PM</button>
+   <div class="datecontrol" aria-label="Date">
+    <span id="relativeDay" class="relative-day" aria-live="off">Today</span>
+    <label class="datebox"><span id="dateLabel">Sat, Oct 24</span><input type="date" id="datePicker" aria-label="Choose date"></label>
+    <button id="prevDay" aria-label="Go to previous day">‹</button>
+    <button id="nextDay" aria-label="Go to next day">›</button>
+    <button id="todayChip" class="todaychip hidden" aria-label="Return to today">Today</button>
+   </div>
+  </div>
+ <span id="focusModeBadge" hidden="">Pray</span></header>
+ <main>
+ <h1 class="page-title" id="pageTitle">Today</h1>
+ <!-- 오늘 -->
+ <section id="page-today" class="page active">
+  <div class="day-signature">
+   <button id="dayEmoji" class="emoji-pick" aria-label="Daily emoji">🌺</button>
+   <div class="headline-wrap">
+    <textarea id="dayHeadline" rows="2" aria-label="One-line note" maxlength="144" placeholder="One-line note for today" autocomplete="off"></textarea>
+    <button id="useSuggest" class="mini-btn hidden" aria-label="Use suggested sentence">✓</button>
+   </div>
+   <button id="jumpCalendar" class="mini-btn" aria-label="Calendar">📅</button>
+  </div><section id="qc-v2" aria-label="Note"><div class="qc-title"><b>Note</b><span hidden="">Capture · Review</span><button class="kx-chip" id="kx-schedule" type="button" aria-label="Linked schedule Personal note · No schedule. Change schedule" aria-expanded="false">Personal note · No schedule</button></div><label for="qc-select">Linked schedule <small>· Change anytime</small></label><select id="qc-select"><option value="">Personal note · No schedule</option></select><textarea id="qc-text" rows="2" placeholder="What’s on your mind? Type or use your keyboard mic…" aria-label="Note text"></textarea><div class="qc-bottom"><small id="qc-state" aria-live="polite">Ready to capture</small><button type="button" id="qc-submit">Save note</button></div></section>
+  <div class="hero" id="hero" style="display:none!important">
+   <div class="hero-line"><span class="lbl" id="heroLbl">Now</span><span class="hero-title" id="heroTitle">Free time</span><span class="hero-meta" id="heroMeta"></span></div>
+   <div class="hero-line"><span class="lbl" id="heroNextLbl">Up next</span><span class="hero-next" id="heroNext">No later events</span><span class="hero-left" id="heroLeft"></span></div>
+   <div class="hero-progress hidden" id="heroProg"><i id="heroBar" style="width: 0%;"></i></div>
+  </div>
+  <button id="activeSessionBanner" class="active-session-banner" type="button" hidden=""></button>
+  
+  
+  <div id="pageheadExtra"><div id="pinRow" class="pinned-summary"><div class="tasks-overview"><button class="task-fold" type="button" title="Expand tasks" aria-label="Expand tasks">Tasks · 0/0 ⌄</button><button class="task-add" type="button" title="Add task" aria-label="Add task">＋ Add task</button></div></div></div><div class="card" id="todayTaskCard" hidden="">
+   <div class="sectionhead"><h2 id="todayTasksHeading">Today’s tasks</h2><div class="right"><button class="mini-btn add" id="quickAddTask" aria-label="Add task">＋</button><button class="manage-btn" data-go="schedule" data-sub="tasks" aria-label="Manage tasks">Manage</button></div></div>
+   <div id="todayTaskList"><div class="dash">–</div></div>
+  </div>
+  <div class="card home-checkins" aria-labelledby="homeCheckinsTitle">
+   <div class="sectionhead"><h2 id="homeCheckinsTitle">Check-ins</h2><span class="micro">Choose a time</span></div>
+   <div id="todayCheckins" class="home-checkin-grid"><button class="home-checkin" type="button" aria-label="Morning check-in, no entry yet"><span class="journey-dot" aria-hidden="true"></span><b>Morning</b><small>Not yet</small></button><button class="home-checkin" type="button" aria-label="Midday check-in, no entry yet"><span class="journey-dot" aria-hidden="true"></span><b>Midday</b><small>Not yet</small></button><button class="home-checkin is-current" type="button" aria-current="step" aria-label="Evening check-in, no entry yet"><span class="journey-dot" aria-hidden="true"></span><b>Evening</b><small>Not yet</small></button><button class="home-checkin" type="button" aria-label="Day wrap-up check-in, no entry yet" hidden="" tabindex="-1" style="display: none !important;"><span class="journey-dot" aria-hidden="true"></span><b>Day wrap-up</b><small>Not yet</small></button></div>
+  </div>
+  <div id="weekLecture" class="week-lecture"><div class="summary"><small>This week’s class</small></div><button class="mini-btn week-edit" type="button" title="Edit this week’s morning class details" aria-label="Edit this week’s morning class details">Add speaker or topic ›</button></div><div class="card tl-card">
+   <div class="sectionhead" style="padding:0 2px"><h2 id="todayScheduleHeading">Today’s schedule</h2><div class="right"><button class="kx-toggle" id="kx-timeline-toggle" type="button" aria-expanded="false">Full timeline</button><button class="mini-btn add" id="quickAddEvent" aria-label="Add event">＋</button><button class="manage-btn" data-go="schedule" data-sub="events" aria-label="Edit schedule">Edit</button><button class="manage-btn all-notes-btn" id="openAllMemos">All notes</button></div></div>
+   <div class="kx-summary" id="kx-summary"><p class="kx-empty">No scheduled events for this day.</p></div><div id="todayTimeline" hidden="" style="display: none;"><div class="event-timeline" style="height: 795.6px;"><div class="timeline-hours"><div style="top: 0px; transform: translateY(0px);">06:00</div><div style="top: 46.8px;">07:00</div><div style="top: 93.6px;">08:00</div><div style="top: 140.4px;">09:00</div><div style="top: 187.2px;">10:00</div><div style="top: 234px;">11:00</div><div style="top: 280.8px;">12:00</div><div style="top: 327.6px;">13:00</div><div style="top: 374.4px;">14:00</div><div style="top: 421.2px;">15:00</div><div style="top: 468px;">16:00</div><div style="top: 514.8px;">17:00</div><div style="top: 561.6px;">18:00</div><div style="top: 608.4px;">19:00</div><div style="top: 655.2px;">20:00</div><div style="top: 702px;">21:00</div><div style="top: 748.8px;">22:00</div><div style="top: 795.6px; transform: translateY(-12px);">23:00</div></div><div class="time-grid"><span style="top: 0px;"></span><span style="top: 46.8px;"></span><span style="top: 93.6px;"></span><span style="top: 140.4px;"></span><span style="top: 187.2px;"></span><span style="top: 234px;"></span><span style="top: 280.8px;"></span><span style="top: 327.6px;"></span><span style="top: 374.4px;"></span><span style="top: 421.2px;"></span><span style="top: 468px;"></span><span style="top: 514.8px;"></span><span style="top: 561.6px;"></span><span style="top: 608.4px;"></span><span style="top: 655.2px;"></span><span style="top: 702px;"></span><span style="top: 748.8px;"></span><span style="top: 795.6px;"></span></div><div class="lane-divider" style="left: calc(40% + 19.2px);"></div><span class="lane-head" style="left: 32px;">Plan</span><span class="lane-head" style="left: calc(40% + 23.2px);">Notes</span><div class="nowline" style="top: 668.46px;"></div></div></div>
+  </div>
+   <section class="endday" id="homeNightCard" aria-label="Day wrap-up" hidden="" aria-hidden="true" style="display: none !important;">
+    <div class="endday-head"><div><h2>🌙 Day wrap-up</h2></div><button id="homeNightMood" type="button" class="endday-mood">Log today’s mood ↗</button></div>
+    <label class="sr-only" for="homeNightNote">End-of-day reflection</label>
+    <textarea id="homeNightNote" class="endday-note" rows="4" maxlength="2500" placeholder="How was your day? Write down something that stayed with you or made you grateful."></textarea>
+    <p class="endday-foot" id="homeNightStatus" role="status">Saved automatically as you type · linked to the day wrap-up.</p>
+   </section>
+  <p class="footer-note" id="storageNote">Not protected · export a backup · Last backup –</p>
+ </section>
+
+ <!-- 일정 -->
+ <section id="page-schedule" class="page" aria-label="Manage schedule and tasks">
+  <div class="manage-head"><button class="manage-back" id="backFromManage" aria-label="Return to today">‹ Today</button><span class="manage-caption">Schedule &amp; tasks</span><button id="tutorialButton" class="tutorial-button" type="button" aria-label="Open tutorial">Tutorial</button></div>
+  <div class="subtabs"><button class="active" data-schedulesub="events">Schedule</button><button data-schedulesub="tasks">Tasks</button></div>
+  <div id="editorEventsArea">
+   <div class="card"><div class="sectionhead"><h2>Schedule for this day</h2><div class="right"><span class="small" id="eventCount"></span><button class="mini-btn add" id="addEventBtn" aria-label="Add event">＋</button></div></div><div id="eventManageList"></div></div>
+  </div>
+  <div id="editorTasksArea" class="hidden">
+   <div class="card"><div class="sectionhead"><h2>Task list</h2><button class="mini-btn add" id="addTaskBtn" aria-label="Add task">＋</button></div><div id="taskManageList"></div></div>
+  </div>
+ </section>
+
+ <!-- 체크인 -->
+ <section id="page-checkin" class="page">
+  <div class="phases" aria-label="Check-in journey"><button data-phase="morning" class="active" aria-label="Morning check-in" aria-pressed="true"><span class="phase-node" aria-hidden="true"></span><small>Morning</small></button><button data-phase="noon" aria-label="Midday check-in" aria-pressed="false"><span class="phase-node" aria-hidden="true"></span><small>Midday</small></button><button data-phase="evening" aria-label="Evening check-in" aria-pressed="false"><span class="phase-node" aria-hidden="true"></span><small>Evening</small></button><button data-phase="night" aria-label="Day wrap-up check-in" aria-pressed="false" hidden="" tabindex="-1" style="display: none !important;"><span class="phase-node" aria-hidden="true"></span><small>Day wrap-up</small></button></div>
+  <div class="card" id="generalNoteCard">
+   <div class="row between"><h2 class="note-title" id="generalNoteTitle">How have you been so far?</h2><span class="check-state" id="checkState">–</span></div>
+   <label class="recorded-time-row" for="checkRecordedTime"><span>Time recorded</span><input id="checkRecordedTime" type="time" aria-label="Actual check-in time"></label>
+   <div id="lecRef" class="lec-ref hidden"></div><p class="micro" id="checkWindow"></p>
+   <textarea id="checkNote" aria-label="Check-in note, auto-saved" class="field" maxlength="2500" rows="4"></textarea>
+  </div>
+  <div class="card" id="moodCard"><div class="sectionhead"><h2>How you feel now</h2><div class="row"><button id="changeMoodBtn" type="button" class="mood-change hidden">Change</button></div></div>
+   <div class="mood-banner" id="moodBanner"></div>
+   <div id="moodGrid" class="mood-grid"></div>
+   <div class="mood-axis"><span>Energy ↑</span><span>Mood →</span></div>
+  </div>
+  <div class="card hidden" id="lectureNoteCard"><div class="sectionhead"><h2>Morning class notes</h2></div><div id="lectureLinks" class="lecture-links"></div><label class="label" for="lectureQuote">Memorable words</label><textarea id="lectureQuote" class="field class-note-field" maxlength="2500" rows="3" placeholder="A quote or phrase you want to remember"></textarea><label class="label" for="lectureReflection">Reflection</label><textarea id="lectureReflection" class="field class-note-field" maxlength="2500" rows="4" placeholder="What stood out to you? What did you feel or think?"></textarea><div class="lecture-action"><input id="lectureAction" class="field" maxlength="100" aria-label="One action from class" placeholder="One action from class"><button id="addLectureTask" class="mini-btn solid">Add task</button></div><div id="lectureTaskLinks" class="lecture-task-links"></div></div>
+
+  <div class="card" id="morningTaskCard"><div class="sectionhead"><h2>Today’s tasks</h2><button class="manage-btn" data-go="schedule" data-sub="tasks" aria-label="Manage tasks">Manage</button></div><div id="checkTasks"></div></div>
+  <div class="card prayer-today hidden" id="checkPrayer"><span>🙏</span><span class="t" id="checkPrayerTitle"></span><button class="mini-btn" id="checkPrayerBtn" aria-label="Log today’s prayer">✓</button></div>
+ </section>
+
+ <!-- 기도 (제목: 집중하기) -->
+ <section id="page-focus" class="page">
+  <div class="card focus-card kx-ready">
+   <div class="kindseg" id="kindSeg"><button data-kind="prayer" aria-pressed="false">Pray</button><button data-kind="devotion" aria-pressed="false">Devotion</button><button data-kind="focus" aria-pressed="false">Focus</button></div>
+   <div class="focus-controls"><select id="focusTarget" class="field" aria-label="Choose a task or prayer request"></select><input id="focusContext" class="field" aria-label="Activity topic" maxlength="200" hidden=""></div>
+   <div id="focusSetupMore">   <div id="listeningTools" class="listening-tools" hidden><p id="listeningPrompt"></p><button id="quietTimerToggle" type="button" aria-pressed="false">Hide timer</button></div></div><p id="quietTimerMessage" class="quiet-timer-message" hidden>Be still. Take your time.</p>
+   <p id="focusResumeHint" class="focus-resume-hint" hidden=""></p>
+   <div class="focus-clock-area"><p id="timerStatus" class="micro" role="status" aria-live="polite">Ready</p><h2 id="focusSessionTitle"></h2><div class="timer" id="focusClock">10:00</div><div class="segment" id="focusDurations" role="group" aria-label="Session duration"></div><progress id="timerProgress" aria-label="Session progress" max="100" value="0"></progress></div>
+   <div class="timer-row"><button class="solid" id="focusStart" aria-label="Start session">Start</button><button class="outline hidden" id="focusEnd">Finish</button><button id="focusCancel" class="mini-btn" hidden="">Cancel</button><button id="focusMore" type="button" aria-label="More session options">⋯</button></div>
+   <div id="focusAlarm" class="focus-alarm" role="status" aria-live="polite" hidden=""><span id="focusAlarmText"></span><button id="dismissFocusAlarm" class="mini-btn">Dismiss</button></div>
+   <div class="alarm-caption"><p class="micro" id="focusHint"></p></div><button id="focusNoteToggle" type="button" aria-expanded="false" aria-controls="timerNote">Add a thought</button><label id="timerNoteLabel" for="timerNote">Session note</label><textarea id="timerNote" class="field" rows="6" maxlength="10000" placeholder="Optional note · you can continue writing after finishing."></textarea>
+   <div id="focusAfter" class="hidden"><button id="focusMarkDone">✓</button><button id="focusKeep">Later</button></div>
+  </div>
+  <div class="focus-summary"><button id="focusLibraryOpen" class="mini-btn">Prayer requests (0) ▸</button><span id="focusTotal">Today P 0 · D 0 · F 0m</span></div>
+ </section>
+
+ <!-- 돌아보기 -->
+ <section id="page-records" class="page">
+  <div class="review-backup stale" id="reviewBackupStatus"><span id="backupStatusText">Last backup: never</span><button type="button" id="backupNow">Back up now</button><button type="button" id="restoreNow">Restore</button><input type="file" id="restoreFile" accept="application/json,.json" hidden=""></div>
+  <div id="new-review-switch" data-kx-bound="1"><button id="rev-reflect">Reflect</button><button id="rev-archive">Archive</button></div><section id="new-reflect-page"></section><label class="kx-archive-select" hidden="">Browse<select id="kx-archive"><option value="log">Daily log</option><option value="week">Weekly records</option><option value="mood">Mood trends</option><option value="class">Class notes</option></select></label><nav class="review-nav kx-old-nav" aria-label="Review views" role="tablist">
+   <button type="button" role="tab" data-review-tab="log">Log</button><button type="button" role="tab" data-review-tab="week">Week</button><button type="button" role="tab" data-review-tab="mood">Mood</button><button type="button" role="tab" data-review-tab="class">Class</button>
+  </nav>
+  <div class="review-panel" data-review-panel="log">
+  <div class="card" id="viewCal">
+   <div class="calendar-toolbar"><button class="mini-btn" id="calPrev" aria-label="Previous month">‹</button><strong id="calHeading"></strong><span class="row"><button class="mini-btn" id="calNext" aria-label="Next month">›</button></span></div>
+   <button class="kx-calendar-toggle" id="kx-calendar" aria-expanded="false">Calendar display</button><div class="calendar-toolbar review-calendar-mode"><div class="toggle" id="calendarMode" role="group" aria-label="Calendar display" style="display: none;"><button type="button" data-mode="entries" class="active">Entries</button><button type="button" data-mode="mood">Mood</button></div></div>
+   <div id="monthCalendar" class="calendar"></div>
+  </div>
+  <div id="reflectionCollection" class="reflection-collection" aria-label="Reflection flower collection"></div><button id="reflectDay" class="mini-btn" type="button">Mark as reflected</button>
+  <section class="card day-review" id="dayReviewCard" aria-label="Records for selected date">
+   <div class="sectionhead"><h2 id="dayReviewDate">Selected day’s records</h2><button type="button" id="reviewOpenToday" class="day-review-action">View timeline ↗</button></div>
+   <div id="dayReviewBody" aria-live="polite"></div>
+  </section>
+  <div class="card" id="viewWeek">
+   <div class="calendar-toolbar"><button class="mini-btn" id="weekPrev" aria-label="Previous week">‹</button><strong id="weekRange"></strong><span class="row"><button class="mini-btn" id="exportTxt">Export</button><button class="mini-btn" id="weekNext" aria-label="Next week">›</button></span></div>
+   <div id="weekNotes"></div>
+  </div>
+  <div class="card review-journal-link"><div class="sectionhead"><h2>Devotion &amp; personal prayer</h2><button class="manage-btn" data-open-journal="">All notes ›</button></div></div>
+  </div>
+  <div class="review-panel" data-review-panel="week" hidden=""><div class="card" id="weekPanel"></div></div>
+  <div class="review-panel" data-review-panel="class" hidden=""><div class="card class-review"><div class="sectionhead"><h2>Class notes</h2><button type="button" id="classPinnedOnly" class="manage-btn" aria-pressed="false">Pinned only</button></div><div id="classNotesList"></div></div></div>
+  <div class="review-panel" data-review-panel="mood" hidden="">
+  <div class="card" id="moodTrend"><div class="sectionhead"><h2>Mood trends</h2><div class="toggle" id="chartToggle"><button data-days="7" class="active">7 days</button><button data-days="30">30 days</button></div></div>
+   <div class="chart-legend" id="chartLegend"><span><i style="background:var(--devo)"></i>Energy</span><span><i style="background:var(--pray)"></i>Mood</span></div>
+   <p id="chartEmpty" class="chart-empty hidden" role="status"></p><p class="score-disclaimer">Mood and Energy scores are estimates from selected feeling words.</p>
+   <svg id="trendChart" class="chart" viewBox="0 0 350 132" role="img" aria-label="Mood and energy trends"></svg>
+  </div>
+  </div>
+  <details id="kx-settings" hidden=""><summary>App settings</summary><div class="review-reset-link"><button type="button" id="openAppHelp">Help &amp; About</button><button type="button" id="openAppReset">Reset…</button></div></details>
+ </section>
+ </main>
+</div>
+
+<div class="dock" id="dock"><svg class="shore-art" viewBox="0 0 480 12" preserveAspectRatio="none" aria-hidden="true"><path d="M0 6Q40 -2 80 6T160 6T240 6T320 6T400 6T480 6V12H0Z" fill="#C4DAE8"></path><path d="M0 10Q45 2 90 10T180 10T270 10T360 10T450 10" fill="none" stroke="#6A98C6" stroke-width="1"></path></svg>
+ <div class="pstrip" id="prayerStrip" hidden="">
+  <span class="plabel" aria-hidden="true">🙏</span>
+  <button class="ptitle" id="stripTitle" aria-label="Pray for a random item"></button>
+  <button class="pbtn" id="stripPray" aria-label="Log today’s prayer">✓</button>
+  <button class="pbtn" id="stripNext" aria-label="Another random prayer request">↻</button>
+ </div>
+ <nav class="tabs" aria-label="Main navigation"><button data-page="today" class="active" aria-current="page"><span class="navico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg></span>Today</button><button data-page="checkin"><span class="navico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 1 0-7.8 7.8l8.9 8.3 8.8-8.3a5.5 5.5 0 0 0 0-7.8z"></path></svg></span>Check-in</button><button data-page="focus"><span class="navico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8V4.5a1.5 1.5 0 0 1 3 0v5M11 7V3.5a1.5 1.5 0 0 1 3 0V9m0-3a1.5 1.5 0 0 1 3 0v4m0-1a1.5 1.5 0 0 1 3 0v5c0 4.5-3 7-7 7h-1c-2.5 0-4-1-5.5-3L3 13.5a1.7 1.7 0 0 1 2.6-2.1L8 14V8z"></path></svg></span>Focus</button><button data-page="records"><span class="navico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path></svg></span>Review</button></nav>
+</div>
+
+<div id="tutorialModal" class="modal-under" hidden="" role="presentation"><div class="sheet tutorial-sheet" role="dialog" aria-modal="true" aria-labelledby="tutorialHeading" aria-describedby="tutorialBody"><div class="top"><strong>Kona DTS · Quick start</strong><button id="tutorialClose" class="close" aria-label="Close guide">×</button></div><section id="tutorialLanguage" hidden><img class="language-sheep" src="./assets/sheep-hearing-13888b427d4c.png" alt="" width="72" height="72"><div class="language-brand" translate="no">On_HARU</div><h2 id="tutorialLanguageHeading" tabindex="-1">한국어 / English</h2><p>사용할 언어를 선택하세요.<br>Choose your language.</p><div class="tutorial-language-actions"><button id="tutorialChooseKo" class="solid" lang="ko">한국어</button><button id="tutorialChooseEn" class="outline" lang="en">English</button></div></section><section id="tutorialWelcome"><img class="welcome-art" src="./assets/kona-welcome-sunset.png" alt="Kona DTS · To Know God and to Make Him Known"><p class="micro">Learn by doing · about 3–5 minutes</p><h2 id="tutorialHeading" tabindex="-1">Welcome</h2><p id="tutorialBody" class="tutorial-body">Try writing a note, checking in, planning and finding your records. Practice uses temporary data and leaves your own records unchanged.</p><div class="row"><button id="welcomeSkip" class="mini-btn">Skip</button><button id="welcomeContinue" class="solid grow" hidden>Continue</button></div><button id="startGuidedTour" class="solid wide">Practice with sample data</button><button id="showFeatureGuides" class="tour-secondary">Explore all feature guides</button></section><section id="tutorialGuidePanel" hidden=""><label class="micro" for="tutorialTopics">Choose a guide</label><select id="tutorialTopics" class="field tutorial-select"></select><div class="tutorial-progress" role="progressbar" aria-label="Guide progress" aria-valuemin="1" aria-valuemax="9"><i id="tutorialProgress"></i></div><p id="tutorialStepLabel" class="micro" aria-live="polite"></p><h2 id="tutorialGuideHeading" tabindex="-1"></h2><p id="tutorialGuideBody" class="tutorial-body"></p><ol id="tutorialList" class="tutorial-list"></ol><img id="tutorialCaptureSheep" src="./assets/onharu-sheep-v2.png" alt="" width="32" height="32" hidden><p id="tutorialTip" class="tutorial-tip"></p><div class="tutorial-actions"><button id="tutorialBack" class="outline">Back</button><button id="tutorialNext" class="solid">Next</button></div><button id="tutorialTryFeature" class="solid wide">Open this feature in my app</button><button id="backToTourWelcome" class="tour-secondary">Back to quick start</button></section></div></div><div id="guidedTour" role="region" aria-label="Practice with temporary sample data" hidden=""><div class="tour-count" id="tourCount"></div><h2 id="tourHeading"></h2><p id="tourCopy"></p><p id="tourFeedback" role="status" aria-live="polite"></p><div class="tour-actions"><button id="tourBack" class="outline">Back</button><button id="tourNext" class="solid tour-primary" hidden="">Continue</button><button id="tourSkip" class="tour-exit">Skip step</button><button id="tourExit" class="tour-exit">Exit practice</button></div></div>
+
+<div id="recordPreview" hidden="" role="region" aria-label="Record preview"><div class="row between"><strong id="recordPreviewHeading">View record</strong><div><button id="editPreviewRecord" class="mini-btn">Edit</button><button id="closeRecordPreview" class="mini-btn" aria-label="Close preview">×</button></div></div><div id="recordPreviewMood"></div><div id="recordPreviewText"></div></div>
+<div id="recordEditModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-label="Edit record"><div class="top"><strong id="recordEditHeading">Edit note</strong><button class="close" data-close="" aria-label="Close">×</button></div><label class="label" for="recordEditMood">Mood</label><select id="recordEditMood" class="field"></select><div id="recordEditFields"></div><p id="recordEditStatus" class="micro" aria-live="polite">Changes apply when you save.</p><div class="row"><button id="deleteRecordEdit" class="outline danger">Delete record</button><button id="saveRecordEdit" class="solid grow">Save</button></div></div></div>
+<div id="emojiModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-label="Daily emoji"><div class="top"><strong>Daily emoji</strong><button class="close" data-close="" aria-label="Close">×</button></div><div id="emojiChoices" class="emoji-sheet"><div class="emoji-heading">Good day</div><button type="button" aria-label="미소 😊"><span>😊</span></button><button type="button" aria-label="사랑스러움 🥰"><span>🥰</span></button><button type="button" aria-label="하트 눈 😍"><span>😍</span></button><button type="button" aria-label="축하 🥳"><span>🥳</span></button><button type="button" aria-label="평온 😌"><span>😌</span></button><button type="button" aria-label="감동 🥹"><span>🥹</span></button><button type="button" aria-label="자신감 😎"><span>😎</span></button><button type="button" aria-label="특별 ✨"><span>✨</span></button><button type="button" aria-label="활짝 😁"><span>😁</span></button><button type="button" aria-label="웃음 😆"><span>😆</span></button><button type="button" aria-label="웃겨 😂"><span>😂</span></button><button type="button" aria-label="빵터짐 🤣"><span>🤣</span></button><button type="button" aria-label="설렘 🤩"><span>🤩</span></button><button type="button" aria-label="포옹 🤗"><span>🤗</span></button><button type="button" aria-label="애정 😘"><span>😘</span></button><button type="button" aria-label="냠냠 😋"><span>😋</span></button><button type="button" aria-label="히히 🤭"><span>🤭</span></button><button type="button" aria-label="천사 😇"><span>😇</span></button><button type="button" aria-label="사랑 🫶"><span>🫶</span></button><button type="button" aria-label="하트 ❤️"><span>❤️</span></button><div class="emoji-heading">Mixed feelings</div><button type="button" aria-label="쑥스러움 🙈"><span>🙈</span></button><button type="button" aria-label="아차 🤦"><span>🤦</span></button><button type="button" aria-label="하품 🥱"><span>🥱</span></button><button type="button" aria-label="한숨 😮‍💨"><span>😮‍💨</span></button><button type="button" aria-label="머리 터짐 🤯"><span>🤯</span></button><button type="button" aria-label="웃픈 하루 🥲"><span>🥲</span></button><button type="button" aria-label="글썽 🥺"><span>🥺</span></button><button type="button" aria-label="슬픔 😢"><span>😢</span></button><button type="button" aria-label="답답함 😤"><span>😤</span></button><button type="button" aria-label="녹아내림 🫠"><span>🫠</span></button><button type="button" aria-label="생각 💭"><span>💭</span></button><button type="button" aria-label="대화 💬"><span>💬</span></button><button type="button" aria-label="무표정 😑"><span>😑</span></button><button type="button" aria-label="어질어질 😵‍💫"><span>😵‍💫</span></button><button type="button" aria-label="긴장 😬"><span>😬</span></button><button type="button" aria-label="에휴 🙄"><span>🙄</span></button><button type="button" aria-label="침울 😔"><span>😔</span></button><button type="button" aria-label="울음 😭"><span>😭</span></button><button type="button" aria-label="화남 😡"><span>😡</span></button><button type="button" aria-label="걱정 😰"><span>😰</span></button><button type="button" aria-label="고민 🤔"><span>🤔</span></button><button type="button" aria-label="모르겠어 🤷"><span>🤷</span></button><button type="button" aria-label="아픔 🤒"><span>🤒</span></button><button type="button" aria-label="숨고싶음 🫥"><span>🫥</span></button><div class="emoji-heading">Everyday life · breaks</div><button type="button" aria-label="휴식 ⛱️"><span>⛱️</span></button><button type="button" aria-label="발견 🔎"><span>🔎</span></button><button type="button" aria-label="달리기 🏃‍♂️"><span>🏃‍♂️</span></button><button type="button" aria-label="산책 🚶‍♀️"><span>🚶‍♀️</span></button><button type="button" aria-label="잠 😴"><span>😴</span></button><button type="button" aria-label="기록 ✍️"><span>✍️</span></button><button type="button" aria-label="정리 🧹"><span>🧹</span></button><button type="button" aria-label="작업 💻"><span>💻</span></button><button type="button" aria-label="바다 🌊"><span>🌊</span></button><button type="button" aria-label="하와이 🌺"><span>🌺</span></button><button type="button" aria-label="만남 🤝"><span>🤝</span></button><button type="button" aria-label="해냈다 💪"><span>💪</span></button><button type="button" aria-label="휴식 🛌"><span>🛌</span></button><button type="button" aria-label="목욕 🛁"><span>🛁</span></button><button type="button" aria-label="명상 🧘‍♀️"><span>🧘‍♀️</span></button><button type="button" aria-label="꽃 💐"><span>💐</span></button><button type="button" aria-label="빨래 🧺"><span>🧺</span></button><button type="button" aria-label="장보기 🛒"><span>🛒</span></button><button type="button" aria-label="비행 ✈️"><span>✈️</span></button><button type="button" aria-label="드라이브 🚗"><span>🚗</span></button><button type="button" aria-label="버스 🚌"><span>🚌</span></button><button type="button" aria-label="섬 🏝️"><span>🏝️</span></button><button type="button" aria-label="일출 🌅"><span>🌅</span></button><button type="button" aria-label="일몰 🌇"><span>🌇</span></button><button type="button" aria-label="비 🌧️"><span>🌧️</span></button><button type="button" aria-label="맑음 ☀️"><span>☀️</span></button><button type="button" aria-label="밤 🌙"><span>🌙</span></button><button type="button" aria-label="별 ⭐"><span>⭐</span></button><button type="button" aria-label="선물 🎁"><span>🎁</span></button><button type="button" aria-label="파티 🎉"><span>🎉</span></button><button type="button" aria-label="포근함 🧸"><span>🧸</span></button><div class="emoji-heading">Faith · gratitude</div><button type="button" aria-label="기도 🙏"><span>🙏</span></button><button type="button" aria-label="말씀 📖"><span>📖</span></button><button type="button" aria-label="평안 🕊️"><span>🕊️</span></button><button type="button" aria-label="감사 🌈"><span>🌈</span></button></div><div class="row" style="margin-top:6px"><input id="customEmoji" maxlength="40" class="field grow" placeholder="Enter one emoji" aria-label="Emoji to add"><button id="useCustomEmoji" class="mini-btn solid" aria-label="Save and use this emoji">＋ Add</button><button id="clearEmoji" class="mini-btn" aria-label="Clear">×</button></div></div></div>
+
+<div id="eventModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-label="Schedule">
+ <div class="top"><strong id="eventModalTitle">Schedule</strong><button class="close" data-close="" aria-label="Close">×</button></div>
+ <p id="eventModalTime" class="small" style="margin:0 0 3px"></p>
+ <div id="lectureBox" class="hidden">
+  <div class="compactrow"><label><span class="label">Speaker</span><input id="evSpeaker" class="field" maxlength="40"></label><label><span class="label">Topic</span><input id="evTopic" class="field" maxlength="60"></label></div>
+  <label class="label" for="evApplyScope">Apply speaker and topic to</label>
+  <select id="evApplyScope" class="field"><option value="day">This class only</option><option value="sameWeek">This week · same class</option><option value="morningWeek">This week · all morning classes</option></select>
+  <label class="micro"><input type="checkbox" id="protectLecture" checked=""> Exclude individually edited classes</label><button type="button" id="previewLecture" class="mini-btn">Review affected classes</button><p id="evApplySummary" class="micro" aria-live="polite"></p>
+ <button class="mini-btn" type="button" title="Undo recent bulk class update" aria-label="Undo recent bulk class update">Undo changes</button></div>
+ <div id="eventCheckinArea" hidden=""></div><div id="eventLinkedRecords"></div><span class="label">Event note</span>
+ <label class="label" for="eventNoteTitle">Title (optional · one line)</label><input type="text" id="eventNoteTitle" class="field note-title-input" maxlength="60" placeholder="Add a title">
+ <textarea id="eventMemo" class="field" rows="3"></textarea>
+ <div id="ovBox" class="ov-box hidden">
+  <div class="row between"><span class="label" style="margin:0">Edit this date only</span><button type="button" class="mini-btn" id="ovReset">Reset</button></div>
+  <label class="label" for="ovTitle">Event title for this day</label><input id="ovTitle" class="field" maxlength="100"><label class="label" for="ovShortTitle">Short name for this day</label><input id="ovShortTitle" class="field" maxlength="4"><label class="label" for="ovCategory">Category for this day</label><select id="ovCategory" class="field"><option value="lecture">Class</option><option value="meal">Meal · Break</option><option value="worship">Worship · Prayer</option><option value="group">One-on-one · Small group</option><option value="personal">Personal time</option><option value="duty">Work duty</option></select><div class="compactrow" style="margin-top:3px"><label>Start<input aria-label="Start time for this day" id="ovStart" type="time" class="field"></label><label>End<input aria-label="End time for this day" id="ovEnd" type="time" class="field"></label></div><p class="micro" id="ovScopeHint">Only this date changes; recurring events on other dates stay the same.</p>
+ </div>
+ <div class="modal-actions"><button id="evPray" class="outline hidden" aria-label="Log a prayer during this event">🙏</button><button id="eventDeleteOptions" type="button" class="mini-btn event-delete-btn">Delete event…</button><button id="saveEventMemo" class="solid grow">Save</button></div>
+</div></div>
+
+<div id="eventFormModal" class="modal-under" hidden="" role="presentation"><div class="sheet form-sheet" role="dialog" aria-modal="true" aria-label="Schedule">
+ <div class="top"><strong id="eventFormHeading">New event</strong><button class="close" data-close="" aria-label="Close">×</button></div>
+ <form id="eventForm">
+  <input id="eventTitle" class="title-input" maxlength="80" placeholder="Event name" required=""><label class="label" for="eventShortTitle">Short name</label><input id="eventShortTitle" class="field" maxlength="4" placeholder="Up to 4 characters"><p class="micro">This name appears in the plan column. Leave it blank to use the full title.</p><div id="eventShortPreview" class="short-preview">Schedule name / 18:30–20:30</div><label class="label" for="shortTitleScope">Apply short name to</label><select id="shortTitleScope" class="field"><option value="single">This event only (default)</option><option value="sameName">All events with the same title</option></select>
+  <p class="event-scope-help" id="eventScopeHelp" hidden=""></p><div class="frow"><span class="flabel">Time</span><div class="pair"><input id="eventStart" type="time" class="pill-input" value="18:30" required=""><span class="sep">–</span><input id="eventEnd" type="time" class="pill-input" value="20:30" required=""></div></div>
+  <div class="frow col"><span class="flabel">Category</span><div class="chips" id="catChips"><button class="chip active" type="button" style="background: rgb(206, 221, 238); box-shadow: rgb(79, 132, 196) 0px 0px 0px 1.5px inset;">📘 Class</button><button class="chip" type="button">🍽️ Meal · Break</button><button class="chip" type="button">🙏 Worship · Prayer</button><button class="chip" type="button">🫶 One-on-one · Small group</button><button class="chip" type="button">🌿 Personal time</button><button class="chip" type="button">🧹 Work duty</button></div><select id="eventCategory" hidden=""><option value="lecture">📘 Class</option><option value="meal">🍽️ Meal · Break</option><option value="worship">🙏 Worship · Prayer</option><option value="group">🫶 One-on-one · Small group</option><option value="personal">🌿 Personal time</option><option value="duty">🧹 Work duty</option></select></div>
+  <div class="frow col"><span class="flabel">Repeat</span><div class="chips" id="eventRepeatChips"><button class="chip active" type="button">Does not repeat</button><button class="chip" type="button">Daily</button><button class="chip" type="button">Weekly</button></div>
+   <select id="eventRepeat" hidden=""><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select>
+   <div id="eventWeekdaysWrap" class="hidden"><div class="weekdayselect" id="eventWeekdays"><label><input type="checkbox" value="1" name="eventDays">Mon</label><label><input type="checkbox" value="2" name="eventDays">Tue</label><label><input type="checkbox" value="3" name="eventDays">Wed</label><label><input type="checkbox" value="4" name="eventDays">Thu</label><label><input type="checkbox" value="5" name="eventDays">Fri</label><label><input type="checkbox" value="6" name="eventDays">Sat</label><label><input type="checkbox" value="0" name="eventDays">Sun</label></div></div></div>
+  <div class="frow"><span class="flabel" id="eventSinceLabel">Date</span><input id="eventSince" type="date" class="pill-input" required=""></div>
+  <div class="frow hidden" id="eventUntilRow"><span class="flabel">Repeat until</span><input id="eventUntil" type="date" class="pill-input" disabled=""></div>
+  <button type="submit" id="eventSave" class="solid wide">Save</button><button type="button" id="eventCancel" class="hidden"></button>
+ </form>
+</div></div>
+
+<div id="taskFormModal" class="modal-under" hidden="" role="presentation"><div class="sheet form-sheet" role="dialog" aria-modal="true" aria-label="Task">
+ <div class="top"><strong id="taskFormHeading">New task</strong><button class="close" data-close="" aria-label="Close">×</button></div>
+ <form id="taskForm">
+  <input id="taskTitle" class="title-input" maxlength="100" placeholder="Task" required="">
+  <label class="frow task-important-control"><span>Important <small>For the selected day · up to 3</small></span><input id="taskImportant" type="checkbox" role="switch" aria-label="Important for selected day"></label>
+  <label class="frow" for="taskKind"><span class="flabel">Type</span><select id="taskKind" class="pill-input"><option value="task">Task</option><option value="prayer">Prayer</option><option value="devotion">Devotion</option></select></label>
+  <div class="frow col"><span class="flabel">Repeat</span><div class="chips" id="taskRepeatChips"><button class="chip active" type="button">Does not repeat</button><button class="chip" type="button">Daily</button><button class="chip" type="button">Weekly</button></div>
+   <select id="taskRepeat" hidden=""><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option></select>
+   <div id="taskWeekdaysWrap" class="hidden"><div class="weekdayselect" id="taskWeekdays"><label><input type="checkbox" value="1" name="taskDays">Mon</label><label><input type="checkbox" value="2" name="taskDays">Tue</label><label><input type="checkbox" value="3" name="taskDays">Wed</label><label><input type="checkbox" value="4" name="taskDays">Thu</label><label><input type="checkbox" value="5" name="taskDays">Fri</label><label><input type="checkbox" value="6" name="taskDays">Sat</label><label><input type="checkbox" value="0" name="taskDays">Sun</label></div></div></div>
+  <div class="frow"><span class="flabel">Start</span><input id="taskSince" class="pill-input" type="date" required=""></div>
+  <div class="frow" id="taskDueWrap"><span class="flabel">Due</span><div class="pair"><label class="chip check active"><input id="taskDueNone" type="checkbox" checked="" hidden="">None</label><input id="taskDue" class="pill-input hidden" type="date" disabled=""></div></div>
+  <div class="frow hidden" id="taskUntilWrap"><span class="flabel">Repeat until</span><input type="date" class="pill-input" id="taskUntil"></div>
+  <button class="solid wide" type="submit" id="taskSave">Save</button><button type="button" class="hidden" id="taskCancel"></button>
+ </form>
+</div></div>
+
+
+<div id="sessionNoteModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-label="Devotion and prayer notes"><div class="top"><strong id="sessionNoteTitle">What stayed with you</strong><button class="close" data-close="" aria-label="Close">×</button></div><p id="sessionNoteMeta" class="micro"></p><label class="label" for="sessionMemo">What stayed with you</label><textarea id="sessionMemo" class="field" maxlength="5000" placeholder="Write what came to mind, what you prayed, or a passage you want to remember."></textarea><p class="note-status" id="sessionNoteStatus">Auto-saved as you type.</p><button class="solid wide" id="finishSessionNote">Done</button></div></div>
+<div id="timeNotesModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-label="Time-slot notes"><div class="top"><strong id="timeNotesTitle"></strong><button class="close" data-close="" aria-label="Close">×</button></div><div id="timeNotesBody"></div><p class="micro" id="timeNotesStatus" aria-live="polite"></p></div></div>
+<div id="mealLogModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mealLogHeading"><div class="top"><strong id="mealLogHeading">Meal</strong><button class="close" data-close="" aria-label="Close">×</button></div><p class="micro" id="mealLogDate"></p><label class="label" for="mealLogText">What did you eat?</label><textarea id="mealLogText" class="field" rows="4" maxlength="1200" placeholder="Add food, drinks, or portions"></textarea><div class="review-entry-actions"><button type="button" id="mealLogClear" class="mini-btn">Clear</button><button type="button" id="mealLogSave" class="solid">Save meal</button></div></div></div>
+<div id="journalModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-label="All notes"><div class="top"><strong>All notes</strong><button class="close" data-close="" aria-label="Close">×</button></div><div class="journal-controls"><button data-journal-filter="all">All</button><button data-journal-filter="event">Schedule</button><button data-journal-filter="meal">Meals</button><button data-journal-filter="class">Class</button><button data-journal-filter="check">Check-in</button><button data-journal-filter="wrap">Day wrap-up</button><button data-journal-filter="devotion">Devotion</button><button data-journal-filter="personal">Personal prayer</button></div><div class="journal-search"><input id="journalSearch" class="field" aria-label="Search notes" placeholder="Search notes"><div class="compactrow"><label>Start date<input id="journalFrom" type="date" class="field"></label><label>End date<input id="journalTo" type="date" class="field"></label></div><button id="resetJournal" class="mini-btn">Clear search and date range</button></div><div id="journalList"></div></div></div>
+<div id="brandModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-label="Change app name"><div class="top"><strong>My app name</strong><button class="close" data-close="" aria-label="Close">×</button></div><form id="brandForm"><label class="label" for="brandInput">App name</label><input id="brandInput" class="field" maxlength="24" required=""><button class="solid wide" type="submit">Save name</button></form></div></div>
+
+<div id="choiceModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true"><div class="top"><strong id="choiceTitle"></strong><button class="close" data-close="" aria-label="Close">×</button></div><div id="choiceList"></div></div></div>
+<div id="reviewEntryModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-label="Review entry"><div class="top"><strong id="reviewEntryTitle"></strong><button class="close" data-close="" aria-label="Close">×</button></div><p id="reviewEntryText" class="review-entry-detail"></p><div class="review-entry-actions"><button type="button" id="reviewEntryEdit" class="mini-btn">Edit</button><button type="button" id="reviewEntryDelete" class="outline danger">Delete</button></div></div></div>
+<div id="focusLibraryModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="focusLibraryTitle"><div class="top"><strong id="focusLibraryTitle">Prayer requests</strong><button class="close" data-close="" aria-label="Close">×</button></div><div id="focusLibraryList"></div>  <div class="card prayer-card"><div class="sectionhead"><div class="prayer-heading"><h2>Prayer requests</h2><span class="small" id="prayerCount"></span></div><button class="manage-btn" id="togglePrayerAdd" type="button" aria-expanded="false">Add request</button></div><div class="prayer-box"></div></div><details class="focus-history"><summary>Session history</summary><div id="focusHistory"></div></details><button class="mini-btn" data-open-journal="">All notes ›</button></div></div>
+<div id="weeklyReflectionSettingsModal" class="modal-under" hidden role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="weeklyReflectionSettingsTitle"><div class="top"><strong id="weeklyReflectionSettingsTitle">Reflection settings</strong><button class="close" data-close aria-label="Close">×</button></div><label class="label" for="weeklyReflectionDay">Weekly reflection day</label><select id="weeklyReflectionDay" class="field"><option value="0">Sunday</option><option value="1">Monday</option></select><p class="micro">Weeks run Monday–Sunday. On Monday, reflect on the previous week. You can write a weekly reflection on any day.</p><p id="weeklyReflectionSettingsStatus" role="status"></p><button id="saveWeeklyReflectionSettings" type="button" class="solid wide">Save settings</button></div></div>
+<div id="appHelpModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-label="Help and About"><div class="top"><strong>About Kona DTS</strong><button class="close" data-close="" aria-label="Close">×</button></div><img class="about-art" src="./assets/kona-focus-island.png" alt="Kona island illustration"><p>I created KONA DTS to capture meaningful moments and return to them through reflection and prayer.</p><p class="micro">Your records stay in this browser on this device. Clearing browser data or using another device may remove or separate your records. Export a JSON backup from Review before moving devices.</p><button id="revisitWelcome" class="outline">Welcome &amp; tutorial</button></div></div>
+<div id="appResetModal" class="modal-under" hidden="" role="presentation"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="appResetTitle"><div class="top"><strong id="appResetTitle">Reset this app?</strong><button class="close" data-close="" aria-label="Close">×</button></div><p>This deletes all notes, check-ins, sessions, prayer requests, tasks, and custom schedules in this browser. Settings and the schedule return to their defaults. Any running timer will stop.</p><p class="micro">This cannot be undone. Download a backup first if you want to restore your data later. Other devices are not affected.</p><button type="button" id="backupBeforeReset" class="mini-btn">Download backup</button><label class="label" for="appResetConfirm">Type RESET to confirm</label><input id="appResetConfirm" class="field" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="RESET"><p id="appResetStatus" class="micro" role="status"></p><div class="review-entry-actions"><button type="button" id="cancelAppReset" class="mini-btn">Cancel</button><button type="button" id="confirmAppReset" class="outline danger" disabled="">Delete all data &amp; reset</button></div></div></div>
+
+<div id="konaActionInputModal" class="modal-under" hidden>
+<form class="sheet kona-input-sheet" role="dialog" aria-modal="true" aria-labelledby="konaActionInputTitle">
+<div class="top"><strong id="konaActionInputTitle">Action to take</strong><button type="button" class="close" id="konaInputClose" aria-label="Close">×</button></div>
+<input id="konaActionInputField" class="kona-input-field" type="text" maxlength="200" required autocomplete="off" aria-label="Action to take" placeholder="What will you do next?">
+<div class="kona-input-actions"><button type="button" id="konaInputCancel">Cancel</button><button type="submit" class="kona-input-save" id="konaInputSubmit">Add action</button></div>
+</form>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<button id="jumpTimelineNow" class="now-fab" aria-label="Jump to current time">Now ↓</button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="./runtime/legacy-controllers.9a6fbb5e22cc.js"></script><script src="./runtime/settings.58b48f87b05a.js"></script></body></html>

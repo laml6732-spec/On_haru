@@ -1,0 +1,25 @@
+{
+  "name": "On_Haru",
+  "short_name": "On_Haru",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "prefer_related_applications": false,
+  "background_color": "#FDFDFB",
+  "theme_color": "#1D6155",
+  "icons": [
+    {
+      "src": "./icons/onharu-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/onharu-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

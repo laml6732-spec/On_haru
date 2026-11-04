@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Sheep — Listening to God's Voice">
+  <defs>
+    <linearGradient id="wool" x1=".18" y1="0" x2=".82" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#FFFDF3"/>
+      <stop offset=".57" stop-color="#FFF0D4"/>
+      <stop offset="1" stop-color="#F8DBAF"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2=".8" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#FFE1CF"/>
+      <stop offset="1" stop-color="#F1B4A6"/>
+    </linearGradient>
+    <linearGradient id="ears" x1=".2" y1="0" x2=".8" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#F9C7B9"/>
+      <stop offset="1" stop-color="#ECA18F"/>
+    </linearGradient>
+    <filter id="softshadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="1.3" stdDeviation="1.25" flood-color="#9F8162" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <!-- The rounded app button, outline, and selected state should be drawn by the app. -->
+  <g filter="url(#softshadow)">
+    <rect x="35" y="73" width="9" height="16" rx="4.5" fill="#E8B09D"/>
+    <rect x="56" y="73" width="9" height="16" rx="4.5" fill="#E8B09D"/>
+    <rect x="36.6" y="75.5" width="2.5" height="7" rx="1.2" fill="#F7D2BF" opacity=".7"/>
+    <rect x="57.6" y="75.5" width="2.5" height="7" rx="1.2" fill="#F7D2BF" opacity=".7"/>
+    <!-- Warm shadow border: maintain soft, rounded wool silhouette. -->
+    <g fill="#E6C994">
+      <circle cx="24" cy="56" r="15"/><circle cx="76" cy="56" r="15"/>
+      <circle cx="30" cy="40" r="16"/><circle cx="70" cy="40" r="16"/>
+      <circle cx="50" cy="34" r="17"/>
+      <circle cx="34" cy="70" r="14"/><circle cx="66" cy="70" r="14"/>
+    </g>
+    <g fill="url(#wool)">
+      <circle cx="24" cy="55.6" r="13.2"/><circle cx="76" cy="55.6" r="13.2"/>
+      <circle cx="30" cy="39.5" r="14.2"/><circle cx="70" cy="39.5" r="14.2"/>
+      <circle cx="50" cy="33.5" r="15.2"/>
+      <circle cx="34" cy="69.5" r="12.3"/><circle cx="66" cy="69.5" r="12.3"/>
+    </g>
+    <!-- Limited glow replaces the five distracting white dots. -->
+    <ellipse cx="43" cy="24" rx="6.4" ry="3.1" transform="rotate(-19 43 24)" fill="white" opacity=".42"/>
+    <ellipse cx="26" cy="34" rx="4.6" ry="2.1" transform="rotate(-45 26 34)" fill="white" opacity=".26"/>
+    <!-- Ears behind face -->
+    <ellipse cx="31" cy="58" rx="8.5" ry="4.5" transform="rotate(-20 31 58)" fill="url(#ears)"/>
+    <ellipse cx="69" cy="58" rx="8.5" ry="4.5" transform="rotate(20 69 58)" fill="url(#ears)"/>
+    <ellipse cx="50" cy="61.4" rx="17.2" ry="16" fill="url(#face)"/>
+    <ellipse cx="44" cy="55" rx="7" ry="5.5" fill="white" opacity=".12"/>
+    <!-- Forelock -->
+    <g fill="#E6C994">
+      <circle cx="42" cy="47" r="10"/><circle cx="50" cy="44" r="11"/><circle cx="58" cy="47" r="10"/>
+    </g>
+    <g fill="url(#wool)">
+      <circle cx="42" cy="46.5" r="8.1"/><circle cx="50" cy="43.4" r="9.1"/><circle cx="58" cy="46.5" r="8.1"/>
+    </g>
+    <ellipse cx="48" cy="38" rx="4" ry="1.8" transform="rotate(-18 48 38)" fill="white" opacity=".35"/>
+    <circle cx="43" cy="62" r="2.95" fill="#463C50"/><circle cx="57" cy="62" r="2.95" fill="#463C50"/>
+    <circle cx="44" cy="60.8" r="1.02" fill="white"/><circle cx="58" cy="60.8" r="1.02" fill="white"/>
+    <circle cx="37.5" cy="68" r="3.5" fill="#F68EA5" opacity=".78"/>
+    <circle cx="62.5" cy="68" r="3.5" fill="#F68EA5" opacity=".78"/>
+    <path d="M46.4 68 Q50 72.2 53.6 68" stroke="#463C50" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>
