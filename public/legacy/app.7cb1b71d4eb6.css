@@ -4210,7 +4210,7 @@ body .app #page-capture #qc-v2 .kona-tag-tray-toggle,
 body .app .kona-inline-emoji-picker > .kona-emoji-more {
   display:flex!important;
   position:absolute!important;
-  bottom:0!important;
+  bottom:5px!important;
   right:0!important;
   box-sizing:border-box!important;
   width:calc((100% - 42px)/8)!important;
@@ -4256,4 +4256,18 @@ body .app .kona-inline-emoji-picker > .kona-emoji-more:focus-visible{
     background:#EEF6F0!important;
     border-color:#B0CDBD!important;
   }
+}
+
+/* A quiet, readable version of the same control in dark mode. */
+html[data-appearance="dark"] body .app #page-capture #qc-v2 .kona-tag-tray-toggle,
+html[data-appearance="dark"] body .app .kona-inline-emoji-picker > .kona-emoji-more{
+  background:#253C34!important;
+  border-color:#577669!important;
+  color:#DBEBDD!important;
+}
+html[data-appearance="dark"] body .app #page-capture #qc-v2 .kona-tag-tray-toggle[aria-expanded="true"],
+html[data-appearance="dark"] body .app .kona-inline-emoji-picker > .kona-emoji-more[aria-expanded="true"]{
+  background:#3D6150!important;
+  border-color:#9AC3A9!important;
+  color:#F3FCF5!important;
 }
