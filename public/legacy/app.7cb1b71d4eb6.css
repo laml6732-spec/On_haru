@@ -4146,3 +4146,28 @@ body .app #page-capture #captureComposerHeading{display:none!important}
 body .app #page-capture button.kona-tag-chip[aria-pressed=true]{outline:0!important;border:0!important;box-shadow:none!important;background:transparent!important}
 body .app #page-capture button.kona-tag-chip[aria-pressed=true] .kona-tag-symbol{border:2px solid #386651!important;box-shadow:none!important;background:#e5f0e9!important}
 body .app #page-capture button.kona-tag-chip:focus-visible{outline:2px solid #386651!important;outline-offset:3px!important}
+
+/* On_HARU first-run branding: use the same handwritten mark as the app header. */
+#tutorialLanguage .language-brand{
+  font-family:'Pacifico','Gaegu','Pretendard','Apple SD Gothic Neo',cursive!important;
+  font-weight:400!important;
+  font-synthesis:none;
+  font-size:clamp(30px,8vw,38px)!important;
+  line-height:1.4;
+  letter-spacing:0!important;
+  color:#20584A;
+}
+/* Keep the guided card clear of the task title field while the form is open.
+   The extra sheet scroll space lets the Save button move above the coachmark. */
+body.practice-mode #guidedTour.tour-task-entry{
+  top:auto!important;
+  bottom:calc(env(safe-area-inset-bottom) + 8px)!important;
+  max-height:min(28dvh,232px)!important;
+  width:min(440px,calc(100vw - 20px));
+}
+body.practice-mode #taskFormModal .sheet{
+  max-height:80dvh!important;
+  padding-bottom:calc(29dvh + 22px + env(safe-area-inset-bottom))!important;
+  scroll-padding-bottom:30dvh;
+}
+body.practice-mode #taskTitle{scroll-margin-top:12px}
