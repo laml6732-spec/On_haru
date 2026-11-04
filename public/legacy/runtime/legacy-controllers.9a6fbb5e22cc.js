@@ -1575,9 +1575,16 @@ let guidedIndex=0,guidedTourActive=false,guidedFinished=false,guidedEvidence=new
 function clearGuidedTarget(){document.querySelectorAll('.guided-target').forEach(n=>n.classList.remove('guided-target'))}
 function guidedText(id,value){if($(id).textContent!==value)$(id).textContent=value}
 function visibleGuidedTarget(step){const n=document.querySelector(step.selector);return n&&n.getClientRects().length?n:null}
-function positionGuidedCard(){const modal=[...document.querySelectorAll('.modal-under')].some(n=>!n.hidden);const keyboard=window.visualViewport&&window.innerHeight-window.visualViewport.height>120;$('guidedTour').dataset.position=modal||keyboard?'top':'bottom'}
+function positionGuidedCard(){const taskFormOpen=!$('taskFormModal').hidden;const modal=[...document.querySelectorAll('.modal-under')].some(n=>!n.hidden);const keyboard=window.visualViewport&&window.innerHeight-window.visualViewport.height>120;const guide=$('guidedTour');guide.classList.toggle('tour-task-entry',taskFormOpen);guide.dataset.position=taskFormOpen?'bottom':(modal||keyboard?'top':'bottom')}
 function refreshGuidedStep(){
  if(!guidedTourActive)return;
+ // Opening the task sheet completes the preceding 'Add task' step automatically.
+ // The next instruction and focus now follow the visible title input.
+ if(guidedIndex===2&&!$('taskFormModal').hidden){
+  guidedCompleted.add(guidedIndex);guidedIndex=3;showGuidedStep();
+  requestAnimationFrame(()=>{const input=$('taskTitle');if(input&&!input.disabled&&document.activeElement!==input)input.focus({preventScroll:true})});
+  return;
+ }
  const step=guidedSteps[guidedIndex],ready=step.ready();const target=visibleGuidedTarget(step),recover=!ready&&!target;
  document.querySelectorAll('.guided-target').forEach(n=>{if(n!==target)n.classList.remove('guided-target')});
  if(target&&!target.classList.contains('guided-target'))target.classList.add('guided-target');
