@@ -4203,3 +4203,57 @@ body.practice-mode #taskTitle{scroll-margin-top:12px}
   #guidedTour .tour-actions{gap:4px 7px!important}
   #guidedTour #tourBack,#guidedTour #tourNext{min-height:40px!important}
 }
+
+
+/* On_HARU Capture: rounded icon-only tag expander, matching the 36px emoji tokens. */
+body .app #page-capture #qc-v2 .kona-tag-tray-toggle,
+body .app .kona-inline-emoji-picker > .kona-emoji-more {
+  display:flex!important;
+  position:absolute!important;
+  bottom:0!important;
+  right:0!important;
+  box-sizing:border-box!important;
+  width:calc((100% - 42px)/8)!important;
+  max-width:36px!important;
+  min-width:0!important;
+  height:36px!important;
+  min-height:36px!important;
+  margin:0!important;
+  padding:0!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-shrink:0!important;
+  border:1px solid #D6E1D9!important;
+  border-radius:50%!important;
+  background:#FFFDF9!important;
+  color:#426958!important;
+  box-shadow:0 1px 3px rgba(35,76,58,.08)!important;
+  font-family:Nunito,system-ui,sans-serif!important;
+  font-weight:700!important;
+  font-size:calc(20px * var(--kona-ui-scale,1))!important;
+  line-height:1!important;
+  letter-spacing:-.7px!important;
+  text-align:center!important;
+  transform:none!important;
+  cursor:pointer!important;
+  -webkit-tap-highlight-color:transparent;
+}
+body .app #page-capture #qc-v2 .kona-tag-tray-toggle[aria-expanded="true"],
+body .app .kona-inline-emoji-picker > .kona-emoji-more[aria-expanded="true"] {
+  background:#E8F2EB!important;
+  border-color:#A8C4B5!important;
+  color:#245A48!important;
+  box-shadow:none!important;
+}
+body .app #page-capture #qc-v2 .kona-tag-tray-toggle:focus-visible,
+body .app .kona-inline-emoji-picker > .kona-emoji-more:focus-visible{
+  outline:2px solid #386651!important;
+  outline-offset:3px!important;
+}
+@media(hover:hover) {
+  body .app #page-capture #qc-v2 .kona-tag-tray-toggle:hover,
+  body .app .kona-inline-emoji-picker > .kona-emoji-more:hover{
+    background:#EEF6F0!important;
+    border-color:#B0CDBD!important;
+  }
+}
