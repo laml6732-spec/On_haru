@@ -1,9 +1,9 @@
 /* Minimal offline-first app shell; images are cached only when requested. */
 const PREFIX='kona-legacy-shell-'; // Keep prefix: clean up old 18 MB versioned caches.
-const RELEASE='cc7f8a2e5b01';
+const RELEASE='cc7f8a2e5b02';
 const CACHE=PREFIX+RELEASE;
 const MEDIA=PREFIX+'media-'+RELEASE;
-const CORE=["./runtime/settings.58b48f87b05a.js","./assets/onharu-welcome.png","./icons/onharu-512.png","./","./index.html","./app.7cb1b71d4eb6.css?rev=cc7f8a2e5b01","./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=cc7f8a2e5b01","./manifest.webmanifest","./icons/onharu-192.png"];
+const CORE=["./runtime/settings.58b48f87b05a.js","./assets/onharu-welcome.png","./icons/onharu-512.png","./","./index.html","./app.7cb1b71d4eb6.css?rev=cc7f8a2e5b02","./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=cc7f8a2e5b02","./manifest.webmanifest","./icons/onharu-192.png"];
 const home=new URL('./',self.registration.scope).href;
 const MAX_MEDIA_ENTRIES=16;
 self.addEventListener('install',event=>{
