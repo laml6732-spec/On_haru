@@ -34,7 +34,7 @@ async function serve(request) {
   let path = url.pathname;
   if (path.endsWith("/")) path += "index.html";
 
-  const src = SOURCE + path;
+  const src = SOURCE + path + url.search;
   const ext = Object.keys(MIME).find(k => path.toLowerCase().endsWith(k)) || "";
   const dynamic = ext === ".html" || ext === ".js" || ext === ".webmanifest";
   const cacheSeconds = dynamic ? 60 : 300;
