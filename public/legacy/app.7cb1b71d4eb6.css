@@ -4171,3 +4171,35 @@ body.practice-mode #taskFormModal .sheet{
   scroll-padding-bottom:30dvh;
 }
 body.practice-mode #taskTitle{scroll-margin-top:12px}
+
+/* On_HARU guided practice: two main actions, one quiet skip action, and a close icon. */
+#guidedTour{position:fixed}
+#guidedTour .tour-close{
+  position:absolute;top:8px;right:10px;z-index:2;
+  width:34px;height:34px;min-height:34px;padding:0;
+  display:grid;place-items:center;
+  border:0;border-radius:10px;background:transparent;
+  font:400 25px/1 var(--font-ui,system-ui);color:#526B60;
+}
+#guidedTour .tour-close:hover{background:#EEF3EE}
+#guidedTour .tour-close:focus-visible{outline:2px solid #286657;outline-offset:2px}
+#guidedTour .tour-count,#guidedTour h2{padding-right:40px}
+#guidedTour .tour-actions{
+  display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr);
+  align-items:center;gap:6px 8px!important;position:sticky;bottom:0;
+  background:#fff;padding-top:9px;margin-top:7px;
+}
+#guidedTour #tourBack{grid-column:1;min-width:0}
+#guidedTour #tourNext{grid-column:2;min-width:0;min-height:42px}
+#guidedTour #tourSkip{
+  grid-column:1/-1;justify-self:center;min-height:29px!important;
+  border:none!important;background:transparent!important;
+  font-size:12px!important;line-height:1.4!important;
+  font-weight:600;padding:2px 12px!important;color:#64766D!important;
+}
+#guidedTour :is(#tourBack,#tourNext,#tourSkip,#tourExit)[hidden]{display:none!important}
+@media(max-width:380px){
+  #guidedTour{padding:11px 13px}
+  #guidedTour .tour-actions{gap:4px 7px!important}
+  #guidedTour #tourBack,#guidedTour #tourNext{min-height:40px!important}
+}
