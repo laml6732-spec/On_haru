@@ -27,14 +27,17 @@ jobs:
           retention-days: 7
       - name: Save focused results
         if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git fetch origin work/css-audit-regression-2026-11
           git checkout --detach FETCH_HEAD
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=20" > /tmp/onharu-runs.json
           mkdir -p docs/ui-audit-2026-11
           node --input-type=module <<'JS'
           import fs from 'node:fs';
           const cases=JSON.parse(fs.readFileSync('test-results/extra/report.json','utf8'));
-          const result={runId:process.env.GITHUB_RUN_ID,sourceCommit:process.env.GITHUB_SHA,cases};
+          const result={runId:process.env.GITHUB_RUN_ID,sourceCommit:process.env.GITHUB_SHA,cases,runs:JSON.parse(fs.readFileSync('/tmp/onharu-runs.json','utf8')).workflow_runs.map(r=>({id:r.id,sha:r.head_sha,status:r.status,conclusion:r.conclusion,name:r.name}))};
           fs.writeFileSync('docs/ui-audit-2026-11/EXTRA_RESULTS.json',JSON.stringify(result,null,2));
           JS
           git config user.name "github-actions[bot]"
