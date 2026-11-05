@@ -41,11 +41,11 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   await page.locator('#eventTitle').fill('QA Event');await page.locator('#eventStart').fill('21:00');await page.locator('#eventEnd').fill('21:30');
   await page.locator('#eventShortNameDetails summary').click();await page.locator('#eventShortTitle').fill('TEST');await page.locator('#eventSave').click();
   await expect(await page.locator('#eventFormModal').isHidden(),'event not saved');
-  const stored=await page.evaluate(()=>Object.values(localStorage).some(v=>v.includes('QA Event')&&v.includes('TEST')));await expect(stored,'event missing in storage');
+  const stored=await page.evaluate(()=>Object.keys(localStorage).some(k=>{const v=localStorage.getItem(k);return typeof v==='string'&&v.includes('QA Event')&&v.includes('TEST')}));await expect(stored,'event missing in storage');
  });
  await check('Task add, important, complete',async()=>{
   await tap('today');await page.locator('#pinRow .task-add').click();await page.locator('#taskTitle').fill('QA Task');await page.locator('#taskImportant').check();await page.locator('#taskSave').click();
-  const task=page.locator('#pinRow .pinned-item').filter({hasText:'QA Task'});await expect(await task.count()>0,'task missing');
+  const task=page.locator('#page-today .pinned-item').filter({hasText:'QA Task'});await expect(await task.count()>0,'task missing');
   const toggle=task.locator('.task-check');await toggle.click();await expect(await toggle.getAttribute('aria-checked')==='true','completion not checked');
  });
  await check('Morning autosave and Mood/Energy',async()=>{
@@ -60,10 +60,22 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
  await check('Evening autosave',async()=>{
   await tap('checkin');await page.locator('#page-checkin [data-phase="evening"]').click();await page.locator('#checkNote').fill('QA Evening check-in');await tap('capture');await tap('checkin');await page.locator('#page-checkin [data-phase="evening"]').click();await expect(await page.locator('#checkNote').inputValue()==='QA Evening check-in','evening lost');
  });
+
+ await check('Event edit retains collapsed short name and saved text',async()=>{
+  await page.locator('.app-settings-shortcut').click();await page.locator('#kx-settings').getByRole('button',{name:'Manage',exact:true}).click();
+  await page.locator('#eventManageList').getByRole('button',{name:'Edit QA Event',exact:true}).click();await page.locator('#choiceList button').filter({hasText:'Edit event'}).click();
+  await expect(!await page.locator('#eventShortNameDetails').evaluate(e=>e.open),'edit short name open');await page.locator('#eventShortNameDetails summary').click();await expect(await page.locator('#eventShortTitle').inputValue()==='TEST','short name lost');await page.locator('#eventTitle').fill('QA Event edited');await page.locator('#eventSave').click();await tap('today');
+ });
+ await check('Review edit, delete cancellation, filter and archive search',async()=>{
+  await tap('capture');await page.locator('.capture-recent-note').first().click();await page.locator('#konaReviewEditor').getByRole('textbox',{name:'Note',exact:true}).fill('QA sample memo edited');await page.locator('#konaReviewEditor').getByRole('button',{name:'Save',exact:true}).click();
+  await tap('records');await page.locator('#rev-reflect').click();const entry=page.locator('.review-record').filter({hasText:'QA sample memo edited'}).first();await expect(await entry.count()>0,'edited memo absent');
+  await entry.locator('.rv-entry-menu summary').first().click();await entry.locator('.review-delete').click();await page.locator('.onharu-dialog-cancel').click();await expect(await entry.count()>0,'cancel deleted record');await page.keyboard.press('Escape');
+  await page.locator('#rev-archive').click();await page.locator('#archive-search-input').fill('QA sample memo edited');await expect((await page.locator('#archive-search-results').innerText()).includes('QA sample memo edited'),'archive search missing');await page.locator('#rev-reflect').click();
+ });
  await check('Focus duration, start, pause, resume, finish, session note',async()=>{
   await tap('focus');await page.locator('#kindSeg [data-kind="prayer"]').click();await page.locator('#focusDurations [data-time="2"]').click();await expect(/^0?2:00$/.test((await page.locator('#focusClock').innerText()).trim()),'duration');
   await page.locator('#focusStart').click();await page.waitForTimeout(1100);await page.locator('#focusStart').click();await page.locator('#focusStart').click();
-  if(await page.locator('#focusNoteToggle').isVisible())await page.locator('#focusNoteToggle').click();await page.locator('#timerNote').fill('QA Prayer session');await page.locator('#focusEnd').click();
+  if(await page.locator('#focusNoteToggle').isVisible())await page.locator('#focusNoteToggle').click();await page.locator('#timerNote').fill('QA Prayer session');await page.clock.setFixedTime(new Date('2026-11-04T09:30:04-10:00'));await page.locator('#focusEnd').click();await expect(!await page.locator('body').evaluate(e=>e.classList.contains('focus-immersive')),'session did not exit');
  });
  await check('Review daily, weekly, archive',async()=>{
   // Real Finish can leave the navigation dock hidden; record this as a failure if not accessible.
@@ -74,6 +86,11 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   await page.locator('.app-settings-shortcut').click();await page.locator('[data-kona-setting="theme"]').selectOption(theme);await page.locator('[data-kona-setting="size"]').selectOption('15');
   await Promise.all([page.waitForEvent('load'),page.locator('#konaApplySettings').click()]);await page.waitForSelector('.tabs [data-page="capture"]');
   await expect(await page.locator('html').getAttribute('data-appearance')===theme,'theme not persistent');await tap('capture');await expect((await page.locator('.capture-recent-body').first().innerText()).includes('QA sample memo'),'memo lost after settings reload');
+ });
+
+ await check('Backup and restore fabricated records',async()=>{
+  await page.locator('.app-settings-shortcut').click();const downloadPromise=page.waitForEvent('download');await page.locator('#backupNow').click();const download=await downloadPromise;const path=await download.path();const payload=JSON.parse(await fs.readFile(path,'utf8'));await expect(Object.values(payload.days).some(d=>d.quickCaptureEntries?.some(q=>q.text.includes('QA sample memo'))),'backup missing sample');
+  await page.locator('#restoreFile').setInputFiles(path);await page.locator('.onharu-dialog-accept').click();await page.keyboard.press('Escape');await tap('capture');await expect((await page.locator('.capture-recent-body').first().innerText()).includes('QA sample memo'),'restore lost memo');
  });
  row.storage=await page.evaluate(()=>Object.keys(localStorage).sort());
  await fs.writeFile(`${dir}/report.json`,JSON.stringify(results,null,2));await context.close();
