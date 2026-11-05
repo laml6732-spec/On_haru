@@ -2049,11 +2049,16 @@ function reviewFeelingEditor(record,row,dimension='happiness'){
 }
 function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
  if(['capture','event','free'].includes(record.kind))preview=konaReviewPreferences().previewLines>0&&!archiveDetailRecord;
- const row=el('article',undefined,'review-record rv-item');row.classList.toggle('review-check-record',record.kind==='check');row.classList.toggle('review-session-record',record.kind==='session');row.classList.toggle('review-is-important',reviewImportant(record));row.dataset.recordId=record.id;row.dataset.recordDate=record.date;row.dataset.entryId=record.id;
+ const isPersonal=record.kind==='free'||(record.kind==='capture'&&!record.scheduleId);
+ const row=el('article',undefined,'review-record rv-item');row.classList.toggle('review-check-record',record.kind==='check');row.classList.toggle('review-session-record',record.kind==='session');row.classList.toggle('review-class-record',record.kind==='class');row.classList.toggle('review-personal-note',isPersonal);row.classList.toggle('review-plan-note',!!record.reviewEvent&&['capture','event'].includes(record.kind));row.classList.toggle('review-empty-note',['check','session'].includes(record.kind)&&!String(record.body||'').trim());row.classList.toggle('review-is-important',reviewImportant(record));row.dataset.recordId=record.id;row.dataset.recordDate=record.date;row.dataset.entryId=record.id;
  const body=el('div',undefined,'rv-entry-body'),meta=el('div',undefined,'review-record-meta');const identity=record.date+' · '+(record.scheduleLabel||record.title||record.type)+' · '+record.id;
  const time=record.reviewEvent?(record.recordedTime&&(mins(record.recordedTime)<mins(record.reviewEvent.start)||mins(record.recordedTime)>=mins(record.reviewEvent.end))?KonaI18n.t("Written ")+record.recordedTime:''):record.recordedTime||'';
  const meaningful=record.kind==='check'?record.title.replace(/ check-in$/i,'')+' check-in':record.kind==='class'?'':record.kind==='session'?record.title+(record.sessionDuration?' · '+record.sessionDuration:''):record.kind==='anchor'?KonaI18n.t("Daily Anchor"):'';
- if(meaningful){const name=el('span',meaningful);if(record.kind==='check')konaBindEditTarget(name,KonaI18n.t("Change check-in note · ")+identity,()=>reviewInlineNote(record,row));meta.append(name)}if(time&&!['capture','event','free'].includes(record.kind))meta.append(el('time',time));if(meta.childNodes.length)body.append(meta);
+ if(isPersonal)meta.append(el('span',KonaI18n.t("Personal note"),'review-type-label'));
+ if(meaningful){const name=el('span',meaningful);if(record.kind==='check')konaBindEditTarget(name,KonaI18n.t("Change check-in note · ")+identity,()=>reviewInlineNote(record,row));meta.append(name)}
+ // Capture time is recorded at creation. An old free-note hour is only a slot, not a timestamp.
+ const metaTime=record.kind==='capture'&&isPersonal?record.recordedTime:!['capture','event','free','class'].includes(record.kind)?time:'';
+ if(metaTime)meta.append(el('time',metaTime));if(meta.childNodes.length)body.append(meta);
  if(!grouped&&record.scheduleId)body.append(el('small',record.scheduleLabel,'review-schedule-label'));
  const title=record.noteTitle&&record.noteTitle.trim().toLowerCase()!==String(record.scheduleLabel||record.title).trim().toLowerCase()?record.noteTitle:'';
  const canInline=['capture','event','check','session','anchor','free'].includes(record.kind);
@@ -2061,9 +2066,10 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
  if(title){const heading=el('strong',title,'rv-user-note-title');if(canInline)konaBindEditTarget(heading,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));body.append(heading)}
  if(record.kind!=='class'&&(record.body||(!title&&record.tags?.length))){const text=el('p',record.body,'rv-note-preview'+(preview?' review-preview':''));if(canInline)konaBindEditTarget(text,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));else if(record.kind==='class')konaBindEditTarget(text,KonaI18n.t("Open class review · ")+identity,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);nav('checkin',{phase:'noon'})});if(/\n\s*\n/.test(text.textContent)){const paragraphs=text.textContent.split(/\n\s*\n/);text.replaceChildren(...paragraphs.map(value=>el('span',value,'review-text-paragraph')))}body.append(text);if(preview){const more=el('button',KonaI18n.t("Read more"),'review-preview-more');more.type='button';more.onclick=()=>{text.classList.toggle('review-expanded');more.textContent=text.classList.contains('review-expanded')?KonaI18n.t("Show less"):KonaI18n.t("Read more")};body.append(more);requestAnimationFrame(()=>{if(more.isConnected)reviewSyncPreviews(body)})}}
  if(record.kind==='class'){
-  const c=db.days[record.date]?.checkins?.noon||{},heading=el('h4',konaReviewClassHeading(record.date,c),'review-class-title');konaBindEditTarget(heading,KonaI18n.t("Open class notes · ")+record.date,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);konaOpenReviewEditor(record.date,record.id)});body.append(heading);
+  const c=db.days[record.date]?.checkins?.noon||{},heading=el('h4',konaReviewClassHeading(record.date,c),'review-class-title');konaBindEditTarget(heading,KonaI18n.t("Open class notes · ")+record.date,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);konaOpenReviewEditor(record.date,record.id)});
+  const classHeader=el('div',undefined,'review-class-header'),classTime=validReflectHM(c.classReviewTime)||record.recordedTime;
+  classHeader.append(heading);if(classTime)classHeader.append(el('time',classTime,'review-class-time'));body.append(classHeader);
   for(const [key,label] of [['lectureQuote',KonaI18n.t("Memorable words")],['lectureReflection',KonaI18n.t("Reflection")],['classResponse',KonaI18n.t("Response")]])if(c[key]?.trim()){const part=el('section',undefined,'review-class-part');part.append(el('small',label),el('p',c[key]));body.append(part)}
-  const classTime=validReflectHM(c.classReviewTime);if(classTime)body.append(el('time',classTime,'review-class-time'));
  }
  if(record.kind==='check'){
   const feelings=el('div',undefined,'review-feeling-values'),value=konaFeeling({energy:record.energy,happiness:record.happiness})||record.feeling||KonaI18n.t("Choose");const button=el('button',value,'review-feeling-value');button.type='button';button.setAttribute('aria-label',KonaI18n.t("Change feeling · ",true)+identity);button.onclick=()=>reviewFeelingEditor(record,row);feelings.append(button);const header=el('div',undefined,'review-check-header');meta.remove();header.append(meta,feelings);body.prepend(header)
@@ -2136,10 +2142,94 @@ function openArchiveSearchResult(item){root.classList.add('archive-detail');cons
  }
  mode='archive';reviewTab='log';nav('records');document.getElementById('kx-archive').value='log';renderRecords();requestAnimationFrame(()=>{const row=[...document.querySelectorAll('#dayReviewBody .day-review-entry-row')].find(node=>node.dataset.recordId===item.id);if(row){row.scrollIntoView({block:'center',behavior:'smooth'});row.querySelector('.day-review-entry')?.click()}})
 }
+// Archive mood is a read-only view of existing Check-ins. Do not normalize or save days.
+let archiveMoodView='records',archiveMoodMonth=date.slice(0,7),archiveMoodDate=date;
+const archiveMoodText=(en,ko)=>KonaI18n.language==='ko'?ko:en;
+function archiveMoodEntries(d){
+ const checkins=db.days[d]?.checkins||{};
+ const rating=value=>value!==undefined&&value!==null&&value!==''&&Number.isInteger(Number(value))&&Number(value)>=1&&Number(value)<=5?Number(value):null;
+ return ['morning','evening'].flatMap(phase=>{
+  const c=checkins[phase];if(!c)return[];
+  const legacy=moodOf(c)||{};
+  const energy=rating(c[phase+'Energy']??c[phase+KonaI18n.t('Energy')]??c.mood?.energy??c.mood?.e??legacy.e);
+  const happiness=rating(c[phase+'Happiness']??c[phase+KonaI18n.t('Happiness')]??c.mood?.happiness??c.mood?.v??legacy.v);
+  if(energy===null&&happiness===null&&!c.mood)return[];
+  const name=energy!==null&&happiness!==null?konaFeeling({energy,happiness}):happiness!==null?KONA_MOOD_LABELS[happiness-1]:c.mood?konaFeeling(legacy):'';
+  return [{phase,phaseLabel:KonaI18n.t(phase==='morning'?'Morning':'Evening'),energy,happiness,
+   feeling:name||archiveMoodText('Mood recorded','감정 기록 있음'),time:validReflectHM(c.moodTime)}];
+ });
+}
+function archiveMoodRender(panel){
+ const month=archiveMoodMonth.match(/^(\d{4})-(\d{2})$/);
+ if(!month)return;
+ const year=Number(month[1]),number=Number(month[2]);if(number<1||number>12)return;
+ const selected=archiveMoodDate.startsWith(archiveMoodMonth)?archiveMoodDate:archiveMoodMonth+'-01';
+ const title=new Date(Date.UTC(year,number-1,1)).toLocaleDateString(KonaI18n.dateLocale,{year:'numeric',month:'long',timeZone:'UTC'});
+ const heading=el('div',undefined,'archive-mood-heading'),monthTitle=el('strong',title);
+ for(const [text,shift,name] of [['‹',-1,archiveMoodText('Previous month','이전 달')],['›',1,archiveMoodText('Next month','다음 달')]]){
+  const button=el('button',text,'archive-mood-arrow');button.type='button';button.setAttribute('aria-label',name);
+  button.onclick=()=>{if(!reviewCanEdit())return;const moved=new Date(Date.UTC(year,number-1+shift,1));archiveMoodMonth=moved.toISOString().slice(0,7);archiveMoodDate=archiveMoodMonth+'-01';drawArchiveSearch()};
+  if(shift<0)heading.append(button);else heading.append(monthTitle,button);
+ }
+ panel.append(heading);
+ const weekdays=el('div',undefined,'archive-mood-weekdays');
+ for(const en of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'])weekdays.append(el('span',KonaI18n.t(en).slice(0,3)));
+ panel.append(weekdays);
+ const grid=el('div',undefined,'archive-mood-grid');grid.setAttribute('role','group');grid.setAttribute('aria-label',title);
+ const leading=new Date(Date.UTC(year,number-1,1)).getUTCDay(),days=new Date(Date.UTC(year,number,0)).getUTCDate();
+ for(let i=0;i<leading;i++){const blank=el('span',undefined,'archive-mood-blank');blank.setAttribute('aria-hidden','true');grid.append(blank)}
+ for(let n=1;n<=days;n++){
+  const d=archiveMoodMonth+'-'+String(n).padStart(2,'0'),entries=archiveMoodEntries(d);
+  const button=el('button',undefined,'archive-mood-day');button.type='button';button.dataset.moodDate=d;
+  button.setAttribute('aria-pressed',String(d===selected));
+  const descriptions=entries.map(x=>x.phaseLabel+': '+x.feeling);
+  button.setAttribute('aria-label',d+' · '+(descriptions.length?descriptions.join(' · '):archiveMoodText('No mood check-in','감정 체크인 없음')));
+  button.append(el('span',String(n),'archive-mood-day-number'));
+  const dots=el('span',undefined,'archive-mood-dots');
+  for(const e of entries){const dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);dot.title=e.phaseLabel+': '+e.feeling;dots.append(dot)}
+  button.append(dots);
+  button.onclick=()=>{if(!reviewCanEdit())return;archiveMoodDate=d;drawArchiveSearch();archiveSearch.querySelector('[data-mood-date="'+d+'"]')?.focus({preventScroll:true})};
+  grid.append(button);
+ }
+ panel.append(grid);
+ const legend=el('p',archiveMoodText('Colored dots: mood rating · outlined dots: energy only · no dot: no rating.','색 점: 기분 점수 · 빈 점: 에너지 기록만 있음 · 점 없음: 평가 기록 없음.'),'archive-mood-legend');panel.append(legend);
+ const detail=el('section',undefined,'archive-mood-detail'),localDate=new Date(selected+'T12:00:00Z').toLocaleDateString(KonaI18n.dateLocale,{month:'long',day:'numeric',weekday:'short',timeZone:'UTC'});
+ detail.append(el('h3',localDate));
+ const entries=archiveMoodEntries(selected);
+ if(!entries.length){detail.append(el('p',archiveMoodText('No mood or energy check-ins for this date.','이 날짜에 기록된 감정·에너지 체크인이 없어요.'),'archive-mood-empty'))}
+ else for(const e of entries){
+  const item=el('div',undefined,'archive-mood-item'),row=el('div',undefined,'archive-mood-item-head');
+  row.append(el('strong',e.phaseLabel),el('span',e.time||'', 'archive-mood-time'));item.append(row);
+  const summary=el('div',undefined,'archive-mood-item-values'),dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);
+  const moodLabel=e.happiness===null?archiveMoodText('Mood not rated','기분 점수 없음'):e.feeling;
+  summary.append(dot,el('span',moodLabel));
+  if(e.energy!==null)summary.append(el('span',archiveMoodText('Energy ','에너지 ')+e.energy+'/5','archive-mood-energy'));
+  item.append(summary);detail.append(item);
+ }
+ const daily=el('button',archiveMoodText('Open Daily Review','해당 날짜의 Daily Review 열기'),'archive-mood-open-daily');daily.type='button';
+ daily.onclick=()=>{if(!reviewCanEdit())return;archiveDetailRecord=null;mode='reflect';reflectPeriod='daily';changeDate(selected)};
+ detail.append(daily);panel.append(detail);
+}
+
 function drawArchiveSearch(){
  const input=document.getElementById('archive-search-input'),results=document.getElementById('archive-search-results'),status=document.getElementById('archive-search-status');if(!input||!results||!status)return;
- archiveSearch.append(status);status.hidden=!!archiveDetailRecord;root.classList.add('review-modern-archive');root.classList.remove('archive-searching');other.forEach(p=>p.style.display='none');document.getElementById('archivedWeeklyReflection')?.remove();archiveSearch.querySelectorAll('.archive-back,.archive-filter-row,.archive-period-row,.review-archive-context,.review-saved-filters').forEach(n=>n.remove());
- const searchRow=archiveSearch.querySelector('.archive-search-row');searchRow.hidden=!!archiveDetailRecord;results.hidden=false;results.replaceChildren();status.textContent='';
+ archiveSearch.append(status);status.hidden=!!archiveDetailRecord;root.classList.add('review-modern-archive');root.classList.remove('archive-searching');other.forEach(p=>p.style.display='none');document.getElementById('archivedWeeklyReflection')?.remove();archiveSearch.querySelectorAll('.archive-back,.archive-filter-row,.archive-period-row,.review-archive-context,.review-saved-filters,.archive-mood-view-switch,.archive-mood-panel').forEach(n=>n.remove());
+ const searchRow=archiveSearch.querySelector('.archive-search-row'),label=archiveSearch.querySelector('label[for="archive-search-input"]');
+ searchRow.hidden=!!archiveDetailRecord;results.hidden=false;results.replaceChildren();status.textContent='';
+ label?.style.removeProperty('display');searchRow.style.removeProperty('display');results.style.removeProperty('display');status.style.removeProperty('display');
+ if(!archiveDetailRecord){
+  const switcher=el('div',undefined,'archive-mood-view-switch');switcher.setAttribute('role','group');switcher.setAttribute('aria-label',archiveMoodText('Archive view','아카이브 보기'));
+  for(const [key,name] of [['records',archiveMoodText('Records','기록')],['mood',archiveMoodText('Mood','감정')]]){
+   const button=el('button',name);button.type='button';button.setAttribute('aria-pressed',String(archiveMoodView===key));
+   button.onclick=()=>{if(!reviewCanEdit())return;archiveMoodView=key;drawArchiveSearch()};
+   switcher.append(button);
+  }
+  archiveSearch.prepend(switcher);
+  if(archiveMoodView==='mood'){
+   if(label)label.style.setProperty('display','none','important');searchRow.hidden=true;results.hidden=true;status.hidden=true;
+   const panel=el('div',undefined,'archive-mood-panel');archiveSearch.append(panel);archiveMoodRender(panel);return;
+  }
+ }
  const all=reviewArchiveRecords(),query=input.value.trim();const clear=document.getElementById('archive-search-clear');if(clear)clear.hidden=!query;
  if(archiveDetailRecord){
   const back=el('button',KonaI18n.t("← Back to results"),'archive-back');back.type='button';back.onclick=()=>{if(!reviewCanEdit())return;const saved=archiveReturnState;archiveDetailRecord=null;root.classList.remove('archive-detail');if(saved){input.value=saved.query;archiveType=saved.type;archiveContext=saved.context;archivePeriod=saved.period;archiveExactDate=saved.exact;archiveMeaning=saved.meaning||'all'}drawArchiveSearch();requestAnimationFrame(()=>window.scrollTo(0,saved?.scroll||0))};archiveSearch.prepend(back);
