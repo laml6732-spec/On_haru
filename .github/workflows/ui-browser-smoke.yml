@@ -31,6 +31,8 @@ jobs:
         continue-on-error: true
         env:
           ONHARU_URL: http://127.0.0.1:8080/legacy/
+      - run: node scripts/ui-pwa.mjs
+        if: always()
       - run: node scripts/compare-ui-matrix.mjs
         if: always()
       - uses: actions/upload-artifact@v4
