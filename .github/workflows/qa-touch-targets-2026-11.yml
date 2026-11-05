@@ -1,0 +1,34 @@
+name: On_HARU 44px touch-area regression
+on:
+  push:
+    branches: ['fix/write-plan-touch-targets-2026-11-05']
+  workflow_dispatch:
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node --check public/legacy/sw.js
+      - run: node --check public/legacy/runtime/legacy-controllers.9a6fbb5e22cc.js
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-touch-http.log 2>&1 &
+      - name: Measure and tap-test 44px Write and Plan targets on all screens
+        run: node scripts/qa-touch-targets-2026-11.mjs
+      - name: Run existing smoke and full interaction matrix
+        run: |
+          ONHARU_ARTIFACTS=test-results/smoke-touch node scripts/ui-smoke.mjs
+          ONHARU_ARTIFACTS=test-results/matrix-touch node scripts/ui-matrix.mjs
+      - name: Verify install/offline PWA
+        run: node scripts/ui-pwa.mjs
+      - name: Upload actual screenshot and geometry evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: onharu-write-plan-touch-qa
+          path: test-results/
+          retention-days: 14
