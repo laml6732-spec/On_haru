@@ -1,0 +1,25 @@
+name: OnHaru isolated browser smoke
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/ui-browser-smoke.yml']
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-server.log 2>&1 &
+      - run: node scripts/ui-smoke.mjs
+        env:
+          ONHARU_URL: http://127.0.0.1:8080/legacy/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-smoke-screenshots
+          path: test-results/onharu-ui/
+          retention-days: 7
