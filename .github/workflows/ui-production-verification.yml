@@ -2,7 +2,7 @@ name: OnHaru Workers production verification
 on:
   push:
     branches: [main]
-    paths: ['public/legacy/**', 'cloudflare/on-haru-edge-preview.js', '.github/workflows/ui-production-verification.yml']
+    paths: ['public/legacy/**', 'cloudflare/on-haru-edge-preview.js', 'scripts/verify-live-release.mjs', 'scripts/ui-pwa.mjs', 'scripts/test-verify-live-release.mjs', '.github/workflows/ui-production-verification.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -23,6 +23,8 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright-core@1.56.1
       - run: npx playwright-core install --with-deps chromium
+      - name: Test release verifier contract
+        run: node --test scripts/test-verify-live-release.mjs
       - run: node scripts/verify-live-release.mjs
         continue-on-error: true
       - run: ONHARU_ARTIFACTS=test-results/live/smoke node scripts/ui-smoke.mjs
