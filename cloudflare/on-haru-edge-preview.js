@@ -2,8 +2,8 @@
 // Source files remain in GitHub /public. Replace this proxy with a Git-integrated
 // Cloudflare Pages/Workers Static Assets deployment for production.
 // GitHub's raw origin can be rate-limited and is not an asset hosting SLA.
-const RELEASE = "b7e4311050aa";
-const SOURCE = "https://raw.githubusercontent.com/laml6732-spec/On_haru/508f8e06031e9b1ddf8eaedcc952c0999ac6fad5/public";
+const RELEASE = "c94f6e1205ab";
+const SOURCE = "https://raw.githubusercontent.com/laml6732-spec/On_haru/0ed8bee231c56315ddb187c6285e77d4e50182c0/public";
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
