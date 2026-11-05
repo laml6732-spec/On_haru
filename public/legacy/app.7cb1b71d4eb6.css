@@ -4499,3 +4499,6 @@ html[data-appearance=dark] body #recordEditModal.modal-under .sheet :is(input,te
 html[data-appearance=dark] body :is(#eventFormModal,#taskFormModal,#eventModal,#konaReviewEditor,#recordEditModal) :is(input,textarea)::placeholder{color:#BBD3C1!important;opacity:1!important}
 html[data-appearance=dark] body #eventFormModal #eventScopeHelp{background:#293D33!important;color:#C8DDCE!important}
 html[data-appearance=dark] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row .event-now-badge{background:#3E705D!important;color:#FFFFFF!important}
+/* Keep secondary light-theme text above AA without changing layout or palette. */
+html[data-appearance=light] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row .kona-row-time{color:#586D56!important}
+html[data-appearance=light] body .app #page-records #new-review-switch :is(#rev-reflect,#rev-weekly,#rev-archive):not(.on){color:#5B7063!important}
