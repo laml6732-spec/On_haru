@@ -325,6 +325,13 @@ body .app #page-today .tl-card>.sectionhead{min-height:44px!important}
 </style>
 <script src="./runtime/install-metrics.v1.js" defer></script>
 <style id="onharu-capture-pin-grid-fix">
+/* On narrow screens an old 40px fixed chip width could exceed the 8-column
+   cell and overlap its neighbor. Keep the original maximum but fit the cell. */
+body .app #page-capture #qc-v2 #konaCaptureTagTray > button.kona-tag-chip{
+  box-sizing:border-box!important;
+  width:100%!important;min-width:0!important;max-width:40px!important;
+  justify-self:center!important;
+}
 /* Keep the More/Less control in row 1, column 8. All remaining 8 tags,
    including the ninth 📌 Remember tag, belong in row 2 and cannot fill
    the free cell underneath the More control. Does not change note data. */
