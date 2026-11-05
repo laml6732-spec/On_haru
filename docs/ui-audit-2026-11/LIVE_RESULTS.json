@@ -1,10 +1,10 @@
 {
-  "runId": "42100906551",
-  "sourceCommit": "1ee207a1d089fad9b93b43ab9d92b7cd2d541d7f",
+  "runId": "42102882609",
+  "sourceCommit": "edd90ff23dbd99d15ab3b44638595acd5fda3ff1",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
-    "release": "moodpalettev120261105",
+    "release": "legibilityv120261105",
     "verifier": "hash-content-v2",
     "cases": [
       {
@@ -12,8 +12,8 @@
         "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
-        "expectedSha256": "8061614f1142858a36b140ebf70ed30f715db5490209d0e2a812c957e14ac190",
-        "actualSha256": "8061614f1142858a36b140ebf70ed30f715db5490209d0e2a812c957e14ac190",
+        "expectedSha256": "6b53f1e644b4ea70444ebc5d7e2f71c084aa452fc56ca43594fc1f73a12fd654",
+        "actualSha256": "6b53f1e644b4ea70444ebc5d7e2f71c084aa452fc56ca43594fc1f73a12fd654",
         "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
@@ -25,7 +25,7 @@
         "path": "app.7cb1b71d4eb6.css",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=moodpalettev120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=legibilityv120261105",
         "expectedSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "actualSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "hashMatch": true,
@@ -39,9 +39,9 @@
         "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=moodpalettev120261105",
-        "expectedSha256": "084eaee37e5a565ea5fed9e8ebc0d25b64609d4c591326d17d91db84e8106f19",
-        "actualSha256": "084eaee37e5a565ea5fed9e8ebc0d25b64609d4c591326d17d91db84e8106f19",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=legibilityv120261105",
+        "expectedSha256": "fe2f185796733efb02fb98d6fae368cf59813101b6bc2be4e5743240811ff3b2",
+        "actualSha256": "fe2f185796733efb02fb98d6fae368cf59813101b6bc2be4e5743240811ff3b2",
         "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
@@ -53,7 +53,7 @@
         "path": "runtime/settings.58b48f87b05a.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=moodpalettev120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=legibilityv120261105",
         "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "hashMatch": true,
@@ -67,9 +67,9 @@
         "path": "sw.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=moodpalettev120261105",
-        "expectedSha256": "c1043c69095931ba10484cafbf536a699f8ce69e558399cec1fc3055b59850a0",
-        "actualSha256": "c1043c69095931ba10484cafbf536a699f8ce69e558399cec1fc3055b59850a0",
+        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=legibilityv120261105",
+        "expectedSha256": "31193ca1f4b872b482745487cbe9933ae6c35dc42c20424e852d951226702e30",
+        "actualSha256": "31193ca1f4b872b482745487cbe9933ae6c35dc42c20424e852d951226702e30",
         "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
@@ -698,9 +698,30 @@
         "ok": true
       }
     ],
-    "release": "moodpalettev120261105"
+    "release": "legibilityv120261105"
   },
   "runs": [
+    {
+      "id": 42102882696,
+      "sha": "edd90ff23dbd99d15ab3b44638595acd5fda3ff1",
+      "name": "OnHaru metrics privacy and regression checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42102882609,
+      "sha": "edd90ff23dbd99d15ab3b44638595acd5fda3ff1",
+      "name": "OnHaru Workers production verification",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 42102882595,
+      "sha": "edd90ff23dbd99d15ab3b44638595acd5fda3ff1",
+      "name": "OnHaru static UI checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
     {
       "id": 42102477737,
       "sha": "644287ec5aa5255a3a79d3ea9ae5c173c0b18623",
@@ -712,15 +733,15 @@
       "id": 42102439782,
       "sha": "644287ec5aa5255a3a79d3ea9ae5c173c0b18623",
       "name": "On_HARU Sheep and Mood Legend UI QA",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 42100906551,
       "sha": "1ee207a1d089fad9b93b43ab9d92b7cd2d541d7f",
       "name": "OnHaru Workers production verification",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 42100552805,
@@ -733,27 +754,6 @@
       "id": 42100521800,
       "sha": "fd214b62ce76826883e3a8799c38a4ac03b1c248",
       "name": "On_HARU release verifier contract regression",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42096650876,
-      "sha": "287b23ea4a19b5ad66b84e160ead03e8d86c274a",
-      "name": "OnHaru Workers production verification",
-      "status": "completed",
-      "conclusion": "failure"
-    },
-    {
-      "id": 42096650702,
-      "sha": "287b23ea4a19b5ad66b84e160ead03e8d86c274a",
-      "name": "OnHaru metrics privacy and regression checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42096650659,
-      "sha": "287b23ea4a19b5ad66b84e160ead03e8d86c274a",
-      "name": "OnHaru static UI checks",
       "status": "completed",
       "conclusion": "success"
     }
