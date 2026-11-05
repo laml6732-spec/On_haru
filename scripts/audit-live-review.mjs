@@ -13,7 +13,7 @@ const page=await context.newPage();
 page.on('pageerror',e=>log.errors.push(String(e)));
 async function record(label,fn){await fn();log.actions.push(label);console.log('SUCCESS',label);}
 async function capture(title,note,event,tag){
- await page.locator('.tabs [data-page="today"]').click();
+ await page.locator('.tabs [data-page="capture"]').click();
  const select=page.locator('#qc-select');
  await select.evaluate((el,eventName)=>{
   const match=[...el.options].find(o=>o.textContent.includes(eventName));
@@ -21,7 +21,7 @@ async function capture(title,note,event,tag){
   el.value=match.value;
   el.dispatchEvent(new Event('change',{bubbles:true}));
  },event);
- await page.locator('#qc-note-title').fill(title);
+ await page.locator('#qc-note-title').fill(title,{timeout:8000});
  await page.locator('#qc-text').fill(note);
  if(tag)await page.locator('#page-capture [data-tag="'+tag+'"]').click();
  await page.locator('#qc-submit').click();
