@@ -75,7 +75,8 @@ try{
   await page.locator('#focusEnd').click();
   await page.waitForTimeout(350);
  });
- await page.locator('.tabs [data-page="records"]').click();
+ // Focus immersive mode hides bottom navigation; trigger the existing Review tab handler.
+ await page.locator('.tabs [data-page="records"]').dispatchEvent('click');
  await page.waitForTimeout(900);
  // Expand actual Daily review sections if collapsed
  for(const btn of await page.locator('#page-records .review-section-bar[aria-expanded="false"]').all())await btn.click();
