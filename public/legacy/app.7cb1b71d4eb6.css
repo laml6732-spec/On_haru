@@ -4271,3 +4271,16 @@ html[data-appearance="dark"] body .app .kona-inline-emoji-picker > .kona-emoji-m
   border-color:#9AC3A9!important;
   color:#F3FCF5!important;
 }
+
+/* On_HARU welcome title: a clean Korean-friendly heading, without the playful script font. */
+#tutorialModal #tutorialWelcome #tutorialHeading{
+  font-family:'Pretendard','Pretendard Variable','Apple SD Gothic Neo','Noto Sans KR',system-ui,sans-serif!important;
+  font-size:calc(26px * var(--kona-ui-scale,1))!important;
+  font-weight:700!important;
+  font-synthesis:none!important;
+  letter-spacing:-.045em!important;
+  line-height:1.3!important;
+  color:#245849!important;
+  margin:12px 0 9px!important;
+  text-wrap:balance;
+}
