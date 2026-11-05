@@ -98,6 +98,7 @@ async function takeAppScreenshot(c) {
     // The actual plan has two columns: schedule and a faith note.
     const filled=await page.locator('#kx-summary .kona-rich-note.has-note').count();
     if(filled<3)throw new Error('Expected three genuine schedule-linked faith notes; found '+filled);
+    await page.waitForTimeout(2800); // Let the real Saved toast fade before capturing
   }
 
   if(c.tab==='records'){const expand=page.locator('#page-records .review-group-more[aria-expanded="false"]');if(await expand.count())await expand.first().click();}
