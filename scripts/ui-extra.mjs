@@ -12,14 +12,14 @@ try{for(const width of [320,390,1024])for(const theme of ['light','dark']){
   await page.locator('#checkNote').fill('PRACTICE_ONLY_MORNING');await page.locator('#tourNext').click();
   for(const label of ['Energy','Mood']){const slider=page.getByRole('slider',{name:label,exact:true});await slider.focus();await slider.press('ArrowRight');await slider.press('Tab')}
   await page.locator('#tourNext').click();await page.locator('#pinRow .task-add').click();await page.locator('#taskTitle').fill('PRACTICE_ONLY_TASK');await page.locator('#taskSave').click();await page.locator('#tourNext').click();await page.locator('#tourNext').click();await page.locator('#tourNext').click();await page.locator('#tourNext').click();
-  expect(await page.locator('#guidedTour').isHidden(),'guide still open');expect(!await page.evaluate(()=>Object.keys(localStorage).some(k=>String(localStorage.getItem(k)).includes('PRACTICE_ONLY_'))),'practice leaked to storage');
+  expect(await page.locator('#guidedTour').isHidden(),'guide still open');expect(!await page.evaluate(()=>Object.keys(window.localStorage).some(k=>String(window.localStorage.getItem(k)).includes('PRACTICE_ONLY_'))),'practice leaked to storage');
  });
  // Independent recovery via the UI so a guided failure doesn't imply prayer failure.
  if(await page.locator('#tourExit').isVisible())await page.locator('#tourExit').click();if(await page.locator('#welcomeSkip').isVisible())await page.locator('#welcomeSkip').click();
  await test('Capture title, emoji More/Less and saved tags',async()=>{
   await tap('capture');await page.locator('#qc-note-title').fill('QA titled note');await page.locator('#qc-text').fill('QA tagged body');await page.locator('#qc-v2 [data-tag="meaning_scripture"]').click();await page.locator('#qc-v2 .kona-tag-tray-toggle').click();await page.locator('#qc-v2 .kona-tag-tray-toggle').click();await page.locator('#qc-submit').click();expect((await page.locator('.capture-recent-note').first().innerText()).includes('QA titled note'),'title missing');
  });
- await test('Prayer add, log, edit, response and safe delete cancellation',async()=>{
+ await test('Prayer add, log, edit and safe delete cancellation',async()=>{
   await tap('focus');await page.locator('#kindSeg [data-kind="prayer"]').click();await page.locator('#focusLibraryOpen').click();await page.locator('#togglePrayerAdd').click();await page.locator('.prayer-add input').fill('QA Prayer request');await page.locator('.prayer-add button').click();
   let item=page.locator('.prayer-item').filter({hasText:'QA Prayer request'});await item.getByRole('button',{name:'Mark prayed today',exact:true}).click();
   await item.getByRole('button',{name:'Prayer request options',exact:true}).click();await page.locator('#choiceList button').filter({hasText:'Edit title'}).click();await page.locator('dialog.onharu-native-replacement input').fill('QA Prayer edited');await page.locator('.onharu-dialog-accept').click();
