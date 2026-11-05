@@ -370,6 +370,33 @@ function konaMoodShade(energy,happiness){
   return Math.round(v*(1-fraction)+t*fraction).toString(16).padStart(2,'0');
  }).join('').toUpperCase();
 }
+
+// On_HARU Daily Review and Archive: 25 semantic color pairs.
+// Rows = Energy 1–5, columns = Mood 1–5. Display-only; no saved-data changes.
+// The same pair is used in both views and adapts automatically to theme changes.
+const KONA_REVIEW_MOOD_LIGHT=[
+ ['#D1D5EA','#CFDCE8','#CDDEE0','#C7E3DA','#BCE2D7'],
+ ['#D9CCE5','#D7D8E4','#D0DED8','#C7E2D5','#B9E2CE'],
+ ['#E5D1DD','#E1D4DB','#DAD7CE','#DDE2C5','#D6E3B6'],
+ ['#EDC5CD','#EECFCE','#EFD8C6','#EFDFB5','#F0D097'],
+ ['#E7AAB8','#EAB7B5','#EDC6B5','#EDC49B','#E9B47A']
+];
+const KONA_REVIEW_MOOD_DARK=[
+ ['#675477','#5D617A','#4D6977','#3E7376','#397568'],
+ ['#75577F','#6A6080','#53727A','#3C796F','#417A60'],
+ ['#805978','#74657D','#617372','#537C69','#5D7C55'],
+ ['#8A576D','#815E70','#7D6A68','#7E7159','#877348'],
+ ['#8E5363','#945D62','#8E685C','#906B4F','#95683D']
+];
+function konaReviewMoodTone(node,energy,mood){
+ const h=Number(mood),e=energy===null||energy===undefined||energy===''?3:Number(energy);
+ if(!Number.isInteger(h)||h<1||h>5||!Number.isInteger(e)||e<1||e>5)return false;
+ node.classList.add('onharu-mood-tone');
+ node.style.setProperty('--onharu-mood-light',KONA_REVIEW_MOOD_LIGHT[e-1][h-1]);
+ node.style.setProperty('--onharu-mood-dark',KONA_REVIEW_MOOD_DARK[e-1][h-1]);
+ node.dataset.moodEnergy=String(e);node.dataset.moodRating=String(h);
+ return true;
+}
 const moodColor=(m,boost=0)=>konaMoodShade(m?.e,m?.v);
 const scoreColor=(sc,boost=0)=>konaMoodShade(sc?.e,sc?.v);
 const moodChip=m=>KonaI18n.format("<span class=\"mchip\" style=\"background:⟪0⟫\">⟪1⟫</span>",[moodColor(m),escapeHTML(konaFeeling(m)||moodEnglishNames[m.id]||m.n)],false);
@@ -2072,7 +2099,7 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
   for(const [key,label] of [['lectureQuote',KonaI18n.t("Memorable words")],['lectureReflection',KonaI18n.t("Reflection")],['classResponse',KonaI18n.t("Response")]])if(c[key]?.trim()){const part=el('section',undefined,'review-class-part');part.append(el('small',label),el('p',c[key]));body.append(part)}
  }
  if(record.kind==='check'){
-  const feelings=el('div',undefined,'review-feeling-values'),value=konaFeeling({energy:record.energy,happiness:record.happiness})||record.feeling||KonaI18n.t("Choose");const button=el('button',value,'review-feeling-value');button.type='button';button.setAttribute('aria-label',KonaI18n.t("Change feeling · ",true)+identity);button.onclick=()=>reviewFeelingEditor(record,row);feelings.append(button);const header=el('div',undefined,'review-check-header');meta.remove();header.append(meta,feelings);body.prepend(header)
+  const feelings=el('div',undefined,'review-feeling-values'),value=konaFeeling({energy:record.energy,happiness:record.happiness})||record.feeling||KonaI18n.t("Choose");const button=el('button',value,'review-feeling-value');button.type='button';konaReviewMoodTone(button,record.energy,record.happiness);button.setAttribute('aria-label',KonaI18n.t("Change feeling · ",true)+identity);button.onclick=()=>reviewFeelingEditor(record,row);feelings.append(button);const header=el('div',undefined,'review-check-header');meta.remove();header.append(meta,feelings);body.prepend(header)
  }
  if(['capture','event'].includes(record.kind)){
   
@@ -2186,13 +2213,13 @@ function archiveMoodRender(panel){
   button.setAttribute('aria-label',d+' · '+(descriptions.length?descriptions.join(' · '):archiveMoodText('No mood check-in','감정 체크인 없음')));
   button.append(el('span',String(n),'archive-mood-day-number'));
   const dots=el('span',undefined,'archive-mood-dots');
-  for(const e of entries){const dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);dot.title=e.phaseLabel+': '+e.feeling;dots.append(dot)}
+  for(const e of entries){const dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);konaReviewMoodTone(dot,e.energy,e.happiness);dot.title=e.phaseLabel+': '+e.feeling;dots.append(dot)}
   button.append(dots);
   button.onclick=()=>{if(!reviewCanEdit())return;archiveMoodDate=d;drawArchiveSearch();archiveSearch.querySelector('[data-mood-date="'+d+'"]')?.focus({preventScroll:true})};
   grid.append(button);
  }
  panel.append(grid);
- const legend=el('p',archiveMoodText('Colored dots: mood rating · outlined dots: energy only · no dot: no rating.','색 점: 기분 점수 · 빈 점: 에너지 기록만 있음 · 점 없음: 평가 기록 없음.'),'archive-mood-legend');panel.append(legend);
+ const legend=el('p',archiveMoodText('Colors: energy × mood · outlined: energy only · no dot: no rating.','색상: 에너지 × 기분 · 빈 점: 에너지만 기록 · 점 없음: 평가 기록 없음.'),'archive-mood-legend');panel.append(legend);
  const detail=el('section',undefined,'archive-mood-detail'),localDate=new Date(selected+'T12:00:00Z').toLocaleDateString(KonaI18n.dateLocale,{month:'long',day:'numeric',weekday:'short',timeZone:'UTC'});
  detail.append(el('h3',localDate));
  const entries=archiveMoodEntries(selected);
@@ -2200,7 +2227,7 @@ function archiveMoodRender(panel){
  else for(const e of entries){
   const item=el('div',undefined,'archive-mood-item'),row=el('div',undefined,'archive-mood-item-head');
   row.append(el('strong',e.phaseLabel),el('span',e.time||'', 'archive-mood-time'));item.append(row);
-  const summary=el('div',undefined,'archive-mood-item-values'),dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);
+  const summary=el('div',undefined,'archive-mood-item-values'),dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);konaReviewMoodTone(dot,e.energy,e.happiness);
   const moodLabel=e.happiness===null?archiveMoodText('Mood not rated','기분 점수 없음'):e.feeling;
   summary.append(dot,el('span',moodLabel));
   if(e.energy!==null)summary.append(el('span',archiveMoodText('Energy ','에너지 ')+e.energy+'/5','archive-mood-energy'));
