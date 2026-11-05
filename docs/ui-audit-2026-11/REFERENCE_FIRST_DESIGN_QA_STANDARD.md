@@ -3,7 +3,7 @@
 **Status:** Standards and acceptance criteria defined **before** any UI changes. This document is the QA specification, not a claim of accessibility certification.  
 **Product:** On_HARU PWA — Write, Today/Plan, Check-in, Focus, Review Daily/Weekly/Archive Mood, Settings.  
 **Production URL:** https://on-haru.laml6732.workers.dev/  
-**Baseline main commit:** \`707503375a5860755700c00c7485f271d71610bf\`; release \`metricsmoodv120261105\` (verified 2026-11-05).  
+**Baseline main commit:** `707503375a5860755700c00c7485f271d71610bf`; release `metricsmoodv120261105` (verified 2026-11-05).  
 **Rules of engagement:** Leave localStorage schema, private notes, Plan-link relations, PWA origin and automatic deploy configuration untouched during QA. This is **reference-first**, not “redesign-by-guessing”.
 
 ## 1. Source hierarchy and authority
@@ -66,10 +66,10 @@
 
 | Screen / selector | Actual measurement or observation | Rubric | Status / priority | What *must* be tested before fix |
 | --- | --- | --- | --- | --- |
-| Write \`.kona-tag-tray-toggle\` | 28×36 CSS px at 320px | A11Y-TARGET/USAB-TOUCH | **WCAG target-size alone passes** by bounds; **comfort gap P2** | Expand hit area without overlapping sheep/neighbor chip; tap both at 320px |
-| Plan \`#konaScheduleMore\` | 32×32 CSS px | A11Y-TARGET/USAB-TOUCH | **WCAG target-size alone passes**; **comfort gap P2** | 320px safe-area and header alignment |
+| Write `.kona-tag-tray-toggle` | 28×36 CSS px at 320px | A11Y-TARGET/USAB-TOUCH | **WCAG target-size alone passes** by bounds; **comfort gap P2** | Expand hit area without overlapping sheep/neighbor chip; tap both at 320px |
+| Plan `#konaScheduleMore` | 32×32 CSS px | A11Y-TARGET/USAB-TOUCH | **WCAG target-size alone passes**; **comfort gap P2** | 320px safe-area and header alignment |
 | Write sheep chip | 40×36 CSS px, icon 34×34 | OPTICAL, A11Y-CONTRAST-UI *if essential* | **P2 visual risk** (too pale relative to neighbors) | Determine whether icon itself is functional/essential or decorative; inspect selected state |
-| Check-in \`#checkRecordedTime\` | 132×38 CSS px | USAB-TOUCH | **Comfort gap P3**; native control exception may apply only if unmodified | On-device time picker tap / screen reader label |
+| Check-in `#checkRecordedTime` | 132×38 CSS px | USAB-TOUCH | **Comfort gap P3**; native control exception may apply only if unmodified | On-device time picker tap / screen reader label |
 | Mood day | 40×43 CSS px | USAB-TOUCH | **Comfort gap P3**; WCAG size passes | At 320px 7 columns, ensure larger target doesn't overlap adjacent days |
 | Mood weekday and legend | font 10px; legend at 320px wraps | TYPE-SCALE, A11Y-CONTRAST-TEXT | **P2 legibility**; **contrast pass/fail not yet measured** | Sample actual contrast in light+dark; text zoom to 200% |
 | Bottom tab label (example Plan) | font 9.5px at 320px | TYPE-SCALE | **P2/P3 legibility**; no automatic WCAG failure | Visual prominence and label truncation, Korean, font scaling |
