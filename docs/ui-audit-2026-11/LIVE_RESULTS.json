@@ -1,6 +1,6 @@
 {
-  "runId": "41978049662",
-  "sourceCommit": "99400b204e4a4faea9a2b7152a5680531915008a",
+  "runId": "41978463850",
+  "sourceCommit": "5599391dc486f7b35eacc5b2316c4f0d44c21ed4",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
@@ -8,9 +8,9 @@
     "cases": [
       {
         "path": "/",
-        "ok": false,
+        "ok": true,
         "expectedSha256": "3cfe376e236bba37223efc26e7f1fd3313b5b742b30ba1e84e6264f9b4a7c836",
-        "actualSha256": "5b0ca29f04b3fe5560652cff36043b4f3cf41295c8812c323c2c9dc3d78c3791",
+        "actualSha256": "3cfe376e236bba37223efc26e7f1fd3313b5b742b30ba1e84e6264f9b4a7c836",
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
         "workerRelease": "c94f6e1205ab"
@@ -674,6 +674,13 @@
   },
   "runs": [
     {
+      "id": 41978463850,
+      "sha": "5599391dc486f7b35eacc5b2316c4f0d44c21ed4",
+      "name": "OnHaru Workers production verification",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
       "id": 41978049974,
       "sha": "99400b204e4a4faea9a2b7152a5680531915008a",
       "name": "OnHaru static UI checks",
@@ -684,8 +691,8 @@
       "id": 41978049662,
       "sha": "99400b204e4a4faea9a2b7152a5680531915008a",
       "name": "OnHaru Workers production verification",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "id": 41974559946,
@@ -721,14 +728,7 @@
       "name": "OnHaru Workers production verification",
       "status": "completed",
       "conclusion": "success"
-    },
-    {
-      "id": 41971457501,
-      "sha": "508f8e06031e9b1ddf8eaedcc952c0999ac6fad5",
-      "name": "OnHaru Workers production verification",
-      "status": "completed",
-      "conclusion": "failure"
     }
   ],
-  "allPassed": false
+  "allPassed": true
 }
