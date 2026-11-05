@@ -1,0 +1,34 @@
+name: On_HARU Sheep and Mood Legend UI QA
+on:
+  push:
+    branches: ['fix/mood-legend-sheep-legibility-2026-11-05']
+  workflow_dispatch:
+jobs:
+  legibility-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node --check public/legacy/runtime/legacy-controllers.9a6fbb5e22cc.js
+      - run: node --check public/legacy/sw.js
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-ui-server.log 2>&1 &
+      - name: Verify six theme/width configurations and screenshots
+        run: node scripts/qa-legibility-2026-11.mjs
+      - name: Existing smoke and interactive regression
+        run: |
+          ONHARU_ARTIFACTS=test-results/legibility-smoke node scripts/ui-smoke.mjs
+          ONHARU_ARTIFACTS=test-results/legibility-matrix node scripts/ui-matrix.mjs
+      - name: PWA cache and offline behaviour
+        run: node scripts/ui-pwa.mjs
+      - name: Attach annotated evidence input and test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: onharu-sheep-mood-legend-qa
+          path: test-results/
+          retention-days: 14
