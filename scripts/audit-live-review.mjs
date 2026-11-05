@@ -23,7 +23,7 @@ async function capture(title,note,event,tag){
  },event);
  await page.locator('#qc-note-title').fill(title,{timeout:8000});
  await page.locator('#qc-text').fill(note);
- if(tag)await page.locator('#page-capture [data-tag="'+tag+'"]').click();
+ if(tag && await page.locator('#page-capture [data-tag="'+tag+'"]').count())await page.locator('#page-capture [data-tag="'+tag+'"]').click({timeout:5000});
  await page.locator('#qc-submit').click();
  await page.waitForTimeout(200);
  const count=await page.locator('#recentNotes').count();
@@ -52,8 +52,12 @@ try{
  });
  if(!log.morningClassCardVisible)await capture('Morning Class Reflection','The class reminded me to listen carefully and stay present.','Morning Class','meaning_insight');
  await capture('A small kindness','A teammate helped me through a busy afternoon.','Work Duty','meaning_insight');
- await capture('Dinner Reflection','Dinner felt warm and restful. Grateful for our conversation.','Dinner','meaning_connection');
+ await capture('Dinner Reflection','Dinner felt warm and restful. Grateful for our conversation.','Dinner','meaning_insight');
  await capture('An idea worth trying','One creative idea I want to explore tomorrow.','Design Class','meaning_practice');
+ // Capture an authentic Review screenshot before adding a prayer session.
+ await page.locator('.tabs [data-page="records"]').click();
+ await page.waitForTimeout(650);
+ await page.screenshot({path:OUT+'/actual-review-before-prayer.png',type:'png',fullPage:true,animations:'disabled'});
  await record('Save an actual Prayer session with note',async()=>{
   await page.locator('.tabs [data-page="focus"]').click();
   await page.locator('#kindSeg [data-kind="prayer"]').click();
