@@ -31,3 +31,14 @@ Open http://localhost:8080/legacy/.
 This deployment was initially attempted via the Cloudflare Pages API on 2026-11-04 but Cloudflare rejected Git integration with `8000011: internal issue with your Cloudflare Pages Git installation`. The Worker preview avoids this Git installation dependency.
 
 **Browser data migration:** Personal records remain in browser storage scoped to their original domain. They do not automatically transfer to a different domain. Export a JSON backup in the original app before switching domains, then import it in the new app.
+
+## Git-integrated production deployment (2026-11-04)
+
+- Cloudflare Pages project: `on-haru-pages`
+- GitHub source: `laml6732-spec/On_haru`, production branch `main`.
+- Build settings: root `/`, build command empty (static HTML), output directory `public`.
+- Pages host: https://on-haru-pages.pages.dev/legacy/
+- Automatic production builds are enabled for commits to `main`.
+- Existing `on-haru` Workers.dev edge preview remains intact for comparison and rollback.
+- No app UI, assets, or browser-storage behavior were changed by configuring this deployment.
+- **User data note:** Browser local storage is scoped to the host. Before switching from the original or preview hostname, export a JSON backup from the old app and import it on the new hostname. Avoid deleting any old-site data until verified.
