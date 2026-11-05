@@ -17,10 +17,14 @@ jobs:
       - run: python3 -m http.server 8080 --directory public > /tmp/onharu-precision-http.log 2>&1 &
       - name: Quantitative 6-config visual audit (source unchanged)
         run: node scripts/qa-precision-visual-2026-11.mjs
-      - name: Upload measured geometry and screenshots
+      - name: Source-backed WCAG target and color-contrast screening
+        run: node scripts/qa-reference-standards-screening-2026-11.mjs
+      - name: Upload measured geometry and source-based screening
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: onharu-visual-precision-evidence
-          path: test-results/precision-visual/
+          path: |
+            test-results/precision-visual/
+            test-results/reference-aa-screening/
           retention-days: 14
