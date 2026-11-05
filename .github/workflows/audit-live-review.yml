@@ -1,0 +1,39 @@
+name: Audit real On_HARU Review UI
+on:
+  push:
+    paths:
+      - 'scripts/audit-live-review.mjs'
+      - '.github/workflows/audit-live-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Core
+        run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - name: Run real live-app Review test
+        run: node scripts/audit-live-review.mjs
+      - name: Upload real UI screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: onharu-actual-review-ui
+          path: promo/review-actual/
+          retention-days: 7
+      - name: Commit screenshot outputs
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A promo/review-actual/
+          if ! git diff --cached --quiet; then
+            git commit -m "evidence: capture actual live On_HARU Review with demo entries"
+            git push
+          fi
