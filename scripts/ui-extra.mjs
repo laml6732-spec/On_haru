@@ -26,7 +26,7 @@ try{for(const width of [320,390,1024])for(const theme of ['light','dark']){
   item=page.locator('.prayer-item').filter({hasText:'QA Prayer edited'});expect(await item.count()>0,'edited prayer missing');await item.getByRole('button',{name:'Prayer request options',exact:true}).click();await page.locator('#choiceList button').filter({hasText:'Delete request'}).click();await page.locator('.onharu-dialog-cancel').click();expect(await item.count()>0,'delete cancellation failed');await page.locator('#focusLibraryModal .close').click();
  });
  await test('Devotion scripture prompt',async()=>{
-  await tap('focus');await page.locator('#kindSeg [data-kind="devotion"]').click();await page.locator('#focusLibraryOpen').click();await page.locator('#focusLibraryList').getByRole('button',{name:/Set Scripture/}).click();await page.locator('dialog.onharu-native-replacement input').fill('John 10:27');await page.locator('.onharu-dialog-accept').click();expect((await page.locator('#page-focus').innerText()).includes('John 10:27'),'devotion context missing');
+  await tap('focus');await page.locator('#kindSeg [data-kind="devotion"]').click();await page.locator('#focusLibraryOpen').click();await page.locator('#focusLibraryList').getByRole('button',{name:/Set Scripture/}).click();await page.locator('dialog.onharu-native-replacement input').fill('John 10:27');await page.locator('.onharu-dialog-accept').click();expect(await page.locator('#focusContext').inputValue()==='John 10:27','devotion context missing');
  });
 
  await test('Recurring event category and whole-series edit scope',async()=>{
