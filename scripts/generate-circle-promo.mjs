@@ -7,13 +7,14 @@ const OUT = 'promo/circle';
 const executablePath = ['/usr/bin/google-chrome','/usr/bin/chromium','/opt/google/chrome/chrome'].find(existsSync);
 const browser = await chromium.launch({headless:true,...(executablePath?{executablePath}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
 const cards = [
- {n:'01',name:'intro',tab:'today',eyebrow:'WELCOME TO ON_HARU',lines:['A little space','for your day','with God.'],description:'Prayer, plans, and little moments.',chips:[],footer:'',bg:'#FAF7F2',accent:'#DCEFE6'},
- {n:'02',name:'capture',tab:'capture',eyebrow:'CAPTURE',lines:['Capture what','matters.'],description:'Scripture. Prayer. God’s whispers.',chips:[],footer:'SHEEP TAG · LISTENING FOR GOD’S VOICE',bg:'#F8F6F0',accent:'#E7F1DE'},
+ {n:'01',name:'capture',tab:'capture',eyebrow:'WHY ON_HARU',lines:['Notice God','in everyday','moments.'],description:'Capture Scripture, prayers, and what stays on your heart.',chips:[],footer:'A SPACE TO REMEMBER YOUR DAY WITH GOD',bg:'#FAF7F2',accent:'#DCEFE6'},
+ {n:'02',name:'plan',tab:'today',eyebrow:'FAITH IN EVERY MOMENT',lines:['Every plan','can hold','a prayer.'],description:'Add a faith note beside each event.',chips:[],footer:'MEANING IN THE ORDINARY',bg:'#F8F6F0',accent:'#E7F1DE'},
  {n:'03',name:'focus',tab:'focus',eyebrow:'PRAYER TIMER',lines:['Pause.','Pray.','Be present.'],description:'Make time to be still with God.',chips:[],footer:'',bg:'#F6F7F0',accent:'#D7ECE3'},
  {n:'04',name:'checkin',tab:'checkin',eyebrow:'MORNING CHECK-IN',lines:['Wake up.','Check in.','Pray.'],description:'Name your mood. Rise in prayer.',chips:[],footer:'BEGIN WITH PRAYER',bg:'#FAF6F1',accent:'#E8E8DD'},
  {n:'05',name:'review',tab:'records',eyebrow:'REVIEW',lines:['Remember','the little','moments.'],description:'Revisit notes, prayers, and growth.',chips:[],footer:'ON_HARU · FREE WEB APP',bg:'#F4F7F2',accent:'#CFE4D7'}
 ];
 await fs.mkdir(OUT,{recursive:true});
+for (const name of await fs.readdir(OUT)) if(name.endsWith('.png')) await fs.rm(OUT+'/'+name);
 const styles = [
  '@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Pacifico&display=swap");',
  '*{box-sizing:border-box}html,body{width:1080px;height:1350px;margin:0;overflow:hidden}',
@@ -43,13 +44,62 @@ async function takeAppScreenshot(c) {
   await page.waitForTimeout(1100);
   await page.evaluate(()=>{document.querySelector('#launchScreen')?.remove();const t=document.querySelector('#tutorialModal');if(t)t.hidden=true});
   await page.addStyleTag({content:'*{animation-duration:0s!important;transition-duration:0s!important}#launchScreen,#tutorialModal{display:none!important}'});
-  if(c.tab==='capture'||c.tab==='records'){
-    await page.locator('#qc-note-title').fill('A moment worth remembering');
-    await page.locator('#qc-text').fill('Today I was reminded to slow down, listen, and trust God with the next step.');
+  // Both capture and plan samples are entered into the actual app UI.
+  // They remain isolated in this temporary browser context (not users' real data).
+  if(c.tab==='capture'){
+    const samples=[
+      ['A verse for today','Be still, and know that I am God. — Psalm 46:10','meaning_scripture'],
+      ['A short prayer','Lord, teach me to listen and trust You.','meaning_prayer'],
+      ['One thing I noticed','God met me in an ordinary conversation.','meaning_insight']
+    ];
+    for(const [title,body,tag] of samples){
+      await page.locator('#qc-note-title').fill(title);
+      await page.locator('#qc-text').fill(body);
+      await page.locator('#page-capture [data-tag="'+tag+'"]').click();
+      await page.locator('#qc-submit').click();
+      await page.waitForTimeout(240);
+    }
+    await page.locator('#qc-note-title').fill('A moment worth keeping');
+    await page.locator('#qc-text').fill('Today, a quiet prayer reminded me that God is near.');
     await page.locator('#page-capture [data-tag="meaning_listening"]').click();
-    if(c.tab==='records'){const examples=[['Listening in the quiet','God reminded me to trust Him one step at a time.','meaning_listening'],['Scripture for today','Be still, and know that I am God. — Psalm 46:10','meaning_scripture'],['A small answered prayer','I felt peace after praying for my family.','meaning_prayer'],['Grateful for today','Thankful for new friends and kind conversations.','meaning_insight'],['Choosing courage','Listen carefully. Respond with love.','meaning_practice'],['Prayer for tomorrow','Lord, help me make room for Your voice.','meaning_prayer']];for(const [title,note,tag] of examples){await page.locator('#qc-note-title').fill(title);await page.locator('#qc-text').fill(note);if(tag!=='meaning_listening')await page.locator('#page-capture [data-tag="'+tag+'"]').click();await page.locator('#qc-submit').click();await page.waitForTimeout(180);}}
+  }
+  if(c.tab==='records'){
+    const examples=[
+      ['Listening in the quiet','God reminded me to trust Him one step at a time.','meaning_listening'],
+      ['Scripture for today','Be still, and know that I am God. — Psalm 46:10','meaning_scripture'],
+      ['A small answered prayer','I felt peace after praying for my family.','meaning_prayer'],
+      ['Grateful for today','Thankful for new friends and kind conversations.','meaning_insight'],
+      ['Choosing courage','Listen carefully. Respond with love.','meaning_practice'],
+      ['Prayer for tomorrow','Lord, help me make room for Your voice.','meaning_prayer']
+    ];
+    for(const [title,note,tag] of examples){
+      await page.locator('#qc-note-title').fill(title);
+      await page.locator('#qc-text').fill(note);
+      await page.locator('#page-capture [data-tag="'+tag+'"]').click();
+      await page.locator('#qc-submit').click();
+      await page.waitForTimeout(200);
+    }
   }
   if(c.tab!=='capture')await page.locator('.tabs [data-page="'+c.tab+'"]').click();
+  if(c.tab==='today'){
+    const eventFaithNotes=[
+      ['Work Duty','Serve with joy','Whatever you do, work for the Lord. — Colossians 3:23'],
+      ['Dinner','Give thanks','Thank You for food, friendship, and today.'],
+      ['Design Class','Create with purpose','Lord, use my gifts to bless others.']
+    ];
+    for(const [event,title,prayer] of eventFaithNotes){
+      const eventBtn=page.locator('#kx-summary .kona-rich-event').filter({hasText:event}).first();
+      await eventBtn.click({timeout:12000});
+      await page.locator('#eventNoteTitle').fill(title);
+      await page.locator('#eventMemo').fill(prayer);
+      await page.locator('#saveEventMemo').click();
+      await page.waitForTimeout(250);
+    }
+    // The actual plan has two columns: schedule and a faith note.
+    const filled=await page.locator('#kx-summary .kona-rich-note.has-note').count();
+    if(filled<3)throw new Error('Expected three genuine schedule-linked faith notes; found '+filled);
+  }
+
   if(c.tab==='records'){const expand=page.locator('#page-records .review-group-more[aria-expanded="false"]');if(await expand.count())await expand.first().click();}
   if(c.tab==='focus'){await page.locator('#kindSeg [data-kind="prayer"]').click();await page.locator('#focusStart').click();await page.waitForTimeout(1300);}
   if(c.tab==='checkin'){await page.locator('#page-checkin .phases [data-phase="morning"]').click();await page.waitForTimeout(250);const n=page.locator('#checkNote');if(await n.isVisible())await n.fill('Lord, help me begin today with prayer.');for(const dimension of ['energy','happiness']){await page.locator('#moodGrid .kona-slim-scale[data-dimension="'+dimension+'"] input[type="range"]').evaluate(el=>{el.value='4';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));});await page.waitForTimeout(160);}await page.waitForTimeout(250);}
