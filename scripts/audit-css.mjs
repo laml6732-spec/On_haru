@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Read-only CSS inventory. Reports likely conflicts; never auto-deletes rules.
 import fs from 'node:fs';
-const file=process.argv[2]||'public/legacy/app.7cb1b71d4eb6.css';
+const file=process.argv.slice(2).find(arg=>!arg.startsWith('--'))||'public/legacy/app.7cb1b71d4eb6.css';
 const css=fs.readFileSync(file,'utf8');
 const clean=css.replace(/\/\*[\s\S]*?\*\//g,'');
 const selectors=[];
