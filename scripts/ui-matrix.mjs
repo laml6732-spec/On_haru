@@ -67,8 +67,12 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   await tap('checkin');await page.locator('#page-checkin [data-phase="evening"]').click();await page.locator('#checkNote').fill('QA Evening check-in');await tap('capture');await tap('checkin');await page.locator('#page-checkin [data-phase="evening"]').click();await expect(await page.locator('#checkNote').inputValue()==='QA Evening check-in','evening lost');
  });
 
+
+ await check('Settings daily-routines navigation',async()=>{
+  await page.locator('.app-settings-shortcut').click();await page.waitForTimeout(150);await page.locator('#kx-settings').getByRole('button',{name:'Daily routines',exact:true}).click();await page.waitForTimeout(150);await expect(await page.locator('#page-schedule').isVisible(),'Manage returned to previous page instead of schedule');
+ });
  await check('Event edit retains collapsed short name and saved text',async()=>{
-  await page.locator('.app-settings-shortcut').click();await page.waitForTimeout(150);await page.locator('#kx-settings').getByRole('button',{name:'Daily routines',exact:true}).click();
+  await tap('today');await page.locator('#konaScheduleMore > summary').click();await page.locator('#konaScheduleMore [data-go="schedule"]').click();
   await page.locator('#eventManageList').getByRole('button',{name:'Edit QA Event',exact:true}).click();await page.locator('#choiceList button').filter({hasText:'Edit event'}).click();
   await expect(!await page.locator('#eventShortNameDetails').evaluate(e=>e.open),'edit short name open');await page.locator('#eventShortNameDetails summary').click();await expect(await page.locator('#eventShortTitle').inputValue()==='TEST','short name lost');await page.locator('#eventTitle').fill('QA Event edited');await page.locator('#eventSave').click();await tap('today');
  });
