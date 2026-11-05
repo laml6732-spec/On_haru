@@ -1,6 +1,6 @@
 {
-  "runId": "41970531246",
-  "sourceCommit": "3125e7ea55ff88bbfd4c3fe20b357ea42797b577",
+  "runId": "41970956710",
+  "sourceCommit": "090ffb6322444f421f3c5e6a2d5af9fc8e8bb5d4",
   "smoke": {
     "url": "http://127.0.0.1:8080/legacy/",
     "cases": [
@@ -1063,13 +1063,11 @@
         },
         {
           "name": "Plan name and time contrast",
-          "ok": false,
-          "details": "Error: Plan time contrast 4.49"
+          "ok": true
         },
         {
           "name": "Review tab contrast",
-          "ok": false,
-          "details": "Error: rev-weekly contrast 4.25"
+          "ok": true
         },
         {
           "name": "Event title contrast and English keyboard",
@@ -1102,9 +1100,9 @@
         },
         {
           "label": "Plan time",
-          "fg": "rgb(97, 116, 94)",
+          "fg": "rgb(88, 109, 86)",
           "bg": "rgb(237, 244, 233)",
-          "ratio": 4.490769718519622
+          "ratio": 5.009084243359029
         },
         {
           "label": "rev-reflect",
@@ -1114,9 +1112,15 @@
         },
         {
           "label": "rev-weekly",
-          "fg": "rgb(101, 124, 110)",
+          "fg": "rgb(91, 112, 99)",
           "bg": "rgb(250, 248, 244)",
-          "ratio": 4.247096536653447
+          "ratio": 5.021495640455905
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 5.021495640455905
         },
         {
           "label": "Event title",
@@ -1213,13 +1217,11 @@
         },
         {
           "name": "Plan name and time contrast",
-          "ok": false,
-          "details": "Error: Plan time contrast 4.49"
+          "ok": true
         },
         {
           "name": "Review tab contrast",
-          "ok": false,
-          "details": "Error: rev-weekly contrast 4.25"
+          "ok": true
         },
         {
           "name": "Event title contrast and English keyboard",
@@ -1252,9 +1254,9 @@
         },
         {
           "label": "Plan time",
-          "fg": "rgb(97, 116, 94)",
+          "fg": "rgb(88, 109, 86)",
           "bg": "rgb(237, 244, 233)",
-          "ratio": 4.490769718519622
+          "ratio": 5.009084243359029
         },
         {
           "label": "rev-reflect",
@@ -1264,9 +1266,15 @@
         },
         {
           "label": "rev-weekly",
-          "fg": "rgb(101, 124, 110)",
+          "fg": "rgb(91, 112, 99)",
           "bg": "rgb(250, 248, 244)",
-          "ratio": 4.247096536653447
+          "ratio": 5.021495640455905
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 5.021495640455905
         },
         {
           "label": "Event title",
@@ -1363,13 +1371,11 @@
         },
         {
           "name": "Plan name and time contrast",
-          "ok": false,
-          "details": "Error: Plan time contrast 4.49"
+          "ok": true
         },
         {
           "name": "Review tab contrast",
-          "ok": false,
-          "details": "Error: rev-weekly contrast 4.22"
+          "ok": true
         },
         {
           "name": "Event title contrast and English keyboard",
@@ -1402,9 +1408,9 @@
         },
         {
           "label": "Plan time",
-          "fg": "rgb(97, 116, 94)",
+          "fg": "rgb(88, 109, 86)",
           "bg": "rgb(237, 244, 233)",
-          "ratio": 4.490769718519622
+          "ratio": 5.009084243359029
         },
         {
           "label": "rev-reflect",
@@ -1414,9 +1420,15 @@
         },
         {
           "label": "rev-weekly",
-          "fg": "rgb(101, 124, 110)",
+          "fg": "rgb(91, 112, 99)",
           "bg": "rgb(250, 247, 242)",
-          "ratio": 4.215599627013287
+          "ratio": 4.984255706519644
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 247, 242)",
+          "ratio": 4.984255706519644
         },
         {
           "label": "Event title",
@@ -1506,10 +1518,17 @@
   ],
   "runs": [
     {
-      "id": 41970531246,
-      "sha": "3125e7ea55ff88bbfd4c3fe20b357ea42797b577",
+      "id": 41970956710,
+      "sha": "090ffb6322444f421f3c5e6a2d5af9fc8e8bb5d4",
       "status": "in_progress",
       "conclusion": null,
+      "name": "OnHaru release verification"
+    },
+    {
+      "id": 41970531246,
+      "sha": "3125e7ea55ff88bbfd4c3fe20b357ea42797b577",
+      "status": "completed",
+      "conclusion": "failure",
       "name": "OnHaru release verification"
     },
     {
@@ -1567,14 +1586,7 @@
       "status": "completed",
       "conclusion": "failure",
       "name": "OnHaru isolated browser smoke"
-    },
-    {
-      "id": 41967940339,
-      "sha": "84bb469deb3f7c79bc400c4fe7237fb499c16acd",
-      "status": "completed",
-      "conclusion": "failure",
-      "name": "OnHaru focused extended flows"
     }
   ],
-  "allPassed": false
+  "allPassed": true
 }
