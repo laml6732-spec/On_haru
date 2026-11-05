@@ -33,6 +33,8 @@
 
 ### 전후 화면 증거
 
+[Capture·Plan 수정 전후 스크린샷 보기](./screenshots/README.md)
+
 초기 CSS 정리 전후 42쌍과 감사 결과는 아래에 보존했다. 기능 수정 후 화면은 [최종 후보 실행의 release-verification artifact](https://github.com/laml6732-spec/On_haru/actions/runs/41970956710)에서 acceptance 및 matrix 폴더로 확인할 수 있다. 운영 화면은 운영 검증 실행의 workers-live-verification artifact에 남는다. 디자인 변경 의도는 배치 재설계가 아닌 대비와 조작 오류의 보정이다.
 
 ---
