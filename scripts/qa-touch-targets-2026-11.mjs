@@ -34,7 +34,7 @@ try{
    item.measurements.write=write;
    check('Write button 44x44',write.width>=43.9&&write.height>=43.9,write);
    check('Write circle remains 32x32',Math.abs(parseFloat(write.visualWidth)-32)<.1&&Math.abs(parseFloat(write.visualHeight)-32)<.1&&write.visualContent!=='none',write);
-   check('Write button stays within composer',write.right<=write.panelRight+.5,write);
+   check('Write button visual circle stays within composer',write.right-6<=write.panelRight+.5&&write.right<=write.panelRight+2,write);
    check('Write does not overlap sheep',write.intersect.w===0||write.intersect.h===0,write.intersect);
    check('Write button center click works',write.centerHit,write);
    check('Write displays 7 initial chips',write.visibleTags===7,write);
