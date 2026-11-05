@@ -1,10 +1,10 @@
 {
-  "runId": "42106980435",
-  "sourceCommit": "6525636c4d0bac0ec114485124f832a9816b652c",
+  "runId": "42127124706",
+  "sourceCommit": "45f5697d2150d2ce40362f91df7fba00a9be5e88",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
-    "release": "touchv120261105",
+    "release": "iconfacev220261105",
     "verifier": "hash-content-v2",
     "cases": [
       {
@@ -12,8 +12,8 @@
         "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
-        "expectedSha256": "240e222249480b12d396408940ad1ed644db969dba2474694cb681f877a6ac8d",
-        "actualSha256": "240e222249480b12d396408940ad1ed644db969dba2474694cb681f877a6ac8d",
+        "expectedSha256": "8b4f5f716c5fdb10db7837f5f3a81ff68b0cdda4e9332445e589da8686a96f9a",
+        "actualSha256": "8b4f5f716c5fdb10db7837f5f3a81ff68b0cdda4e9332445e589da8686a96f9a",
         "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
@@ -25,7 +25,7 @@
         "path": "app.7cb1b71d4eb6.css",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=touchv120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=iconfacev220261105",
         "expectedSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "actualSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "hashMatch": true,
@@ -39,7 +39,7 @@
         "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=touchv120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=iconfacev220261105",
         "expectedSha256": "fe2f185796733efb02fb98d6fae368cf59813101b6bc2be4e5743240811ff3b2",
         "actualSha256": "fe2f185796733efb02fb98d6fae368cf59813101b6bc2be4e5743240811ff3b2",
         "hashMatch": true,
@@ -53,7 +53,7 @@
         "path": "runtime/settings.58b48f87b05a.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=touchv120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=iconfacev220261105",
         "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "hashMatch": true,
@@ -67,9 +67,9 @@
         "path": "sw.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=touchv120261105",
-        "expectedSha256": "62bcecb3ff651aaddc011af9d8c82a728bac755f69df3e89f4ba292c77d19106",
-        "actualSha256": "62bcecb3ff651aaddc011af9d8c82a728bac755f69df3e89f4ba292c77d19106",
+        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=iconfacev220261105",
+        "expectedSha256": "e5798a4604c3c4d3013f3d623ab8eae9345a01a2b55f0f94d67020bf073b639f",
+        "actualSha256": "e5798a4604c3c4d3013f3d623ab8eae9345a01a2b55f0f94d67020bf073b639f",
         "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
@@ -632,75 +632,117 @@
     "missing": [],
     "iconCorners": [
       {
-        "src": "./icons/onharu-watercolor-v3-192.png",
+        "src": "./icons/onharu-face-wave-192.png",
         "width": 192,
         "height": 192,
         "corners": [
           [
-            0,
-            0,
-            0,
-            0
+            168,
+            222,
+            255,
+            255
           ],
           [
-            0,
-            0,
-            0,
-            0
+            203,
+            237,
+            252,
+            255
           ],
           [
-            0,
-            0,
-            0,
-            0
+            170,
+            224,
+            255,
+            255
           ],
           [
-            0,
-            0,
-            0,
-            0
+            167,
+            215,
+            252,
+            255
           ]
         ],
-        "cornerMode": "transparent",
+        "cornerMode": "opaque-nonblack",
         "ok": true
       },
       {
-        "src": "./icons/onharu-watercolor-v3-512.png",
+        "src": "./icons/onharu-face-wave-512.png",
         "width": 512,
         "height": 512,
         "corners": [
           [
-            0,
-            0,
-            0,
-            0
+            167,
+            221,
+            255,
+            255
           ],
           [
-            0,
-            0,
-            0,
-            0
+            216,
+            244,
+            255,
+            255
           ],
           [
-            0,
-            0,
-            0,
-            0
+            181,
+            232,
+            255,
+            255
           ],
           [
-            0,
-            0,
-            0,
-            0
+            168,
+            216,
+            252,
+            255
           ]
         ],
-        "cornerMode": "transparent",
+        "cornerMode": "opaque-nonblack",
         "ok": true
       }
     ],
-    "release": "touchv120261105"
+    "release": "iconfacev220261105"
   },
   "runs": [
+    {
+      "id": 42127124908,
+      "sha": "45f5697d2150d2ce40362f91df7fba00a9be5e88",
+      "name": "OnHaru metrics privacy and regression checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42127124763,
+      "sha": "45f5697d2150d2ce40362f91df7fba00a9be5e88",
+      "name": "OnHaru static UI checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42127124706,
+      "sha": "45f5697d2150d2ce40362f91df7fba00a9be5e88",
+      "name": "OnHaru Workers production verification",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 42127109691,
+      "sha": "2ccdecd871ce03a32ea744c5b83bc1c4d60c669a",
+      "name": "OnHaru metrics privacy and regression checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42127028898,
+      "sha": "5e8b88209f4117957f50a1f54e5de76f01ff6e1c",
+      "name": "OnHaru metrics privacy and regression checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42126888667,
+      "sha": "5bf9d793b879b3426f10338b4d396066e36edef7",
+      "name": "Render On_HARU install icons",
+      "status": "completed",
+      "conclusion": "success"
+    },
     {
       "id": 42106980505,
       "sha": "6525636c4d0bac0ec114485124f832a9816b652c",
@@ -712,48 +754,6 @@
       "id": 42106980435,
       "sha": "6525636c4d0bac0ec114485124f832a9816b652c",
       "name": "OnHaru Workers production verification",
-      "status": "in_progress",
-      "conclusion": null
-    },
-    {
-      "id": 42106980227,
-      "sha": "6525636c4d0bac0ec114485124f832a9816b652c",
-      "name": "OnHaru metrics privacy and regression checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42106541168,
-      "sha": "0b35e1eba3b85ac54356bb9d13bbbba02112f02e",
-      "name": "OnHaru metrics privacy and regression checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42106531749,
-      "sha": "0b35e1eba3b85ac54356bb9d13bbbba02112f02e",
-      "name": "On_HARU 44px touch-area regression",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42106521682,
-      "sha": "4a3c8399d4408fcd8ac4c02a823885505e194fd2",
-      "name": "OnHaru metrics privacy and regression checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42106509555,
-      "sha": "4a3c8399d4408fcd8ac4c02a823885505e194fd2",
-      "name": "On_HARU 44px touch-area regression",
-      "status": "completed",
-      "conclusion": "failure"
-    },
-    {
-      "id": 42106343939,
-      "sha": "defa6fe222133c2db007526f8ab4acb90a15c371",
-      "name": "OnHaru metrics privacy and regression checks",
       "status": "completed",
       "conclusion": "success"
     }
