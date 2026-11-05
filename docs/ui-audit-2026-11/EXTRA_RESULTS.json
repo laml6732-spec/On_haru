@@ -1,6 +1,6 @@
 {
-  "runId": "41967940339",
-  "sourceCommit": "84bb469deb3f7c79bc400c4fe7237fb499c16acd",
+  "runId": "41968204561",
+  "sourceCommit": "9bc5aef21415768291669276144fb0f959988544",
   "cases": [
     {
       "width": 320,
@@ -26,7 +26,7 @@
         {
           "name": "Recurring event category and whole-series edit scope",
           "ok": false,
-          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
         },
         {
           "name": "Task edit preserves identity",
@@ -59,7 +59,7 @@
         {
           "name": "Recurring event category and whole-series edit scope",
           "ok": false,
-          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
         },
         {
           "name": "Task edit preserves identity",
@@ -92,7 +92,7 @@
         {
           "name": "Recurring event category and whole-series edit scope",
           "ok": false,
-          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
         },
         {
           "name": "Task edit preserves identity",
@@ -125,7 +125,7 @@
         {
           "name": "Recurring event category and whole-series edit scope",
           "ok": false,
-          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
         },
         {
           "name": "Task edit preserves identity",
@@ -158,7 +158,7 @@
         {
           "name": "Recurring event category and whole-series edit scope",
           "ok": false,
-          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
         },
         {
           "name": "Task edit preserves identity",
@@ -191,7 +191,7 @@
         {
           "name": "Recurring event category and whole-series edit scope",
           "ok": false,
-          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
         },
         {
           "name": "Task edit preserves identity",
@@ -201,19 +201,744 @@
       "errors": []
     }
   ],
+  "matrix": [
+    {
+      "width": 320,
+      "theme": "light",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(255, 255, 255)",
+            "ratio": 10.051871741322568
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(255, 255, 255)",
+        "ratio": 10.051871741322568
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": false,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(34, 48, 42)",
+            "ratio": 1.3706345121248649
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(34, 48, 42)",
+        "ratio": 1.3706345121248649
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(255, 255, 255)",
+            "ratio": 10.051871741322568
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(255, 255, 255)",
+        "ratio": 10.051871741322568
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": false,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(34, 48, 42)",
+            "ratio": 1.3706345121248649
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(34, 48, 42)",
+        "ratio": 1.3706345121248649
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(255, 255, 255)",
+            "ratio": 10.051871741322568
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(255, 255, 255)",
+        "ratio": 10.051871741322568
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": false,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(34, 48, 42)",
+            "ratio": 1.3706345121248649
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(34, 48, 42)",
+        "ratio": 1.3706345121248649
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    }
+  ],
   "runs": [
     {
-      "id": 41968011991,
-      "sha": "720cffba5288459f27c7a6f009b942dba1bac839",
+      "id": 41968204561,
+      "sha": "9bc5aef21415768291669276144fb0f959988544",
+      "status": "in_progress",
+      "conclusion": null,
+      "name": "OnHaru focused extended flows"
+    },
+    {
+      "id": 41968202049,
+      "sha": "77da7ec5f08f8217561f74779f45d7f224f0b1ae",
       "status": "in_progress",
       "conclusion": null,
       "name": "OnHaru isolated browser smoke"
     },
     {
-      "id": 41967940339,
-      "sha": "84bb469deb3f7c79bc400c4fe7237fb499c16acd",
+      "id": 41968199408,
+      "sha": "04c81bdd5f2db3145e25ec62082096221a0eb15c",
       "status": "in_progress",
       "conclusion": null,
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41968011991,
+      "sha": "720cffba5288459f27c7a6f009b942dba1bac839",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967940339,
+      "sha": "84bb469deb3f7c79bc400c4fe7237fb499c16acd",
+      "status": "completed",
+      "conclusion": "failure",
       "name": "OnHaru focused extended flows"
     },
     {
@@ -226,8 +951,8 @@
     {
       "id": 41967880467,
       "sha": "8c68c61a207ebd67c3e540e2cafa44d8db222f20",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "name": "OnHaru isolated browser smoke"
     },
     {
@@ -240,8 +965,8 @@
     {
       "id": 41967766445,
       "sha": "a3c1c8503d83615d2fbf0b3e9e9dff3cdc48a80f",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "name": "OnHaru isolated browser smoke"
     },
     {
@@ -317,27 +1042,6 @@
     {
       "id": 41965914578,
       "sha": "9f6efc7736a216d536734c45eb2cebaa12cc7f99",
-      "status": "completed",
-      "conclusion": "failure",
-      "name": "OnHaru isolated browser smoke"
-    },
-    {
-      "id": 41965786374,
-      "sha": "05c6092426255f407caecbdf203de788598f1bc8",
-      "status": "completed",
-      "conclusion": "failure",
-      "name": "OnHaru isolated browser smoke"
-    },
-    {
-      "id": 41965639474,
-      "sha": "9316542e345aee3c02e1966420d5698dfcf5fb8b",
-      "status": "completed",
-      "conclusion": "failure",
-      "name": "OnHaru isolated browser smoke"
-    },
-    {
-      "id": 41965638036,
-      "sha": "f39d57b4391e519e3d541e5815397198cbe1cc60",
       "status": "completed",
       "conclusion": "failure",
       "name": "OnHaru isolated browser smoke"
