@@ -7,8 +7,8 @@ const OUT = 'promo/circle';
 const executablePath = ['/usr/bin/google-chrome','/usr/bin/chromium','/opt/google/chrome/chrome'].find(existsSync);
 const browser = await chromium.launch({headless:true,...(executablePath?{executablePath}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
 const cards = [
- {n:'01',name:'capture',tab:'capture',eyebrow:'WHY ON_HARU',lines:['Notice God','in everyday','moments.'],description:'Capture Scripture, prayers, and what stays on your heart.',chips:[],footer:'A SPACE TO REMEMBER YOUR DAY WITH GOD',bg:'#FAF7F2',accent:'#DCEFE6'},
- {n:'02',name:'plan',tab:'today',eyebrow:'FAITH IN EVERY MOMENT',lines:['Every plan','can hold','a prayer.'],description:'Add a faith note beside each event.',chips:[],footer:'MEANING IN THE ORDINARY',bg:'#F8F6F0',accent:'#E7F1DE'},
+ {n:'01',name:'capture',tab:'capture',eyebrow:'WHY ON_HARU',lines:['Notice it.','Capture it.','Remember it.'],description:'A home for thoughts, prayers, and little moments.',chips:[],footer:'YOUR EVERYDAY MOMENTS MATTER',bg:'#FAF7F2',accent:'#DCEFE6'},
+ {n:'02',name:'plan',tab:'today',eyebrow:'CAPTURE → PLAN',lines:['Capture once.','See it in','your day.'],description:'See captured notes beside their linked events.',chips:[],footer:'YOUR DAY, WITH ITS MOMENTS',bg:'#F8F6F0',accent:'#E7F1DE'},
  {n:'03',name:'focus',tab:'focus',eyebrow:'PRAYER TIMER',lines:['Pause.','Pray.','Be present.'],description:'Make time to be still with God.',chips:[],footer:'',bg:'#F6F7F0',accent:'#D7ECE3'},
  {n:'04',name:'checkin',tab:'checkin',eyebrow:'MORNING CHECK-IN',lines:['Wake up.','Check in.','Pray.'],description:'Name your mood. Rise in prayer.',chips:[],footer:'BEGIN WITH PRAYER',bg:'#FAF6F1',accent:'#E8E8DD'},
  {n:'05',name:'review',tab:'records',eyebrow:'REVIEW',lines:['Remember','the little','moments.'],description:'Revisit notes, prayers, and growth.',chips:[],footer:'ON_HARU · FREE WEB APP',bg:'#F4F7F2',accent:'#CFE4D7'}
@@ -46,22 +46,38 @@ async function takeAppScreenshot(c) {
   await page.addStyleTag({content:'*{animation-duration:0s!important;transition-duration:0s!important}#launchScreen,#tutorialModal{display:none!important}'});
   // Both capture and plan samples are entered into the actual app UI.
   // They remain isolated in this temporary browser context (not users' real data).
-  if(c.tab==='capture'){
-    const samples=[
-      ['A verse for today','Be still, and know that I am God. — Psalm 46:10','meaning_scripture'],
-      ['A short prayer','Lord, teach me to listen and trust You.','meaning_prayer'],
-      ['One thing I noticed','God met me in an ordinary conversation.','meaning_insight']
+  if(c.tab==='capture'||c.tab==='today'){
+    // The same notes are saved through Capture on both slides.
+    // Each is explicitly linked to its schedule in the real Capture selector.
+    const moments=[
+      ['Work Duty','A small kindness','A teammate helped me through a busy afternoon.','meaning_insight'],
+      ['Dinner','A good conversation','We laughed together. I want to remember that.','meaning_insight'],
+      ['Design Class','Something to try','One idea I want to explore tomorrow.','meaning_practice']
     ];
-    for(const [title,body,tag] of samples){
+    for(const [event,title,body,tag] of moments){
+      await page.locator('#qc-select').evaluate((select,target)=>{
+        const option=[...select.options].find(x=>x.textContent.includes(target));
+        if(!option)throw new Error('Capture schedule not found: '+target);
+        select.value=option.value;
+        select.dispatchEvent(new Event('change',{bubbles:true}));
+      },event);
       await page.locator('#qc-note-title').fill(title);
       await page.locator('#qc-text').fill(body);
       await page.locator('#page-capture [data-tag="'+tag+'"]').click();
       await page.locator('#qc-submit').click();
-      await page.waitForTimeout(240);
+      await page.waitForTimeout(220);
     }
-    await page.locator('#qc-note-title').fill('A moment worth keeping');
-    await page.locator('#qc-text').fill('Today, a quiet prayer reminded me that God is near.');
-    await page.locator('#page-capture [data-tag="meaning_listening"]').click();
+    if(c.tab==='capture'){
+      await page.locator('#qc-select').evaluate(select=>{
+        const option=[...select.options].find(x=>x.textContent.includes('Work Duty'));
+        if(!option)throw new Error('Cannot link featured Capture draft');
+        select.value=option.value;
+        select.dispatchEvent(new Event('change',{bubbles:true}));
+      });
+      await page.locator('#qc-note-title').fill('A moment worth keeping');
+      await page.locator('#qc-text').fill('A quiet reminder that God is with us in ordinary days.');
+      await page.locator('#page-capture [data-tag="meaning_listening"]').click();
+    }
   }
   if(c.tab==='records'){
     const examples=[
@@ -82,25 +98,14 @@ async function takeAppScreenshot(c) {
   }
   if(c.tab!=='capture')await page.locator('.tabs [data-page="'+c.tab+'"]').click();
   if(c.tab==='today'){
-    const eventFaithNotes=[
-      ['Work Duty','Serve with joy','Whatever you do, work for the Lord. — Colossians 3:23'],
-      ['Dinner','Give thanks','Thank You for food, friendship, and today.'],
-      ['Design Class','Create with purpose','Lord, use my gifts to bless others.']
-    ];
-    for(const [event,title,prayer] of eventFaithNotes){
-      const eventBtn=page.locator('#kx-summary .kona-rich-event').filter({hasText:event}).first();
-      await eventBtn.click({timeout:12000});
-      await page.locator('#eventNoteTitle').fill(title);
-      await page.locator('#eventMemo').fill(prayer);
-      await page.locator('#saveEventMemo').click();
-      await page.waitForTimeout(250);
-    }
-    // The actual plan has two columns: schedule and a faith note.
-    const filled=await page.locator('#kx-summary .kona-rich-note.has-note').count();
-    if(filled<3)throw new Error('Expected three genuine schedule-linked faith notes; found '+filled);
-    await page.waitForTimeout(2800); // Let the real Saved toast fade before capturing
+    // Verify three Capture entries really appear under three different events in Plan.
+    const expected=['A small kindness','A good conversation','Something to try'];
+    const notes=await page.locator('#kx-summary .kona-rich-note.has-note').allTextContents();
+    for(const title of expected)
+      if(!notes.some(t=>t.includes(title)))throw new Error('Capture note not shown in Plan: '+title);
+    if(notes.length<3)throw new Error('Plan has fewer than three linked Capture notes');
+    await page.waitForTimeout(900);
   }
-
   if(c.tab==='records'){const expand=page.locator('#page-records .review-group-more[aria-expanded="false"]');if(await expand.count())await expand.first().click();}
   if(c.tab==='focus'){await page.locator('#kindSeg [data-kind="prayer"]').click();await page.locator('#focusStart').click();await page.waitForTimeout(1300);}
   if(c.tab==='checkin'){await page.locator('#page-checkin .phases [data-phase="morning"]').click();await page.waitForTimeout(250);const n=page.locator('#checkNote');if(await n.isVisible())await n.fill('Lord, help me begin today with prayer.');for(const dimension of ['energy','happiness']){await page.locator('#moodGrid .kona-slim-scale[data-dimension="'+dimension+'"] input[type="range"]').evaluate(el=>{el.value='4';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));});await page.waitForTimeout(160);}await page.waitForTimeout(250);}
