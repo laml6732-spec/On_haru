@@ -4469,3 +4469,16 @@ html[data-appearance="dark"] body .app #page-today #kx-summary :is(.kona-note-sn
 html[data-appearance="dark"] body .app #page-records textarea,
 html[data-appearance="dark"] body .app #page-checkin textarea,
 html[data-appearance="dark"] body .app #page-focus textarea{color:#F0F7F0!important;background:#293D33!important}
+
+/* On_HARU: optional short name is a folded advanced event setting. */
+body #eventFormModal details.event-shortname-details{margin:10px 0 12px;border-top:1px solid #DEE7DD;border-bottom:1px solid #DEE7DD}
+body #eventFormModal .event-shortname-details>summary{display:flex;gap:9px;align-items:center;min-height:46px;padding:8px 2px;list-style:none;cursor:pointer;color:var(--ink);font-weight:700}
+body #eventFormModal .event-shortname-details>summary::-webkit-details-marker{display:none}
+body #eventFormModal .event-shortname-details>summary small{font-size:11px;color:var(--sub);font-weight:500}
+body #eventFormModal .event-shortname-details>summary::after{content:"⌄";margin-left:auto;color:var(--sub);font-size:18px}
+body #eventFormModal .event-shortname-details[open]>summary::after{transform:rotate(180deg)}
+body #eventFormModal .event-shortname-content{padding:2px 2px 15px}
+body #eventFormModal .event-shortname-details>summary:focus-visible{outline:2px solid #368469;outline-offset:2px;border-radius:8px}
+html[data-appearance=dark] body #eventFormModal .event-shortname-details{border-color:#577466}
+html[data-appearance=dark] body #eventFormModal .event-shortname-details>summary{color:#EAF4EC!important}
+html[data-appearance=dark] body #eventFormModal .event-shortname-details>summary small{color:#B8D0C0!important}
