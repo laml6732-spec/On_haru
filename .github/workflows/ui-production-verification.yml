@@ -1,0 +1,59 @@
+name: OnHaru Workers production verification
+on:
+  push:
+    branches: [main]
+    paths: ['public/legacy/**', 'cloudflare/on-haru-edge-preview.js', '.github/workflows/ui-production-verification.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: onharu-production-verification
+  cancel-in-progress: true
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      ONHARU_URL: https://on-haru.laml6732.workers.dev/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node scripts/verify-live-release.mjs
+        continue-on-error: true
+      - run: ONHARU_ARTIFACTS=test-results/live/smoke node scripts/ui-smoke.mjs
+        continue-on-error: true
+      - run: ONHARU_ACCEPTANCE_ARTIFACTS=test-results/live/acceptance node scripts/ui-release-acceptance.mjs
+        continue-on-error: true
+      - run: node scripts/ui-pwa.mjs
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workers-live-verification
+          path: test-results/
+          retention-days: 14
+      - name: Record and verify live results
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=8" > /tmp/onharu-runs.json
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return null}};
+          const r={runId:process.env.GITHUB_RUN_ID,sourceCommit:process.env.GITHUB_SHA,url:process.env.ONHARU_URL,static:read('test-results/live/static.json'),smoke:read('test-results/live/smoke/report.json'),acceptance:read('test-results/live/acceptance/report.json'),pwa:read('test-results/pwa/report.json'),runs:read('/tmp/onharu-runs.json').workflow_runs.map(r=>({id:r.id,sha:r.head_sha,name:r.name,status:r.status,conclusion:r.conclusion}))};r.allPassed=!!(r.static&&r.smoke&&r.acceptance?.length===6&&r.pwa)&&r.static.cases.every(c=>c.ok)&&r.smoke.cases.every(c=>c.ok)&&!r.smoke.pageErrors.length&&r.acceptance.every(r=>!r.errors.length&&r.cases.every(c=>c.ok))&&r.pwa.checks.every(c=>c.ok)&&!r.pwa.errors.length;fs.writeFileSync('/tmp/LIVE_RESULTS.json',JSON.stringify(r,null,2));
+          JS
+          git fetch origin main
+          git checkout --detach FETCH_HEAD
+          mkdir -p docs/ui-audit-2026-11
+          cp /tmp/LIVE_RESULTS.json docs/ui-audit-2026-11/LIVE_RESULTS.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/ui-audit-2026-11/LIVE_RESULTS.json
+          git diff --cached --quiet || git commit -m "evidence: verify deployed Workers release"
+          git push origin HEAD:main
+          node --input-type=module -e "import fs from 'node:fs';if(!JSON.parse(fs.readFileSync('/tmp/LIVE_RESULTS.json')).allPassed)process.exit(1)"

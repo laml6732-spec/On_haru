@@ -1,0 +1,69 @@
+name: OnHaru release verification
+on:
+  push:
+    branches: ['work/css-audit-regression-2026-11']
+    paths: ['public/legacy/**', 'scripts/ui-*.mjs', '.github/workflows/ui-release-verification.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: onharu-release-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node scripts/verify-ui-static.mjs
+      - run: node scripts/audit-css.mjs --json
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-server.log 2>&1 &
+      - run: node scripts/ui-smoke.mjs
+        continue-on-error: true
+      - run: node scripts/ui-matrix.mjs
+        continue-on-error: true
+      - run: node scripts/ui-extra.mjs
+        continue-on-error: true
+      - run: node scripts/ui-edit-flows.mjs
+        continue-on-error: true
+      - run: node scripts/ui-pwa.mjs
+        continue-on-error: true
+      - run: node scripts/ui-release-acceptance.mjs
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-verification
+          path: test-results/
+          retention-days: 14
+      - name: Persist release evidence and require all checks
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=10" > /tmp/onharu-runs.json
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const compact=rows=>rows?.map(({styles,controls,...r})=>r);
+          const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return null}};
+          const r={runId:process.env.GITHUB_RUN_ID,sourceCommit:process.env.GITHUB_SHA,smoke:read('test-results/onharu-ui/report.json'),matrix:compact(read('test-results/matrix/report.json')),extra:read('test-results/extra/report.json'),edit:read('test-results/edit/report.json'),pwa:read('test-results/pwa/report.json'),acceptance:read('test-results/acceptance/report.json'),runs:read('/tmp/onharu-runs.json').workflow_runs.map(r=>({id:r.id,sha:r.head_sha,status:r.status,conclusion:r.conclusion,name:r.name}))};
+          const rows=[...(r.matrix||[]),...(r.extra||[]),...(r.edit||[]),...(r.acceptance||[])];
+          r.allPassed=!!(r.smoke&&r.matrix?.length===6&&r.extra?.length===6&&r.edit?.length===6&&r.acceptance?.length===6&&r.pwa)&&r.smoke.cases.every(c=>c.ok)&&!r.smoke.pageErrors.length&&r.pwa.checks.every(c=>c.ok)&&!r.pwa.errors.length&&rows.every(x=>!(x.errors||[]).length&&(x.checks||x.cases).every(c=>c.ok));
+          fs.writeFileSync('/tmp/FIX_RESULTS.json',JSON.stringify(r,null,2));
+          JS
+          git fetch origin work/css-audit-regression-2026-11
+          git checkout --detach FETCH_HEAD
+          mkdir -p docs/ui-audit-2026-11
+          cp /tmp/FIX_RESULTS.json docs/ui-audit-2026-11/FIX_RESULTS.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/ui-audit-2026-11/FIX_RESULTS.json
+          git diff --cached --quiet || git commit -m "evidence: release regression and contrast verification"
+          git push origin HEAD:work/css-audit-regression-2026-11
+          node --input-type=module -e "import fs from 'node:fs';if(!JSON.parse(fs.readFileSync('/tmp/FIX_RESULTS.json')).allPassed)process.exit(1)"

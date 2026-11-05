@@ -1,8 +1,6 @@
 name: OnHaru isolated browser smoke
 on:
   workflow_dispatch:
-  push:
-    paths: ['.github/workflows/ui-browser-smoke.yml']
 jobs:
   smoke:
     runs-on: ubuntu-latest
@@ -13,13 +11,33 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node scripts/verify-ui-static.mjs
       - run: python3 -m http.server 8080 --directory public > /tmp/onharu-server.log 2>&1 &
       - run: node scripts/ui-smoke.mjs
         env:
           ONHARU_URL: http://127.0.0.1:8080/legacy/
+      - run: |
+          git fetch origin 4cdbcdb6e421794ee022bef4da251faef58f4669
+          git show FETCH_HEAD:public/legacy/app.7cb1b71d4eb6.css > /tmp/onharu-baseline.css
+          ONHARU_CSS_OVERRIDE=/tmp/onharu-baseline.css ONHARU_ARTIFACTS=test-results/before node scripts/ui-matrix.mjs
+        continue-on-error: true
+        env:
+          ONHARU_URL: http://127.0.0.1:8080/legacy/
+      - run: ONHARU_ARTIFACTS=test-results/after node scripts/ui-matrix.mjs
+        continue-on-error: true
+        env:
+          ONHARU_URL: http://127.0.0.1:8080/legacy/
+      - run: node scripts/ui-extra.mjs
+        if: always()
+      - run: node scripts/ui-pwa.mjs
+        if: always()
+      - run: node scripts/compare-ui-matrix.mjs
+        if: always()
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: ui-smoke-screenshots
-          path: test-results/onharu-ui/
+          path: test-results/
+
           retention-days: 7

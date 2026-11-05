@@ -1,0 +1,1050 @@
+{
+  "runId": "41968204561",
+  "sourceCommit": "9bc5aef21415768291669276144fb0f959988544",
+  "cases": [
+    {
+      "width": 320,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit recurring event' })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "matrix": [
+    {
+      "width": 320,
+      "theme": "light",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(255, 255, 255)",
+            "ratio": 10.051871741322568
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(255, 255, 255)",
+        "ratio": 10.051871741322568
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": false,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(34, 48, 42)",
+            "ratio": 1.3706345121248649
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(34, 48, 42)",
+        "ratio": 1.3706345121248649
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(255, 255, 255)",
+            "ratio": 10.051871741322568
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(255, 255, 255)",
+        "ratio": 10.051871741322568
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": false,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(34, 48, 42)",
+            "ratio": 1.3706345121248649
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(34, 48, 42)",
+        "ratio": 1.3706345121248649
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(255, 255, 255)",
+            "ratio": 10.051871741322568
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(255, 255, 255)",
+        "ratio": 10.051871741322568
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": false,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(34, 48, 42)",
+            "ratio": 1.3706345121248649
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": false,
+          "details": "Error: Manage returned to previous page instead of schedule"
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 6000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit event' })\n"
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": false,
+          "details": "Error: settings Escape failed"
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(34, 48, 42)",
+        "ratio": 1.3706345121248649
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "id": 41968204561,
+      "sha": "9bc5aef21415768291669276144fb0f959988544",
+      "status": "in_progress",
+      "conclusion": null,
+      "name": "OnHaru focused extended flows"
+    },
+    {
+      "id": 41968202049,
+      "sha": "77da7ec5f08f8217561f74779f45d7f224f0b1ae",
+      "status": "in_progress",
+      "conclusion": null,
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41968199408,
+      "sha": "04c81bdd5f2db3145e25ec62082096221a0eb15c",
+      "status": "in_progress",
+      "conclusion": null,
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41968011991,
+      "sha": "720cffba5288459f27c7a6f009b942dba1bac839",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967940339,
+      "sha": "84bb469deb3f7c79bc400c4fe7237fb499c16acd",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru focused extended flows"
+    },
+    {
+      "id": 41967882531,
+      "sha": "6e3a5cac9ddae0b777dbad73f2851672bc5b9ed3",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru focused extended flows"
+    },
+    {
+      "id": 41967880467,
+      "sha": "8c68c61a207ebd67c3e540e2cafa44d8db222f20",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967768919,
+      "sha": "b60021e4dad44c0ed4cdd7778b920b94b4337ca1",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru focused extended flows"
+    },
+    {
+      "id": 41967766445,
+      "sha": "a3c1c8503d83615d2fbf0b3e9e9dff3cdc48a80f",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967391494,
+      "sha": "793ca2deb9bd9a411df0b48d9cffd4b42538b17c",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967366954,
+      "sha": "0e77ceb0d22bf20c060c239aef848b5586cdf5b4",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967129780,
+      "sha": "a731dd151006eb971fcb90a2c030c68764403328",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967126628,
+      "sha": "52f17a67774689cbb1408a4a031458a43cbcaec7",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41966809321,
+      "sha": "0bc44ba11eb773d04f1a9b4458050d9e715a5d76",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41966723482,
+      "sha": "c7531df9aef8017092ff9c2c16414f21eef78d67",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41966290849,
+      "sha": "8685e6cfa40ee66c109873899c716fda3e1d3858",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41966187491,
+      "sha": "aeb2566d1555aab163be4cfe60ad734909778e87",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41966184208,
+      "sha": "74700abd8fc697b9a808f1e826576b78fd25ebd2",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41965916389,
+      "sha": "ab5b2a55a48d775dda063936d62dbebbe9d20ca8",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41965914578,
+      "sha": "9f6efc7736a216d536734c45eb2cebaa12cc7f99",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    }
+  ]
+}
