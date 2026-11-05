@@ -51,7 +51,7 @@ async function takeAppScreenshot(c) {
   }
   if(c.tab!=='capture')await page.locator('.tabs [data-page="'+c.tab+'"]').click();
   if(c.tab==='focus')await page.locator('#kindSeg [data-kind="prayer"]').click();
-  if(c.tab==='checkin'){const n=page.locator('#checkNote');if(await n.isVisible())await n.fill('Thankful for small moments today. Learning to be present.');}
+  if(c.tab==='checkin'){await page.locator('#page-checkin .phases [data-phase="morning"]').click();await page.waitForTimeout(200);const n=page.locator('#checkNote');if(await n.isVisible())await n.fill('Thankful for small moments today. Learning to be present.');}
   await page.waitForTimeout(400);
   return (await page.screenshot({type:'png',animations:'disabled'})).toString('base64');
  }finally{await context.close();}
