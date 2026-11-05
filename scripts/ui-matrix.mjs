@@ -41,7 +41,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   await page.locator('#eventTitle').fill('QA Event');await page.locator('#eventStart').fill('21:00');await page.locator('#eventEnd').fill('21:30');
   await page.locator('#eventShortNameDetails summary').click();await page.locator('#eventShortTitle').fill('TEST');await page.locator('#eventSave').click();
   await expect(await page.locator('#eventFormModal').isHidden(),'event not saved');
-  const stored=await page.evaluate(()=>Object.keys(localStorage).some(k=>{const v=localStorage.getItem(k);return typeof v==='string'&&v.includes('QA Event')&&v.includes('TEST')}));await expect(stored,'event missing in storage');
+  const stored=await page.evaluate(()=>JSON.parse(window.localStorage.getItem('kona.legacy.v1.dayframe')||'{}').events?.some(e=>e.title==='QA Event'&&e.shortTitle==='TEST'));await expect(stored,'event missing in storage');
  });
  await check('Task add, important, complete',async()=>{
   await tap('today');await page.locator('#pinRow .task-add').click();await page.locator('#taskTitle').fill('QA Task');await page.locator('#taskImportant').check();await page.locator('#taskSave').click();
@@ -62,7 +62,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
  });
 
  await check('Event edit retains collapsed short name and saved text',async()=>{
-  await page.locator('.app-settings-shortcut').click();await page.locator('#kx-settings').getByRole('button',{name:'Manage',exact:true}).click();
+  await page.locator('.app-settings-shortcut').click();await page.locator('#kx-settings').getByRole('button',{name:'Daily routines',exact:true}).click();
   await page.locator('#eventManageList').getByRole('button',{name:'Edit QA Event',exact:true}).click();await page.locator('#choiceList button').filter({hasText:'Edit event'}).click();
   await expect(!await page.locator('#eventShortNameDetails').evaluate(e=>e.open),'edit short name open');await page.locator('#eventShortNameDetails summary').click();await expect(await page.locator('#eventShortTitle').inputValue()==='TEST','short name lost');await page.locator('#eventTitle').fill('QA Event edited');await page.locator('#eventSave').click();await tap('today');
  });
@@ -98,7 +98,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   await page.emulateMedia({colorScheme:'dark'});await expect(await page.locator('html').getAttribute('data-appearance')==='dark','system dark mismatch');await page.emulateMedia({colorScheme:'light'});await expect(await page.locator('html').getAttribute('data-appearance')==='light','system light mismatch');
   await page.locator('.app-settings-shortcut').click();await page.keyboard.press('Escape');await expect(!await page.locator('#kx-settings').evaluate(e=>e.open),'settings Escape failed');
  });
- row.storage=await page.evaluate(()=>Object.keys(localStorage).sort());
+ row.storage=await page.evaluate(()=>Object.keys(window.localStorage).sort());
  await fs.writeFile(`${dir}/report.json`,JSON.stringify(results,null,2));await context.close();
 }
 }finally{await fs.writeFile(`${dir}/report.json`,JSON.stringify(results,null,2));await browser.close()}
