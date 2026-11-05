@@ -1,0 +1,1580 @@
+{
+  "runId": "41970531246",
+  "sourceCommit": "3125e7ea55ff88bbfd4c3fe20b357ea42797b577",
+  "smoke": {
+    "url": "http://127.0.0.1:8080/legacy/",
+    "cases": [
+      {
+        "name": "New event: short name collapsed",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "Short name expands",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "Short-name input remains usable",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "Short name resets collapsed on reopen",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "More keeps its top alignment",
+        "ok": true,
+        "details": "delta 0px"
+      },
+      {
+        "name": "Dark capture note contrast ≥ 4.5:1",
+        "ok": true,
+        "details": "10.67:1"
+      },
+      {
+        "name": "Saved note visible in Review",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "App confirmation cancel is safe",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "App text prompt returns edit",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "320px Capture not horizontally overflowing",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "1024px event dialog visible",
+        "ok": true,
+        "details": ""
+      }
+    ],
+    "pageErrors": [],
+    "artifacts": "test-results/onharu-ui"
+  },
+  "matrix": [
+    {
+      "width": 320,
+      "theme": "light",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(255, 255, 255)",
+            "ratio": 10.051871741322568
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": true
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": true
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": true
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(255, 255, 255)",
+        "ratio": 10.051871741322568
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(241, 247, 241)",
+            "background": "rgb(34, 48, 42)",
+            "ratio": 12.67172705442878
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": true
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": true
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": true
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(241, 247, 241)",
+        "background": "rgb(34, 48, 42)",
+        "ratio": 12.67172705442878
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(255, 255, 255)",
+            "ratio": 10.051871741322568
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": true
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": true
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": true
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(255, 255, 255)",
+        "ratio": 10.051871741322568
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(241, 247, 241)",
+            "background": "rgb(34, 48, 42)",
+            "ratio": 12.67172705442878
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": true
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": true
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": true
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(241, 247, 241)",
+        "background": "rgb(34, 48, 42)",
+        "ratio": 12.67172705442878
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(41, 70, 81)",
+            "background": "rgb(255, 255, 255)",
+            "ratio": 10.051871741322568
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": true
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": true
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": true
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(41, 70, 81)",
+        "background": "rgb(255, 255, 255)",
+        "ratio": 10.051871741322568
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "errors": [],
+      "screens": [
+        "capture",
+        "today",
+        "checkin",
+        "focus",
+        "records",
+        "settings"
+      ],
+      "checks": [
+        {
+          "name": "Capture writing text contrast ≥ 4.5:1",
+          "ok": true,
+          "details": {
+            "color": "rgb(241, 247, 241)",
+            "background": "rgb(34, 48, 42)",
+            "ratio": 12.67172705442878
+          }
+        },
+        {
+          "name": "capture save",
+          "ok": true
+        },
+        {
+          "name": "capture overflow",
+          "ok": true
+        },
+        {
+          "name": "today overflow",
+          "ok": true
+        },
+        {
+          "name": "checkin overflow",
+          "ok": true
+        },
+        {
+          "name": "focus overflow",
+          "ok": true
+        },
+        {
+          "name": "records overflow",
+          "ok": true
+        },
+        {
+          "name": "settings overflow",
+          "ok": true
+        },
+        {
+          "name": "Event add and optional short name",
+          "ok": true
+        },
+        {
+          "name": "Task add, important, complete",
+          "ok": true
+        },
+        {
+          "name": "Morning autosave and Mood/Energy",
+          "ok": true
+        },
+        {
+          "name": "Class review autosave",
+          "ok": true
+        },
+        {
+          "name": "Evening autosave",
+          "ok": true
+        },
+        {
+          "name": "Settings daily-routines navigation",
+          "ok": true
+        },
+        {
+          "name": "Event edit retains collapsed short name and saved text",
+          "ok": true
+        },
+        {
+          "name": "Review edit, delete cancellation, filter and archive search",
+          "ok": true
+        },
+        {
+          "name": "Focus duration, start, pause, resume, finish, session note",
+          "ok": true
+        },
+        {
+          "name": "Review daily, weekly, archive",
+          "ok": true
+        },
+        {
+          "name": "Settings Apply persists theme and size, retains notes",
+          "ok": true
+        },
+        {
+          "name": "Backup and restore fabricated records",
+          "ok": true
+        },
+        {
+          "name": "Korean labels, system theme, settings Escape",
+          "ok": true
+        }
+      ],
+      "captureInputContrast": {
+        "color": "rgb(241, 247, 241)",
+        "background": "rgb(34, 48, 42)",
+        "ratio": 12.67172705442878
+      },
+      "storage": [
+        "kona.legacy.v1.dayframe",
+        "kona.legacy.v1.kona.display.v1",
+        "kona.legacy.v1.kona.language.v1"
+      ]
+    }
+  ],
+  "extra": [
+    {
+      "width": 320,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": true
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": true
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": true
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": true
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": true
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": true
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": true
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": true
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": true
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": true
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": true
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": true
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "edit": [
+    {
+      "width": 320,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "pwa": {
+    "checks": [
+      {
+        "name": "PWA manifest and icons",
+        "ok": true
+      },
+      {
+        "name": "Current release cache",
+        "ok": true
+      },
+      {
+        "name": "Offline shell and saved memo",
+        "ok": true
+      },
+      {
+        "name": "No local asset 404",
+        "ok": true
+      }
+    ],
+    "errors": [],
+    "missing": [],
+    "release": "b7e4311050aa"
+  },
+  "acceptance": [
+    {
+      "width": 320,
+      "theme": "light",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": false,
+          "details": "Error: Plan time contrast 4.49"
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": false,
+          "details": "Error: rev-weekly contrast 4.25"
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(48, 69, 77)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.076346058382203
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.051871741322568
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(54, 91, 73)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 6.8077265644385
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(97, 116, 94)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 4.490769718519622
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(38, 93, 73)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 7.214095788024234
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(101, 124, 110)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 4.247096536653447
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 254, 252)",
+          "ratio": 9.972595690627822
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": true
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": true
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 9.63745137722458
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 14.832233281769465
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": false,
+          "details": "Error: Plan time contrast 4.49"
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": false,
+          "details": "Error: rev-weekly contrast 4.25"
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(48, 69, 77)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.076346058382203
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.051871741322568
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(54, 91, 73)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 6.8077265644385
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(97, 116, 94)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 4.490769718519622
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(38, 93, 73)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 7.214095788024234
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(101, 124, 110)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 4.247096536653447
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 254, 252)",
+          "ratio": 9.972595690627822
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": true
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": true
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 9.63745137722458
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 14.832233281769465
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": false,
+          "details": "Error: Plan time contrast 4.49"
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": false,
+          "details": "Error: rev-weekly contrast 4.22"
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(48, 69, 77)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.076346058382203
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.051871741322568
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(54, 91, 73)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 6.8077265644385
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(97, 116, 94)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 4.490769718519622
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(38, 93, 73)",
+          "bg": "rgb(250, 247, 242)",
+          "ratio": 7.160595303349614
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(101, 124, 110)",
+          "bg": "rgb(250, 247, 242)",
+          "ratio": 4.215599627013287
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 254, 252)",
+          "ratio": 9.972595690627822
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": true
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": true
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 9.63745137722458
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 14.832233281769465
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "id": 41970531246,
+      "sha": "3125e7ea55ff88bbfd4c3fe20b357ea42797b577",
+      "status": "in_progress",
+      "conclusion": null,
+      "name": "OnHaru release verification"
+    },
+    {
+      "id": 41969031382,
+      "sha": "da10184a578029d165aa06f98fd3c9cf9b6a0e7f",
+      "status": "completed",
+      "conclusion": "success",
+      "name": "OnHaru focused edit flows"
+    },
+    {
+      "id": 41969005799,
+      "sha": "e38b621d60b6e070c445d13bac380a7b6fdf8ab4",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41969003687,
+      "sha": "f2fb410b76f74e492d1e2451841665a9b037c83f",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41969002315,
+      "sha": "5f3f8813c6eaf40e6e5119e7804323c15fb753f6",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41968204561,
+      "sha": "9bc5aef21415768291669276144fb0f959988544",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru focused extended flows"
+    },
+    {
+      "id": 41968202049,
+      "sha": "77da7ec5f08f8217561f74779f45d7f224f0b1ae",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41968199408,
+      "sha": "04c81bdd5f2db3145e25ec62082096221a0eb15c",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41968011991,
+      "sha": "720cffba5288459f27c7a6f009b942dba1bac839",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967940339,
+      "sha": "84bb469deb3f7c79bc400c4fe7237fb499c16acd",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru focused extended flows"
+    }
+  ],
+  "allPassed": false
+}
