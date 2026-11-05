@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="metricsv120261105"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
+<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="metricsmoodv120261105"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
 <style id="onharu-launch-edge-fix">
 /* True-alpha watercolor launch image; do not blend or mask its transparent edges. */
 #launchScreen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;isolation:isolate;background:#FDFDFB!important;overflow:hidden}
@@ -42,7 +42,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&amp;family=Fredoka:wght@600&amp;family=Gaegu&amp;family=Manrope:wght@300&amp;family=Nunito:wght@400;600;700&amp;family=Pacifico&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=c94f6e1205ab">
+<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=metricsmoodv120261105">
 <style id="onharu-capture-sheep-visibility">
 /* Keep the original listening sheep artwork while giving it legibility at emoji size.
    This affects only its Capture tag. Selection remains a single green ring. */
@@ -80,7 +80,170 @@ body .app #page-records #new-reflect-page .review-session-record .rv-entry-body 
   padding:0!important;
   min-height:0!important;
 }
-</style><script src="./runtime/install-metrics.v1.js" defer></script></head>
+</style>
+<style id="onharu-review-type-hierarchy">
+/* Review hierarchy: daypart > event parent / record > field label > content.
+   Scoped to Reflect, so Archive and the existing data/record editors are untouched. */
+body .app #page-records #new-reflect-page .rv-timegroup+.rv-timegroup{margin-top:24px!important}
+body .app #page-records #new-reflect-page .review-fold-inner>:is(.rv-linked-group,.review-record)+:is(.rv-linked-group,.review-record){margin-top:14px!important}
+body .app #page-records #new-reflect-page .review-v3-section .rv-linked-group>h5.review-event-heading{
+ display:inline-flex!important;align-items:baseline!important;gap:7px!important;max-width:100%;
+ padding:5px 9px!important;margin:0 0 6px!important;border-radius:7px!important;
+ background:#edf2eb!important;color:#52684f!important;
+ font-size:calc(12px * var(--kona-ui-scale,1))!important;font-weight:600!important;
+ line-height:1.45!important;text-transform:none!important;
+}
+body .app #page-records #new-reflect-page .rv-linked-group :is(.review-linked-rail,.review-single-note){
+ border-left:2px solid #b9cfbf!important;padding-left:11px!important;
+ margin:0 0 0 4px!important;background:transparent!important;box-shadow:none!important;
+}
+body .app #page-records #new-reflect-page .review-plan-note{
+ border:0!important;background:transparent!important;padding:5px 0!important;
+}
+body .app #page-records #new-reflect-page .review-plan-note .rv-user-note-title{
+ font-size:calc(13.5px * var(--kona-ui-scale,1))!important;font-weight:600!important;
+ line-height:1.45!important;margin:0 0 6px!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-plan-note .rv-note-preview:not(.review-emoji-target){
+ padding:0!important;margin:2px 0 4px!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-personal-note{
+ padding:9px 0!important;background:transparent!important;
+}
+body .app #page-records #new-reflect-page .review-personal-note .review-record-meta{
+ display:flex!important;justify-content:space-between!important;align-items:baseline!important;
+ min-height:0!important;margin:0 0 5px!important;
+}
+body .app #page-records #new-reflect-page .review-personal-note .review-type-label{
+ font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ color:#6a796e!important;font-weight:600!important;background:transparent!important;
+}
+body .app #page-records #new-reflect-page .review-personal-note .rv-user-note-title{
+ font-size:calc(13.5px * var(--kona-ui-scale,1))!important;
+ font-weight:600!important;line-height:1.45!important;margin:0 0 5px!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-personal-note .rv-note-preview:not(.review-emoji-target){
+ padding:0!important;margin:2px 0 4px!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-session-record{
+ padding:7px 0!important;background:transparent!important;
+}
+body .app #page-records #new-reflect-page .review-session-record.review-empty-note{padding:5px 0!important}
+body .app #page-records #new-reflect-page .review-session-record .review-record-meta:not(:empty){
+ display:flex!important;justify-content:space-between!important;align-items:baseline!important;
+ gap:8px!important;min-height:0!important;margin:0 0 3px!important;
+}
+body .app #page-records #new-reflect-page .review-session-record .rv-note-preview:not(.review-emoji-target){
+ padding:0!important;margin:0 0 4px!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-check-record{
+ padding:9px 11px!important;margin:0!important;border:1px solid #dce5df!important;
+ border-radius:11px!important;background:#f7faf7!important;
+}
+body .app #page-records #new-reflect-page .review-check-record.review-empty-note{padding:7px 11px!important}
+body .app #page-records #new-reflect-page .review-check-record>.rv-entry-body{padding:0!important}
+body .app #page-records #new-reflect-page .review-check-record .review-check-header{
+ display:grid!important;grid-template-columns:minmax(0,1fr) auto auto;
+ align-items:center!important;gap:6px 9px!important;min-height:28px!important;
+}
+body .app #page-records #new-reflect-page .review-check-record .review-check-header>.review-record-meta{
+ display:contents!important;
+}
+body .app #page-records #new-reflect-page .review-check-record .review-record-meta>span{
+ grid-column:1;grid-row:1;font-weight:600!important;min-width:0;overflow-wrap:anywhere;
+}
+body .app #page-records #new-reflect-page .review-check-record .review-record-meta>time{
+ grid-column:3;grid-row:1;margin:0!important;justify-self:end;
+ font-size:calc(11px * var(--kona-ui-scale,1))!important;white-space:nowrap;
+}
+body .app #page-records #new-reflect-page .review-check-record .review-feeling-values{
+ grid-column:2;grid-row:1;margin:0!important;min-width:0;
+}
+body .app #page-records #new-reflect-page .review-check-record .rv-note-preview:not(.review-emoji-target){
+ padding:0!important;margin:6px 0 0!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-class-record{
+ padding:10px 0!important;background:transparent!important;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-header{
+ display:flex!important;align-items:baseline!important;justify-content:space-between!important;
+ gap:10px!important;margin:0 0 10px!important;min-width:0;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-title{
+ margin:0!important;min-width:0;overflow-wrap:anywhere;
+ font-size:calc(13.5px * var(--kona-ui-scale,1))!important;
+ font-weight:600!important;line-height:1.45!important;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-time{
+ flex:none;margin:0!important;white-space:nowrap;font-size:calc(11px * var(--kona-ui-scale,1))!important;color:#77877c!important;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-part{
+ display:block!important;margin:9px 0 0!important;padding:0!important;background:transparent!important;border:0!important;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-part>small{
+ display:inline-block!important;padding:2px 5px!important;border-radius:4px!important;
+ background:#f0f3ed!important;color:#526b5b!important;font-weight:600!important;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-part>p{
+ margin:4px 0 0!important;padding:0!important;line-height:1.55!important;
+}
+/* Dark mode maintains the same grouping without introducing bright cards. */
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-linked-group>h5.review-event-heading{
+ background:#2b3e32!important;color:#d1e4cf!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .review-check-record{
+ background:#283b32!important;border-color:#506c5b!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .review-class-record .review-class-part>small{
+ background:#344b3e!important;color:#e6eee9!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .review-personal-note .review-type-label{
+ color:#b5cbbb!important;
+}
+</style>
+<style id="onharu-archive-mood-calendar">
+/* Read-only Archive Mood calendar, isolated from Record search and Daily Review. */
+body .app #page-records #archive-search .archive-mood-view-switch{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4px!important;padding:4px!important;margin:8px 0 15px!important;border-radius:12px!important;background:#edf1ed!important}
+body .app #page-records #archive-search .archive-mood-view-switch>button{width:100%!important;min-width:0!important;min-height:38px!important;border:0!important;border-radius:9px!important;background:transparent!important;color:#5e7567!important;box-shadow:none!important;padding:8px!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;font-weight:600!important}
+body .app #page-records #archive-search .archive-mood-view-switch>button[aria-pressed=true]{background:#fff!important;color:#244c3c!important;box-shadow:0 1px 3px #243b3020!important}
+body .app #page-records #archive-search .archive-mood-panel{display:block!important;width:100%!important;min-width:0!important;margin:0!important;padding:0 0 16px!important}
+body .app #page-records #archive-search .archive-mood-heading{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;margin:5px 0 12px!important}
+body .app #page-records #archive-search .archive-mood-heading strong{font-size:calc(14px * var(--kona-ui-scale,1))!important;color:inherit!important}
+body .app #page-records #archive-search .archive-mood-arrow{min-width:38px!important;min-height:38px!important;padding:0!important;border:0!important;border-radius:8px!important;background:transparent!important;color:inherit!important;font-size:23px!important}
+body .app #page-records #archive-search :is(.archive-mood-weekdays,.archive-mood-grid){display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:3px!important}
+body .app #page-records #archive-search .archive-mood-weekdays{margin:0 0 6px!important;text-align:center!important;color:#75847a!important;font-size:calc(10px * var(--kona-ui-scale,1))!important}
+body .app #page-records #archive-search .archive-mood-day{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;width:100%!important;min-width:0!important;min-height:46px!important;height:46px!important;border:1px solid transparent!important;border-radius:9px!important;background:transparent!important;color:inherit!important;box-shadow:none!important;padding:3px 0!important}
+body .app #page-records #archive-search .archive-mood-day[aria-pressed=true]{background:#e3f0e8!important;border-color:#83a991!important}
+body .app #page-records #archive-search .archive-mood-day-number{font-size:calc(12px * var(--kona-ui-scale,1))!important;line-height:1!important}
+body .app #page-records #archive-search .archive-mood-dots{display:flex!important;justify-content:center!important;align-items:center!important;gap:3px!important;min-height:8px!important}
+body .app #page-records #archive-search .archive-mood-dot{display:inline-block!important;flex:0 0 7px!important;width:7px!important;height:7px!important;border:1px solid #a2b0a8!important;background:transparent!important;border-radius:50%!important}
+body .app #page-records #archive-search .archive-mood-dot[data-level="1"]{background:#9181b4!important;border-color:#9181b4!important}
+body .app #page-records #archive-search .archive-mood-dot[data-level="2"]{background:#b6a6cf!important;border-color:#b6a6cf!important}
+body .app #page-records #archive-search .archive-mood-dot[data-level="3"]{background:#92aea1!important;border-color:#92aea1!important}
+body .app #page-records #archive-search .archive-mood-dot[data-level="4"]{background:#659c7d!important;border-color:#659c7d!important}
+body .app #page-records #archive-search .archive-mood-dot[data-level="5"]{background:#cf9c74!important;border-color:#cf9c74!important}
+body .app #page-records #archive-search .archive-mood-legend{margin:12px 0 16px!important;color:#728278!important;font-size:calc(10px * var(--kona-ui-scale,1))!important;line-height:1.5!important}
+body .app #page-records #archive-search .archive-mood-detail{padding:13px 0 0!important;margin:0!important;border-top:1px solid #dfe6df!important}
+body .app #page-records #archive-search .archive-mood-detail>h3{margin:0 0 10px!important;font-size:calc(14px * var(--kona-ui-scale,1))!important;color:inherit!important}
+body .app #page-records #archive-search .archive-mood-item{padding:10px 0!important;border-bottom:1px solid #e9efe9!important}
+body .app #page-records #archive-search .archive-mood-item-head{display:flex!important;align-items:baseline!important;justify-content:space-between!important;gap:8px!important}
+body .app #page-records #archive-search .archive-mood-item-head strong{font-size:calc(12px * var(--kona-ui-scale,1))!important}
+body .app #page-records #archive-search .archive-mood-time{color:#728278!important;font-size:calc(11px * var(--kona-ui-scale,1))!important}
+body .app #page-records #archive-search .archive-mood-item-values{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:8px!important;margin-top:6px!important;font-size:calc(12px * var(--kona-ui-scale,1))!important}
+body .app #page-records #archive-search .archive-mood-energy{margin-left:auto!important;color:#728278!important;font-size:calc(11px * var(--kona-ui-scale,1))!important}
+body .app #page-records #archive-search .archive-mood-empty{margin:0!important;padding:8px 0!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;color:#728278!important}
+body .app #page-records #archive-search .archive-mood-open-daily{display:block!important;width:100%!important;min-height:42px!important;margin:14px 0 0!important;padding:8px!important;border:1px solid #bad1c3!important;border-radius:10px!important;background:#edf4ef!important;color:#2d5a48!important;font-weight:600!important;font-size:calc(12px * var(--kona-ui-scale,1))!important}
+html[data-appearance=dark] body .app #page-records #archive-search .archive-mood-view-switch{background:#27372e!important}
+html[data-appearance=dark] body .app #page-records #archive-search .archive-mood-view-switch>button{color:#b9cbbb!important}
+html[data-appearance=dark] body .app #page-records #archive-search .archive-mood-view-switch>button[aria-pressed=true]{background:#446651!important;color:#f1f8f3!important}
+html[data-appearance=dark] body .app #page-records #archive-search .archive-mood-day[aria-pressed=true]{background:#344d3e!important;border-color:#84ad92!important}
+html[data-appearance=dark] body .app #page-records #archive-search .archive-mood-detail{border-color:#4b6755!important}
+html[data-appearance=dark] body .app #page-records #archive-search .archive-mood-item{border-color:#344b3d!important}
+html[data-appearance=dark] body .app #page-records #archive-search .archive-mood-open-daily{background:#355242!important;border-color:#84aa91!important;color:#e5f5e9!important}
+html[data-appearance=dark] body .app #page-records #archive-search :is(.archive-mood-legend,.archive-mood-time,.archive-mood-energy,.archive-mood-empty,.archive-mood-weekdays){color:#b9cbbc!important}
+@media(max-width:350px){body .app #page-records #archive-search .archive-mood-day{min-height:43px!important;height:43px!important}body .app #page-records #archive-search :is(.archive-mood-weekdays,.archive-mood-grid){gap:2px!important}}
+</style>
+<script src="./runtime/install-metrics.v1.js" defer></script></head>
 <body>
 <div id="launchScreen" role="status" aria-label="On_Haru"><img id="launchArt" alt="On_Haru" fetchpriority="high"></div>
 <script>
@@ -356,7 +519,7 @@ body .app #page-records #new-reflect-page .review-session-record .rv-entry-body 
 
 
 
-<script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=c94f6e1205ab"></script><script src="./runtime/settings.58b48f87b05a.js?rev=c94f6e1205ab"></script>
+<script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=metricsmoodv120261105"></script><script src="./runtime/settings.58b48f87b05a.js?rev=metricsmoodv120261105"></script>
 <!-- Cloudflare Web Analytics: On_HARU workers.dev -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"f9b29e261a624202a5e611671cd6e2b9"}'></script>
 </body></html>
