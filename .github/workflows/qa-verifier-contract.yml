@@ -1,0 +1,36 @@
+name: On_HARU release verifier contract regression
+on:
+  push:
+    branches: ['fix/production-verification-pwa-alpha-2026-11-05']
+  workflow_dispatch:
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - name: Verify release checker unit contract
+        run: node --test scripts/test-verify-live-release.mjs
+      - run: node --check scripts/verify-live-release.mjs
+      - run: node --check scripts/ui-pwa.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-verifier-http.log 2>&1 &
+      - name: Validate exact local release (no Worker header)
+        env:
+          ONHARU_URL: http://127.0.0.1:8080/legacy/
+        run: node scripts/verify-live-release.mjs
+      - name: Validate PWA transparent icons and offline shell
+        env:
+          ONHARU_URL: http://127.0.0.1:8080/legacy/
+        run: node scripts/ui-pwa.mjs
+      - name: Upload validation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: onharu-verifier-contract-evidence
+          path: test-results/
+          retention-days: 14
