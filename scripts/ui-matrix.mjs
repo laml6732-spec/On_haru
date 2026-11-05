@@ -17,7 +17,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
  await page.goto(process.env.ONHARU_URL||'http://127.0.0.1:8080/legacy/');
  await page.waitForSelector('.tabs [data-page="capture"]');
  row.controls.firstRun=await page.locator('button:visible,input:visible,select:visible').evaluateAll(es=>es.map(e=>({id:e.id,text:e.textContent?.trim().slice(0,65),label:e.getAttribute('aria-label')})));
- await page.screenshot({path:`${dir}/${width}-${theme}-first-run.png`});
+ await page.screenshot({animations:'disabled',caret:'hide',path:`${dir}/${width}-${theme}-first-run.png`});
  await page.locator('#tutorialChooseEn').click();await page.locator('#welcomeSkip').click();
  await page.evaluate(theme=>{document.querySelector('#launchScreen')?.remove();document.querySelector('#tutorialModal').hidden=true;document.documentElement.dataset.appearance=theme;document.documentElement.style.colorScheme=theme},theme);
  await page.locator('.tabs [data-page="capture"]').click();
@@ -26,14 +26,14 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
  row.checks.push({name:'capture save',ok:(await page.locator('.capture-recent-body').first().innerText()).includes('QA sample memo')});
  for(const tab of ['capture','today','checkin','focus','records','settings']){
  const button=tab==='settings'?page.locator('.app-settings-shortcut'):page.locator(`.tabs [data-page="${tab}"]`);if(!await button.count()){row.checks.push({name:tab+' tab exists',ok:false});continue}
- await button.click();await page.evaluate(()=>document.fonts.ready);row.styles[tab]=await page.locator('body *:visible').evaluateAll(es=>es.map(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return {tag:e.tagName,id:e.id,cls:String(e.className),x:r.x,y:r.y,w:r.width,h:r.height,color:s.color,bg:s.backgroundColor,font:s.fontSize,display:s.display}}));await page.screenshot({path:`${dir}/${width}-${theme}-${tab}.png`});
+ await button.click();await page.mouse.move(0,0);await page.evaluate(()=>document.activeElement?.blur());await page.waitForTimeout(300);await page.evaluate(()=>document.fonts.ready);row.styles[tab]=await page.locator('body *:visible').evaluateAll(es=>es.map(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return {tag:e.tagName,id:e.id,cls:String(e.className),x:r.x,y:r.y,w:r.width,h:r.height,color:s.color,bg:s.backgroundColor,font:s.fontSize,display:s.display}}));await page.screenshot({animations:'disabled',caret:'hide',path:`${dir}/${width}-${theme}-${tab}.png`});
  row.screens.push(tab);row.checks.push({name:tab+' overflow',ok:await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)});
  row.controls[tab]=await page.locator('button:visible,input:visible,textarea:visible,select:visible,summary:visible').evaluateAll(es=>es.map(e=>({id:e.id,tag:e.tagName,type:e.type,text:e.textContent?.trim().slice(0,65),label:e.getAttribute('aria-label'),data:{...e.dataset}})));
  }
  
  await page.keyboard.press('Escape');
  const tap=async t=>page.locator(`.tabs [data-page="${t}"]`).click();
- const check=async(name,fn)=>{try{await fn();row.checks.push({name,ok:true});console.log('PASS',width,theme,name)}catch(e){row.checks.push({name,ok:false,details:String(e)});console.log('FAIL',width,theme,name,String(e));await page.screenshot({path:`${dir}/${width}-${theme}-failure-${row.checks.length}.png`});for(const close of await page.locator('.modal-under:not([hidden]) .close').all())await close.click().catch(()=>{});await page.keyboard.press('Escape')}};
+ const check=async(name,fn)=>{try{await fn();row.checks.push({name,ok:true});console.log('PASS',width,theme,name)}catch(e){row.checks.push({name,ok:false,details:String(e)});console.log('FAIL',width,theme,name,String(e));await page.screenshot({animations:'disabled',caret:'hide',path:`${dir}/${width}-${theme}-failure-${row.checks.length}.png`});for(const close of await page.locator('.modal-under:not([hidden]) .close').all())await close.click().catch(()=>{});await page.keyboard.press('Escape')}};
  page.setDefaultTimeout(6000);
  const expect=async(v,m)=>{if(!v)throw Error(m)};
  await check('Event add and optional short name',async()=>{
