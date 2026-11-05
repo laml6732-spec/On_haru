@@ -7,11 +7,11 @@ const OUT = 'promo/circle';
 const executablePath = ['/usr/bin/google-chrome','/usr/bin/chromium','/opt/google/chrome/chrome'].find(existsSync);
 const browser = await chromium.launch({headless:true,...(executablePath?{executablePath}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
 const cards = [
- {n:'01',name:'intro',tab:'today',eyebrow:'MEET ON_HARU',lines:['A little space','for your day','with God.'],description:'Notice the moment. Remember the meaning.',chips:['PLAN','CAPTURE','REFLECT'],footer:'A DAILY JOURNAL FOR THE MOMENTS THAT MATTER',bg:'#FAF7F2',accent:'#DCEFE6'},
- {n:'02',name:'capture',tab:'capture',eyebrow:'CAPTURE',lines:['Capture it','before it','fades.'],description:'Save a thought, a Scripture, or a prayer while it is still fresh.',chips:['SCRIPTURE','PRAYER','LISTENING'],footer:'THE SHEEP TAG MARKS MOMENTS OF LISTENING',bg:'#F8F6F0',accent:'#E7F1DE'},
- {n:'03',name:'focus',tab:'focus',eyebrow:'PLAN + FOCUS',lines:['Make room','for what','matters.'],description:'Plan your day and set aside time for prayer, devotion, and focus.',chips:['PLAN','PRAY','FOCUS'],footer:'MAKE SPACE FOR THE MOST IMPORTANT THINGS',bg:'#F6F7F0',accent:'#D7ECE3'},
- {n:'04',name:'checkin',tab:'checkin',eyebrow:'CHECK-IN',lines:['Check in','with your','heart.'],description:'Notice your mood, energy, and thoughts throughout the day.',chips:['MOOD','ENERGY','REFLECTION'],footer:'YOUR EVERYDAY MOMENTS ARE WORTH NOTICING',bg:'#FAF6F1',accent:'#E8E8DD'},
- {n:'05',name:'review',tab:'records',eyebrow:'REVIEW',lines:['Look back.','See what','has grown.'],description:'Return to your saved notes, prayers, and reflections.',chips:['REVIEW','REMEMBER'],footer:'TRY ON_HARU · LINK IN THE CIRCLE POST',bg:'#F4F7F2',accent:'#CFE4D7'}
+ {n:'01',name:'intro',tab:'today',eyebrow:'WELCOME TO ON_HARU',lines:['A little space','for your day','with God.'],description:'Prayer, plans, and little moments.',chips:[],footer:'',bg:'#FAF7F2',accent:'#DCEFE6'},
+ {n:'02',name:'capture',tab:'capture',eyebrow:'CAPTURE',lines:['Capture what','matters.'],description:'Scripture. Prayer. God’s whispers.',chips:[],footer:'SHEEP TAG · LISTENING FOR GOD’S VOICE',bg:'#F8F6F0',accent:'#E7F1DE'},
+ {n:'03',name:'focus',tab:'focus',eyebrow:'PRAYER TIMER',lines:['Pause.','Pray.','Be present.'],description:'Make time to be still with God.',chips:[],footer:'',bg:'#F6F7F0',accent:'#D7ECE3'},
+ {n:'04',name:'checkin',tab:'checkin',eyebrow:'MORNING CHECK-IN',lines:['Wake up.','Check in.','Pray.'],description:'Name your mood. Rise in prayer.',chips:[],footer:'BEGIN WITH PRAYER',bg:'#FAF6F1',accent:'#E8E8DD'},
+ {n:'05',name:'review',tab:'records',eyebrow:'REVIEW',lines:['Remember','the little','moments.'],description:'Revisit notes, prayers, and growth.',chips:[],footer:'ON_HARU · FREE WEB APP',bg:'#F4F7F2',accent:'#CFE4D7'}
 ];
 await fs.mkdir(OUT,{recursive:true});
 const styles = [
@@ -32,7 +32,7 @@ const styles = [
  '.chip{border-radius:100px;border:1px solid #ACC5B5;background:rgba(255,255,255,.54);color:#3E6E55;font-size:15px;font-weight:800;letter-spacing:1px;padding:11px 15px}',
  '.phone{position:absolute;left:527px;top:192px;width:508px;height:1087px;background:#FFF;border:10px solid #FFF;border-radius:47px;overflow:hidden;box-shadow:0 31px 80px rgba(39,75,51,.18),0 3px 10px rgba(39,75,51,.05)}',
  '.phone img{display:block;width:100%;height:100%;object-fit:cover}',
- 'footer{position:absolute;left:66px;bottom:87px;width:405px;color:#577C66;font-size:17px;font-weight:800;line-height:1.7;letter-spacing:1.6px}',
+ 'footer{position:absolute;left:66px;bottom:85px;width:405px;color:#577C66;font-size:16px;font-weight:800;line-height:1.7;letter-spacing:1.3px}',
  'footer:before{content:"";display:block;width:138px;height:3px;background:#85AE92;border-radius:10px;margin-bottom:20px}'
 ].join('');
 async function takeAppScreenshot(c) {
@@ -47,11 +47,11 @@ async function takeAppScreenshot(c) {
     await page.locator('#qc-note-title').fill('A moment worth remembering');
     await page.locator('#qc-text').fill('Today I was reminded to slow down, listen, and trust God with the next step.');
     await page.locator('#page-capture [data-tag="meaning_listening"]').click();
-    if(c.tab==='records'){await page.locator('#qc-submit').click();await page.waitForTimeout(400);}
+    if(c.tab==='records'){const examples=[['Listening in the quiet','God reminded me to trust Him one step at a time.','meaning_listening'],['Scripture for today','Be still, and know that I am God. — Psalm 46:10','meaning_scripture'],['A small answered prayer','I felt peace after praying for my family.','meaning_prayer'],['Grateful for today','Thankful for new friends and kind conversations.','meaning_insight'],['Choosing courage','Listen carefully. Respond with love.','meaning_practice'],['Prayer for tomorrow','Lord, help me make room for Your voice.','meaning_prayer']];for(const [title,note,tag] of examples){await page.locator('#qc-note-title').fill(title);await page.locator('#qc-text').fill(note);if(tag!=='meaning_listening')await page.locator('#page-capture [data-tag="'+tag+'"]').click();await page.locator('#qc-submit').click();await page.waitForTimeout(180);}}
   }
   if(c.tab!=='capture')await page.locator('.tabs [data-page="'+c.tab+'"]').click();
-  if(c.tab==='focus')await page.locator('#kindSeg [data-kind="prayer"]').click();
-  if(c.tab==='checkin'){await page.locator('#page-checkin .phases [data-phase="morning"]').click();await page.waitForTimeout(200);const n=page.locator('#checkNote');if(await n.isVisible())await n.fill('Thankful for small moments today. Learning to be present.');}
+  if(c.tab==='focus'){await page.locator('#kindSeg [data-kind="prayer"]').click();await page.locator('#focusStart').click();await page.waitForTimeout(1300);}
+  if(c.tab==='checkin'){await page.locator('#page-checkin .phases [data-phase="morning"]').click();await page.waitForTimeout(250);const n=page.locator('#checkNote');if(await n.isVisible())await n.fill('Lord, help me begin today with prayer.');await page.locator('#moodGrid .kona-slim-scale[data-dimension="energy"] .kona-scale-stops button').nth(3).click();await page.waitForTimeout(160);await page.locator('#moodGrid .kona-slim-scale[data-dimension="happiness"] .kona-scale-stops button').nth(3).click();await page.waitForTimeout(250);}
   await page.waitForTimeout(400);
   return (await page.screenshot({type:'png',animations:'disabled'})).toString('base64');
  }finally{await context.close();}
