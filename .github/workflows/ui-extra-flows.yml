@@ -1,0 +1,48 @@
+name: OnHaru focused extended flows
+on:
+  push:
+    branches: ['work/css-audit-regression-2026-11']
+    paths: ['.github/workflows/ui-extra-flows.yml']
+permissions:
+  contents: write
+jobs:
+  extended:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-extra-server.log 2>&1 &
+      - run: node scripts/ui-extra.mjs
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-extra-results
+          path: test-results/extra/
+          retention-days: 7
+      - name: Save focused results
+        if: always()
+        run: |
+          mkdir -p docs/ui-audit-2026-11
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const cases=JSON.parse(fs.readFileSync('test-results/extra/report.json','utf8'));
+          const result={runId:process.env.GITHUB_RUN_ID,sourceCommit:process.env.GITHUB_SHA,cases};
+          fs.writeFileSync('docs/ui-audit-2026-11/EXTRA_RESULTS.json',JSON.stringify(result,null,2));
+          JS
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/ui-audit-2026-11/EXTRA_RESULTS.json
+          git diff --cached --quiet || git commit -m "evidence: record extended UI flows"
+          git push origin HEAD:work/css-audit-regression-2026-11
+      - name: Require passing flows
+        if: always()
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';const data=JSON.parse(fs.readFileSync('test-results/extra/report.json'));if(data.some(r=>r.errors.length||r.checks.some(c=>!c.ok)))process.exit(1);
+          JS
