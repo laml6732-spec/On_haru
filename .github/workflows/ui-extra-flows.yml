@@ -19,11 +19,13 @@ jobs:
       - run: python3 -m http.server 8080 --directory public > /tmp/onharu-extra-server.log 2>&1 &
       - run: node scripts/ui-extra.mjs
         continue-on-error: true
+      - run: ONHARU_ARTIFACTS=test-results/focused-matrix node scripts/ui-matrix.mjs
+        continue-on-error: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: ui-extra-results
-          path: test-results/extra/
+          path: test-results/
           retention-days: 7
       - name: Save focused results
         if: always()
@@ -37,7 +39,7 @@ jobs:
           node --input-type=module <<'JS'
           import fs from 'node:fs';
           const cases=JSON.parse(fs.readFileSync('test-results/extra/report.json','utf8'));
-          const result={runId:process.env.GITHUB_RUN_ID,sourceCommit:process.env.GITHUB_SHA,cases,runs:JSON.parse(fs.readFileSync('/tmp/onharu-runs.json','utf8')).workflow_runs.map(r=>({id:r.id,sha:r.head_sha,status:r.status,conclusion:r.conclusion,name:r.name}))};
+          const result={runId:process.env.GITHUB_RUN_ID,sourceCommit:process.env.GITHUB_SHA,cases,matrix:JSON.parse(fs.readFileSync('test-results/focused-matrix/report.json','utf8')).map(({styles,controls,...rest})=>rest),runs:JSON.parse(fs.readFileSync('/tmp/onharu-runs.json','utf8')).workflow_runs.map(r=>({id:r.id,sha:r.head_sha,status:r.status,conclusion:r.conclusion,name:r.name}))};
           fs.writeFileSync('docs/ui-audit-2026-11/EXTRA_RESULTS.json',JSON.stringify(result,null,2));
           JS
           git config user.name "github-actions[bot]"
