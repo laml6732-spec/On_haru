@@ -1,16 +1,16 @@
 {
-  "runId": "41982378216",
-  "sourceCommit": "df1f6d44967924f49a16f6d11347753301551afc",
+  "runId": "41987364480",
+  "sourceCommit": "05350a15efb5af12f96dc3b8c2619aa2b30f3f98",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
-    "release": "c94f6e1205ab",
+    "release": "wcbrandv320261105",
     "cases": [
       {
         "path": "/",
         "ok": false,
-        "expectedSha256": "0e8a332528e4d9447d6f9bc16e1febeacbb7ed36f3db7525f12bb8aa1f4f498d",
-        "actualSha256": "0e8a332528e4d9447d6f9bc16e1febeacbb7ed36f3db7525f12bb8aa1f4f498d",
+        "expectedSha256": "a5f240af27a8f249d237833a7428bb11f76ca615b591bac2a1691c7f09b2b7d8",
+        "actualSha256": "a5f240af27a8f249d237833a7428bb11f76ca615b591bac2a1691c7f09b2b7d8",
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
         "workerRelease": null
@@ -21,7 +21,7 @@
         "expectedSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "actualSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=c94f6e1205ab",
+        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=wcbrandv320261105",
         "workerRelease": null
       },
       {
@@ -30,7 +30,7 @@
         "expectedSha256": "3be915a5b1cd60e62eba04eed7c327f3b998ab331fb49063f13fc944e2c05db0",
         "actualSha256": "3be915a5b1cd60e62eba04eed7c327f3b998ab331fb49063f13fc944e2c05db0",
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=c94f6e1205ab",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=wcbrandv320261105",
         "workerRelease": null
       },
       {
@@ -39,16 +39,16 @@
         "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=c94f6e1205ab",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=wcbrandv320261105",
         "workerRelease": null
       },
       {
         "path": "sw.js",
         "ok": false,
-        "expectedSha256": "e4f6f6df127a19371f90f7835c5aaf8a02f0850619207d800878e3758c703a69",
-        "actualSha256": "e4f6f6df127a19371f90f7835c5aaf8a02f0850619207d800878e3758c703a69",
+        "expectedSha256": "e5a08a3028be5ced20b4efb4ff339ad521022bb513151ca41b59bc6f6d5235cf",
+        "actualSha256": "e5a08a3028be5ced20b4efb4ff339ad521022bb513151ca41b59bc6f6d5235cf",
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=c94f6e1205ab",
+        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=wcbrandv320261105",
         "workerRelease": null
       }
     ]
@@ -587,7 +587,7 @@
       },
       {
         "name": "Full-bleed app icons have no black corners",
-        "ok": true
+        "ok": false
       },
       {
         "name": "Current release cache",
@@ -606,79 +606,100 @@
     "missing": [],
     "iconCorners": [
       {
-        "src": "./icons/onharu-square-v2-192.png",
+        "src": "./icons/onharu-watercolor-v3-192.png",
         "width": 192,
         "height": 192,
         "corners": [
           [
-            130,
-            203,
-            253,
-            255
+            0,
+            0,
+            0,
+            0
           ],
           [
-            113,
-            196,
-            252,
-            255
+            0,
+            0,
+            0,
+            0
           ],
           [
-            155,
-            219,
-            253,
-            255
+            0,
+            0,
+            0,
+            0
           ],
           [
-            134,
-            212,
-            252,
-            255
+            0,
+            0,
+            0,
+            0
           ]
         ],
-        "ok": true
+        "ok": false
       },
       {
-        "src": "./icons/onharu-square-v2-512.png",
+        "src": "./icons/onharu-watercolor-v3-512.png",
         "width": 512,
         "height": 512,
         "corners": [
           [
-            121,
-            197,
-            251,
-            255
+            0,
+            0,
+            0,
+            0
           ],
           [
-            135,
-            202,
-            249,
-            255
+            0,
+            0,
+            0,
+            0
           ],
           [
-            167,
-            223,
-            253,
-            255
+            0,
+            0,
+            0,
+            0
           ],
           [
-            134,
-            209,
-            250,
-            255
+            0,
+            0,
+            0,
+            0
           ]
         ],
-        "ok": true
+        "ok": false
       }
     ],
-    "release": "c94f6e1205ab"
+    "release": "wcbrandv320261105"
   },
   "runs": [
+    {
+      "id": 41987691264,
+      "sha": "15df8a19a02b32b10210df7c946296787254a69c",
+      "name": "OnHaru isolated browser smoke",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 41987364561,
+      "sha": "05350a15efb5af12f96dc3b8c2619aa2b30f3f98",
+      "name": "OnHaru static UI checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 41987364480,
+      "sha": "05350a15efb5af12f96dc3b8c2619aa2b30f3f98",
+      "name": "OnHaru Workers production verification",
+      "status": "in_progress",
+      "conclusion": null
+    },
     {
       "id": 41982378216,
       "sha": "df1f6d44967924f49a16f6d11347753301551afc",
       "name": "OnHaru Workers production verification",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "id": 41982378204,
@@ -704,27 +725,6 @@
     {
       "id": 41978463850,
       "sha": "5599391dc486f7b35eacc5b2316c4f0d44c21ed4",
-      "name": "OnHaru Workers production verification",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 41978049974,
-      "sha": "99400b204e4a4faea9a2b7152a5680531915008a",
-      "name": "OnHaru static UI checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 41978049662,
-      "sha": "99400b204e4a4faea9a2b7152a5680531915008a",
-      "name": "OnHaru Workers production verification",
-      "status": "completed",
-      "conclusion": "failure"
-    },
-    {
-      "id": 41974559946,
-      "sha": "1b0ac45b8d81d0a0ebf901bd34a83222521df093",
       "name": "OnHaru Workers production verification",
       "status": "completed",
       "conclusion": "success"
