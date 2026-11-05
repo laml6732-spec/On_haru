@@ -54,7 +54,8 @@ jobs:
           node --input-type=module <<'JS'
           import fs from 'node:fs';
           const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return null}};
-          const result={runId:process.env.GITHUB_RUN_ID,sourceCommit:process.env.GITHUB_SHA,url:'https://github.com/'+process.env.GITHUB_REPOSITORY+'/actions/runs/'+process.env.GITHUB_RUN_ID,before:read('test-results/before/report.json'),after:read('test-results/after/report.json'),extra:read('test-results/extra/report.json'),pwa:read('test-results/pwa/report.json'),smoke:read('test-results/onharu-ui/report.json'),comparison:read('test-results/comparison.json')};
+          const compact=rows=>rows?.map(({styles,controls,...rest})=>rest);
+          const result={runId:process.env.GITHUB_RUN_ID,sourceCommit:process.env.GITHUB_SHA,url:'https://github.com/'+process.env.GITHUB_REPOSITORY+'/actions/runs/'+process.env.GITHUB_RUN_ID,before:compact(read('test-results/before/report.json')),after:compact(read('test-results/after/report.json')),extra:read('test-results/extra/report.json'),pwa:read('test-results/pwa/report.json'),smoke:read('test-results/onharu-ui/report.json'),comparison:read('test-results/comparison.json')};
           fs.writeFileSync('docs/ui-audit-2026-11/CI_RESULTS.json',JSON.stringify(result,null,2));
           JS
           git config user.name "github-actions[bot]"
