@@ -2219,7 +2219,7 @@ function archiveMoodRender(panel){
   grid.append(button);
  }
  panel.append(grid);
- const legend=el('p',archiveMoodText('Colors: energy × mood · outlined: energy only · no dot: no rating.','색상: 에너지 × 기분 · 빈 점: 에너지만 기록 · 점 없음: 평가 기록 없음.'),'archive-mood-legend');panel.append(legend);
+ const legend=el('p',archiveMoodText('Color: energy × mood · Ring: energy only · No dot: unrated.','색 점: 에너지×기분 · 빈 원: 에너지만 · 점 없음: 평가 없음.'),'archive-mood-legend');panel.append(legend);
  const detail=el('section',undefined,'archive-mood-detail'),localDate=new Date(selected+'T12:00:00Z').toLocaleDateString(KonaI18n.dateLocale,{month:'long',day:'numeric',weekday:'short',timeZone:'UTC'});
  detail.append(el('h3',localDate));
  const entries=archiveMoodEntries(selected);
