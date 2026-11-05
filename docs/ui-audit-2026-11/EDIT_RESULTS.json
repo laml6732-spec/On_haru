@@ -1,0 +1,238 @@
+{
+  "runId": "41969031382",
+  "sourceCommit": "da10184a578029d165aa06f98fd3c9cf9b6a0e7f",
+  "cases": [
+    {
+      "width": 320,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Add/edit event, collapsed short name and saved value",
+          "ok": true
+        },
+        {
+          "name": "Recurring category and whole-series edit",
+          "ok": true
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "runs": [
+    {
+      "id": 41969031382,
+      "sha": "da10184a578029d165aa06f98fd3c9cf9b6a0e7f",
+      "status": "in_progress",
+      "conclusion": null,
+      "name": "OnHaru focused edit flows"
+    },
+    {
+      "id": 41969005799,
+      "sha": "e38b621d60b6e070c445d13bac380a7b6fdf8ab4",
+      "status": "in_progress",
+      "conclusion": null,
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41969003687,
+      "sha": "f2fb410b76f74e492d1e2451841665a9b037c83f",
+      "status": "in_progress",
+      "conclusion": null,
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41969002315,
+      "sha": "5f3f8813c6eaf40e6e5119e7804323c15fb753f6",
+      "status": "in_progress",
+      "conclusion": null,
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41968204561,
+      "sha": "9bc5aef21415768291669276144fb0f959988544",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru focused extended flows"
+    },
+    {
+      "id": 41968202049,
+      "sha": "77da7ec5f08f8217561f74779f45d7f224f0b1ae",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41968199408,
+      "sha": "04c81bdd5f2db3145e25ec62082096221a0eb15c",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41968011991,
+      "sha": "720cffba5288459f27c7a6f009b942dba1bac839",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967940339,
+      "sha": "84bb469deb3f7c79bc400c4fe7237fb499c16acd",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru focused extended flows"
+    },
+    {
+      "id": 41967882531,
+      "sha": "6e3a5cac9ddae0b777dbad73f2851672bc5b9ed3",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru focused extended flows"
+    },
+    {
+      "id": 41967880467,
+      "sha": "8c68c61a207ebd67c3e540e2cafa44d8db222f20",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967768919,
+      "sha": "b60021e4dad44c0ed4cdd7778b920b94b4337ca1",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru focused extended flows"
+    },
+    {
+      "id": 41967766445,
+      "sha": "a3c1c8503d83615d2fbf0b3e9e9dff3cdc48a80f",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967391494,
+      "sha": "793ca2deb9bd9a411df0b48d9cffd4b42538b17c",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967366954,
+      "sha": "0e77ceb0d22bf20c060c239aef848b5586cdf5b4",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967129780,
+      "sha": "a731dd151006eb971fcb90a2c030c68764403328",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41967126628,
+      "sha": "52f17a67774689cbb1408a4a031458a43cbcaec7",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41966809321,
+      "sha": "0bc44ba11eb773d04f1a9b4458050d9e715a5d76",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41966723482,
+      "sha": "c7531df9aef8017092ff9c2c16414f21eef78d67",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    },
+    {
+      "id": 41966290849,
+      "sha": "8685e6cfa40ee66c109873899c716fda3e1d3858",
+      "status": "completed",
+      "conclusion": "failure",
+      "name": "OnHaru isolated browser smoke"
+    }
+  ]
+}
