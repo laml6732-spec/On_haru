@@ -30,6 +30,12 @@ jobs:
           curl --fail --silent http://127.0.0.1:8787/legacy/ >/dev/null
       - name: Capture actual English app and render carousel
         run: node scripts/generate-circle-promo.mjs
+      - name: Package five promotional PNGs
+        uses: actions/upload-artifact@v4
+        with:
+          name: onharu-circle-five-actual-ui
+          path: promo/circle/*.png
+          retention-days: 7
       - name: Commit five PNGs to repository
         run: |
           git config user.name "github-actions[bot]"
