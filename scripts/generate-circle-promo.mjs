@@ -40,6 +40,8 @@ async function takeAppScreenshot(c) {
  const context=await browser.newContext({viewport:{width:393,height:840},deviceScaleFactor:2,isMobile:true,hasTouch:true,locale:'en-US',timezoneId:'Pacific/Honolulu',reducedMotion:'reduce'});
  try {
   const page=await context.newPage();
+  // Reproducible demo time: show Work Duty as the current schedule so all three linked notes are visible.
+  if(c.tab==='capture'||c.tab==='today')await page.clock.install({time:new Date('2026-11-04T16:20:00-10:00')});
   await page.goto(URL,{waitUntil:'networkidle',timeout:30000});
   await page.waitForTimeout(1100);
   await page.evaluate(()=>{document.querySelector('#launchScreen')?.remove();const t=document.querySelector('#tutorialModal');if(t)t.hidden=true});
@@ -101,7 +103,7 @@ async function takeAppScreenshot(c) {
     // Verify three Capture entries really appear under three different events in Plan.
     const expected=['A small kindness','A good conversation','Something to try'];
     const notes=await page.locator('#kx-summary .kona-rich-note.has-note').allTextContents();
-    console.log('Promo Plan debug',JSON.stringify({planText:(await page.locator('#kx-summary').innerText()).slice(0,1900),noteCount:notes.length,noteTexts:notes,selectorOptions:await page.locator('#qc-select').evaluate(x=>[...x.options].map(o=>o.textContent))}));
+
     for(const title of expected)
       if(!notes.some(t=>t.includes(title)))throw new Error('Capture note not shown in Plan: '+title);
     if(notes.length<3)throw new Error('Plan has fewer than three linked Capture notes');
