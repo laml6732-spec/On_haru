@@ -27,6 +27,13 @@ check('Create/Edit reset the short-name disclosure',source.js.includes("function
 check('No native confirm()/prompt() calls',!/(?<![\w$.])(confirm|prompt)\s*\(/.test(source.js));
 check('Branded confirmation dialog is available',source.js.includes('function onHaruDialog(')&&source.css.includes('dialog.onharu-native-replacement'));
 check('Capture expandable tags exist',source.js.includes('kona-tag-tray-toggle')&&source.css.includes('top:2px!important;bottom:auto!important'));
+
+const pinGrid=source.html.match(/<style id="onharu-capture-pin-grid-fix">([\s\S]*?)<\/style>/)?.[1]||'';
+const captureIds=source.js.match(/const KONA_CAPTURE_TAG_IDS=\[([^\]]+)\]/)?.[1]||'';
+check('Capture contains the Remember pin tag',captureIds.includes('"meaning_remember"'));
+check('Expanded Capture second row has explicit non-overlapping slots',
+  Array.from({length:8},(_,i)=>pinGrid.includes('nth-child('+(i+8)+'){grid-row:2!important;grid-column:'+(i+1)+'!important;}')).every(Boolean));
+
 check('Dark-mode memo text override exists',source.css.includes('/* On_HARU: readable dark-theme note content. */')&&source.css.includes('#F1F7F1'));
 check('Review empty state exists',source.js.includes('onharu-review-empty'));
 const assets=[...source.html.matchAll(/(?:src|href)="\.\/(assets|icons)\/([^"]+)"/g)].map(m=>base+'/'+m[1]+'/'+m[2]);
