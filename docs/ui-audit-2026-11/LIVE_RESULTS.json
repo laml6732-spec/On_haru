@@ -1,16 +1,16 @@
 {
-  "runId": "41990413264",
-  "sourceCommit": "8cb1ef740cc1e1fa1edace67c5ab948f3e5286fd",
+  "runId": "42069813232",
+  "sourceCommit": "9ab00023658f28eeb764c175059c4a6658a88eb5",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
-    "release": "metricsv120261105",
+    "release": "metricsmoodv120261105",
     "cases": [
       {
         "path": "/",
         "ok": false,
-        "expectedSha256": "4cb9c9997b0b9f625d686b9ec81e8e23dbd0a19dccd4cf9472d22ccb4338c7ec",
-        "actualSha256": "4cb9c9997b0b9f625d686b9ec81e8e23dbd0a19dccd4cf9472d22ccb4338c7ec",
+        "expectedSha256": "1789c42d08a8a88db030ac89f86e825a80a479ed455b39748162e33c0171c85a",
+        "actualSha256": "1789c42d08a8a88db030ac89f86e825a80a479ed455b39748162e33c0171c85a",
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
         "workerRelease": null
@@ -21,16 +21,16 @@
         "expectedSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "actualSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=metricsv120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=metricsmoodv120261105",
         "workerRelease": null
       },
       {
         "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
         "ok": false,
-        "expectedSha256": "3be915a5b1cd60e62eba04eed7c327f3b998ab331fb49063f13fc944e2c05db0",
-        "actualSha256": "3be915a5b1cd60e62eba04eed7c327f3b998ab331fb49063f13fc944e2c05db0",
+        "expectedSha256": "53f44e48a6d93f7cc95bd72926d58f750bf7721c5ee51ae4e82398eb91195868",
+        "actualSha256": "53f44e48a6d93f7cc95bd72926d58f750bf7721c5ee51ae4e82398eb91195868",
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=metricsv120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=metricsmoodv120261105",
         "workerRelease": null
       },
       {
@@ -39,16 +39,16 @@
         "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=metricsv120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=metricsmoodv120261105",
         "workerRelease": null
       },
       {
         "path": "sw.js",
         "ok": false,
-        "expectedSha256": "fcf92db3596d6215f9060693b8d8776b650bcc5a50f1c4c31f5ec14576c61d9b",
-        "actualSha256": "fcf92db3596d6215f9060693b8d8776b650bcc5a50f1c4c31f5ec14576c61d9b",
+        "expectedSha256": "44f9ff00af82e1ddb63fff0829d34d952a3b0e1343a318d654817c5bbf7d9de4",
+        "actualSha256": "44f9ff00af82e1ddb63fff0829d34d952a3b0e1343a318d654817c5bbf7d9de4",
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=metricsv120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=metricsmoodv120261105",
         "workerRelease": null
       }
     ]
@@ -670,9 +670,44 @@
         "ok": false
       }
     ],
-    "release": "metricsv120261105"
+    "release": "metricsmoodv120261105"
   },
   "runs": [
+    {
+      "id": 42069813259,
+      "sha": "9ab00023658f28eeb764c175059c4a6658a88eb5",
+      "name": "OnHaru static UI checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42069813232,
+      "sha": "9ab00023658f28eeb764c175059c4a6658a88eb5",
+      "name": "OnHaru Workers production verification",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 42069813043,
+      "sha": "9ab00023658f28eeb764c175059c4a6658a88eb5",
+      "name": "OnHaru metrics privacy and regression checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 41995792024,
+      "sha": "0040b7766e27d296b07f505d73ef7b07eaafe20d",
+      "name": "OnHaru metrics privacy and regression checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 41993532233,
+      "sha": "612e5659e94e72c9f944059290b1cb7403a59294",
+      "name": "Verify On_HARU live install telemetry",
+      "status": "completed",
+      "conclusion": "success"
+    },
     {
       "id": 41990413293,
       "sha": "8cb1ef740cc1e1fa1edace67c5ab948f3e5286fd",
@@ -684,8 +719,8 @@
       "id": 41990413264,
       "sha": "8cb1ef740cc1e1fa1edace67c5ab948f3e5286fd",
       "name": "OnHaru Workers production verification",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "id": 41990413229,
@@ -693,41 +728,6 @@
       "name": "OnHaru static UI checks",
       "status": "completed",
       "conclusion": "success"
-    },
-    {
-      "id": 41990365596,
-      "sha": "8cd6850842e09505b9310e07dfe074c842eeb8cd",
-      "name": "OnHaru static UI checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 41990365585,
-      "sha": "8cd6850842e09505b9310e07dfe074c842eeb8cd",
-      "name": "OnHaru Workers production verification",
-      "status": "completed",
-      "conclusion": "cancelled"
-    },
-    {
-      "id": 41990268637,
-      "sha": "8988c30fec94c8a3938dc334126b561b4a41a0cf",
-      "name": "OnHaru metrics privacy and regression checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 41990217008,
-      "sha": "8988c30fec94c8a3938dc334126b561b4a41a0cf",
-      "name": "OnHaru metrics privacy and regression checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 41987691264,
-      "sha": "15df8a19a02b32b10210df7c946296787254a69c",
-      "name": "OnHaru isolated browser smoke",
-      "status": "completed",
-      "conclusion": "failure"
     }
   ],
   "allPassed": false
