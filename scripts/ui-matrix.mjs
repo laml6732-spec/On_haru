@@ -34,6 +34,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
  await page.keyboard.press('Escape');
  const tap=async t=>page.locator(`.tabs [data-page="${t}"]`).click();
  const check=async(name,fn)=>{try{await fn();row.checks.push({name,ok:true})}catch(e){row.checks.push({name,ok:false,details:String(e)});await page.screenshot({path:`${dir}/${width}-${theme}-failure-${row.checks.length}.png`});for(const close of await page.locator('.modal-under:not([hidden]) .close').all())await close.click().catch(()=>{});await page.keyboard.press('Escape')}};
+ page.setDefaultTimeout(6000);
  const expect=async(v,m)=>{if(!v)throw Error(m)};
  await check('Event add and optional short name',async()=>{
   await tap('today');await page.locator('#quickAddEvent').click();await expect(!await page.locator('#eventShortNameDetails').evaluate(e=>e.open),'short name open');
@@ -44,8 +45,8 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
  });
  await check('Task add, important, complete',async()=>{
   await tap('today');await page.locator('#pinRow .task-add').click();await page.locator('#taskTitle').fill('QA Task');await page.locator('#taskImportant').check();await page.locator('#taskSave').click();
-  const task=page.locator('#pinRow .taskrow').filter({hasText:'QA Task'});await expect(await task.count()>0,'task missing');
-  const toggle=task.locator('button').first();await toggle.click();
+  const task=page.locator('#pinRow .pinned-item').filter({hasText:'QA Task'});await expect(await task.count()>0,'task missing');
+  const toggle=task.locator('.task-check');await toggle.click();await expect(await toggle.getAttribute('aria-checked')==='true','completion not checked');
  });
  await check('Morning autosave and Mood/Energy',async()=>{
   await tap('checkin');await page.locator('#page-checkin [data-phase="morning"]').click();await page.locator('#checkNote').fill('QA Morning check-in');
@@ -60,7 +61,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   await tap('checkin');await page.locator('#page-checkin [data-phase="evening"]').click();await page.locator('#checkNote').fill('QA Evening check-in');await tap('capture');await tap('checkin');await page.locator('#page-checkin [data-phase="evening"]').click();await expect(await page.locator('#checkNote').inputValue()==='QA Evening check-in','evening lost');
  });
  await check('Focus duration, start, pause, resume, finish, session note',async()=>{
-  await tap('focus');await page.locator('#kindSeg [data-kind="prayer"]').click();await page.locator('#focusDurations [data-time="2"]').click();await expect((await page.locator('#focusClock').innerText()).includes('02:00'),'duration');
+  await tap('focus');await page.locator('#kindSeg [data-kind="prayer"]').click();await page.locator('#focusDurations [data-time="2"]').click();await expect(/^0?2:00$/.test((await page.locator('#focusClock').innerText()).trim()),'duration');
   await page.locator('#focusStart').click();await page.waitForTimeout(1100);await page.locator('#focusStart').click();await page.locator('#focusStart').click();
   if(await page.locator('#focusNoteToggle').isVisible())await page.locator('#focusNoteToggle').click();await page.locator('#timerNote').fill('QA Prayer session');await page.locator('#focusEnd').click();
  });
