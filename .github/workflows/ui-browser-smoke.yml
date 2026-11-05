@@ -2,6 +2,7 @@ name: OnHaru isolated browser smoke
 on:
   workflow_dispatch:
   push:
+    branches: ['work/css-audit-regression-2026-11']
     paths: ['.github/workflows/ui-browser-smoke.yml']
 jobs:
   smoke:
@@ -13,6 +14,9 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node scripts/verify-ui-static.mjs
+      - run: node scripts/audit-css.mjs public/legacy/app.7cb1b71d4eb6.css --json
       - run: python3 -m http.server 8080 --directory public > /tmp/onharu-server.log 2>&1 &
       - run: node scripts/ui-smoke.mjs
         env:
