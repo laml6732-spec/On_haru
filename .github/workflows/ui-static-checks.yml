@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['public/legacy/**', 'scripts/verify-ui-static.mjs', 'scripts/audit-css.mjs']
+    paths: ['public/legacy/**', 'scripts/verify-ui-static.mjs', 'scripts/audit-css.mjs', '.github/workflows/ui-static-checks.yml']
 jobs:
   check:
     runs-on: ubuntu-latest
