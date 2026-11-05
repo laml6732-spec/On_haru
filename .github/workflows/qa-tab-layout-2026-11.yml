@@ -43,10 +43,23 @@ jobs:
           const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return null}};
           const a=read('test-results/tab-layout-qa/report.json');
           const p=read('test-results/pwa/report.json');
+          const smoke=read('test-results/onharu-ui/report.json');
+          const matrix=read('test-results/matrix/report.json');
+          const extra=read('test-results/extra/report.json');
+          const matrixFail=(matrix||[]).flatMap(c=>(c.checks||[]).filter(k=>!k.ok).map(k=>c.width+'/'+c.theme+' '+k.name));
+          const extraFail=(extra||[]).flatMap(c=>(c.checks||[]).filter(k=>!k.ok).map(k=>c.width+'/'+c.theme+' '+k.name));
+          const pwaFail=(p?.checks||[]).filter(c=>!c.ok).map(c=>c.name);
+          const smokeFail=(smoke?.cases||[]).filter(c=>!c.ok).map(c=>c.name);
           const result={layout:a?.totals,layoutFailures:a?.cases?.filter(x=>!x.ok).map(x=>({config:x.config,name:x.name,details:x.details})).slice(0,30),
-            browserErrors:a?.errors?.slice(0,10),pwa:p?.checks?.map(x=>({name:x.name,ok:x.ok}))};
+            browserErrors:a?.errors?.slice(0,10),smokeFailures:smokeFail,matrixFailures:matrixFail,extraFailures:extraFail,pwaFailures:pwaFail,
+            pwa:p?.checks?.map(x=>({name:x.name,ok:x.ok}))};
+          const passed=!!(a&&p&&smoke&&matrix?.length===6&&extra?.length===6)
+            && !a.totals.failed&&!a.totals.errorCount&&!smokeFail.length&&!matrixFail.length&&!extraFail.length&&!pwaFail.length
+            && !(smoke.pageErrors||[]).length&&!(p.errors||[]).length
+            && matrix.every(c=>!(c.errors||[]).length)&&extra.every(c=>!(c.errors||[]).length);
+          result.allPassed=passed;
           console.log('ONHARU_QA_REPORT',JSON.stringify(result));
-          if(!a||a.totals.failed||a.totals.errorCount)process.exitCode=1;
+          if(!passed)process.exitCode=1;
           JS
       - uses: actions/upload-artifact@v4
         if: always()
