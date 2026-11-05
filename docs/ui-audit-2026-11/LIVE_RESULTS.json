@@ -1,55 +1,81 @@
 {
-  "runId": "42096650876",
-  "sourceCommit": "287b23ea4a19b5ad66b84e160ead03e8d86c274a",
+  "runId": "42100906551",
+  "sourceCommit": "1ee207a1d089fad9b93b43ab9d92b7cd2d541d7f",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
     "release": "moodpalettev120261105",
+    "verifier": "hash-content-v2",
     "cases": [
       {
         "path": "/",
-        "ok": false,
-        "expectedSha256": "8061614f1142858a36b140ebf70ed30f715db5490209d0e2a812c957e14ac190",
-        "actualSha256": "8061614f1142858a36b140ebf70ed30f715db5490209d0e2a812c957e14ac190",
+        "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
-        "workerRelease": null
+        "expectedSha256": "8061614f1142858a36b140ebf70ed30f715db5490209d0e2a812c957e14ac190",
+        "actualSha256": "8061614f1142858a36b140ebf70ed30f715db5490209d0e2a812c957e14ac190",
+        "hashMatch": true,
+        "urlMatch": true,
+        "bodyReleaseMatch": true,
+        "workerRelease": null,
+        "releaseHeaderPresent": false,
+        "releaseEvidence": "sha256 + same-origin path + HTML/SW embedded release; header optional but checked when present"
       },
       {
         "path": "app.7cb1b71d4eb6.css",
-        "ok": false,
-        "expectedSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
-        "actualSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
+        "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=moodpalettev120261105",
-        "workerRelease": null
+        "expectedSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
+        "actualSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
+        "hashMatch": true,
+        "urlMatch": true,
+        "bodyReleaseMatch": true,
+        "workerRelease": null,
+        "releaseHeaderPresent": false,
+        "releaseEvidence": "sha256 + same-origin path + HTML/SW embedded release; header optional but checked when present"
       },
       {
         "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
-        "ok": false,
-        "expectedSha256": "084eaee37e5a565ea5fed9e8ebc0d25b64609d4c591326d17d91db84e8106f19",
-        "actualSha256": "084eaee37e5a565ea5fed9e8ebc0d25b64609d4c591326d17d91db84e8106f19",
+        "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=moodpalettev120261105",
-        "workerRelease": null
+        "expectedSha256": "084eaee37e5a565ea5fed9e8ebc0d25b64609d4c591326d17d91db84e8106f19",
+        "actualSha256": "084eaee37e5a565ea5fed9e8ebc0d25b64609d4c591326d17d91db84e8106f19",
+        "hashMatch": true,
+        "urlMatch": true,
+        "bodyReleaseMatch": true,
+        "workerRelease": null,
+        "releaseHeaderPresent": false,
+        "releaseEvidence": "sha256 + same-origin path + HTML/SW embedded release; header optional but checked when present"
       },
       {
         "path": "runtime/settings.58b48f87b05a.js",
-        "ok": false,
-        "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
-        "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
+        "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=moodpalettev120261105",
-        "workerRelease": null
+        "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
+        "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
+        "hashMatch": true,
+        "urlMatch": true,
+        "bodyReleaseMatch": true,
+        "workerRelease": null,
+        "releaseHeaderPresent": false,
+        "releaseEvidence": "sha256 + same-origin path + HTML/SW embedded release; header optional but checked when present"
       },
       {
         "path": "sw.js",
-        "ok": false,
-        "expectedSha256": "c1043c69095931ba10484cafbf536a699f8ce69e558399cec1fc3055b59850a0",
-        "actualSha256": "c1043c69095931ba10484cafbf536a699f8ce69e558399cec1fc3055b59850a0",
+        "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=moodpalettev120261105",
-        "workerRelease": null
+        "expectedSha256": "c1043c69095931ba10484cafbf536a699f8ce69e558399cec1fc3055b59850a0",
+        "actualSha256": "c1043c69095931ba10484cafbf536a699f8ce69e558399cec1fc3055b59850a0",
+        "hashMatch": true,
+        "urlMatch": true,
+        "bodyReleaseMatch": true,
+        "workerRelease": null,
+        "releaseHeaderPresent": false,
+        "releaseEvidence": "sha256 + same-origin path + HTML/SW embedded release; header optional but checked when present"
       }
     ]
   },
@@ -586,8 +612,8 @@
         "ok": true
       },
       {
-        "name": "Full-bleed app icons have no black corners",
-        "ok": false
+        "name": "PWA icons have transparent or nonblack opaque corners",
+        "ok": true
       },
       {
         "name": "Current release cache",
@@ -635,7 +661,8 @@
             0
           ]
         ],
-        "ok": false
+        "cornerMode": "transparent",
+        "ok": true
       },
       {
         "src": "./icons/onharu-watercolor-v3-512.png",
@@ -667,18 +694,54 @@
             0
           ]
         ],
-        "ok": false
+        "cornerMode": "transparent",
+        "ok": true
       }
     ],
     "release": "moodpalettev120261105"
   },
   "runs": [
     {
-      "id": 42096650876,
-      "sha": "287b23ea4a19b5ad66b84e160ead03e8d86c274a",
+      "id": 42102477737,
+      "sha": "644287ec5aa5255a3a79d3ea9ae5c173c0b18623",
+      "name": "OnHaru metrics privacy and regression checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42102439782,
+      "sha": "644287ec5aa5255a3a79d3ea9ae5c173c0b18623",
+      "name": "On_HARU Sheep and Mood Legend UI QA",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 42100906551,
+      "sha": "1ee207a1d089fad9b93b43ab9d92b7cd2d541d7f",
       "name": "OnHaru Workers production verification",
       "status": "in_progress",
       "conclusion": null
+    },
+    {
+      "id": 42100552805,
+      "sha": "c7e94583f1a3551746f9cc961ace305b852210d3",
+      "name": "On_HARU release verifier contract regression",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42100521800,
+      "sha": "fd214b62ce76826883e3a8799c38a4ac03b1c248",
+      "name": "On_HARU release verifier contract regression",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42096650876,
+      "sha": "287b23ea4a19b5ad66b84e160ead03e8d86c274a",
+      "name": "OnHaru Workers production verification",
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "id": 42096650702,
@@ -693,42 +756,7 @@
       "name": "OnHaru static UI checks",
       "status": "completed",
       "conclusion": "success"
-    },
-    {
-      "id": 42096338700,
-      "sha": "032fb75f530aae240c1a0df422e961b5390f301e",
-      "name": "OnHaru metrics privacy and regression checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42096276951,
-      "sha": "032fb75f530aae240c1a0df422e961b5390f301e",
-      "name": "On_HARU Review Mood Palette QA",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42092028034,
-      "sha": "16eb53ed7cce7827dc2e9e73d194a9ab1ec98757",
-      "name": "On_HARU consultant-level visual precision audit",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42091984989,
-      "sha": "120f569ba677e4f66ca3fd4002d30c1ca0377575",
-      "name": "On_HARU consultant-level visual precision audit",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42091730461,
-      "sha": "a672e3b0f0398c564f2020cf197f6373ad51ac3b",
-      "name": "On_HARU consultant-level visual precision audit",
-      "status": "completed",
-      "conclusion": "success"
     }
   ],
-  "allPassed": false
+  "allPassed": true
 }
