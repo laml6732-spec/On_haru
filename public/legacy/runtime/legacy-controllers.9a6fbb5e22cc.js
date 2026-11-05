@@ -45,8 +45,67 @@ function konaOpenReviewEditor(d,id){
  const status=node('p');status.setAttribute('role','status');sheet.append(status);const actions=node('div');actions.className='rv-edit-actions';const cancel=node('button',KonaI18n.t("Cancel")),saveButton=node('button',KonaI18n.t("Save")),remove=node('button',KonaI18n.t("Delete"));for(const b of [cancel,saveButton,remove])b.type='button';cancel.className='mini-btn';saveButton.className='solid';remove.className='outline danger';actions.append(cancel,saveButton,remove);sheet.append(actions);
  const finish=()=>{modal.remove();render();if(page==='records')renderDayReview()};cancel.onclick=()=>modal.remove();modal.onclick=e=>{if(e.target===modal)modal.remove()};
  saveButton.onclick=()=>{const ok=guardedMutation(()=>{const dayValue=day(d),tags=draft.tags.filter(tag=>marked||tag!=='important');if(isCapture||isEvent){const key=isCapture?source.id:eventId;dayValue.important??=[];dayValue.important=dayValue.important.filter(k=>k!==key);if(marked)dayValue.important.push(key);if(isCapture)source.important=marked;if(later?.value?.trim()){const entry={text:later.value.trim(),createdAt:new Date().toISOString()};if(isCapture){source.laterReflections??=[];source.laterReflections.push(entry)}else{dayValue.eventNoteReflections??={};dayValue.eventNoteReflections[eventId]??=[];dayValue.eventNoteReflections[eventId].push(entry)}}}if(isClass){const c=check(d,'noon');for(const key of ['lectureQuote','lectureReflection','classResponse'])c[key]=fields[key].value;c.classTags=tags}else if(isCapture){source.title=fields.title.value.trim();source.text=fields.note.value;source.tags=tags}else if(isSession||isCheck){source.note=fields.note.value;source.tags=tags;if(id==='check-night')dayValue.eventNotes.__day_wrap=source.note}else if(isAnchor){dayValue.headline=normalizeDailyHeadline(fields.note.value);dayValue.headlineTags=tags}else if(isFree){dayValue.timeNotes??={};dayValue.timeNotes[id.slice(5)]??={};dayValue.timeNotes[id.slice(5)].free={...(typeof oldFree==='object'?oldFree:{}),text:fields.note.value,tags}}else if(isMeal){dayValue.meals??={};dayValue.meals[id.slice(5)]=fields.note.value;dayValue.eventNoteTags??={};dayValue.eventNoteTags[id.slice(5)]=tags}else{dayValue.eventNotes[eventId]=fields.note.value;setEventNoteTitle(d,eventId,fields.title.value);dayValue.eventNoteTags??={};dayValue.eventNoteTags[eventId]=tags;dayValue.unifiedNotesSaved??=[];if(!dayValue.unifiedNotesSaved.includes(eventId))dayValue.unifiedNotesSaved.push(eventId);dayValue.legacyMergedIds??=[];if(!dayValue.legacyMergedIds.includes(eventId))dayValue.legacyMergedIds.push(eventId)}},KonaI18n.t("Not saved. Your changes are still here."));if(ok)finish();else status.textContent=KonaI18n.t("Not saved · retry.")};
- remove.onclick=()=>{if(confirm(KonaI18n.t("Delete this record?"))&&guardedMutation(()=>konaDeleteReviewSource(d,id),KonaI18n.t("Delete failed. The record was kept.")))finish()};document.body.append(modal);openSheet('konaReviewEditor');(fields.note||fields.lectureQuote)?.focus({preventScroll:true});
+ remove.onclick=async()=>{if(await onHaruConfirm(KonaI18n.t("Delete this record?"))&&guardedMutation(()=>konaDeleteReviewSource(d,id),KonaI18n.t("Delete failed. The record was kept.")))finish()};document.body.append(modal);openSheet('konaReviewEditor');(fields.note||fields.lectureQuote)?.focus({preventScroll:true});
 }
+
+/* Consistent, accessible On_HARU confirmation and short-text dialogs.
+   Resolve only after a user's explicit button action or Escape. */
+function onHaruDialog(message, initialValue, needsInput){
+ return new Promise(resolve=>{
+  const isKo=KonaI18n.language==='ko';
+  const dialog=document.createElement('dialog');
+  dialog.className='onharu-native-replacement';
+  dialog.setAttribute('aria-modal','true');
+  const heading=document.createElement('h2');
+  heading.id='onharu-dialog-heading';
+  heading.textContent=needsInput?(isKo?'내용 입력':'Edit details'):(isKo?'확인':'Please confirm');
+  dialog.setAttribute('aria-labelledby',heading.id);
+  const description=document.createElement('p');
+  description.className='onharu-dialog-message';
+  description.textContent=String(message??'');
+  const form=document.createElement('form');
+  form.noValidate=true;
+  form.addEventListener('submit',event=>{event.preventDefault();done(needsInput?input.value:true)});
+  let input=null;
+  if(needsInput){
+   input=document.createElement('input');
+   input.className='onharu-dialog-input';input.type='text';
+   input.autocomplete='off';input.maxLength=2000;
+   input.value=String(initialValue??'');
+   input.setAttribute('aria-label',String(message??''));
+  }
+  const actions=document.createElement('div');actions.className='onharu-dialog-actions';
+  const cancel=document.createElement('button');
+  cancel.type='button';cancel.className='onharu-dialog-cancel';
+  cancel.textContent=isKo?'취소':'Cancel';
+  const accept=document.createElement('button');
+  accept.type='submit';accept.className='onharu-dialog-accept';
+  accept.textContent=needsInput?(isKo?'저장':'Save'):(isKo?'확인':'Confirm');
+  if(!needsInput&&/delete|discard|remove|replace|삭제|제거|버리|교체/i.test(String(message)))accept.classList.add('is-danger');
+  actions.append(cancel,accept);
+  form.append(...(input?[input]:[]),actions);
+  dialog.append(heading,description,form);
+  let finished=false;
+  const previous=document.activeElement;
+  function done(value){
+   if(finished)return;finished=true;
+   if(dialog.open)dialog.close();
+   dialog.remove();
+   if(previous&&previous.isConnected&&typeof previous.focus==='function')previous.focus({preventScroll:true});
+   resolve(value);
+  }
+  cancel.addEventListener('click',()=>done(needsInput?null:false));
+  dialog.addEventListener('cancel',e=>{e.preventDefault();done(needsInput?null:false)});
+  dialog.addEventListener('close',()=>done(needsInput?null:false));
+  document.body.append(dialog);
+  dialog.showModal();
+  (input||cancel).focus({preventScroll:true});
+  if(input)input.select();
+ });
+}
+function onHaruConfirm(message){return onHaruDialog(message,null,false)}
+function onHaruPrompt(message,value=''){return onHaruDialog(message,value,true)}
+
 function konaReviewHasCheckContent(c){return !!(c&&((c.note||'').trim()||moodOf(c)||['morningEnergy','morningHappiness','eveningEnergy','eveningHappiness','nightEnergy','nightHappiness'].some(k=>Number.isInteger(c[k])&&c[k]>=1&&c[k]<=5)))}
 function konaReviewMirroredMeal(v,id,text){const value=String(text||'').trim();return !!value&&(String(v.eventNotes?.[id]||'').trim()===value||Object.values(v.timeNotes||{}).some(slot=>{const n=slot?.[id];return String(typeof n==='string'?n:n?.text||'').trim()===value}))}
 function konaReviewLinkedMirror(v,id,text){const value=String(text||'').trim();if(!value||(v.eventNoteTitles?.[id]||'').trim()||v.eventNoteTags?.[id]?.length||(v.important||[]).includes(id))return false;return (v.quickCaptureEntries||[]).some(q=>q.scheduleId===id&&String(q.text||'').trim()===value)||(v.sessions||[]).some(s=>s.eventId===id&&Number(s.seconds)>0&&String(s.note||'').trim()===value)}
@@ -719,18 +778,18 @@ function prayerItem(p){
   const actions=el('div','buttons');
   if(!p.answered)actions.append(btn('iconbtn'+(prayed?' on':''),'✓',prayed?KonaI18n.t("Remove today’s prayer log"):KonaI18n.t("Mark prayed today"),()=>togglePrayed(p)));
   actions.append(btn('iconbtn','···',KonaI18n.t("Prayer request options"),()=>openChoices(p.title,[
-    {label:p.answered?KonaI18n.t("Undo response"):KonaI18n.t("Record response"),sub:KonaI18n.t("Prayer response"),fn:()=>{
+    {label:p.answered?KonaI18n.t("Undo response"):KonaI18n.t("Record response"),sub:KonaI18n.t("Prayer response"),fn:async()=>{
       if(p.answered){if(!guardedMutation(()=>{p.answered=null;p.note=''},KonaI18n.t("Prayer response not saved.")))return}
-      else{const n=prompt(KonaI18n.t("Note for this answered prayer"),'');if(n===null)return;if(!guardedMutation(()=>{p.answered=nowLocal();p.note=n.trim()},KonaI18n.t("Prayer response not saved.")))return}
+      else{const n=await onHaruPrompt(KonaI18n.t("Note for this answered prayer"),'');if(n===null)return;if(!guardedMutation(()=>{p.answered=nowLocal();p.note=n.trim()},KonaI18n.t("Prayer response not saved.")))return}
       render();
     }},
-    {label:KonaI18n.t("Edit title"),sub:KonaI18n.t("Prayer request title"),fn:()=>{
-      const t=prompt(KonaI18n.t("Prayer request"),p.title);if(t===null)return;
+    {label:KonaI18n.t("Edit title"),sub:KonaI18n.t("Prayer request title"),fn:async()=>{
+      const t=await onHaruPrompt(KonaI18n.t("Prayer request"),p.title);if(t===null)return;
       if(!t.trim()){toast(KonaI18n.t("Enter a title."));return}
       if(guardedMutation(()=>{p.title=t.trim()},KonaI18n.t("Prayer title was not saved.")))render();
     }},
-    {label:KonaI18n.t("Delete request"),sub:KonaI18n.t("Also remove it from records"),danger:true,fn:()=>{
-      if(!confirm(KonaI18n.t("Delete this prayer request?")))return;
+    {label:KonaI18n.t("Delete request"),sub:KonaI18n.t("Also remove it from records"),danger:true,fn:async()=>{
+      if(!await onHaruConfirm(KonaI18n.t("Delete this prayer request?")))return;
       if(guardedMutation(()=>{db.prayers=db.prayers.filter(x=>x.id!==p.id)},KonaI18n.t("Prayer request deletion failed."))){render();toast(KonaI18n.t("Deleted"))}
     }}
   ])));
@@ -749,8 +808,8 @@ function chooseTimerMode(kind){
  if(sess.started){if(sess.kind!==kind){if(sess.running){sess.acc=elapsed();sess.running=false;sess.paused=true;storeActiveSession()}toast(KonaI18n.t("Current session paused. Finish or cancel it before choosing another activity."))}renderFocus();return}
  sessKind=kind;sessDurMin=db.settings.timerPresets?.[kind]??TIMER_MODES[kind].default;rememberTimer();renderFocus();
 }
-function chooseTimerDuration(value){
- if(sess.started){if(!confirm(KonaI18n.t("Reset elapsed time and restart this session with the new duration? Your note will be kept.")))return;sess.dur=value*60;sess.acc=0;sess.runStart=Date.now();sess.running=true;sess.paused=false;sess.awaitingSave=false;sess.alarmDismissed=false;sess.goalReached=false;storeActiveSession()}
+async function chooseTimerDuration(value){
+ if(sess.started){if(!await onHaruConfirm(KonaI18n.t("Reset elapsed time and restart this session with the new duration? Your note will be kept.")))return;sess.dur=value*60;sess.acc=0;sess.runStart=Date.now();sess.running=true;sess.paused=false;sess.awaitingSave=false;sess.alarmDismissed=false;sess.goalReached=false;storeActiveSession()}
  sessDurMin=value;rememberTimer();renderFocus();
 }
 function renderFocus(){
@@ -808,7 +867,7 @@ function openFocusLibrary(){
   for(const t of itemsDue(date))root.append(btn('choice',escapeHTML(t.title),KonaI18n.t("Select ")+t.title,()=>{focusTaskKey=taskKey(t,date);db.settings.timerSelections??={};db.settings.timerSelections.focus=focusTaskKey;save();closeSheet('focusLibraryModal');renderFocus()}));
   root.append(btn('mini-btn',KonaI18n.t("Manage tasks"),KonaI18n.t("Manage tasks"),()=>{closeSheet('focusLibraryModal');nav('schedule',{sub:'tasks'})}));
  }else if(kind==='devotion'){
-  root.append(btn('mini-btn',KonaI18n.t("Set Scripture / topic"),KonaI18n.t("Set Scripture or devotion topic"),()=>{const topic=prompt(KonaI18n.t("Scripture reference or devotion topic"),timerDraft('devotion').context||'');if(topic===null)return;timerDraft('devotion').context=topic.trim();save();closeSheet('focusLibraryModal');renderFocus()}));
+  root.append(btn('mini-btn',KonaI18n.t("Set Scripture / topic"),KonaI18n.t("Set Scripture or devotion topic"),async()=>{const topic=await onHaruPrompt(KonaI18n.t("Scripture reference or devotion topic"),timerDraft('devotion').context||'');if(topic===null)return;timerDraft('devotion').context=topic.trim();save();closeSheet('focusLibraryModal');renderFocus()}));
   const recent=Object.entries(db.days).flatMap(([d,v])=>(v.sessions||[]).filter(s=>s.kind==='devotion').map(s=>({d,s}))).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,20);
   for(const {d,s} of recent)root.append(btn('choice',escapeHTML(s.task||KonaI18n.t("Devotion"))+' · '+short(d),KonaI18n.t("Open devotion note"),()=>{closeSheet('focusLibraryModal');openSessionNote(d,s)}));
   if(!recent.length)root.append(el('p','micro',KonaI18n.t("No devotion records yet.")));
@@ -861,7 +920,7 @@ function commitTimerSession(markDone=false){
  try{if(!tutorialPractice)localStorage.setItem(KEY,JSON.stringify(db))}catch(e){db=JSON.parse(before);toast('Could not save. Your timer and note are kept; try again or back up.');return false}
  const kind=sess.kind;sessKind=kind;sessDurMin=sess.dur/60;timerDraft(kind).note='';rememberTimer();sess=idleSess();storeActiveSession();afterTaskKey=null;if(date!==d)changeDate(d);else render();toast(KonaI18n.t("Session saved"));return true;
 }
-function cancelTimer(){if(!sess.started)return;if((elapsed()>0||(sess.note||'').trim())&&!confirm(KonaI18n.t("Discard this session without saving its time or note?")))return;timerDraft(sess.kind).note='';save();sess=idleSess();storeActiveSession();renderFocus()}
+async function cancelTimer(){if(!sess.started)return;if((elapsed()>0||(sess.note||'').trim())&&!await onHaruConfirm(KonaI18n.t("Discard this session without saving its time or note?")))return;timerDraft(sess.kind).note='';save();sess=idleSess();storeActiveSession();renderFocus()}
 function tick(){if(sess.started&&page==='focus')updateClock();else if(sess.started)expireTimer()}
 function normalizeWeeklyReflections(d){
  d.settings??={};if(d.settings.weeklyReflectionDay!==0&&d.settings.weeklyReflectionDay!==1)d.settings.weeklyReflectionDay=0;
@@ -926,7 +985,7 @@ function renderSchedule(){
   db.tasks.slice().sort((a,b)=>a.title.localeCompare(b.title,'ko')).forEach(t=>{
     const rep=t.repeat==='none'?(t.due?short(t.due):'–'):repeatText(t);
     const type=TASK_KIND[t.kind]||TASK_KIND.task;const item=el('div','record-item tap',KonaI18n.format("<span class=\"grow ellip\" style=\"font-weight:700\">⟪0⟫ ⟪1⟫</span><span class=\"meta-r\">⟪2⟫⟪3⟫</span>",[type.icon,escapeHTML(t.title),t.repeat==='none'?'':'🔁 ',rep],false)),b=el('div','buttons');
-    b.append(btn('iconbtn','×',KonaI18n.t("Delete"),ev=>{ev.stopPropagation();if(!confirm(KonaI18n.t("Delete this task and its recurring records?")))return;if(guardedMutation(()=>{db.tasks=db.tasks.filter(x=>x.id!==t.id)},KonaI18n.t("Task deletion failed."))){render();toast(KonaI18n.t("Deleted"))}}));
+    b.append(btn('iconbtn','×',KonaI18n.t("Delete"),async ev=>{ev.stopPropagation();if(!await onHaruConfirm(KonaI18n.t("Delete this task and its recurring records?")))return;if(guardedMutation(()=>{db.tasks=db.tasks.filter(x=>x.id!==t.id)},KonaI18n.t("Task deletion failed."))){render();toast(KonaI18n.t("Deleted"))}}));
     item.setAttribute('role','button');item.tabIndex=0;item.setAttribute('aria-label',KonaI18n.format("Edit task: ⟪0⟫",[t.title],true));item.onkeydown=ev=>{if(ev.target===item&&(ev.key===KonaI18n.t("Enter")||ev.key===' ')){ev.preventDefault();beginEditTask(t)}};item.onclick=()=>beginEditTask(t);
     item.append(b);taskRoot.append(item);
   });
@@ -939,7 +998,7 @@ function openDeleteSheet(e){
   if(base.repeat!=='none'){
     items.push({label:KonaI18n.t("Delete this day only"),sub:fmt(date),fn:()=>{if(guardedMutation(()=>{db.skip[base.id+'|'+date]=true},KonaI18n.t("This date was not deleted."))){render();toast(KonaI18n.t("Deleted"))}}});
     items.push({label:KonaI18n.t("Delete from this day onward"),sub:KonaI18n.format("Earlier events remain · ⟪0⟫ onward",[fmt(date)],false),fn:()=>{if(base.since>=date){removeAll();return}if(guardedMutation(()=>{base.until=dayAdd(date,-1)},KonaI18n.t("Series change was not saved."))){render();toast(KonaI18n.t("Deleted"))}}});
-    items.push({label:KonaI18n.t("Delete entire series"),sub:KonaI18n.t("Includes past dates"),danger:true,fn:()=>{if(confirm(KonaI18n.t("Delete the entire recurring series?")))removeAll()}});
+    items.push({label:KonaI18n.t("Delete entire series"),sub:KonaI18n.t("Includes past dates"),danger:true,fn:async()=>{if(await onHaruConfirm(KonaI18n.t("Delete the entire recurring series?")))removeAll()}});
   }else items.push({label:KonaI18n.t("Delete"),sub:`${fmt(date)} ${base.start}–${base.end}`,danger:true,fn:removeAll});
   openChoices(base.title,items);
 }
@@ -1240,7 +1299,7 @@ function exportWeek(){
 function konaDeviceSettingsPayload(){let display;try{display=JSON.parse(window.localStorage.getItem('kona.legacy.v1.kona.display.v1')||'null')}catch{}return {kind:'kona-device-settings',version:1,exportedAt:new Date().toISOString(),language:KonaI18n.language,display:display||{theme:'system',size:'13.5',spacing:'compact',motion:false}}}
 function konaValidDeviceSettings(data){return !!(data&&data.kind==='kona-device-settings'&&data.version===1&&['en','ko'].includes(data.language)&&data.display&&['system','light','dark'].includes(data.display.theme)&&['13.5','15','17','19'].includes(data.display.size)&&['compact','standard','relaxed'].includes(data.display.spacing)&&typeof data.display.motion==='boolean')}
 function konaExportDeviceSettings(){if(tutorialPractice)return;try{download('KonaDTS_settings_'+nowLocal()+'.json',JSON.stringify(konaDeviceSettingsPayload(),null,1),'application/json');toast(KonaI18n.t("Settings download requested · check your Downloads folder"))}catch{toast(KonaI18n.t("Settings could not be exported. Please retry."))}}
-function konaRestoreDeviceSettings(file){if(tutorialPractice||!file)return;const reader=new FileReader();reader.onload=()=>{let data;try{data=JSON.parse(reader.result)}catch{}if(!konaValidDeviceSettings(data)){toast(KonaI18n.t("This is not a valid device settings file. Records are unchanged."));return}if(!confirm(KonaI18n.t("Restore language and display settings? Records and schedules will stay unchanged.")))return;const store=window.localStorage,langKey=KonaI18n.key,displayKey='kona.legacy.v1.kona.display.v1';let oldLanguage,oldDisplay;try{oldLanguage=store.getItem(langKey);oldDisplay=store.getItem(displayKey);store.setItem(langKey,data.language);store.setItem(displayKey,JSON.stringify({theme:data.display.theme,size:data.display.size,spacing:data.display.spacing,motion:data.display.motion}))}catch{try{if(oldLanguage===null)store.removeItem(langKey);else if(oldLanguage!==undefined)store.setItem(langKey,oldLanguage);if(oldDisplay===null)store.removeItem(displayKey);else if(oldDisplay!==undefined)store.setItem(displayKey,oldDisplay)}catch{}toast(KonaI18n.t("Settings could not be restored. Please retry."));return}window.location.reload()};reader.onerror=()=>toast(KonaI18n.t("Could not read the file."));reader.readAsText(file)}
+function konaRestoreDeviceSettings(file){if(tutorialPractice||!file)return;const reader=new FileReader();reader.onload=async()=>{let data;try{data=JSON.parse(reader.result)}catch{}if(!konaValidDeviceSettings(data)){toast(KonaI18n.t("This is not a valid device settings file. Records are unchanged."));return}if(!await onHaruConfirm(KonaI18n.t("Restore language and display settings? Records and schedules will stay unchanged.")))return;const store=window.localStorage,langKey=KonaI18n.key,displayKey='kona.legacy.v1.kona.display.v1';let oldLanguage,oldDisplay;try{oldLanguage=store.getItem(langKey);oldDisplay=store.getItem(displayKey);store.setItem(langKey,data.language);store.setItem(displayKey,JSON.stringify({theme:data.display.theme,size:data.display.size,spacing:data.display.spacing,motion:data.display.motion}))}catch{try{if(oldLanguage===null)store.removeItem(langKey);else if(oldLanguage!==undefined)store.setItem(langKey,oldLanguage);if(oldDisplay===null)store.removeItem(displayKey);else if(oldDisplay!==undefined)store.setItem(displayKey,oldDisplay)}catch{}toast(KonaI18n.t("Settings could not be restored. Please retry."));return}window.location.reload()};reader.onerror=()=>toast(KonaI18n.t("Could not read the file."));reader.readAsText(file)}
 function backupJson(){
  if(storageRecovery.active){toast(KonaI18n.t("Saved data needs recovery. Use Download damaged data above or restore a valid backup."));return}
  const stamp=nowLocal(),previous=db.settings.lastBackup;
@@ -1261,12 +1320,12 @@ function resetApp(){
 }
 function restoreJson(file){
   const r=new FileReader();
-  r.onload=()=>{
+  r.onload=async()=>{
     let d;try{d=JSON.parse(r.result)}catch(e){toast(KonaI18n.t("Could not read the file."));return}
     if(!d||!d.days||typeof d.days!=='object'||Array.isArray(d.days)||!Array.isArray(d.events)||!Array.isArray(d.tasks)||
       Object.values(d.days).some(v=>!v||typeof v!=='object'||Array.isArray(v)||v.checkins&&(!v.checkins||typeof v.checkins!=='object'||Array.isArray(v.checkins))||v.sessions&&!Array.isArray(v.sessions))||
       [...d.events,...d.tasks,...(Array.isArray(d.prayers)?d.prayers:[])].some(v=>!v||typeof v!=='object'||Array.isArray(v))){toast(KonaI18n.t("This is not a valid backup file."));return}
-    if(!confirm(KonaI18n.t("Replace records, schedules and app preferences? Language, display settings and font size on this device will stay unchanged. This cannot be undone.")))return;
+    if(!await onHaruConfirm(KonaI18n.t("Replace records, schedules and app preferences? Language, display settings and font size on this device will stay unchanged. This cannot be undone.")))return;
     let restored;
     try{restored=migrate(d)}catch(e){toast(KonaI18n.t("This backup cannot be restored. The original data is unchanged."));return}
     const priorDb=db,priorRecovery=storageRecovery;
@@ -1462,7 +1521,7 @@ $('closeRecordPreview').onclick=closeRecordPreview;document.addEventListener('ke
 let previewTouchY=null;$('recordPreview').addEventListener('touchstart',e=>{previewTouchY=e.touches[0].clientY},{passive:true});$('recordPreview').addEventListener('touchend',e=>{if(previewTouchY!==null&&e.changedTouches[0].clientY-previewTouchY>60)closeRecordPreview();previewTouchY=null},{passive:true});
 $('editPreviewRecord').onclick=()=>{if(previewRecord)openRecordEditor(previewRecord.e)};
 $('saveRecordEdit').onclick=saveRecordEditor;
-$('deleteRecordEdit').onclick=()=>{if(!editRecord)return;if(!confirm(KonaI18n.format("Delete “⟪0⟫”? This cannot be undone.",[$('recordEditHeading').textContent],false)))return;deleteCurrentRecordEdit()};
+$('deleteRecordEdit').onclick=async()=>{if(!editRecord)return;if(!await onHaruConfirm(KonaI18n.format("Delete “⟪0⟫”? This cannot be undone.",[$('recordEditHeading').textContent],false)))return;deleteCurrentRecordEdit()};
 $('sessionMemo').oninput=e=>{if(!activeSessionNote)return;activeSessionNote.s.note=e.target.value;$('sessionNoteStatus').textContent=(save()||!!tutorialPractice)?KonaI18n.t("Saved"):KonaI18n.t("Not saved · keep this note open and retry.")};
 $('finishSessionNote').onclick=()=>{closeSheet('sessionNoteModal');render()};
 $$('[data-open-journal]').forEach(b=>b.onclick=()=>{renderJournal();openSheet('journalModal')});
@@ -2015,7 +2074,7 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
   const revisit=el('button',KonaI18n.t("Revisit later"),'note-revisit');revisit.type='button';revisit.onclick=()=>{if(!reviewCanEdit())return;openKonaInput({title:KonaI18n.t("Later reflection"),placeholder:KonaI18n.t("What changed in your understanding or response?"),multiline:true,saveLabel:KonaI18n.t("Save reflection"),onSave:text=>{if(!text.trim())return false;const ok=guardedMutation(()=>{const v=day(record.date),entry={text:text.trim(),createdAt:new Date().toISOString()};if(record.kind==='capture'){const q=v.quickCaptureEntries.find(q=>q.id===record.sourceId);q.laterReflections??=[];q.laterReflections.push(entry)}else{v.eventNoteReflections??={};v.eventNoteReflections[record.sourceId]??=[];v.eventNoteReflections[record.sourceId].push(entry)}},KonaI18n.t("Later reflection was not saved."));if(ok)reviewAfterChange();return ok}})};controls.append(revisit);
   for(const entry of laterEntries){const part=el('section',undefined,'review-note-followup');part.append(el('small',KonaI18n.t("Later reflection · ")+entry.createdAt.slice(0,10)),el('p',entry.text));body.append(part)}
   const marked=reviewImportant(record),highlight=el('button',marked?KonaI18n.t("Remove highlight"):KonaI18n.t("Highlight · Important"),'note-highlight-toggle');highlight.type='button';highlight.setAttribute('aria-pressed',String(marked));highlight.onclick=()=>{if(!reviewCanEdit())return;const ok=guardedMutation(()=>{const v=day(record.date);v.important??=[];if(marked){v.important=v.important.filter(id=>id!==record.sourceId);if(record.kind==='capture'){const q=v.quickCaptureEntries.find(q=>q.id===record.sourceId);q.important=false;q.tags=(q.tags||[]).filter(t=>t!=='important')}else if(v.eventNoteTags?.[record.sourceId])v.eventNoteTags[record.sourceId]=v.eventNoteTags[record.sourceId].filter(t=>t!=='important')}else v.important.push(record.sourceId)},KonaI18n.t("Highlight was not saved."));if(ok)reviewAfterChange()};controls.append(highlight);
-  const remove=el('button',KonaI18n.t("Delete"),'review-delete');remove.type='button';remove.onclick=()=>{if(!reviewCanEdit()||!confirm(KonaI18n.t("Delete this note?")))return;const ok=guardedMutation(()=>{if(record.kind==='capture')db.days[record.date].quickCaptureEntries=db.days[record.date].quickCaptureEntries.filter(q=>q.id!==record.sourceId);else deleteEventNote(record.date,record.sourceId)},KonaI18n.t("Delete failed. The record was kept."));if(ok)reviewAfterChange()};controls.append(remove);
+  const remove=el('button',KonaI18n.t("Delete"),'review-delete');remove.type='button';remove.onclick=async()=>{if(!reviewCanEdit()||!await onHaruConfirm(KonaI18n.t("Delete this note?")))return;const ok=guardedMutation(()=>{if(record.kind==='capture')db.days[record.date].quickCaptureEntries=db.days[record.date].quickCaptureEntries.filter(q=>q.id!==record.sourceId);else deleteEventNote(record.date,record.sourceId)},KonaI18n.t("Delete failed. The record was kept."));if(ok)reviewAfterChange()};controls.append(remove);
  }
  const emoji=konaNoteTagEmoji(record.tags?.[0]);if(emoji){const first=body.querySelector('.rv-user-note-title,.rv-note-preview');if(first){row.classList.add('review-has-emoji');first.classList.add('review-emoji-target');const symbol=el('span',emoji,'review-note-leading-emoji');konaApplyNoteTagIcon(symbol,record.tags);symbol.setAttribute('aria-hidden','true');first.prepend(symbol)}}if(record.kind==='session'){const heading=body.querySelector('.rv-user-note-title');if(heading&&meta.parentElement===body)body.insertBefore(heading,meta)}row.append(body);return row;
 }
@@ -2148,7 +2207,7 @@ const taskOpt=el('div',undefined,'rv-task-optin');const taskLabel=el('label',und
 taskCheckbox=el('input');taskCheckbox.type='checkbox';taskCheckbox.id='reflectionAddTask';taskCheckbox.checked=!!linkedReflectionTask();taskCheckbox.disabled=!(dailyDraft.action||'').trim()&&!taskCheckbox.checked;
 const taskWords=el('span',KonaI18n.t("Add to Tasks"),'rv-task-checkbox-text');taskLabel.append(taskCheckbox,taskWords);
 taskHint=el('small',taskCheckbox.checked?KonaI18n.t("Added to Plan and available in Focus. Uncheck to remove the linked task."):'','rv-task-hint');taskHint.id='reflectionAddTaskHint';taskCheckbox.setAttribute('aria-describedby',taskHint.id);
-taskCheckbox.onchange=()=>{
+taskCheckbox.onchange=async()=>{
  const reflectionDate=date,linked=linkedReflectionTask();
  if(taskCheckbox.checked){
   if(!persistReflection()||!day(reflectionDate).reflectionNotes?.action?.trim()){taskCheckbox.checked=false;taskHint.textContent=KonaI18n.t("Save your response before creating a task.");return}
@@ -2159,7 +2218,7 @@ taskCheckbox.onchange=()=>{
   if(ok)toast(KonaI18n.t("Added to Tasks"));
  }else{
   if(!linked){taskCheckbox.checked=false;return}
-  if(!confirm(KonaI18n.t("Remove the linked task from Plan? Your reflection text will be kept."))){taskCheckbox.checked=true;return}
+  if(!await onHaruConfirm(KonaI18n.t("Remove the linked task from Plan? Your reflection text will be kept."))){taskCheckbox.checked=true;return}
   const ok=guardedMutation(()=>{db.tasks=db.tasks.filter(t=>t.id!==linked.id);delete day(reflectionDate).reflectionTaskId;for(const v of Object.values(db.days)){if(Array.isArray(v.pins))v.pins=v.pins.filter(k=>!k.startsWith(linked.id+'|'))}for(const k of Object.keys(db.checks))if(k.startsWith(linked.id+'|'))delete db.checks[k]},KonaI18n.t("Could not remove the linked task. Please retry."));
   taskCheckbox.checked=!ok;taskHint.textContent=ok?KonaI18n.t("Removed from Plan. Your reflection was kept."):KonaI18n.t("Not removed · please retry.");
  }
