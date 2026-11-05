@@ -45,6 +45,25 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&amp;family=Fredoka:wght@600&amp;family=Gaegu&amp;family=Manrope:wght@300&amp;family=Nunito:wght@400;600;700&amp;family=Pacifico&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
 <link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=c94f6e1205ab">
+<style id="onharu-capture-sheep-visibility">
+/* Keep the original listening sheep artwork while giving it legibility at emoji size.
+   This affects only its Capture tag. Selection remains a single green ring. */
+body .app #page-capture button.kona-tag-chip[data-tag="meaning_listening"] .kona-tag-symbol{
+ width:32px!important;height:32px!important;min-width:32px!important;
+ border:0!important;background:#f6eee2!important;box-shadow:none!important;
+ overflow:visible!important;
+}
+body .app #page-capture button.kona-tag-chip[data-tag="meaning_listening"] .kona-tag-symbol img.kona-sheep-icon{
+ display:block!important;width:34px!important;height:34px!important;max-width:none!important;
+ object-fit:contain!important;margin:0!important;filter:contrast(1.16) saturate(1.10)!important;
+}
+body .app #page-capture button.kona-tag-chip[data-tag="meaning_listening"][aria-pressed="true"] .kona-tag-symbol{
+ border:2px solid #386651!important;background:#e5f0e9!important;box-shadow:none!important;
+}
+html[data-appearance="dark"] body .app #page-capture button.kona-tag-chip[data-tag="meaning_listening"]:not([aria-pressed="true"]) .kona-tag-symbol{
+ background:#465246!important;
+}
+</style>
 <style id="onharu-review-session-spacing">
 /* Review > Reflect: keep session title distinct, and its timing close to the note.
    Only affect session records in the daily review; never change stored content. */
