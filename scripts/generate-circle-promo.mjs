@@ -51,7 +51,7 @@ async function takeAppScreenshot(c) {
   }
   if(c.tab!=='capture')await page.locator('.tabs [data-page="'+c.tab+'"]').click();
   if(c.tab==='focus'){await page.locator('#kindSeg [data-kind="prayer"]').click();await page.locator('#focusStart').click();await page.waitForTimeout(1300);}
-  if(c.tab==='checkin'){await page.locator('#page-checkin .phases [data-phase="morning"]').click();await page.waitForTimeout(250);const n=page.locator('#checkNote');if(await n.isVisible())await n.fill('Lord, help me begin today with prayer.');await page.locator('#moodGrid .kona-slim-scale[data-dimension="energy"] .kona-scale-stops button').nth(3).click();await page.waitForTimeout(160);await page.locator('#moodGrid .kona-slim-scale[data-dimension="happiness"] .kona-scale-stops button').nth(3).click();await page.waitForTimeout(250);}
+  if(c.tab==='checkin'){await page.locator('#page-checkin .phases [data-phase="morning"]').click();await page.waitForTimeout(250);const n=page.locator('#checkNote');if(await n.isVisible())await n.fill('Lord, help me begin today with prayer.');for(const dimension of ['energy','happiness']){await page.locator('#moodGrid .kona-slim-scale[data-dimension="'+dimension+'"] input[type="range"]').evaluate(el=>{el.value='4';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));});await page.waitForTimeout(160);}await page.waitForTimeout(250);}
   await page.waitForTimeout(400);
   return (await page.screenshot({type:'png',animations:'disabled'})).toString('base64');
  }finally{await context.close();}
