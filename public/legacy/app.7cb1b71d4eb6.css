@@ -4478,3 +4478,24 @@ body #eventFormModal .event-shortname-details>summary:focus-visible{outline:2px 
 html[data-appearance=dark] body #eventFormModal .event-shortname-details{border-color:#577466}
 html[data-appearance=dark] body #eventFormModal .event-shortname-details>summary{color:#EAF4EC!important}
 html[data-appearance=dark] body #eventFormModal .event-shortname-details>summary small{color:#B8D0C0!important}
+
+/* On_HARU release fix: keep the established dark palette legible. */
+html[data-appearance=dark] body .app #page-capture #qc-v2 :is(#qc-text,#qc-note-title){color:#F1F7F1!important}
+html[data-appearance=dark] body .app #page-capture #qc-v2 :is(#qc-text,#qc-note-title)::placeholder{color:#BBD3C1!important;opacity:1!important}
+html[data-appearance=dark] body .app #page-checkin #generalNoteCard textarea#checkNote.field,
+html[data-appearance=dark] body .app #page-checkin #lectureNoteCard :is(#lectureQuote,#lectureReflection,#lectureAction),
+html[data-appearance=dark] body .app #page-focus #timerNote{color:#F0F7F0!important;background:#293D33!important;border-color:#577466!important}
+html[data-appearance=dark] body .app #page-records #new-review-switch :is(#rev-reflect,#rev-weekly,#rev-archive){color:#C8DDCE!important}
+html[data-appearance=dark] body .app #page-records #new-review-switch :is(#rev-reflect,#rev-weekly,#rev-archive).on{color:#F0F7F0!important;border-bottom-color:#9ACBB0!important}
+html[data-appearance=dark] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row{background:#22302A!important;border-color:#577466!important}
+html[data-appearance=dark] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row :is(.kona-rich-event,.kona-rich-note,.plan-note-cell,.plan-event-cell){background:#293D33!important;color:#F0F7F0!important}
+html[data-appearance=dark] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row :is(.kona-event-name,.kona-plan-time,.kona-event-time,.kona-time,.kona-note-snippet,.kona-linked-capture){color:#F0F7F0!important}
+html[data-appearance=dark] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row :is(time,small){color:#C8DDCE!important}
+html[data-appearance=dark] body #eventFormModal.modal-under .sheet :is(#eventTitle,#eventShortTitle,#eventStart,#eventEnd,#eventSince,#eventUntil,#shortTitleScope),
+html[data-appearance=dark] body #taskFormModal.modal-under .sheet :is(#taskTitle,#taskKind,#taskSince,#taskDue,#taskUntil),
+html[data-appearance=dark] body #eventModal.modal-under .sheet :is(#eventMemo,#eventNoteTitle),
+html[data-appearance=dark] body #konaReviewEditor.modal-under .sheet textarea.field,
+html[data-appearance=dark] body #recordEditModal.modal-under .sheet :is(input,textarea,select){color:#F0F7F0!important;background:#293D33!important;border-color:#688573!important}
+html[data-appearance=dark] body :is(#eventFormModal,#taskFormModal,#eventModal,#konaReviewEditor,#recordEditModal) :is(input,textarea)::placeholder{color:#BBD3C1!important;opacity:1!important}
+html[data-appearance=dark] body #eventFormModal #eventScopeHelp{background:#293D33!important;color:#C8DDCE!important}
+html[data-appearance=dark] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row .event-now-badge{background:#3E705D!important;color:#FFFFFF!important}

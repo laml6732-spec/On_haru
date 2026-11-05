@@ -17,6 +17,9 @@ try{/* The language setting is separate from journal backups and saved records. 
 (function(){
  let active=null,closing=false;
  function close(layer){closing=true;if(layer.matches('.archive-back'))layer.click();else layer.open=false;closing=false}
+ window.konaNavigateAfterLayerClose=callback=>{
+  if(active&&history.state?.konaUILayer){const layer=active;active=null;close(layer);window.addEventListener('popstate',()=>queueMicrotask(callback),{once:true});history.back()}else callback();
+ };
  function arm(layer){if(closing||active===layer)return;if(active)close(active);active=layer;history.pushState({...history.state,konaUILayer:true},'',location.href)}
  document.addEventListener('toggle',e=>{const node=e.target;if(!node.matches?.('.rv-entry-menu,#kx-settings'))return;if(node.open)arm(node);else if(active===node){active=null;if(history.state?.konaUILayer)history.back()}},true);
  new MutationObserver(()=>{const back=document.querySelector('.archive-detail .archive-back');if(back&&active!==back)arm(back)}).observe(document.body,{childList:true,subtree:true});
@@ -52,7 +55,7 @@ try{;/* Settings: existing tools plus persisted Review preferences. */
  function section(title){const n=node('section',null,'kona-settings-section');n.append(node('h2',title));return n}
  function row(parent,label,field,help){const r=node('label',null,'kona-settings-row'),words=node('span',label);if(help)words.append(node('small',help));field.setAttribute('aria-label',label);r.append(words,field);parent.append(r)}
  const schedule=section(KonaI18n.t("Schedule")),journal=section(KonaI18n.t("Journal & Review")),data=section(KonaI18n.t("Data & privacy"));
- const manage=node('button',KonaI18n.t("Manage"),'mini-btn');manage.type='button';manage.onclick=()=>{panel.open=false;panel.dispatchEvent(new Event('toggle'));nav('schedule',{sub:'events'})};row(schedule,KonaI18n.t("Daily routines"),manage,'Edit repeat rules in Plan; choose this day or the series.');
+ const manage=node('button',KonaI18n.t("Manage"),'mini-btn');manage.type='button';manage.onclick=()=>window.konaNavigateFromSettings('schedule',{sub:'events'});row(schedule,KonaI18n.t("Daily routines"),manage,'Edit repeat rules in Plan; choose this day or the series.');
  const zone=node('select');for(const z of ZONES)zone.append(new Option(z.label+' · '+z.utc,z.id));zone.value=zoneInfo().id;row(schedule,KonaI18n.t("Time zone"),zone,KonaI18n.t("Applies to the clock and new timestamps. Existing records keep their date and time."));
  function apply(){const prefs=konaReviewPreferences();document.documentElement.style.setProperty('--review-preview-lines',String(prefs.previewLines||3))}
  function commit(key,value,field,previous){if(tutorialPractice){field.type==='checkbox'?field.checked=previous:field.value=String(previous);status.textContent=KonaI18n.t("Exit practice to change settings.");return}const had=Object.prototype.hasOwnProperty.call(db.settings,key),old=db.settings[key];db.settings[key]=value;if(!save()){if(had)db.settings[key]=old;else delete db.settings[key];if(field.type==='checkbox')field.checked=previous;else field.value=String(previous);status.textContent=KonaI18n.t("Not saved · retry.");return}apply();render();status.textContent=KonaI18n.t("Saved on this device")}
