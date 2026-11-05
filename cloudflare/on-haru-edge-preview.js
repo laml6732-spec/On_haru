@@ -27,11 +27,15 @@ async function serve(request) {
     return new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET, HEAD" } });
   }
 
-  if (url.pathname === "/" || url.pathname === "/index.html" || url.pathname === "/legacy") {
+  if (url.pathname === "/legacy") {
     return Response.redirect(url.origin + "/legacy/" + url.search + url.hash, 302);
   }
 
+  // Serve the existing app at the clean root URL without changing the browser URL.
+  // Keep /legacy/ working; root-level assets, manifest and service worker also
+  // resolve against /legacy/ internally, preserving the app's PWA behavior.
   let path = url.pathname;
+  if (!path.startsWith("/legacy/")) path = "/legacy" + path;
   if (path.endsWith("/")) path += "index.html";
 
   const src = SOURCE + path + url.search;
