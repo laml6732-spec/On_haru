@@ -4456,3 +4456,16 @@ body .app #page-records .onharu-review-empty-action:focus-visible{
 html[data-appearance="dark"] body .app #page-records .onharu-review-empty-action{
  background:#294A3A;border-color:#719783;color:#E9F4EA;
 }
+
+/* On_HARU: readable dark-theme note content. */
+html[data-appearance="dark"] body .app #page-capture #qc-v2,
+html[data-appearance="dark"] body .app #page-capture .capture-recent-note{background:#293D33!important;border-color:#577466!important}
+html[data-appearance="dark"] body .app #page-capture :is(#qc-text,#qc-note-title,.capture-recent-title,.capture-recent-body){color:#F1F7F1!important}
+html[data-appearance="dark"] body .app #page-capture :is(.capture-recent-label,.capture-recent-count){color:#BBD3C1!important}
+html[data-appearance="dark"] body .app #page-capture :is(#qc-text,#qc-note-title)::placeholder{color:#AEC4B4!important;opacity:1!important}
+html[data-appearance="dark"] body .app #page-records :is(#new-reflect-page,#archive-search-results,#dayReviewBody) :is(.rv-note-preview,.rv-user-note-title,.rv-entry-body,.day-review-entry-text,.review-session-title){color:#F0F7F0!important}
+html[data-appearance="dark"] body .app #page-records :is(.review-record,.review-check-record,.review-session-record,.archive-result-card){background:#283B32!important;border-color:#506C5B!important}
+html[data-appearance="dark"] body .app #page-today #kx-summary :is(.kona-note-snippet,.kona-rich-note){color:#EDF7EF!important}
+html[data-appearance="dark"] body .app #page-records textarea,
+html[data-appearance="dark"] body .app #page-checkin textarea,
+html[data-appearance="dark"] body .app #page-focus textarea{color:#F0F7F0!important;background:#293D33!important}
