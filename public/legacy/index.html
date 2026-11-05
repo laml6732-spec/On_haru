@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="wcbrandv320261105"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
+<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="wcbrandv3rv20261105"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
 <style id="onharu-launch-edge-fix">
 /* True-alpha watercolor launch image; do not blend or mask its transparent edges. */
 #launchScreen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;isolation:isolate;background:#FDFDFB!important;overflow:hidden}
@@ -42,7 +42,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&amp;family=Fredoka:wght@600&amp;family=Gaegu&amp;family=Manrope:wght@300&amp;family=Nunito:wght@400;600;700&amp;family=Pacifico&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=c94f6e1205ab">
+<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=wcbrandv3rv20261105">
 <style id="onharu-capture-sheep-visibility">
 /* Keep the original listening sheep artwork while giving it legibility at emoji size.
    This affects only its Capture tag. Selection remains a single green ring. */
@@ -79,6 +79,126 @@ body .app #page-records #new-reflect-page .review-session-record .rv-entry-body 
   margin:0 0 4px!important;
   padding:0!important;
   min-height:0!important;
+}
+</style>
+<style id="onharu-review-type-hierarchy">
+/* Review hierarchy: daypart > event parent / record > field label > content.
+   Scoped to Reflect, so Archive and the existing data/record editors are untouched. */
+body .app #page-records #new-reflect-page .rv-timegroup+.rv-timegroup{margin-top:24px!important}
+body .app #page-records #new-reflect-page .review-fold-inner>:is(.rv-linked-group,.review-record)+:is(.rv-linked-group,.review-record){margin-top:14px!important}
+body .app #page-records #new-reflect-page .review-v3-section .rv-linked-group>h5.review-event-heading{
+ display:inline-flex!important;align-items:baseline!important;gap:7px!important;max-width:100%;
+ padding:5px 9px!important;margin:0 0 6px!important;border-radius:7px!important;
+ background:#edf2eb!important;color:#52684f!important;
+ font-size:calc(12px * var(--kona-ui-scale,1))!important;font-weight:600!important;
+ line-height:1.45!important;text-transform:none!important;
+}
+body .app #page-records #new-reflect-page .rv-linked-group :is(.review-linked-rail,.review-single-note){
+ border-left:2px solid #b9cfbf!important;padding-left:11px!important;
+ margin:0 0 0 4px!important;background:transparent!important;box-shadow:none!important;
+}
+body .app #page-records #new-reflect-page .review-plan-note{
+ border:0!important;background:transparent!important;padding:5px 0!important;
+}
+body .app #page-records #new-reflect-page .review-plan-note .rv-user-note-title{
+ font-size:calc(13.5px * var(--kona-ui-scale,1))!important;font-weight:600!important;
+ line-height:1.45!important;margin:0 0 6px!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-plan-note .rv-note-preview:not(.review-emoji-target){
+ padding:0!important;margin:2px 0 4px!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-personal-note{
+ padding:9px 0!important;background:transparent!important;
+}
+body .app #page-records #new-reflect-page .review-personal-note .review-record-meta{
+ display:flex!important;justify-content:space-between!important;align-items:baseline!important;
+ min-height:0!important;margin:0 0 5px!important;
+}
+body .app #page-records #new-reflect-page .review-personal-note .review-type-label{
+ font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ color:#6a796e!important;font-weight:600!important;background:transparent!important;
+}
+body .app #page-records #new-reflect-page .review-personal-note .rv-user-note-title{
+ font-size:calc(13.5px * var(--kona-ui-scale,1))!important;
+ font-weight:600!important;line-height:1.45!important;margin:0 0 5px!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-personal-note .rv-note-preview:not(.review-emoji-target){
+ padding:0!important;margin:2px 0 4px!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-session-record{
+ padding:7px 0!important;background:transparent!important;
+}
+body .app #page-records #new-reflect-page .review-session-record.review-empty-note{padding:5px 0!important}
+body .app #page-records #new-reflect-page .review-session-record .review-record-meta:not(:empty){
+ display:flex!important;justify-content:space-between!important;align-items:baseline!important;
+ gap:8px!important;min-height:0!important;margin:0 0 3px!important;
+}
+body .app #page-records #new-reflect-page .review-session-record .rv-note-preview:not(.review-emoji-target){
+ padding:0!important;margin:0 0 4px!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-check-record{
+ padding:9px 11px!important;margin:0!important;border:1px solid #dce5df!important;
+ border-radius:11px!important;background:#f7faf7!important;
+}
+body .app #page-records #new-reflect-page .review-check-record.review-empty-note{padding:7px 11px!important}
+body .app #page-records #new-reflect-page .review-check-record>.rv-entry-body{padding:0!important}
+body .app #page-records #new-reflect-page .review-check-record .review-check-header{
+ display:grid!important;grid-template-columns:minmax(0,1fr) auto auto;
+ align-items:center!important;gap:6px 9px!important;min-height:28px!important;
+}
+body .app #page-records #new-reflect-page .review-check-record .review-check-header>.review-record-meta{
+ display:contents!important;
+}
+body .app #page-records #new-reflect-page .review-check-record .review-record-meta>span{
+ grid-column:1;grid-row:1;font-weight:600!important;min-width:0;overflow-wrap:anywhere;
+}
+body .app #page-records #new-reflect-page .review-check-record .review-record-meta>time{
+ grid-column:3;grid-row:1;margin:0!important;justify-self:end;
+ font-size:calc(11px * var(--kona-ui-scale,1))!important;white-space:nowrap;
+}
+body .app #page-records #new-reflect-page .review-check-record .review-feeling-values{
+ grid-column:2;grid-row:1;margin:0!important;min-width:0;
+}
+body .app #page-records #new-reflect-page .review-check-record .rv-note-preview:not(.review-emoji-target){
+ padding:0!important;margin:6px 0 0!important;min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-class-record{
+ padding:10px 0!important;background:transparent!important;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-header{
+ display:flex!important;align-items:baseline!important;justify-content:space-between!important;
+ gap:10px!important;margin:0 0 10px!important;min-width:0;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-title{
+ margin:0!important;min-width:0;overflow-wrap:anywhere;
+ font-size:calc(13.5px * var(--kona-ui-scale,1))!important;
+ font-weight:600!important;line-height:1.45!important;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-time{
+ flex:none;margin:0!important;white-space:nowrap;font-size:calc(11px * var(--kona-ui-scale,1))!important;color:#77877c!important;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-part{
+ display:block!important;margin:9px 0 0!important;padding:0!important;background:transparent!important;border:0!important;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-part>small{
+ display:inline-block!important;padding:2px 5px!important;border-radius:4px!important;
+ background:#f0f3ed!important;color:#526b5b!important;font-weight:600!important;
+}
+body .app #page-records #new-reflect-page .review-class-record .review-class-part>p{
+ margin:4px 0 0!important;padding:0!important;line-height:1.55!important;
+}
+/* Dark mode maintains the same grouping without introducing bright cards. */
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-linked-group>h5.review-event-heading{
+ background:#2b3e32!important;color:#d1e4cf!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .review-check-record{
+ background:#283b32!important;border-color:#506c5b!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .review-class-record .review-class-part>small{
+ background:#344b3e!important;color:#e6eee9!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .review-personal-note .review-type-label{
+ color:#b5cbbb!important;
 }
 </style></head>
 <body>
@@ -356,4 +476,4 @@ body .app #page-records #new-reflect-page .review-session-record .rv-entry-body 
 
 
 
-<script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=c94f6e1205ab"></script><script src="./runtime/settings.58b48f87b05a.js?rev=c94f6e1205ab"></script></body></html>
+<script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=wcbrandv3rv20261105"></script><script src="./runtime/settings.58b48f87b05a.js?rev=wcbrandv3rv20261105"></script></body></html>
