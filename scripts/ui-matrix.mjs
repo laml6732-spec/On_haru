@@ -10,7 +10,7 @@ const results=[];
 try {
 for(const width of [320,390,1024])for(const theme of ['light','dark']){
  const context=await browser.newContext({viewport:{width,height:844},isMobile:width<600,hasTouch:width<600,locale:'en-US',timezoneId:'Pacific/Honolulu',serviceWorkers:'block',reducedMotion:'reduce'});
- const page=await context.newPage();const row={width,theme,errors:[],screens:[],controls:{},checks:[]};results.push(row);
+ const page=await context.newPage();if(process.env.ONHARU_CSS_OVERRIDE)await page.route('**/app.7cb1b71d4eb6.css*',route=>route.fulfill({path:process.env.ONHARU_CSS_OVERRIDE,contentType:'text/css'}));const row={width,theme,errors:[],screens:[],controls:{},checks:[],styles:{}};results.push(row);
  page.on('pageerror',e=>row.errors.push(String(e)));
  page.on('dialog',async d=>{row.errors.push('Native dialog: '+d.type());await d.dismiss()});
  await page.clock.setFixedTime(new Date('2026-11-04T09:30:00-10:00'));
@@ -26,14 +26,14 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
  row.checks.push({name:'capture save',ok:(await page.locator('.capture-recent-body').first().innerText()).includes('QA sample memo')});
  for(const tab of ['capture','today','checkin','focus','records','settings']){
  const button=tab==='settings'?page.locator('.app-settings-shortcut'):page.locator(`.tabs [data-page="${tab}"]`);if(!await button.count()){row.checks.push({name:tab+' tab exists',ok:false});continue}
- await button.click();await page.screenshot({path:`${dir}/${width}-${theme}-${tab}.png`});
+ await button.click();await page.evaluate(()=>document.fonts.ready);row.styles[tab]=await page.locator('body *:visible').evaluateAll(es=>es.map(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return {tag:e.tagName,id:e.id,cls:String(e.className),x:r.x,y:r.y,w:r.width,h:r.height,color:s.color,bg:s.backgroundColor,font:s.fontSize,display:s.display}}));await page.screenshot({path:`${dir}/${width}-${theme}-${tab}.png`});
  row.screens.push(tab);row.checks.push({name:tab+' overflow',ok:await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)});
  row.controls[tab]=await page.locator('button:visible,input:visible,textarea:visible,select:visible,summary:visible').evaluateAll(es=>es.map(e=>({id:e.id,tag:e.tagName,type:e.type,text:e.textContent?.trim().slice(0,65),label:e.getAttribute('aria-label'),data:{...e.dataset}})));
  }
  
  await page.keyboard.press('Escape');
  const tap=async t=>page.locator(`.tabs [data-page="${t}"]`).click();
- const check=async(name,fn)=>{try{await fn();row.checks.push({name,ok:true})}catch(e){row.checks.push({name,ok:false,details:String(e)});await page.screenshot({path:`${dir}/${width}-${theme}-failure-${row.checks.length}.png`});for(const close of await page.locator('.modal-under:not([hidden]) .close').all())await close.click().catch(()=>{});await page.keyboard.press('Escape')}};
+ const check=async(name,fn)=>{try{await fn();row.checks.push({name,ok:true});console.log('PASS',width,theme,name)}catch(e){row.checks.push({name,ok:false,details:String(e)});console.log('FAIL',width,theme,name,String(e));await page.screenshot({path:`${dir}/${width}-${theme}-failure-${row.checks.length}.png`});for(const close of await page.locator('.modal-under:not([hidden]) .close').all())await close.click().catch(()=>{});await page.keyboard.press('Escape')}};
  page.setDefaultTimeout(6000);
  const expect=async(v,m)=>{if(!v)throw Error(m)};
  await check('Event add and optional short name',async()=>{
@@ -79,5 +79,5 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
  await fs.writeFile(`${dir}/report.json`,JSON.stringify(results,null,2));await context.close();
 }
 }finally{await fs.writeFile(`${dir}/report.json`,JSON.stringify(results,null,2));await browser.close()}
-console.log(JSON.stringify(results.map(({controls,...rest})=>rest),null,2));
+console.log(JSON.stringify(results.map(({controls,styles,...rest})=>rest),null,2));
 if(results.some(r=>r.errors.length||r.checks.some(c=>!c.ok)))process.exitCode=1;
