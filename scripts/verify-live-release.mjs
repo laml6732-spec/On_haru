@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 
 const DEFAULT_URL = 'https://on-haru.laml6732.workers.dev/';
 const ASSETS = [
@@ -28,9 +29,9 @@ export function verifyAsset({ path, local, actual, release, status, finalURL, ba
   const headerMatch = !workerRelease || workerRelease === release;
   const body = actual ? actual.toString('utf8') : '';
   const bodyReleaseMatch = path === ''
-    ? new RegExp('name="kona-release"\\s+content="' + release + '"').test(body)
+    ? body.includes('name="kona-release" content="' + release + '"')
     : path === 'sw.js'
-      ? new RegExp("const RELEASE\\s*=\\s*['\\\"]" + release + "['\\\"]").test(body)
+      ? body.includes("const RELEASE='" + release + "'") || body.includes('const RELEASE="' + release + '"')
       : true;
   return {
     path: path || '/',
@@ -73,7 +74,7 @@ export async function verifyLiveRelease({ base = DEFAULT_URL, attempts = 4, dela
   await fs.writeFile('test-results/live/static.json', JSON.stringify(report, null, 2));
   return report;
 }
-if (process.argv[1] && fileURLToPath(import.meta.url) === fileURLToPath(new URL('file://' + process.argv[1]))) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
   const report = await verifyLiveRelease({ base: process.env.ONHARU_URL || DEFAULT_URL });
   if (report.cases.some(row => !row.ok)) process.exitCode = 1;
 }
