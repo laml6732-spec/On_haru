@@ -1,6 +1,6 @@
 {
-  "runId": "41974559946",
-  "sourceCommit": "1b0ac45b8d81d0a0ebf901bd34a83222521df093",
+  "runId": "41978049662",
+  "sourceCommit": "99400b204e4a4faea9a2b7152a5680531915008a",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
@@ -8,8 +8,8 @@
     "cases": [
       {
         "path": "/",
-        "ok": true,
-        "expectedSha256": "5b0ca29f04b3fe5560652cff36043b4f3cf41295c8812c323c2c9dc3d78c3791",
+        "ok": false,
+        "expectedSha256": "3cfe376e236bba37223efc26e7f1fd3313b5b742b30ba1e84e6264f9b4a7c836",
         "actualSha256": "5b0ca29f04b3fe5560652cff36043b4f3cf41295c8812c323c2c9dc3d78c3791",
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
@@ -674,11 +674,25 @@
   },
   "runs": [
     {
-      "id": 41974559946,
-      "sha": "1b0ac45b8d81d0a0ebf901bd34a83222521df093",
+      "id": 41978049974,
+      "sha": "99400b204e4a4faea9a2b7152a5680531915008a",
+      "name": "OnHaru static UI checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 41978049662,
+      "sha": "99400b204e4a4faea9a2b7152a5680531915008a",
       "name": "OnHaru Workers production verification",
       "status": "in_progress",
       "conclusion": null
+    },
+    {
+      "id": 41974559946,
+      "sha": "1b0ac45b8d81d0a0ebf901bd34a83222521df093",
+      "name": "OnHaru Workers production verification",
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 41974557578,
@@ -714,21 +728,7 @@
       "name": "OnHaru Workers production verification",
       "status": "completed",
       "conclusion": "failure"
-    },
-    {
-      "id": 41971457482,
-      "sha": "508f8e06031e9b1ddf8eaedcc952c0999ac6fad5",
-      "name": "OnHaru static UI checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 41970956710,
-      "sha": "090ffb6322444f421f3c5e6a2d5af9fc8e8bb5d4",
-      "name": "OnHaru release verification",
-      "status": "completed",
-      "conclusion": "success"
     }
   ],
-  "allPassed": true
+  "allPassed": false
 }
