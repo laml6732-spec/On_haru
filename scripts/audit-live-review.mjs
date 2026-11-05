@@ -66,7 +66,8 @@ try{
   await page.locator('.tabs [data-page="focus"]').click();
   await page.locator('#kindSeg [data-kind="prayer"]').click();
   await page.locator('#focusStart').click();
-  await page.waitForTimeout(1500);
+  // Playwright's fixed demo clock must advance; real 1.5s waiting alone does not advance Date.now().
+  await page.clock.runFor(3500);
   const toggle=page.locator('#focusNoteToggle');
   if(await toggle.isVisible())await toggle.click();
   const thought='Prayed for a friend who has an exam tomorrow. May they feel peace and courage.';
@@ -98,7 +99,7 @@ try{
  }));
  log.review=audit;
  console.log('REVIEW INSPECT:',JSON.stringify(audit));
- if(audit.totalRecords<4)throw Error('Expected at least four actual Review records, got '+audit.totalRecords);
+ if(audit.totalRecords<5 || !audit.reviewText.includes('Prayed for a friend'))throw Error('Prayer session was not recorded in actual Review: '+JSON.stringify({total:audit.totalRecords,content:audit.reviewText.slice(-600)}));
  await page.screenshot({path:OUT+'/actual-review-full-page.png',type:'png',fullPage:true,animations:'disabled'});
  // Also provide a detail screenshot of the actual Review content, not an AI mockup.
  const panel=page.locator('#new-reflect-page');
