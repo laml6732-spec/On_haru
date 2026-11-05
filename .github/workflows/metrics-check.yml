@@ -1,0 +1,28 @@
+name: OnHaru metrics privacy and regression checks
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, feat/privacy-safe-install-metrics]
+    paths:
+      - 'cloudflare/onharu-metrics-worker.js'
+      - 'public/legacy/**'
+      - 'scripts/verify-metrics.mjs'
+      - '.github/workflows/metrics-check.yml'
+  pull_request:
+    paths:
+      - 'cloudflare/onharu-metrics-worker.js'
+      - 'public/legacy/**'
+      - 'scripts/verify-metrics.mjs'
+      - '.github/workflows/metrics-check.yml'
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check public/legacy/runtime/install-metrics.v1.js
+      - run: node --input-type=module --check < cloudflare/onharu-metrics-worker.js
+      - run: node scripts/verify-metrics.mjs
+      - run: node scripts/verify-ui-static.mjs
