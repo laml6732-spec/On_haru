@@ -4,6 +4,8 @@
 // GitHub's raw origin can be rate-limited and is not an asset hosting SLA.
 const RELEASE = "c94f6e1205ab";
 const SOURCE = "https://raw.githubusercontent.com/laml6732-spec/On_haru/0ed8bee231c56315ddb187c6285e77d4e50182c0/public";
+// Only the welcome HTML differs: keep every JS/CSS/media asset pinned to RELEASE.
+const WELCOME_SOURCE = "https://raw.githubusercontent.com/laml6732-spec/On_haru/99400b204e4a4faea9a2b7152a5680531915008a/public";
 const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
@@ -39,7 +41,7 @@ async function serve(request) {
   if (!path.startsWith("/legacy/")) path = "/legacy" + path;
   if (path.endsWith("/")) path += "index.html";
 
-  const upstreamUrl = new URL(SOURCE + path + url.search);
+  const upstreamUrl = new URL((path === "/legacy/index.html" ? WELCOME_SOURCE : SOURCE) + path + url.search);
   upstreamUrl.searchParams.set("onharu_release", RELEASE);
   const src = upstreamUrl.href;
   const ext = Object.keys(MIME).find(k => path.toLowerCase().endsWith(k)) || "";
