@@ -4406,3 +4406,53 @@ html[data-appearance="dark"] dialog.onharu-native-replacement .onharu-dialog-inp
 html[data-appearance="dark"] dialog.onharu-native-replacement .onharu-dialog-cancel{
  background:#344F40;border-color:#6C8573;color:#E5EEE6;
 }
+
+/* On_HARU 2026-11 follow-up: Settings rhythm, Plan hit targets, Review zero-state. */
+body .app #kx-settings .display-settings-status:empty{
+ display:none!important;min-height:0!important;margin:0!important;padding:0!important;
+}
+body .app #kx-settings[open] :is(.display-settings,.kona-settings-section){
+ padding-top:12px!important;padding-bottom:12px!important;
+}
+body .app #kx-settings[open] .kona-settings-row select{
+ min-height:42px!important;border-radius:11px!important;
+ padding:7px 10px!important;max-width:52%!important;
+}
+body .app #kx-settings[open] .kona-settings-row input[type=checkbox]{
+ width:22px!important;height:22px!important;min-width:22px!important;
+ accent-color:#286657;cursor:pointer;
+}
+body .app #kx-settings[open] .settings-apply-actions{
+ background:var(--surface,#fffefa);border-top:1px solid #E0E8E0;
+}
+body .app #page-today :is(#quickAddEvent,#quickAddTask,#pinRow .task-add){
+ box-sizing:border-box;min-height:42px!important;
+ min-width:40px;padding:7px 9px!important;
+ border-radius:11px!important;
+}
+body .app #page-today #kx-summary .kona-notes-open-all{
+ min-height:38px!important;padding-inline:8px!important;
+}
+body .app #page-records .onharu-review-empty{
+ text-align:center;padding:25px 12px 22px;
+ margin:8px 0 12px;border-top:1px solid #E0E9E2;
+}
+body .app #page-records .onharu-review-empty strong{
+ display:block;font-size:calc(15px * var(--kona-ui-scale,1));
+ color:var(--ink);font-weight:750;
+}
+body .app #page-records .onharu-review-empty p{
+ margin:8px auto 16px;max-width:290px;line-height:1.6;
+ color:var(--sub);font-size:calc(13px * var(--kona-ui-scale,1));
+}
+body .app #page-records .onharu-review-empty-action{
+ min-height:43px;padding:9px 18px;border-radius:12px;
+ border:1px solid #A5C9B7;background:#EBF4ED;
+ color:#205B46;font-family:var(--font-ui);font-weight:700;cursor:pointer;
+}
+body .app #page-records .onharu-review-empty-action:focus-visible{
+ outline:2px solid #286657;outline-offset:3px;
+}
+html[data-appearance="dark"] body .app #page-records .onharu-review-empty-action{
+ background:#294A3A;border-color:#719783;color:#E9F4EA;
+}
