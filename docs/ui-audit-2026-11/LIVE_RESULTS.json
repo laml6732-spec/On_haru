@@ -1,6 +1,6 @@
 {
-  "runId": "41979884296",
-  "sourceCommit": "eea39c1dee6b4fa10fc3f6e8b0915f2b7e14281e",
+  "runId": "41982378216",
+  "sourceCommit": "df1f6d44967924f49a16f6d11347753301551afc",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
@@ -9,8 +9,8 @@
       {
         "path": "/",
         "ok": false,
-        "expectedSha256": "7ccdc1f128d7119593e97fe8542d9cf6726879bdf20e1c3776f865bc57c6ee33",
-        "actualSha256": "7ccdc1f128d7119593e97fe8542d9cf6726879bdf20e1c3776f865bc57c6ee33",
+        "expectedSha256": "0e8a332528e4d9447d6f9bc16e1febeacbb7ed36f3db7525f12bb8aa1f4f498d",
+        "actualSha256": "0e8a332528e4d9447d6f9bc16e1febeacbb7ed36f3db7525f12bb8aa1f4f498d",
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
         "workerRelease": null
@@ -674,11 +674,25 @@
   },
   "runs": [
     {
-      "id": 41979884296,
-      "sha": "eea39c1dee6b4fa10fc3f6e8b0915f2b7e14281e",
+      "id": 41982378216,
+      "sha": "df1f6d44967924f49a16f6d11347753301551afc",
       "name": "OnHaru Workers production verification",
       "status": "in_progress",
       "conclusion": null
+    },
+    {
+      "id": 41982378204,
+      "sha": "df1f6d44967924f49a16f6d11347753301551afc",
+      "name": "OnHaru static UI checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 41979884296,
+      "sha": "eea39c1dee6b4fa10fc3f6e8b0915f2b7e14281e",
+      "name": "OnHaru Workers production verification",
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "id": 41979884290,
@@ -714,20 +728,6 @@
       "name": "OnHaru Workers production verification",
       "status": "completed",
       "conclusion": "success"
-    },
-    {
-      "id": 41974557578,
-      "sha": "0ed8bee231c56315ddb187c6285e77d4e50182c0",
-      "name": "OnHaru static UI checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 41974557537,
-      "sha": "0ed8bee231c56315ddb187c6285e77d4e50182c0",
-      "name": "OnHaru Workers production verification",
-      "status": "completed",
-      "conclusion": "cancelled"
     }
   ],
   "allPassed": false
