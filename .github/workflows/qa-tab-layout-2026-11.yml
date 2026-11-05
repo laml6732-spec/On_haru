@@ -1,0 +1,56 @@
+name: On_HARU six-layout QA audit
+on:
+  push:
+    branches: ['qa/tab-layout-audit-2026-11-05']
+  workflow_dispatch:
+jobs:
+  tab-layout-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ONHARU_URL: http://127.0.0.1:8080/legacy/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-qa-server.log 2>&1 &
+      - name: Static regression
+        run: node scripts/verify-ui-static.mjs
+        continue-on-error: true
+      - name: Six-config layout and Archive Mood functional QA
+        run: node scripts/qa-tab-layout-2026-11.mjs
+        continue-on-error: true
+      - name: Existing smoke test
+        run: node scripts/ui-smoke.mjs
+        continue-on-error: true
+      - name: Existing full UI matrix
+        run: node scripts/ui-matrix.mjs
+        continue-on-error: true
+      - name: Existing extended flows
+        run: node scripts/ui-extra.mjs
+        continue-on-error: true
+      - name: Existing PWA audit
+        run: node scripts/ui-pwa.mjs
+        continue-on-error: true
+      - name: Print QA summary
+        if: always()
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return null}};
+          const a=read('test-results/tab-layout-qa/report.json');
+          const p=read('test-results/pwa/report.json');
+          const result={layout:a?.totals,layoutFailures:a?.cases?.filter(x=>!x.ok).map(x=>({config:x.config,name:x.name,details:x.details})).slice(0,30),
+            browserErrors:a?.errors?.slice(0,10),pwa:p?.checks?.map(x=>({name:x.name,ok:x.ok}))};
+          console.log('ONHARU_QA_REPORT',JSON.stringify(result));
+          if(!a||a.totals.failed||a.totals.errorCount)process.exitCode=1;
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-tab-layout-qa
+          path: test-results/
+          retention-days: 14
