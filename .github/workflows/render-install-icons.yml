@@ -1,0 +1,35 @@
+name: Render On_HARU install icons
+on:
+  push:
+    branches: ['work/install-icon-sheep-wave-2026-11-05']
+    paths:
+      - 'public/legacy/icons/onharu-face-wave-source.avif'
+      - 'scripts/render-install-icons.py'
+      - '.github/workflows/render-install-icons.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install AVIF-capable Pillow
+        run: python -m pip install --disable-pip-version-check 'Pillow==12.0.0'
+      - name: Generate install icon PNGs
+        run: python scripts/render-install-icons.py
+      - name: Confirm HTML, manifest and service worker references
+        run: node scripts/verify-ui-static.mjs
+      - name: Commit approved install icons to review branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/legacy/icons/onharu-face-wave-192.png public/legacy/icons/onharu-face-wave-512.png
+          if ! git diff --cached --quiet; then
+            git commit -m "assets: render opaque sheep-wave PWA PNG icons"
+            git push origin HEAD:work/install-icon-sheep-wave-2026-11-05
+          fi
