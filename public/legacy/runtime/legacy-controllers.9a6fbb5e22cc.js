@@ -2192,7 +2192,7 @@ function archiveMoodRender(panel){
   grid.append(button);
  }
  panel.append(grid);
- const legend=el('p',archiveMoodText('Each dot is a Morning or Evening Check-in. No dot = no mood rating.','점은 아침·저녁 체크인 기록을 나타내요. 점이 없으면 해당 기록이 없어요.'),'archive-mood-legend');panel.append(legend);
+ const legend=el('p',archiveMoodText('Colored dots: mood rating · outlined dots: energy only · no dot: no rating.','색 점: 기분 점수 · 빈 점: 에너지 기록만 있음 · 점 없음: 평가 기록 없음.'),'archive-mood-legend');panel.append(legend);
  const detail=el('section',undefined,'archive-mood-detail'),localDate=new Date(selected+'T12:00:00Z').toLocaleDateString(KonaI18n.dateLocale,{month:'long',day:'numeric',weekday:'short',timeZone:'UTC'});
  detail.append(el('h3',localDate));
  const entries=archiveMoodEntries(selected);
