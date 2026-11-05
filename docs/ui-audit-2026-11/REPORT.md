@@ -29,6 +29,8 @@
 
 ### 운영 배포
 
+**배포 및 운영 검증 완료.** [운영 실행 41971733717](https://github.com/laml6732-spec/On_haru/actions/runs/41971733717) 성공, LIVE_RESULTS.json allPassed=true. 지정된 Workers 루트에서 HTML·CSS·컨트롤러·설정·SW 5/5 SHA256 일치, smoke 11/11, 6개 구성 acceptance 30/30, PWA 4/4 통과. 페이지 예외·로컬 자산 404 없음. 루트 주소는 /legacy/로 이동하지 않는다. 배포 ID 4463dee95d4847a5971174cb6d7018be, 릴리스 b7e4311050aa.
+
 PR #1은 main에 병합되었다(508f8e0). 첫 운영 검사에서 UI 30/30·smoke 11/11·오프라인 저장은 통과했지만, GitHub main 원본의 HTML 캐시가 이전 릴리스여서 파일 일치 및 PWA 버전 검사는 실패했다. Workers 원본을 검증된 불변 커밋 508f8e06031e9b1ddf8eaedcc952c0999ac6fad5로 고정해 혼합 버전과 미검증 main 변경의 자동 노출을 막았다. 이후 릴리스는 검증 후 원본 커밋을 갱신하여 배포해야 한다.
 
 배포 대상은 **https://on-haru.laml6732.workers.dev/** 이다. main 병합 후 운영 검증 워크플로가 실제 루트 응답·자산 SHA256·릴리스 표식·6개 화면 구성·오프라인 동작을 확인한다. 최종 운영 결과는 [LIVE_RESULTS.json](./LIVE_RESULTS.json)에 저장된다. 배포 성공 여부는 해당 파일의 allPassed와 Actions 결과로 판단한다.
