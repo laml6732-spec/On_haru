@@ -69,7 +69,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
  await check('Review edit, delete cancellation, filter and archive search',async()=>{
   await tap('capture');await page.locator('.capture-recent-note').first().click();await page.locator('#konaReviewEditor').getByRole('textbox',{name:'Note',exact:true}).fill('QA sample memo edited');await page.locator('#konaReviewEditor').getByRole('button',{name:'Save',exact:true}).click();
   await tap('records');await page.locator('#rev-reflect').click();const entry=page.locator('.review-record').filter({hasText:'QA sample memo edited'}).first();await expect(await entry.count()>0,'edited memo absent');
-  await entry.locator('.rv-entry-menu summary').first().click();await entry.locator('.review-delete').click();await page.locator('.onharu-dialog-cancel').click();await expect(await entry.count()>0,'cancel deleted record');await page.keyboard.press('Escape');
+  await entry.locator('.rv-note-preview').click();await page.locator('#konaReviewEditor').getByRole('button',{name:'Delete',exact:true}).click();await page.locator('.onharu-dialog-cancel').click();await page.locator('#konaReviewEditor').getByRole('button',{name:'Cancel',exact:true}).click();await expect(await entry.count()>0,'cancel deleted record');
   await page.locator('#rev-archive').click();await page.locator('#archive-search-input').fill('QA sample memo edited');await expect((await page.locator('#archive-search-results').innerText()).includes('QA sample memo edited'),'archive search missing');await page.locator('#rev-reflect').click();
  });
  await check('Focus duration, start, pause, resume, finish, session note',async()=>{
@@ -91,6 +91,12 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
  await check('Backup and restore fabricated records',async()=>{
   await page.locator('.app-settings-shortcut').click();const downloadPromise=page.waitForEvent('download');await page.locator('#backupNow').click();const download=await downloadPromise;const path=await download.path();const payload=JSON.parse(await fs.readFile(path,'utf8'));await expect(Object.values(payload.days).some(d=>d.quickCaptureEntries?.some(q=>q.text.includes('QA sample memo'))),'backup missing sample');
   await page.locator('#restoreFile').setInputFiles(path);await page.locator('.onharu-dialog-accept').click();await page.keyboard.press('Escape');await tap('capture');await expect((await page.locator('.capture-recent-body').first().innerText()).includes('QA sample memo'),'restore lost memo');
+ });
+
+ await check('Korean labels, system theme, settings Escape',async()=>{
+  await page.locator('.app-settings-shortcut').click();await page.locator('[data-kona-setting="language"]').selectOption('ko');await page.locator('[data-kona-setting="theme"]').selectOption('system');await Promise.all([page.waitForEvent('load'),page.locator('#konaApplySettings').click()]);await page.waitForSelector('.tabs [data-page="capture"]');await expect(await page.locator('html').getAttribute('lang')==='ko','Korean not applied');
+  await page.emulateMedia({colorScheme:'dark'});await expect(await page.locator('html').getAttribute('data-appearance')==='dark','system dark mismatch');await page.emulateMedia({colorScheme:'light'});await expect(await page.locator('html').getAttribute('data-appearance')==='light','system light mismatch');
+  await page.locator('.app-settings-shortcut').click();await page.keyboard.press('Escape');await expect(!await page.locator('#kx-settings').evaluate(e=>e.open),'settings Escape failed');
  });
  row.storage=await page.evaluate(()=>Object.keys(localStorage).sort());
  await fs.writeFile(`${dir}/report.json`,JSON.stringify(results,null,2));await context.close();
