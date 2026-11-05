@@ -1,0 +1,40 @@
+name: Verify On_HARU live install telemetry
+on:
+  push:
+    branches: [test/metrics-live-verification]
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check deployed script and events end to end
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const origin='https://on-haru.laml6732.workers.dev';
+          const page=await fetch(origin+'/legacy/',{redirect:'follow'});
+          console.log('App page:',page.status,page.url);
+          assert.equal(page.status,200);
+          const html=await page.text();
+          assert.match(html,/install-metrics\.v1\.js/);
+          const script=await fetch(origin+'/legacy/runtime/install-metrics.v1.js');
+          console.log('Install analytics script:',script.status,script.headers.get('content-type'));
+          assert.equal(script.status,200);
+          const js=await script.text();
+          assert.match(js,/onharu-metrics\.laml6732\.workers\.dev/);
+          const endpoint='https://onharu-metrics.laml6732.workers.dev/event';
+          const id='b7465e5a-8d28-4f70-a2d5-334755182341'; // Synthetic: to be deleted after test.
+          for(const event of ['visit','install']){
+            const response=await fetch(endpoint,{method:'POST',headers:{Origin:origin,'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({v:1,id,event,mode:event==='visit'?'standalone':'browser'})});
+            console.log('Telemetry',event,response.status, response.headers.get('access-control-allow-origin'));
+            assert.equal(response.status,204);
+            assert.equal(response.headers.get('access-control-allow-origin'),origin);
+          }
+          const forbidden=await fetch(endpoint,{method:'POST',headers:{Origin:'https://example.com','Content-Type':'text/plain'},body:JSON.stringify({v:1,id,event:'visit',mode:'browser'})});
+          assert.equal(forbidden.status,403);
+          console.log('PASS live install telemetry, page asset, CORS and blocked invalid origin');
+          NODE
