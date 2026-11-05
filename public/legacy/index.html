@@ -1,11 +1,9 @@
-<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="c94f6e1205ab"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
+<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="brand-wc-v3-20261105"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
 <style id="onharu-launch-edge-fix">
-/* Draw the launch background before the large app CSS finishes loading.
-   The original watercolor is a JPEG with a light rectangular canvas.
-   Blend its pale edges into the launch surface and feather only its outer 5%. */
+/* True-alpha watercolor launch image; do not blend or mask its transparent edges. */
 #launchScreen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;isolation:isolate;background:#FDFDFB!important;overflow:hidden}
-#launchArt{display:block;background:transparent;border:0;box-shadow:none;object-fit:contain;mix-blend-mode:multiply;-webkit-mask-image:linear-gradient(to right,transparent 0%,#000 5%,#000 95%,transparent 100%),linear-gradient(to bottom,transparent 0%,#000 5%,#000 95%,transparent 100%);mask-image:linear-gradient(to right,transparent 0%,#000 5%,#000 95%,transparent 100%),linear-gradient(to bottom,transparent 0%,#000 5%,#000 95%,transparent 100%);mask-composite:intersect}
-</style><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="512x512" href="./icons/onharu-square-v2-512.png"><link rel="apple-touch-icon" href="./icons/onharu-square-v2-512.png"><title>On_Haru</title><meta name="description" content="On_HARU — plan, capture, focus, reflect.">
+#launchScreen #launchArt{display:block;width:min(94vw,540px)!important;height:auto!important;max-height:84svh!important;aspect-ratio:1/1!important;background:transparent!important;border:0!important;box-shadow:none!important;object-fit:contain!important;mix-blend-mode:normal!important;-webkit-mask-image:none!important;mask-image:none!important}
+</style><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="512x512" href="./icons/onharu-watercolor-v3-512.png"><link rel="apple-touch-icon" href="./icons/onharu-watercolor-v3-512.png"><title>On_Haru</title><meta name="description" content="On_HARU — plan, capture, focus, reflect.">
 <!-- Use local/system fonts so an unreachable font CDN cannot hold up the first render. -->
 
 
@@ -88,7 +86,7 @@ body .app #page-records #new-reflect-page .review-session-record .rv-entry-body 
 <script>
 (function(){
  const screen=document.getElementById('launchScreen'),art=document.getElementById('launchArt'),started=Date.now();
- art.src='./assets/onharu-welcome.png';
+ art.src='./assets/onharu-launch-v3.png';
  let finished=false;function close(){if(finished)return;finished=true;screen.classList.add('is-ready');setTimeout(()=>screen.remove(),220)}
  window.konaLaunchReady=()=>setTimeout(close,Math.max(0,900-(Date.now()-started)));
  screen.addEventListener('click',close);art.addEventListener('error',close);setTimeout(close,5000);
