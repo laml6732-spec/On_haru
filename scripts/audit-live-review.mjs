@@ -31,7 +31,7 @@ async function capture(title,note,event,tag){
 }
 try{
  // Use a real deployed URL, not the GitHub static copy.
- await page.clock.install({time:new Date('2026-11-04T19:20:00-10:00')});
+ await page.clock.install({time:new Date('2026-11-04T10:30:00-10:00')});
  await page.goto(URL+'?test=actual-review-entries', {waitUntil:'networkidle',timeout:35000});
  await page.waitForTimeout(1100);
  await page.evaluate(()=>{document.querySelector('#launchScreen')?.remove();const t=document.querySelector('#tutorialModal');if(t)t.hidden=true});
@@ -51,21 +51,27 @@ try{
   }
  });
  if(!log.morningClassCardVisible)await capture('Morning Class Reflection','The class reminded me to listen carefully and stay present.','Morning Class','meaning_insight');
+ await page.clock.setFixedTime(new Date('2026-11-04T15:30:00-10:00'));
  await capture('A small kindness','A teammate helped me through a busy afternoon.','Work Duty','meaning_insight');
+ await page.clock.setFixedTime(new Date('2026-11-04T17:30:00-10:00'));
  await capture('Dinner Reflection','Dinner felt warm and restful. Grateful for our conversation.','Dinner','meaning_insight');
+ await page.clock.setFixedTime(new Date('2026-11-04T19:00:00-10:00'));
  await capture('An idea worth trying','One creative idea I want to explore tomorrow.','Design Class','meaning_practice');
  // Capture an authentic Review screenshot before adding a prayer session.
  await page.locator('.tabs [data-page="records"]').click();
  await page.waitForTimeout(650);
  await page.screenshot({path:OUT+'/actual-review-before-prayer.png',type:'png',fullPage:true,animations:'disabled'});
+ await page.clock.setFixedTime(new Date('2026-11-04T20:20:00-10:00'));
  await record('Save an actual Prayer session with note',async()=>{
   await page.locator('.tabs [data-page="focus"]').click();
   await page.locator('#kindSeg [data-kind="prayer"]').click();
-  const toggle=page.locator('#focusNoteToggle');
-  if(await toggle.isVisible())await toggle.click();
-  await page.locator('#timerNote').fill('Prayed for a friend who has an exam tomorrow. May they feel peace and courage.');
   await page.locator('#focusStart').click();
   await page.waitForTimeout(1500);
+  const toggle=page.locator('#focusNoteToggle');
+  if(await toggle.isVisible())await toggle.click();
+  const thought='Prayed for a friend who has an exam tomorrow. May they feel peace and courage.';
+  if(await page.locator('#timerNote').isVisible())await page.locator('#timerNote').fill(thought,{timeout:5000});
+  else await page.locator('#timerNote').evaluate((el,text)=>{el.value=text;el.dispatchEvent(new Event('input',{bubbles:true}));},thought);
   await page.locator('#focusEnd').click();
   await page.waitForTimeout(350);
  });
