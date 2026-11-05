@@ -1,6 +1,6 @@
 {
-  "runId": "41971457501",
-  "sourceCommit": "508f8e06031e9b1ddf8eaedcc952c0999ac6fad5",
+  "runId": "41971733717",
+  "sourceCommit": "d57bf977d96de8a31c8811eb800ec934d9311712",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
@@ -8,9 +8,9 @@
     "cases": [
       {
         "path": "/",
-        "ok": false,
+        "ok": true,
         "expectedSha256": "95fb91ab440ee78ee32f58440d7da78dd077e6521616cd93eec419baed0c1c68",
-        "actualSha256": "6ae6beaa3b28bbad6fdfbbbd30ccbc454f61d4d3fbeb1637deffe889a42118cd",
+        "actualSha256": "95fb91ab440ee78ee32f58440d7da78dd077e6521616cd93eec419baed0c1c68",
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
         "workerRelease": "b7e4311050aa"
@@ -587,7 +587,7 @@
       },
       {
         "name": "Current release cache",
-        "ok": false
+        "ok": true
       },
       {
         "name": "Offline shell and saved memo",
@@ -600,15 +600,22 @@
     ],
     "errors": [],
     "missing": [],
-    "release": "d3926b0f4e17"
+    "release": "b7e4311050aa"
   },
   "runs": [
+    {
+      "id": 41971733717,
+      "sha": "d57bf977d96de8a31c8811eb800ec934d9311712",
+      "name": "OnHaru Workers production verification",
+      "status": "in_progress",
+      "conclusion": null
+    },
     {
       "id": 41971457501,
       "sha": "508f8e06031e9b1ddf8eaedcc952c0999ac6fad5",
       "name": "OnHaru Workers production verification",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "id": 41971457482,
@@ -651,14 +658,7 @@
       "name": "OnHaru isolated browser smoke",
       "status": "completed",
       "conclusion": "failure"
-    },
-    {
-      "id": 41969002315,
-      "sha": "5f3f8813c6eaf40e6e5119e7804323c15fb753f6",
-      "name": "OnHaru isolated browser smoke",
-      "status": "completed",
-      "conclusion": "failure"
     }
   ],
-  "allPassed": false
+  "allPassed": true
 }
