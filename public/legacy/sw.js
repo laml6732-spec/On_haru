@@ -1,9 +1,9 @@
 /* Minimal offline-first app shell; images are cached only when requested. */
 const PREFIX='kona-legacy-shell-'; // Keep prefix: clean up old 18 MB versioned caches.
-const RELEASE='wcbrandv320261105';
+const RELEASE='metricsv120261105';
 const CACHE=PREFIX+RELEASE;
 const MEDIA=PREFIX+'media-'+RELEASE;
-const CORE=["./runtime/settings.58b48f87b05a.js?rev=wcbrandv320261105","./assets/onharu-launch-v3.png","./assets/onharu-welcome.png","./icons/onharu-watercolor-v3-512.png","./","./index.html","./app.7cb1b71d4eb6.css?rev=wcbrandv320261105","./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=wcbrandv320261105","./manifest.webmanifest","./icons/onharu-watercolor-v3-192.png"];
+const CORE=["./runtime/install-metrics.v1.js","./runtime/settings.58b48f87b05a.js?rev=wcbrandv320261105","./assets/onharu-launch-v3.png","./assets/onharu-welcome.png","./icons/onharu-watercolor-v3-512.png","./","./index.html","./app.7cb1b71d4eb6.css?rev=wcbrandv320261105","./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=wcbrandv320261105","./manifest.webmanifest","./icons/onharu-watercolor-v3-192.png"];
 const home=new URL('./',self.registration.scope).href;
 const MAX_MEDIA_ENTRIES=16;
 self.addEventListener('install',event=>{
