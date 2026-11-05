@@ -2,6 +2,7 @@
 // Source files remain in GitHub /public. Replace this proxy with a Git-integrated
 // Cloudflare Pages/Workers Static Assets deployment for production.
 // GitHub's raw origin can be rate-limited and is not an asset hosting SLA.
+const RELEASE = "b7e4311050aa";
 const SOURCE = "https://raw.githubusercontent.com/laml6732-spec/On_haru/main/public";
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -38,7 +39,9 @@ async function serve(request) {
   if (!path.startsWith("/legacy/")) path = "/legacy" + path;
   if (path.endsWith("/")) path += "index.html";
 
-  const src = SOURCE + path + url.search;
+  const upstreamUrl = new URL(SOURCE + path + url.search);
+  upstreamUrl.searchParams.set("onharu_release", RELEASE);
+  const src = upstreamUrl.href;
   const ext = Object.keys(MIME).find(k => path.toLowerCase().endsWith(k)) || "";
   const dynamic = ext === ".html" || ext === ".js" || ext === ".webmanifest";
   const cacheSeconds = dynamic ? 60 : 300;
@@ -66,6 +69,7 @@ async function serve(request) {
   headers.delete("set-cookie");
   headers.delete("content-disposition");
   headers.set("x-on-haru-deployment", "github-edge-preview");
+  headers.set("x-on-haru-release", RELEASE);
   return new Response(request.method === "HEAD" ? null : upstream.body, {
     status: 200,
     headers
