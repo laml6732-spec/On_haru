@@ -1,0 +1,664 @@
+{
+  "runId": "41971457501",
+  "sourceCommit": "508f8e06031e9b1ddf8eaedcc952c0999ac6fad5",
+  "url": "https://on-haru.laml6732.workers.dev/",
+  "static": {
+    "url": "https://on-haru.laml6732.workers.dev/",
+    "release": "b7e4311050aa",
+    "cases": [
+      {
+        "path": "/",
+        "ok": false,
+        "expectedSha256": "95fb91ab440ee78ee32f58440d7da78dd077e6521616cd93eec419baed0c1c68",
+        "actualSha256": "6ae6beaa3b28bbad6fdfbbbd30ccbc454f61d4d3fbeb1637deffe889a42118cd",
+        "status": 200,
+        "finalURL": "https://on-haru.laml6732.workers.dev/",
+        "workerRelease": "b7e4311050aa"
+      },
+      {
+        "path": "app.7cb1b71d4eb6.css",
+        "ok": true,
+        "expectedSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
+        "actualSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
+        "status": 200,
+        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=b7e4311050aa",
+        "workerRelease": "b7e4311050aa"
+      },
+      {
+        "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
+        "ok": true,
+        "expectedSha256": "3be915a5b1cd60e62eba04eed7c327f3b998ab331fb49063f13fc944e2c05db0",
+        "actualSha256": "3be915a5b1cd60e62eba04eed7c327f3b998ab331fb49063f13fc944e2c05db0",
+        "status": 200,
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=b7e4311050aa",
+        "workerRelease": "b7e4311050aa"
+      },
+      {
+        "path": "runtime/settings.58b48f87b05a.js",
+        "ok": true,
+        "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
+        "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
+        "status": 200,
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=b7e4311050aa",
+        "workerRelease": "b7e4311050aa"
+      },
+      {
+        "path": "sw.js",
+        "ok": true,
+        "expectedSha256": "53b5013f2991f93fc24986778fddd29202faa3115ae5ff46f21bb08151780e85",
+        "actualSha256": "53b5013f2991f93fc24986778fddd29202faa3115ae5ff46f21bb08151780e85",
+        "status": 200,
+        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=b7e4311050aa",
+        "workerRelease": "b7e4311050aa"
+      }
+    ]
+  },
+  "smoke": {
+    "url": "https://on-haru.laml6732.workers.dev/",
+    "cases": [
+      {
+        "name": "New event: short name collapsed",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "Short name expands",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "Short-name input remains usable",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "Short name resets collapsed on reopen",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "More keeps its top alignment",
+        "ok": true,
+        "details": "delta 0px"
+      },
+      {
+        "name": "Dark capture note contrast ≥ 4.5:1",
+        "ok": true,
+        "details": "10.67:1"
+      },
+      {
+        "name": "Saved note visible in Review",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "App confirmation cancel is safe",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "App text prompt returns edit",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "320px Capture not horizontally overflowing",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "1024px event dialog visible",
+        "ok": true,
+        "details": ""
+      }
+    ],
+    "pageErrors": [],
+    "artifacts": "test-results/live/smoke"
+  },
+  "acceptance": [
+    {
+      "width": 320,
+      "theme": "light",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": true
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": true
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(48, 69, 77)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.076346058382203
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.051871741322568
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(54, 91, 73)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 6.8077265644385
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(88, 109, 86)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 5.009084243359029
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(38, 93, 73)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 7.214095788024234
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 5.021495640455905
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 5.021495640455905
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 254, 252)",
+          "ratio": 9.972595690627822
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": true
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": true
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 9.63745137722458
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 14.832233281769465
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": true
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": true
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(48, 69, 77)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.076346058382203
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.051871741322568
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(54, 91, 73)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 6.8077265644385
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(88, 109, 86)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 5.009084243359029
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(38, 93, 73)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 7.214095788024234
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 5.021495640455905
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 5.021495640455905
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 254, 252)",
+          "ratio": 9.972595690627822
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": true
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": true
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 9.63745137722458
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 14.832233281769465
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": true
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": true
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(48, 69, 77)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.076346058382203
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.051871741322568
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(54, 91, 73)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 6.8077265644385
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(88, 109, 86)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 5.009084243359029
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(38, 93, 73)",
+          "bg": "rgb(250, 247, 242)",
+          "ratio": 7.160595303349614
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 247, 242)",
+          "ratio": 4.984255706519644
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 247, 242)",
+          "ratio": 4.984255706519644
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 254, 252)",
+          "ratio": 9.972595690627822
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": true
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": true
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 9.63745137722458
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 14.832233281769465
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        }
+      ]
+    }
+  ],
+  "pwa": {
+    "checks": [
+      {
+        "name": "PWA manifest and icons",
+        "ok": true
+      },
+      {
+        "name": "Current release cache",
+        "ok": false
+      },
+      {
+        "name": "Offline shell and saved memo",
+        "ok": true
+      },
+      {
+        "name": "No local asset 404",
+        "ok": true
+      }
+    ],
+    "errors": [],
+    "missing": [],
+    "release": "d3926b0f4e17"
+  },
+  "runs": [
+    {
+      "id": 41971457501,
+      "sha": "508f8e06031e9b1ddf8eaedcc952c0999ac6fad5",
+      "name": "OnHaru Workers production verification",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 41971457482,
+      "sha": "508f8e06031e9b1ddf8eaedcc952c0999ac6fad5",
+      "name": "OnHaru static UI checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 41970956710,
+      "sha": "090ffb6322444f421f3c5e6a2d5af9fc8e8bb5d4",
+      "name": "OnHaru release verification",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 41970531246,
+      "sha": "3125e7ea55ff88bbfd4c3fe20b357ea42797b577",
+      "name": "OnHaru release verification",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 41969031382,
+      "sha": "da10184a578029d165aa06f98fd3c9cf9b6a0e7f",
+      "name": "OnHaru focused edit flows",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 41969005799,
+      "sha": "e38b621d60b6e070c445d13bac380a7b6fdf8ab4",
+      "name": "OnHaru isolated browser smoke",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 41969003687,
+      "sha": "f2fb410b76f74e492d1e2451841665a9b037c83f",
+      "name": "OnHaru isolated browser smoke",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 41969002315,
+      "sha": "5f3f8813c6eaf40e6e5119e7804323c15fb753f6",
+      "name": "OnHaru isolated browser smoke",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "allPassed": false
+}
