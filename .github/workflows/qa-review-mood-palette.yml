@@ -1,0 +1,32 @@
+name: On_HARU Review Mood Palette QA
+on:
+  push:
+    branches: ['feature/review-mood-palette-25-light-dark']
+  workflow_dispatch:
+jobs:
+  mood-palette:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node --check public/legacy/runtime/legacy-controllers.9a6fbb5e22cc.js
+      - run: node --check public/legacy/sw.js
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-mood-server.log 2>&1 &
+      - name: Full six-viewport Mood Palette visual/behavior tests
+        run: node scripts/qa-review-mood-palette.mjs
+      - name: Existing smoke/regression checks
+        run: |
+          ONHARU_ARTIFACTS=test-results/review-smoke node scripts/ui-smoke.mjs
+          ONHARU_ARTIFACTS=test-results/review-matrix node scripts/ui-matrix.mjs
+      - name: Upload before/after comparison evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-mood-palette-screenshots
+          path: test-results/
+          retention-days: 14
