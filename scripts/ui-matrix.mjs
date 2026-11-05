@@ -73,7 +73,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
  });
  await check('Event edit retains collapsed short name and saved text',async()=>{
   await tap('today');await page.locator('#konaScheduleMore > summary').click();await page.locator('#konaScheduleMore [data-go="schedule"]').click();
-  await page.locator('#eventManageList').getByRole('button',{name:'Edit QA Event',exact:true}).click();await page.locator('#choiceList button').filter({hasText:'Edit event'}).click();
+  await page.locator('#eventManageList button[aria-label="Edit QA Event"]').click();await page.locator('#choiceList button').filter({hasText:'Edit event'}).click();
   await expect(!await page.locator('#eventShortNameDetails').evaluate(e=>e.open),'edit short name open');await page.locator('#eventShortNameDetails summary').click();await expect(await page.locator('#eventShortTitle').inputValue()==='TEST','short name lost');await page.locator('#eventTitle').fill('QA Event edited');await page.locator('#eventSave').click();await tap('today');
  });
  await check('Review edit, delete cancellation, filter and archive search',async()=>{
