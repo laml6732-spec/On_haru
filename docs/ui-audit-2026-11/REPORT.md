@@ -1,5 +1,12 @@
 # On_HARU 수정 및 배포 검증
 
+## 아이콘 검은 모서리 수정 — 2026-11-04 하와이
+
+기존 192px/512px RGB 아이콘의 네 모서리가 (0,0,0)으로 채워져 있었다. 하늘·구름·파도가 모서리까지 이어지는 정사각 수채화 이미지로 교체했다. manifest·favicon·apple-touch-icon·SW 캐시 참조를 새 파일명으로 갱신했다. 새 릴리스 c94f6e1205ab. 앱 데이터 키·저장 구조는 변경하지 않았다.
+
+[PR #2](https://github.com/laml6732-spec/On_haru/pull/2) main 병합 완료. [후보 전체 회귀 검사](https://github.com/laml6732-spec/On_haru/actions/runs/41974131675) 및 [Workers 운영 검사](https://github.com/laml6732-spec/On_haru/actions/runs/41974559946) 성공. 운영 루트 5/5 파일 일치, smoke 11/11, 6개 구성 30/30, PWA 5/5. 두 아이콘의 모든 모서리가 불투명 하늘색·바다색임을 브라우저 canvas로 확인했다. 설치된 운영체제 아이콘의 실제 갱신 시점은 기기 캐시에 따라 달라질 수 있다.
+
+
 ## 최종 후보 검증 — 2026-11-05 UTC
 
 기존 On_HARU 구성과 로고, 메모 저장 키·스키마·마이그레이션을 유지했다. 아래 초기 감사의 배포 차단 문제를 수정했다.
