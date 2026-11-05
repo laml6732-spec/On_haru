@@ -101,6 +101,7 @@ async function takeAppScreenshot(c) {
     // Verify three Capture entries really appear under three different events in Plan.
     const expected=['A small kindness','A good conversation','Something to try'];
     const notes=await page.locator('#kx-summary .kona-rich-note.has-note').allTextContents();
+    console.log('Promo Plan debug',JSON.stringify({planText:(await page.locator('#kx-summary').innerText()).slice(0,1900),noteCount:notes.length,noteTexts:notes,selectorOptions:await page.locator('#qc-select').evaluate(x=>[...x.options].map(o=>o.textContent))}));
     for(const title of expected)
       if(!notes.some(t=>t.includes(title)))throw new Error('Capture note not shown in Plan: '+title);
     if(notes.length<3)throw new Error('Plan has fewer than three linked Capture notes');
