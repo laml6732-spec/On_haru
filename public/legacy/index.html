@@ -44,7 +44,26 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&amp;family=Fredoka:wght@600&amp;family=Gaegu&amp;family=Manrope:wght@300&amp;family=Nunito:wght@400;600;700&amp;family=Pacifico&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=c94f6e1205ab"></head>
+<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=c94f6e1205ab">
+<style id="onharu-review-session-spacing">
+/* Review > Reflect: keep session title distinct, and its timing close to the note.
+   Only affect session records in the daily review; never change stored content. */
+body .app #page-records #new-reflect-page .review-session-record .rv-entry-body > .rv-user-note-title {
+  margin:0 0 12px!important;
+  padding:0!important;
+  min-height:0!important;
+}
+body .app #page-records #new-reflect-page .review-session-record .rv-entry-body > .review-record-meta:not(:empty) {
+  margin:0 0 2px!important;
+  min-height:0!important;
+  padding:0!important;
+}
+body .app #page-records #new-reflect-page .review-session-record .rv-entry-body > .rv-note-preview {
+  margin:0 0 4px!important;
+  padding:0!important;
+  min-height:0!important;
+}
+</style></head>
 <body>
 <div id="launchScreen" role="status" aria-label="On_Haru"><img id="launchArt" alt="On_Haru" fetchpriority="high"></div>
 <script>
