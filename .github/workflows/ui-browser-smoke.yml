@@ -4,8 +4,6 @@ on:
   push:
     branches: ['work/css-audit-regression-2026-11']
     paths: ['.github/workflows/ui-browser-smoke.yml', 'scripts/ui-*.mjs', 'public/legacy/**']
-permissions:
-  contents: write
 jobs:
   smoke:
     runs-on: ubuntu-latest
@@ -40,26 +38,9 @@ jobs:
       - run: node scripts/compare-ui-matrix.mjs
         if: always()
       - uses: actions/upload-artifact@v4
-        id: evidence
         if: always()
         with:
           name: ui-smoke-screenshots
           path: test-results/
 
           retention-days: 7
-      - name: Save reviewable results on audit branch
-        if: always() && github.ref == 'refs/heads/work/css-audit-regression-2026-11'
-        run: |
-          mkdir -p docs/ui-audit-2026-11
-          node --input-type=module <<'JS'
-          import fs from 'node:fs';
-          const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return null}};
-          const compact=rows=>rows?.map(({styles,controls,...rest})=>rest);
-          const result={runId:process.env.GITHUB_RUN_ID,sourceCommit:process.env.GITHUB_SHA,url:'https://github.com/'+process.env.GITHUB_REPOSITORY+'/actions/runs/'+process.env.GITHUB_RUN_ID,before:compact(read('test-results/before/report.json')),after:compact(read('test-results/after/report.json')),extra:read('test-results/extra/report.json'),pwa:read('test-results/pwa/report.json'),smoke:read('test-results/onharu-ui/report.json'),comparison:read('test-results/comparison.json')};
-          fs.writeFileSync('docs/ui-audit-2026-11/CI_RESULTS.json',JSON.stringify(result,null,2));
-          JS
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/ui-audit-2026-11/CI_RESULTS.json
-          git diff --cached --quiet || git commit -m "evidence: record isolated CSS audit results"
-          git push origin HEAD:work/css-audit-regression-2026-11
