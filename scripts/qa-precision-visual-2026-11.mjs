@@ -136,5 +136,27 @@ for(const conf of all){
  await fs.writeFile(dir+'/report.json',JSON.stringify(report,null,2));
  await browser.close();
 }
+const sizes=report.configurations.map(row=>{
+ const lookup=(v,key)=>row.views[v]?.elements?.find(e=>e.selector===key);
+ const group=row.views.records?.visualRelations?.groups||[];
+ return {viewport:row.id,
+   pageLeft:lookup('today','#page-today')?.x,appWidth:lookup('today','#page-today')?.w,
+   writeExpand:lookup('capture','.kona-tag-tray-toggle')&&{w:lookup('capture','.kona-tag-tray-toggle').w,h:lookup('capture','.kona-tag-tray-toggle').h},
+   sheep:lookup('capture','.kona-sheep-icon')?.w,
+   planMenu:lookup('today','#konaScheduleMore')&&{w:lookup('today','#konaScheduleMore').w,h:lookup('today','#konaScheduleMore').h},
+   checkTime:lookup('checkin','#checkRecordedTime')?.h,
+   focusCenterDelta:lookup('focus','#focusClock')&&Math.round((lookup('focus','#focusClock').x+lookup('focus','#focusClock').w/2-row.width/2)*10)/10,
+   groupGap:group.length>1?Math.round((group[1].y-(group[0].y+group[0].height))*10)/10:null,
+   planNoteX:row.views.records?.visualRelations?.planNote?.x,
+   personalNoteX:row.views.records?.visualRelations?.personal?.x,
+   classTitleFont:lookup('records','.review-class-title')?.fs,
+   moodDay:lookup('mood','.archive-mood-day')&&{w:lookup('mood','.archive-mood-day').w,h:lookup('mood','.archive-mood-day').h},
+   moodWeekdayFont:lookup('mood','.archive-mood-weekdays')?.fs,
+   moodLegendFont:lookup('mood','.archive-mood-legend')?.fs,
+   smallCount:Object.fromEntries(Object.entries(row.views).map(([k,v])=>[k,v.smallTargets?.length||0])),
+   clipTextCount:Object.fromEntries(Object.entries(row.views).map(([k,v])=>[k,v.clipText?.length||0]))
+ }
+});
+console.log('PRECISION_AUDIT_DETAIL '+JSON.stringify(sizes));
 console.log('PRECISION_AUDIT_SUMMARY '+JSON.stringify(report.summary));
 if(report.summary.failed||report.summary.browserExceptions)process.exitCode=1;
