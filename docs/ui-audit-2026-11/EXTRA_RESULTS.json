@@ -1,0 +1,204 @@
+{
+  "runId": "41967882531",
+  "sourceCommit": "6e3a5cac9ddae0b777dbad73f2851672bc5b9ed3",
+  "cases": [
+    {
+      "width": 320,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "checks": [
+        {
+          "name": "Guided practice Capture, Check-in, sliders, Task, Review and finish",
+          "ok": true
+        },
+        {
+          "name": "Capture title, emoji More/Less and saved tags",
+          "ok": true
+        },
+        {
+          "name": "Prayer add, log, edit and safe delete cancellation",
+          "ok": false,
+          "details": "TimeoutError: locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('#choiceList button').filter({ hasText: 'Edit title' })\n    - locator resolved to <button type=\"button\" class=\"choice\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"focusLibraryTitle\">…</div> from <div class=\"modal-under\" role=\"presentation\" id=\"focusLibraryModal\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+        },
+        {
+          "name": "Devotion scripture prompt",
+          "ok": true
+        },
+        {
+          "name": "Recurring event category and whole-series edit scope",
+          "ok": false,
+          "details": "Error: locator.click: Error: strict mode violation: locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true }) resolved to 2 elements:\n    1) <div tabindex=\"0\" role=\"button\" class=\"record-item tap\" aria-label=\"Edit QA recurring\">…</div> aka getByText('21:00QA recurringUntil 21:')\n    2) <button type=\"button\" class=\"mini-btn\" title=\"Edit QA recurring\" aria-label=\"Edit QA recurring\">Edit</button> aka getByTitle('Edit QA recurring')\n\nCall log:\n  - waiting for locator('#eventManageList').getByRole('button', { name: 'Edit QA recurring', exact: true })\n"
+        },
+        {
+          "name": "Task edit preserves identity",
+          "ok": true
+        }
+      ],
+      "errors": []
+    }
+  ]
+}
