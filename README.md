@@ -1,44 +1,38 @@
-# On_Haru
+# On_HARU
 
-Original app: https://onharu.myeram.chatgpt.site/legacy/
+On_HARU is a bilingual, offline-friendly faith reflection and daily-notes PWA. The original legacy UI remains at `public/legacy/`.
 
-The original app files are preserved in `public/legacy/`. The root redirects to `/legacy/`.
+## Production (GitHub → Cloudflare Pages)
 
-## Current Cloudflare edge preview
+- **Official Pages URL:** https://on-haru-pages.pages.dev/legacy/
+- **Repository:** `laml6732-spec/On_haru`, `main` branch
+- **Cloudflare Pages project:** `on-haru-pages`
+- **Build:** no build command; output directory `public`
+- Commits to `main` trigger automatic Pages deployments.
+- The older edge proxy is a separate preview at https://on-haru.laml6732.workers.dev/legacy/.
+- The original app at https://onharu.myeram.chatgpt.site/legacy/ is separate and should remain unchanged.
 
-- URL: https://on-haru.laml6732.workers.dev/legacy/
-- Cloudflare Worker: `on-haru`
-- Worker source: [cloudflare/on-haru-edge-preview.js](cloudflare/on-haru-edge-preview.js)
-- The Worker serves the existing GitHub `main` branch's `public/` files through the Cloudflare URL. App UI and files were not changed.
-- This is an **edge proxy preview**, **not a Cloudflare Pages static-asset deployment**. Static files are fetched from `raw.githubusercontent.com`. Updates to `main` generally appear after cache expiry (60–300 seconds, plus any GitHub caching); they are not triggered by a GitHub deployment webhook. Production release should use a Git-integrated Pages or Workers Static Assets deployment.
-- Changing the Worker source file in GitHub does **not** automatically redeploy Worker logic; a Cloudflare Worker deployment is needed.
+## Current work and test instructions
 
-## Local preview
+For the detailed UI cleanup scope, status, risks, acceptance criteria and Work-mode handoff, read [docs/WORK_UI_HANDOFF.md](docs/WORK_UI_HANDOFF.md).
 
 ```sh
+# Terminal 1: local server for UI checks
 python3 -m http.server 8080 --directory public
+
+# Terminal 2: fast structural scan and CSS diagnostics
+node scripts/verify-ui-static.mjs
+node scripts/audit-css.mjs
+
+# Browser checks (uses a new isolated test profile)
+npm install --no-save --no-package-lock playwright-core@1.56.1
+ONHARU_URL=http://127.0.0.1:8080/legacy/ node scripts/ui-smoke.mjs
 ```
 
-Open http://localhost:8080/legacy/.
+A GitHub Actions workflow runs static structural checks on relevant source pushes. Browser smoke screenshots are stored in `test-results/onharu-ui/` when executed.
 
-## Recommended production deployment: Git-integrated Cloudflare Pages
+## Safety / storage
 
-1. In GitHub, grant the **Cloudflare Workers & Pages** app access to `laml6732-spec/On_haru` at https://github.com/settings/installations.
-2. In Cloudflare **Workers & Pages**, create a Pages project connected to this GitHub repository. If Git connection reports an installation error, reinstall or reauthorize the Cloudflare GitHub app first.
-3. Configure: project `on-haru`, production branch `main`, root directory `/`, empty build command, output directory `public`.
-4. Deploy. Git pushes to `main` will then automatically trigger real static-asset deployments.
+Personal notes and records are stored in the current browser profile. Do not modify the existing storage schema or keys, clear local data, or test destructive operations in a real user's browser. Test with isolated temporary browser contexts and fabricated entries.
 
-This deployment was initially attempted via the Cloudflare Pages API on 2026-11-04 but Cloudflare rejected Git integration with `8000011: internal issue with your Cloudflare Pages Git installation`. The Worker preview avoids this Git installation dependency.
-
-**Browser data migration:** Personal records remain in browser storage scoped to their original domain. They do not automatically transfer to a different domain. Export a JSON backup in the original app before switching domains, then import it in the new app.
-
-## Git-integrated production deployment (2026-11-04)
-
-- Cloudflare Pages project: `on-haru-pages`
-- GitHub source: `laml6732-spec/On_haru`, production branch `main`.
-- Build settings: root `/`, build command empty (static HTML), output directory `public`.
-- Pages host: https://on-haru-pages.pages.dev/legacy/
-- Automatic production builds are enabled for commits to `main`.
-- Existing `on-haru` Workers.dev edge preview remains intact for comparison and rollback.
-- No app UI, assets, or browser-storage behavior were changed by configuring this deployment.
-- **User data note:** Browser local storage is scoped to the host. Before switching from the original or preview hostname, export a JSON backup from the old app and import it on the new hostname. Avoid deleting any old-site data until verified.
+When changing asset references, update the **same** release marker in both `public/legacy/index.html` and `public/legacy/sw.js` so installed PWA clients do not keep outdated CSS/JavaScript. Do not change visual design or core behavior as part of unrelated deployment maintenance.
