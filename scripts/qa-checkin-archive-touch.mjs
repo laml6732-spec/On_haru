@@ -61,9 +61,10 @@ try{
        const navs=[...document.querySelectorAll('#archive-search .archive-mood-arrow')];
        return{days:days.length,minHeight:Math.min(...heights),minWidth:Math.min(...widths),
          weekdaySize:parseFloat(getComputedStyle(weekday).fontSize),
-         tooltipSize:parseFloat(getComputedStyle(el('#archive-search .archive-mood-info-tooltip')).fontSize),
-         infoVisible:!!el('#archive-search .archive-mood-info summary'),
-         oldLegendCount:document.querySelectorAll('#archive-search .archive-mood-legend').length,
+         legendSize:parseFloat(getComputedStyle(el('#archive-search .archive-mood-visible-legend')).fontSize),
+         legendVisible:!!el('#archive-search .archive-mood-visible-legend'),
+         legendItems:document.querySelectorAll('#archive-search .archive-mood-legend-item').length,
+         infoCount:document.querySelectorAll('#archive-search .archive-mood-info').length,
          gridColumns:getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length,
          navHeights:navs.map(e=>rect(e).h),navWidths:navs.map(e=>rect(e).w),
          overflow:document.documentElement.scrollWidth-window.innerWidth,
@@ -72,7 +73,7 @@ try{
      });
      if(measures.days<28||measures.days>31)throw Error('Expected full month of days: '+JSON.stringify(measures));
      if(measures.minHeight<47.9)throw Error('Mood day height <48px: '+JSON.stringify(measures));
-     if(measures.weekdaySize<11.4||measures.tooltipSize<11.9||!measures.infoVisible||measures.oldLegendCount>0)throw Error('Weekday or tooltip text too small (or old legend still present)');
+     if(measures.weekdaySize<11.4||measures.legendSize<10||!measures.legendVisible||measures.legendItems!==4||measures.infoCount!==0)throw Error('Visible phase legend is incomplete or unreadable: '+JSON.stringify(measures));
      if(measures.gridColumns!==7)throw Error('Mood 7-column grid changed');
      if(measures.navHeights.some(h=>h<43.9)||measures.navWidths.some(w=>w<43.9))throw Error('Mood month arrows too small');
      if(measures.overflow>1||measures.offscreen)throw Error('Mood calendar overflows the viewport');

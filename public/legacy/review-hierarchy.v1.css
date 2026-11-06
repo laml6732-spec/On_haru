@@ -421,3 +421,226 @@ html[data-appearance=dark] body .app #page-records #archive-search .archive-mood
   min-height:44px!important;height:44px!important;
  }
 }
+
+
+/* Archive Mood hierarchy v2: selected-day data before supporting 7-day trend. */
+body .app #page-records #archive-search .archive-mood-view-switch{
+  margin:5px 0 8px!important;
+  border:1px solid var(--line)!important;
+  background:#edf1ed!important;
+  gap:3px!important;
+}
+body .app #page-records #archive-search .archive-mood-view-switch>button{
+  min-height:44px!important;
+  border:1px solid transparent!important;
+  color:var(--sub)!important;
+  background:transparent!important;
+}
+body .app #page-records #archive-search .archive-mood-view-switch>button[aria-pressed="true"]{
+  background:var(--surface)!important;color:var(--ink)!important;
+  border:1px solid var(--line)!important;
+  box-shadow:0 1px 2px #00000010!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-view-switch{
+  background:var(--surface)!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-view-switch>button[aria-pressed="true"]{
+  background:var(--bg)!important;color:var(--ink)!important;
+  border:1px solid var(--line)!important;
+  box-shadow:none!important;
+}
+body .app #page-records #archive-search .archive-mood-detail{
+  margin:0 0 9px!important;padding:7px 0 12px!important;
+  border-top:0!important;border-bottom:1px solid var(--line)!important;
+}
+body .app #page-records #archive-search .archive-mood-detail>h3{
+  margin:0 0 9px!important;color:var(--ink)!important;
+  font-size:calc(15px * var(--kona-ui-scale,1))!important;
+  font-weight:750!important;
+}
+body .app #page-records #archive-search .archive-mood-entry-grid{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important;min-width:0!important;
+}
+body .app #page-records #archive-search .archive-mood-entry-grid[data-count="1"]{
+  grid-template-columns:minmax(0,1fr)!important;
+}
+body .app #page-records #archive-search .archive-mood-entry-grid .archive-mood-item{
+  min-width:0!important;margin:0!important;padding:10px!important;
+  border:1px solid var(--line)!important;border-radius:9px!important;
+  background:var(--surface)!important;
+}
+body .app #page-records #archive-search .archive-mood-entry-grid .archive-mood-item-head{
+  min-width:0!important;gap:3px!important;
+}
+body .app #page-records #archive-search .archive-mood-entry-grid .archive-mood-item-head>strong{
+  color:var(--ink)!important;font-weight:700!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search .archive-mood-entry-grid .archive-mood-time{
+  color:var(--sub)!important;font-size:calc(10px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search .archive-mood-entry-grid .archive-mood-item-values{
+  margin:8px 0 5px!important;gap:7px!important;
+  flex-wrap:nowrap!important;align-items:flex-start!important;min-width:0!important;
+}
+body .app #page-records #archive-search .archive-mood-feeling-name{
+  min-width:0!important;overflow-wrap:anywhere!important;
+  font-size:calc(15px * var(--kona-ui-scale,1))!important;
+  line-height:1.25!important;color:var(--ink)!important;font-weight:750!important;
+}
+body .app #page-records #archive-search .archive-mood-entry-grid .archive-mood-dot{
+  flex:0 0 10px!important;width:10px!important;height:10px!important;
+  margin-top:4px!important;
+}
+body .app #page-records #archive-search .archive-mood-rating-row{
+  display:flex!important;align-items:center!important;flex-wrap:wrap!important;
+  gap:2px 9px!important;margin:0!important;min-width:0!important;
+  color:var(--ink)!important;font-size:calc(11px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search .archive-mood-rating-row .archive-mood-energy{
+  margin:0!important;color:var(--ink)!important;
+  font-size:inherit!important;
+}
+body .app #page-records #archive-search .archive-mood-heading{
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr) 44px!important;
+  align-items:center!important;gap:0!important;
+  min-height:44px!important;margin:4px 0 5px!important;
+}
+body .app #page-records #archive-search .archive-mood-heading .archive-mood-month-label{
+  display:flex!important;flex-direction:column!important;justify-content:center!important;
+  align-items:center!important;min-width:0!important;gap:1px!important;
+  text-align:center!important;
+}
+body .app #page-records #archive-search .archive-mood-heading .archive-mood-period-type{
+  color:var(--sub)!important;
+  font-size:calc(10px * var(--kona-ui-scale,1))!important;
+  font-weight:600!important;
+}
+body .app #page-records #archive-search .archive-mood-heading strong{
+  white-space:nowrap!important;color:var(--ink)!important;
+  font-size:calc(13px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search .archive-mood-arrow{
+  min-width:44px!important;width:44px!important;
+  min-height:44px!important;height:44px!important;
+}
+body .app #page-records #archive-search .archive-mood-arrow:disabled,
+body .app #page-records #archive-search .archive-mood-day:disabled{
+  opacity:.38!important;cursor:default!important;
+}
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-weekdays{
+  margin:2px 0 2px!important;
+}
+body .app #page-records #archive-search .archive-mood-dots{
+  min-height:10px!important;gap:2px!important;
+}
+body .app #page-records #archive-search .archive-mood-dots .archive-mood-dot{
+  width:9px!important;height:9px!important;flex:0 0 9px!important;
+}
+body .app #page-records #archive-search .archive-mood-dot[data-phase="morning"],
+body .app #page-records #archive-search .archive-mood-legend-shape[data-phase="morning"]{
+  border-radius:50%!important;
+}
+body .app #page-records #archive-search .archive-mood-dot[data-phase="noon"],
+body .app #page-records #archive-search .archive-mood-legend-shape[data-phase="noon"]{
+  border-radius:1px!important;
+}
+body .app #page-records #archive-search .archive-mood-dot[data-phase="evening"],
+body .app #page-records #archive-search .archive-mood-legend-shape[data-phase="evening"]{
+  border-radius:1px!important;transform:rotate(45deg) scale(.78)!important;
+}
+body .app #page-records #archive-search .archive-mood-dot[data-phase="night"],
+body .app #page-records #archive-search .archive-mood-legend-shape[data-phase="night"]{
+  border-radius:2px 8px 2px 8px!important;
+}
+body .app #page-records #archive-search .archive-mood-visible-legend{
+  display:flex!important;justify-content:center!important;align-items:center!important;
+  flex-wrap:wrap!important;gap:4px 10px!important;
+  min-width:0!important;margin:7px 0 5px!important;
+  color:var(--ink)!important;
+  font-size:calc(10.5px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search .archive-mood-legend-item{
+  display:inline-flex!important;align-items:center!important;gap:5px!important;
+  white-space:nowrap!important;
+}
+body .app #page-records #archive-search .archive-mood-legend-shape{
+  display:inline-block!important;flex:0 0 9px!important;
+  width:9px!important;height:9px!important;
+  border:1px solid var(--ink)!important;
+  background:var(--ink)!important;opacity:.7!important;
+}
+body .app #page-records #archive-search .archive-mood-color-explainer{
+  flex:0 0 100%!important;text-align:center!important;
+  font-size:calc(10px * var(--kona-ui-scale,1))!important;
+  color:var(--sub)!important;
+}
+body .app #page-records #archive-search .archive-mood-calendar-toggle{
+  display:flex!important;width:max-content!important;max-width:100%!important;
+  margin:4px auto 7px!important;padding:7px 15px!important;
+  min-height:44px!important;
+  border:1px solid var(--line)!important;border-radius:999px!important;
+  background:var(--surface)!important;color:var(--ink)!important;
+}
+body .app #page-records #archive-search .archive-mood-empty-state{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  gap:8px!important;
+}
+body .app #page-records #archive-search .archive-mood-empty{
+  padding:0!important;margin:0!important;color:var(--ink)!important;
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search .archive-mood-open-checkin{
+  display:block!important;width:100%!important;min-height:44px!important;
+  padding:10px 15px!important;margin:0!important;
+  border:1px solid var(--hero-ink)!important;border-radius:9px!important;
+  background:var(--hero-ink)!important;color:var(--surface)!important;
+  box-shadow:none!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;
+  font-weight:700!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-open-checkin{
+  background:var(--ink)!important;border-color:var(--ink)!important;color:var(--bg)!important;
+}
+body .app #page-records #archive-search .archive-mood-recent-link{
+  min-height:44px!important;width:100%!important;margin:0!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;
+  color:var(--ink)!important;text-decoration:underline!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search .archive-mood-open-daily{
+  min-height:44px!important;width:100%!important;margin:4px 0 0!important;
+  padding:7px 10px!important;
+  border:0!important;background:transparent!important;
+  box-shadow:none!important;
+  color:var(--ink)!important;text-decoration:underline!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+}
+@media(max-width:350px){
+  body .app #page-records #archive-search .archive-mood-dots{gap:1px!important}
+  body .app #page-records #archive-search .archive-mood-dots .archive-mood-dot{
+    width:8px!important;height:8px!important;flex-basis:8px!important;
+  }
+  body .app #page-records #archive-search .archive-mood-legend-item{gap:3px!important}
+  body .app #page-records #archive-search .archive-mood-visible-legend{column-gap:7px!important}
+}
+
+
+/* Match compact Mood specificity: primary summary is above the calendar, not below it. */
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-detail{
+  margin:0 0 9px!important;padding:7px 0 12px!important;
+}
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-detail>h3{
+  margin:0 0 9px!important;
+}
+
+
+/* Keep Daily Review a secondary text action in dark mode as well. */
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-open-daily{
+  background:transparent!important;
+  border:0!important;
+  color:var(--ink)!important;
+  box-shadow:none!important;
+  text-decoration:underline!important;
+}
