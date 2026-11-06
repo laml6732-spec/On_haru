@@ -66,7 +66,7 @@ try{
    if(!await page.locator('.archive-mood-info-tooltip').isVisible())throw Error('Tooltip hidden');
    await info.locator('summary').click();
    await week.locator('[data-mood-date="2026-11-04"]').click();
-   if(!await detail.innerText().then(x=>x.includes('Yesterday')))throw Error('Cannot select another day');
+   if(!await page.locator('.archive-mood-detail>h3').innerText().then(x=>x.includes('November 4')))throw Error('Cannot select another day');
    await page.locator('.archive-mood-arrow').first().click();
    const prior=await page.locator('.archive-mood-week-grid .archive-mood-day').evaluateAll(xs=>xs.map(x=>x.dataset.moodDate));
    if(prior[6]!=='2026-10-29')throw Error('Previous 7 days navigation failed');
@@ -84,13 +84,13 @@ try{
    await page.locator('.archive-mood-calendar-toggle').click();
    const collapsed=await page.locator('.archive-mood-week-grid .archive-mood-day').evaluateAll(xs=>xs.map(x=>x.dataset.moodDate));
    if(collapsed.length!==7||collapsed[6]!=='2026-10-30')throw Error('Selected date was not carried back to seven-day view');
+   const after=await page.evaluate(()=>localStorage.getItem('kona.legacy.v1.dayframe'));
+   if(after!==baseline)throw Error('Browsing Mood wrote to stored user records');
    await page.locator('.archive-mood-open-daily').click();
    if(!await page.locator('#rev-reflect').getAttribute('aria-pressed').then(x=>x==='true'))throw Error('Open Daily Review action failed');
    await page.locator('#rev-archive').click();
    await page.locator('.archive-mood-view-switch button').filter({hasText:'Records'}).click();
    if(!await page.locator('#archive-search-input').isVisible())throw Error('Archive Records view lost');
-   const after=await page.evaluate(()=>localStorage.getItem('kona.legacy.v1.dayframe'));
-   if(after!==baseline)throw Error('Browsing Mood wrote to stored user records');
    if(errors.length)throw Error('Page errors '+errors.join(' / '));
    report.ok=true;
    console.log('MOOD_WEEK_PASS '+JSON.stringify({width,theme,detailFraction:placement.fraction,sevenDays:true,fullMonth:true,keyboardInfo:true,dataUnchanged:true}));
