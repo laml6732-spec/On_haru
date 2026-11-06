@@ -1,0 +1,171 @@
+/* On_HARU Review hierarchy v1.
+   Uses only existing app palette/font tokens. No storage or record-schema edits.
+   Loaded after legacy styles so these narrowly scoped rules win. */
+
+/* One first-level Review navigation; nested Archive modes are not peers. */
+body .app #page-records #new-review-switch{margin-bottom:4px!important}
+
+/* Readable, content-first Daily and Weekly secondary labels. */
+body .app #page-records #new-reflect-page :is(.rv-moment-count,.weekly-summary,.rv-save-status,.review-date-count){color:var(--ink)!important}
+body .app #page-records #new-reflect-page .review-weekly-records .weekly-day>.review-date-header .review-date-count,
+body .app #page-records #archive-search-results>.review-date-header .review-date-count{color:var(--ink)!important}
+body .app #page-records #new-reflect-page .weekly-feeling-summary{
+  display:block!important;width:100%!important;box-sizing:border-box!important;
+  margin:5px 0 12px!important;padding:0!important;border:0!important;
+  background:transparent!important;box-shadow:none!important;
+}
+body .app #page-records #new-reflect-page .weekly-feeling-summary>summary{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  min-height:42px!important;padding:7px 10px!important;cursor:pointer!important;
+  border:1px solid var(--line)!important;border-radius:9px!important;
+  color:var(--ink)!important;background:var(--surface)!important;
+  font-weight:650!important;line-height:1.35!important;
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #new-reflect-page .weekly-feeling-summary>summary::after{
+  content:"⌄";font-size:17px;line-height:1;opacity:1;
+}
+body .app #page-records #new-reflect-page .weekly-feeling-summary[open]>summary::after{transform:rotate(180deg)}
+body .app #page-records #new-reflect-page .weekly-feeling-summary>button{
+  display:block!important;width:100%!important;min-height:44px!important;
+  margin:0!important;padding:10px!important;text-align:left!important;
+  border:0!important;border-bottom:1px solid var(--line)!important;
+  border-radius:0!important;background:transparent!important;color:var(--ink)!important;
+}
+body .app #page-records #new-reflect-page .weekly-feeling-summary>button:last-child{border-bottom:0!important}
+body .app #page-records #new-reflect-page .weekly-feeling-summary:not([open])>button{display:none!important}
+body .app #page-records #new-reflect-page .weekly-records .review-section-heading{
+  margin:12px 0 8px!important;color:var(--ink)!important;
+}
+
+/* Search is a supporting tool, followed by one compact search toolbar. */
+body .app #page-records #archive-search .archive-toolbar{
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;
+  gap:7px!important;align-items:center!important;margin:8px 0 7px!important;
+  width:100%!important;min-width:0!important;
+}
+body .app #page-records #archive-search .archive-toolbar>.review-saved-filters{
+  display:flex!important;flex-wrap:nowrap!important;gap:6px!important;
+  min-width:0!important;margin:0!important;padding:0!important;
+}
+body .app #page-records #archive-search .archive-toolbar>.review-saved-filters>button{
+  flex:0 1 auto!important;min-width:0!important;
+  min-height:44px!important;margin:0!important;padding:8px 9px!important;
+  white-space:nowrap!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+  font-weight:650!important;
+}
+body .app #page-records #archive-search .archive-toolbar>.archive-filter-disclosure{
+  display:block!important;min-width:0!important;margin:0!important;padding:0!important;
+}
+body .app #page-records #archive-search .archive-toolbar>.archive-filter-disclosure>summary{
+  min-height:44px!important;margin:0!important;padding:9px 10px!important;
+  white-space:nowrap!important;color:var(--ink)!important;
+}
+body .app #page-records #archive-search .archive-toolbar>.archive-filter-disclosure[open]{
+  grid-column:1/-1!important;
+}
+body .app #page-records #archive-search .archive-toolbar>.archive-filter-disclosure[open]>summary{
+  display:inline-flex!important;margin-bottom:5px!important;
+}
+body .app #page-records #archive-search .archive-toolbar .review-filter>span{
+  color:var(--ink)!important;
+}
+body .app #page-records #archive-search #archive-search-status{
+  margin:4px 0 6px!important;min-height:20px!important;
+  color:var(--ink)!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search .review-saved-filters button[aria-pressed=true],
+body .app #page-records #archive-search .archive-mood-view-switch>button[aria-pressed=true]{
+  background:var(--hero-ink)!important;color:var(--surface)!important;
+  border-color:var(--hero-ink)!important;
+}
+body .app #page-records #archive-search .review-saved-filters button[aria-pressed=false],
+body .app #page-records #archive-search .archive-mood-view-switch>button[aria-pressed=false]{
+  color:var(--ink)!important;
+}
+body .app #page-records #archive-search .archive-mood-view-switch{
+  margin:5px 0 10px!important;
+}
+body .app #page-records #archive-search-results .archive-search-result{
+  padding:9px 2px!important;gap:4px!important;min-height:56px!important;
+}
+body .app #page-records #archive-search-results .archive-search-result .archive-search-preview,
+body .app #page-records #archive-search-results .archive-search-result .archive-search-meta{
+  color:var(--ink)!important;
+}
+body .app #page-records #archive-search-results .archive-search-result .archive-search-meta{
+  font-size:calc(11.5px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search #archive-search-input{color:var(--ink)!important}
+body .app #page-records #archive-search #archive-search-input::placeholder{color:var(--sub)!important;opacity:1!important}
+body .app #page-records #archive-search .archive-filter-disclosure .review-filter select{
+  color:var(--ink)!important;
+}
+
+/* Keep the 7-column Mood calendar; improve date and helper legibility. */
+body .app #page-records #archive-search .archive-mood-heading .archive-mood-info>summary{
+  width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;
+  border:1.5px solid currentColor!important;border-radius:50%!important;
+  font-family:var(--font-ui)!important;font-size:15px!important;font-weight:750!important;
+  color:var(--ink)!important;line-height:1!important;
+}
+body .app #page-records #archive-search .archive-mood-weekdays,
+body .app #page-records #archive-search .archive-mood-day-number,
+body .app #page-records #archive-search .archive-mood-detail :is(h3,.archive-mood-time,.archive-mood-energy),
+body .app #page-records #archive-search .archive-mood-item-head{
+  color:var(--ink)!important;
+}
+body .app #page-records #archive-search .archive-mood-detail .archive-mood-item-values{
+  color:var(--ink)!important;
+}
+body .app #page-records #archive-search .archive-mood-open-daily{
+  min-height:44px!important;color:var(--ink)!important;
+}
+
+/* Dark theme: preserve the existing muted palette and enforce text contrast. */
+html[data-appearance=dark] body .app #page-records #archive-search .review-saved-filters button[aria-pressed=true],
+html[data-appearance=dark] body .app #page-records #archive-search .archive-mood-view-switch>button[aria-pressed=true]{
+  background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important;
+}
+html[data-appearance=dark] body .app #page-records #archive-search #archive-search-input{
+  color:var(--ink)!important;background:var(--surface)!important;
+}
+html[data-appearance=dark] body .app #page-records #archive-search .archive-toolbar>.archive-filter-disclosure>summary{
+  background:var(--surface)!important;color:var(--ink)!important;border-color:var(--line)!important;
+}
+html[data-appearance=dark] body .app #page-records #archive-search .archive-mood-heading .archive-mood-info>summary{
+  color:var(--ink)!important;
+}
+@media(max-width:340px){
+ body .app #page-records #archive-search .archive-toolbar{gap:4px!important}
+ body .app #page-records #archive-search .archive-toolbar>.review-saved-filters{gap:4px!important}
+ body .app #page-records #archive-search .archive-toolbar>.review-saved-filters>button{padding:8px 6px!important;font-size:calc(10.5px * var(--kona-ui-scale,1))!important}
+ body .app #page-records #archive-search .archive-toolbar>.archive-filter-disclosure>summary{padding:8px 7px!important}
+}
+
+
+/* Contrast corrections found by isolated Chromium's complete Review text audit. */
+body .app #page-records #new-reflect-page .review-section-count,
+body .app #page-records #new-reflect-page time.review-event-time,
+body .app #page-records #new-reflect-page .review-weekly-records .review-record :is(time,.kona-tap-edit),
+body .app #page-records #new-reflect-page .weekly-count {
+  color:var(--ink)!important;
+}
+body .app #page-records #new-reflect-page .rv-head .rv-nav button {
+  background:var(--surface)!important;color:var(--ink)!important;
+  border-color:var(--line)!important;
+}
+body .app #page-records button:disabled{
+  opacity:1!important;
+  color:var(--ink)!important;
+  border-color:var(--line)!important;
+}
+
+
+/* Preserve the current three-category Archive taxonomy while raising contrast. */
+body .app #page-records #archive-search-results .archive-record-category,
+body .app #page-records #archive-search-results .archive-record-category small,
+body .app #page-records #archive-search-results .archive-record-schedule-title{
+ color:var(--ink)!important;opacity:1!important;
+}

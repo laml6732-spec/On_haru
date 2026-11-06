@@ -2193,7 +2193,7 @@ function archiveMoodRender(panel){
  const selected=archiveMoodDate.startsWith(archiveMoodMonth)?archiveMoodDate:archiveMoodMonth+'-01';
  const title=new Date(Date.UTC(year,number-1,1)).toLocaleDateString(KonaI18n.dateLocale,{year:'numeric',month:'long',timeZone:'UTC'});
  const heading=el('div',undefined,'archive-mood-heading'),monthTitle=el('strong',title);
- const info=el('details',undefined,'archive-mood-info'),infoToggle=el('summary','ⓘ'),infoTooltip=el('p',
+ const info=el('details',undefined,'archive-mood-info'),infoToggle=el('summary','i'),infoTooltip=el('p',
   archiveMoodText('Color: energy × mood · Ring: energy only · No dot: unrated.','색 점: 에너지×기분 · 빈 원: 에너지만 · 점 없음: 평가 없음.'),
   'archive-mood-info-tooltip');
  infoToggle.setAttribute('aria-label',archiveMoodText('Explain calendar dots','달력 점 설명'));
@@ -2265,7 +2265,7 @@ function archivePracticeName(record){
 }
 function drawArchiveSearch(){
  const input=document.getElementById('archive-search-input'),results=document.getElementById('archive-search-results'),status=document.getElementById('archive-search-status');if(!input||!results||!status)return;
- archiveSearch.append(status);status.hidden=!!archiveDetailRecord;root.classList.add('review-modern-archive');root.classList.remove('archive-searching');other.forEach(p=>p.style.display='none');document.getElementById('archivedWeeklyReflection')?.remove();archiveSearch.querySelectorAll('.archive-back,.archive-filter-disclosure,.archive-active-filters,.archive-filter-row,.archive-period-row,.review-archive-context,.review-saved-filters,.archive-mood-view-switch,.archive-mood-panel').forEach(n=>n.remove());
+ archiveSearch.append(status);status.hidden=!!archiveDetailRecord;root.classList.add('review-modern-archive');root.classList.remove('archive-searching');other.forEach(p=>p.style.display='none');document.getElementById('archivedWeeklyReflection')?.remove();archiveSearch.querySelectorAll('.archive-toolbar,.archive-back,.archive-filter-disclosure,.archive-active-filters,.archive-filter-row,.archive-period-row,.review-archive-context,.review-saved-filters,.archive-mood-view-switch,.archive-mood-panel').forEach(n=>n.remove());
  const searchRow=archiveSearch.querySelector('.archive-search-row'),label=archiveSearch.querySelector('label[for="archive-search-input"]');
  input.placeholder=archiveMoodText('Search records…','기록 검색…');
  searchRow.hidden=!!archiveDetailRecord;results.hidden=false;results.replaceChildren();status.textContent='';
@@ -2290,7 +2290,7 @@ function drawArchiveSearch(){
   results.append(el('h3',fmt(record.date),'archive-date-group'));const row=reviewRow(record);results.append(row);if(record.kind==='reflection'||record.kind==='weekly-reflection')konaBindEditTarget(row.querySelector('.rv-note-preview'),KonaI18n.t("Open reflection · ")+record.date,()=>{if(!reviewCanEdit())return;archiveDetailRecord=null;if(date!==record.date)changeDate(record.date);if(record.kind==='weekly-reflection')openWeeklyAt(record.date);else{mode='reflect';reflectPeriod='daily';renderRecords();reviewJumpToReflection()}});else if(record.kind==='meal')konaBindEditTarget(row.querySelector('.rv-note-preview'),KonaI18n.t("Change meal note · ")+record.date,()=>{if(date!==record.date)changeDate(record.date);const event=dayEvents(record.date).find(e=>e.id===record.sourceId);if(event)openMealLog(event)});return;
  }
  root.classList.remove('archive-detail');
- const savedTabs=el('div',undefined,'review-saved-filters');for(const [id,label] of [['all',KonaI18n.t("All records")],['saved',KonaI18n.t("Saved for later")]]){const b=el('button',label,'mini-btn');b.type='button';b.setAttribute('aria-pressed',String(id==='all'?archiveMeaning==='all':archiveMeaning!=='all'));b.onclick=()=>{if(!reviewCanEdit())return;archiveMeaning=id;drawArchiveSearch()};savedTabs.append(b)}searchRow.after(savedTabs);
+ const savedTabs=el('div',undefined,'review-saved-filters');for(const [id,label] of [['all',KonaI18n.t("All records")],['saved',KonaI18n.t("Saved for later")]]){const b=el('button',label,'mini-btn');b.type='button';b.setAttribute('aria-pressed',String(id==='all'?archiveMeaning==='all':archiveMeaning!=='all'));b.onclick=()=>{if(!reviewCanEdit())return;archiveMeaning=id;drawArchiveSearch()};savedTabs.append(b)}const toolbar=el('div',undefined,'archive-toolbar');searchRow.after(toolbar);toolbar.append(savedTabs);
  const filters=el('div',undefined,'archive-filter-row review-filters');
  function selectFilter(label,options,value,change){const wrap=el('label',undefined,'review-filter');wrap.append(el('span',label));const select=el('select');select.setAttribute('aria-label',label);for(const [id,text] of options)select.append(new Option(text,id));select.value=value;select.onchange=()=>{if(!reviewCanEdit())return;archiveFiltersOpen=true;change(select.value);drawArchiveSearch()};wrap.append(select);filters.append(wrap)}
  selectFilter(KonaI18n.t("Type"),[['all',KonaI18n.t("All types")],['schedule',archiveMoodText('Schedule-linked','일정별')],['practice',archiveMoodText('Prayer · Focus · Devotion','기도 · 포커스 · 묵상')],['personal',archiveMoodText('Unlinked notes','일정과 무관한 메모')]],archiveType,v=>archiveType=v);
@@ -2324,7 +2324,7 @@ function drawArchiveSearch(){
  if(archiveType!=='all')chip(KonaI18n.t('Type'),typeLabels[archiveType]||archiveType,()=>archiveType='all');
  if(archiveContext!=='all')chip(KonaI18n.t('Context'),contexts.get(archiveContext.replace(/^schedule:/,'schedule:'))||archiveContext.replace(/^kind:/,''),()=>archiveContext='all');
  if(archivePeriod!=='all')chip(KonaI18n.t('Period'),archivePeriod==='date'?archiveExactDate:archivePeriod==='week'?KonaI18n.t('This week'):KonaI18n.t('This month'),()=>{archivePeriod='all';archiveExactDate=''});
- disclosure.after(chips);chips.after(status);
+ toolbar.after(chips);chips.after(status);
 
  const matches=all.filter(r=>{
   const type=archiveType==='all'||archiveSemanticGroup(r)===archiveType;
@@ -2488,7 +2488,7 @@ const dates=Array.from({length:7},(_,i)=>dayAdd(start,i)),entries=dates.map(d=>(
 const hasDayContent=x=>x.moments.length||reflectionHasText(x.reflection);
 const {momentCount,recordedDays}=reviewWeekSummary(entries);
 panel.append(el('p',recordedDays+' '+(recordedDays===1?KonaI18n.t("day"):KonaI18n.t("days"))+KonaI18n.t(" recorded · ")+momentCount+KonaI18n.t(" records")+(recordedDays<2?KonaI18n.t(" · Not enough days for a trend"):''),'weekly-summary'));
-const feelings=el('section',undefined,'weekly-feeling-summary');for(const entry of entries){const checks=entry.moments.filter(r=>r.kind==='check'&&(r.feeling||r.energy));const latest=checks.at(-1);if(latest){const summary=el('button',fmt(entry.date)+' · '+(latest.feeling||KonaI18n.t("Unfinished")));summary.type='button';summary.onclick=()=>{reflectPeriod='daily';changeDate(entry.date)};feelings.append(summary)}}if(feelings.childNodes.length){feelings.prepend(el('small',KonaI18n.t("Recorded feelings · original values")));panel.append(feelings)}
+const feelings=el('details',undefined,'weekly-feeling-summary');feelings.setAttribute('aria-label',KonaI18n.t('Recorded feelings'));for(const entry of entries){const checks=entry.moments.filter(r=>r.kind==='check'&&(r.feeling||r.energy));const latest=checks.at(-1);if(latest){const summary=el('button',fmt(entry.date)+' · '+(latest.feeling||KonaI18n.t("Unfinished")));summary.type='button';summary.onclick=()=>{reflectPeriod='daily';changeDate(entry.date)};feelings.append(summary)}}if(feelings.childNodes.length){feelings.prepend(el('summary',KonaI18n.t('Recorded feelings')+' · '+feelings.childNodes.length+' '+KonaI18n.t('days')));panel.append(feelings)}
 panel.append(el('h3',KonaI18n.t("Weekly reflection"),'rv-writing-heading'));
 const status=el('span',tutorialPractice?KonaI18n.t("Practice only · not saved"):reflectionHasText(record)?KonaI18n.t("Saved"):KonaI18n.t("Autosave"),'rv-save-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');const retry=el('button',KonaI18n.t("Retry weekly save"),'mini-btn');retry.type='button';retry.hidden=true;const feedback=el('div',undefined,'rv-save-feedback');feedback.append(status,retry);panel.append(feedback);
 const draft={...record},current=()=>db.weeklyReflections[start]||record;
@@ -2513,8 +2513,8 @@ const records=el('section',undefined,'weekly-records review-weekly-records');rec
 if(!recordedDays)records.append(el('p',KonaI18n.t("No daily records this week. You can still write a reflection."),'reflection-help'));
 for(const entry of entries.filter(hasDayContent).reverse()){
  const day=el('section',undefined,'weekly-day'),heading=reviewDateGroupHeading(entry.date,entry.moments.length,'h4');day.append(heading);
- const sorted=[...entry.moments].sort((a,b)=>Number(b.pinned)-Number(a.pinned));for(const record of sorted.slice(0,2))day.append(reviewRow(record,{preview:true}));
- if(sorted.length>2){const extra=el('details',undefined,'review-more-records');extra.append(el('summary',(sorted.length-2)+KonaI18n.t(" more records")));for(const record of sorted.slice(2))extra.append(reviewRow(record,{preview:true}));day.append(extra)}
+ const sorted=[...entry.moments].sort((a,b)=>Number(b.pinned)-Number(a.pinned));for(const record of sorted.slice(0,3))day.append(reviewRow(record,{preview:true}));
+ if(sorted.length>3){const extra=el('details',undefined,'review-more-records');extra.append(el('summary',(sorted.length-3)+KonaI18n.t(" more records")));for(const record of sorted.slice(3))extra.append(reviewRow(record,{preview:true}));day.append(extra)}
  if(reflectionHasText(entry.reflection)){const saved=el('button',entry.reflection.insight||KonaI18n.t("Daily reflection"),'review-reflection-preview');saved.type='button';saved.onclick=()=>{if(!reviewCanEdit())return;reflectPeriod='daily';changeDate(entry.date)};day.append(saved)}records.append(day)
 }
 panel.insertBefore(records,panel.querySelector('.rv-writing-toolbar'));
