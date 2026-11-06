@@ -290,6 +290,10 @@ body .app #page-capture #qc-v2 .kona-tag-tray-toggle{
   background:transparent!important;box-shadow:none!important;
   isolation:isolate!important;cursor:pointer!important;
 }
+/* At 320px the 44px hit target needs 2px more clearance from the sheep. */
+@media(max-width:375px){
+  body .app #page-capture #qc-v2 .kona-tag-tray-toggle{right:-12px!important;}
+}
 body .app #page-capture #qc-v2 .kona-tag-tray-toggle::before{
   content:"";position:absolute;pointer-events:none;
   inset:50% auto auto 50%;width:32px;height:32px;
