@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="togglealignv120261105"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
+<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="togglechevronsv120261105"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
 <style id="onharu-launch-edge-fix">
 /* True-alpha watercolor launch image; do not blend or mask its transparent edges. */
 #launchScreen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;isolation:isolate;background:#FDFDFB!important;overflow:hidden}
@@ -42,7 +42,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&amp;family=Fredoka:wght@600&amp;family=Gaegu&amp;family=Manrope:wght@300&amp;family=Nunito:wght@400;600;700&amp;family=Pacifico&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=togglealignv120261105">
+<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=togglechevronsv120261105">
 <style id="onharu-capture-sheep-visibility">
 /* Keep the original listening sheep artwork while giving it legibility at emoji size.
    This affects only its Capture tag. Selection remains a single green ring. */
@@ -316,6 +316,32 @@ html[data-appearance="dark"] body .app #page-capture #qc-v2 .kona-tag-tray-toggl
 }
 html[data-appearance="dark"] body .app #page-capture #qc-v2 .kona-tag-tray-toggle[aria-expanded="true"]::before{
   background:#3D6150;border-color:#9AC3A9;
+}
+/* One centered chevron artwork for both states. The same 10px stroke
+   rotates 180 degrees, so expanded/collapsed do not jump in size or baseline.
+   Keep the 32px circle and 44px touch hit box unchanged. */
+body .app #page-capture #qc-v2 .kona-tag-tray-toggle{
+  font-size:0!important;
+  line-height:0!important;
+  color:#245A48!important;
+}
+body .app #page-capture #qc-v2 .kona-tag-tray-toggle::after{
+  content:"";
+  position:absolute;
+  box-sizing:border-box;
+  width:10px;height:10px;
+  top:50%;left:50%;
+  border-right:2.5px solid currentColor;
+  border-bottom:2.5px solid currentColor;
+  pointer-events:none;
+  transform:translate(-50%,-50%) rotate(45deg);
+  transform-origin:center;
+}
+body .app #page-capture #qc-v2 .kona-tag-tray-toggle[aria-expanded="true"]::after{
+  transform:translate(-50%,-50%) rotate(-135deg);
+}
+html[data-appearance="dark"] body .app #page-capture #qc-v2 .kona-tag-tray-toggle{
+  color:#DBEBDD!important;
 }
 /* Keep Plan menu's ellipsis at its existing optical size; enlarge only its box. */
 body .app #page-today #konaScheduleMore>summary{
@@ -624,7 +650,7 @@ body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTra
 
 
 
-<script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=togglealignv120261105"></script><script src="./runtime/settings.58b48f87b05a.js?rev=togglealignv120261105"></script>
+<script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=togglechevronsv120261105"></script><script src="./runtime/settings.58b48f87b05a.js?rev=togglechevronsv120261105"></script>
 <!-- Cloudflare Web Analytics: On_HARU workers.dev -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"f9b29e261a624202a5e611671cd6e2b9"}'></script>
 </body></html>
