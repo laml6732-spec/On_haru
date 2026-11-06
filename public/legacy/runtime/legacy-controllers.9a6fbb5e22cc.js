@@ -2210,6 +2210,11 @@ function archiveMoodEntries(d){
  });
 }
 function archiveMoodRender(panel){
+ const today=nowLocal();
+ // Never create a future mood browsing interval; user history stays read-only.
+ if(archiveMoodDate>today)archiveMoodDate=today;
+ if(archiveMoodWeekEnd>today)archiveMoodWeekEnd=today;
+ if(archiveMoodMonth>today.slice(0,7))archiveMoodMonth=today.slice(0,7);
  const month=archiveMoodMonth.match(/^(\d{4})-(\d{2})$/);
  if(!month)return;
  const year=Number(month[1]),number=Number(month[2]);if(number<1||number>12)return;
@@ -2220,17 +2225,18 @@ function archiveMoodRender(panel){
  const title=archiveMoodExpanded?monthTitle:weekTitle;
  panel.classList.toggle('archive-mood-compact',!archiveMoodExpanded);
  const heading=el('div',undefined,'archive-mood-heading'),periodTitle=el('strong',title);
- const info=el('details',undefined,'archive-mood-info'),infoToggle=el('summary','i'),infoTooltip=el('p',
-  archiveMoodText('Color: energy × mood · Ring: energy only · No dot: unrated.','색 점: 에너지×기분 · 빈 원: 에너지만 · 점 없음: 평가 없음.'),
-  'archive-mood-info-tooltip');
- infoToggle.setAttribute('aria-label',archiveMoodText('Explain calendar dots','달력 점 설명'));
- infoTooltip.setAttribute('role','tooltip');info.append(infoToggle,infoTooltip);
- const periodLabel=el('div',undefined,'archive-mood-month-label');periodLabel.append(periodTitle,info);
+ const periodLabel=el('div',undefined,'archive-mood-month-label');
+ if(!archiveMoodExpanded)periodLabel.append(el('span',archiveMoodText('7-day trend','7일 흐름'),'archive-mood-period-type'));
+ periodLabel.append(periodTitle);
  for(const [text,shift] of [['‹',-1],['›',1]]){
   const label=archiveMoodExpanded
    ?archiveMoodText(shift<0?'Previous month':'Next month',shift<0?'이전 달':'다음 달')
    :archiveMoodText(shift<0?'Previous 7 days':'Next 7 days',shift<0?'이전 7일':'다음 7일');
   const button=el('button',text,'archive-mood-arrow');button.type='button';button.setAttribute('aria-label',label);
+  if(shift>0){
+   const next=archiveMoodExpanded?new Date(Date.UTC(year,number,1)).toISOString().slice(0,7):archiveMoodShiftDay(archiveMoodWeekEnd,7);
+   button.disabled=archiveMoodExpanded?next>today.slice(0,7):next>today;
+  }
   button.onclick=()=>{
    if(!reviewCanEdit())return;
    if(archiveMoodExpanded){
@@ -2267,6 +2273,7 @@ function archiveMoodRender(panel){
  }
  for(const d of daysToShow){
   const entries=archiveMoodEntries(d),button=el('button',undefined,'archive-mood-day');button.type='button';button.dataset.moodDate=d;
+  button.disabled=d>today;
   button.setAttribute('aria-pressed',String(d===selected));
   const descriptions=entries.map(x=>x.phaseLabel+': '+x.feeling+(x.energy!==null?' · '+KonaI18n.t('Energy')+' '+x.energy+'/5':'')+(x.happiness!==null?' · '+KonaI18n.t('Mood')+' '+x.happiness+'/5':''));
   button.setAttribute('aria-label',d+' · '+(descriptions.length?descriptions.join(' · '):archiveMoodText('No mood check-in','감정 체크인 없음')));
@@ -2274,7 +2281,7 @@ function archiveMoodRender(panel){
   const dots=el('span',undefined,'archive-mood-dots');
   for(const e of entries){
    const dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);
-   dot.dataset.phase=e.phase;
+   dot.dataset.phase=e.phase;dot.setAttribute('aria-hidden','true');
    konaReviewMoodTone(dot,e.energy,e.happiness);dot.title=e.phaseLabel+': '+e.feeling;dots.append(dot)
   }
   button.append(dots);
@@ -2288,6 +2295,20 @@ function archiveMoodRender(panel){
   grid.append(button);
  }
  panel.append(grid);
+ const legend=el('div',undefined,'archive-mood-visible-legend');
+ legend.setAttribute('aria-label',archiveMoodText('Mood calendar key','감정 달력 범례'));
+ for(const [phase,label] of [
+  ['morning',archiveMoodText('Morning','오전')],
+  ['noon',archiveMoodText('Midday','낮')],
+  ['evening',archiveMoodText('Evening','저녁')],
+  ['night',archiveMoodText('End of day','하루 마무리')]
+ ]){
+  const item=el('span',undefined,'archive-mood-legend-item');
+  const shape=el('span',undefined,'archive-mood-legend-shape');shape.dataset.phase=phase;shape.setAttribute('aria-hidden','true');
+  item.append(shape,el('span',label));legend.append(item);
+ }
+ legend.append(el('span',archiveMoodText('Color = mood × energy','색상 = 기분 × 에너지'),'archive-mood-color-explainer'));
+ panel.append(legend);
  const toggle=el('button',archiveMoodExpanded
   ?archiveMoodText('Show 7 days','7일만 보기')
   :archiveMoodText('View full month','월간 달력 보기'),'archive-mood-calendar-toggle');
@@ -2301,23 +2322,52 @@ function archiveMoodRender(panel){
   archiveSearch.querySelector('.archive-mood-calendar-toggle')?.focus({preventScroll:true});
  };
  panel.append(toggle);
- // Show all recorded mood phases, including the end-of-day reflection's night mood.
- const detail=el('section',undefined,'archive-mood-detail'),localDate=new Date(selected+'T12:00:00Z').toLocaleDateString(KonaI18n.dateLocale,{month:'long',day:'numeric',weekday:'short',timeZone:'UTC'});
+
+ // Selected-day mood is the primary information, above the date navigator.
+ const detail=el('section',undefined,'archive-mood-detail');
+ detail.setAttribute('aria-label',archiveMoodText('Selected day mood and energy','선택 날짜의 기분과 에너지'));
+ const localDate=new Date(selected+'T12:00:00Z').toLocaleDateString(KonaI18n.dateLocale,{month:'long',day:'numeric',weekday:'short',timeZone:'UTC'});
  detail.append(el('h3',localDate));
  const entries=archiveMoodEntries(selected);
- if(!entries.length){detail.append(el('p',archiveMoodText('No mood or energy check-ins for this date.','이 날짜에 기록된 감정·에너지 체크인이 없어요.'),'archive-mood-empty'))}
- else for(const e of entries){
-  const item=el('div',undefined,'archive-mood-item'),row=el('div',undefined,'archive-mood-item-head');
-  row.append(el('strong',e.phaseLabel),el('span',e.time||'', 'archive-mood-time'));item.append(row);
-  const summary=el('div',undefined,'archive-mood-item-values'),dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);konaReviewMoodTone(dot,e.energy,e.happiness);
-  const moodLabel=e.happiness===null?archiveMoodText('Mood not rated','기분 점수 없음'):e.feeling;
-  summary.append(dot,el('span',moodLabel));
-  if(e.energy!==null)summary.append(el('span',archiveMoodText('Energy ','에너지 ')+e.energy+'/5','archive-mood-energy'));
-  item.append(summary);detail.append(item);
+ if(!entries.length){
+  const empty=el('div',undefined,'archive-mood-empty-state');
+  empty.append(el('p',archiveMoodText('No mood or energy recorded for this day.','이 날짜에는 기분·에너지 기록이 없어요.'),'archive-mood-empty'));
+  const checkin=el('button',selected===today?archiveMoodText('Check in today','오늘 체크인하기'):archiveMoodText('Check in for this day','이 날짜 체크인하기'),'archive-mood-open-checkin');
+  checkin.type='button';
+  checkin.onclick=()=>{if(!reviewCanEdit())return;changeDate(selected);nav('checkin')};
+  empty.append(checkin);
+  // A recent non-empty day is a secondary text link, not a second primary CTA.
+  const recent=Object.keys(db.days).filter(d=>d<selected&&d<=today&&archiveMoodEntries(d).length>0).sort().pop();
+  if(recent){
+   const recentDate=new Date(recent+'T12:00:00Z').toLocaleDateString(KonaI18n.dateLocale,{month:'numeric',day:'numeric',timeZone:'UTC'});
+   const link=el('button',archiveMoodText('See latest mood · ','최근 감정 보기 · ')+recentDate,'archive-mood-recent-link');
+   link.type='button';
+   link.onclick=()=>{if(!reviewCanEdit())return;archiveMoodDate=recent;archiveMoodWeekEnd=recent;archiveMoodMonth=recent.slice(0,7);drawArchiveSearch()};
+   empty.append(link);
+  }
+  detail.append(empty);
+ }else{
+  const cards=el('div',undefined,'archive-mood-entry-grid');
+  cards.dataset.count=String(entries.length);
+  for(const e of entries){
+   const item=el('div',undefined,'archive-mood-item'),row=el('div',undefined,'archive-mood-item-head');
+   row.append(el('strong',e.phaseLabel),el('span',e.time||'', 'archive-mood-time'));item.append(row);
+   const summary=el('div',undefined,'archive-mood-item-values'),dot=el('span',undefined,'archive-mood-dot');
+   dot.dataset.level=String(e.happiness??0);dot.dataset.phase=e.phase;dot.setAttribute('aria-hidden','true');
+   konaReviewMoodTone(dot,e.energy,e.happiness);
+   const moodLabel=e.happiness===null?archiveMoodText('Mood not rated','기분 점수 없음'):e.feeling;
+   summary.append(dot,el('strong',moodLabel,'archive-mood-feeling-name'));item.append(summary);
+   const ratings=el('div',undefined,'archive-mood-rating-row');
+   if(e.happiness!==null)ratings.append(el('span',archiveMoodText('Mood ','기분 ')+e.happiness+'/5','archive-mood-score'));
+   if(e.energy!==null)ratings.append(el('span',archiveMoodText('Energy ','에너지 ')+e.energy+'/5','archive-mood-energy'));
+   item.append(ratings);cards.append(item);
+  }
+  detail.append(cards);
+  const daily=el('button',archiveMoodText('Open Daily Review','해당 날짜의 Daily Review 열기'),'archive-mood-open-daily');daily.type='button';
+  daily.onclick=()=>{if(!reviewCanEdit())return;archiveDetailRecord=null;mode='reflect';reflectPeriod='daily';changeDate(selected)};
+  detail.append(daily);
  }
- const daily=el('button',archiveMoodText('Open Daily Review','해당 날짜의 Daily Review 열기'),'archive-mood-open-daily');daily.type='button';
- daily.onclick=()=>{if(!reviewCanEdit())return;archiveDetailRecord=null;mode='reflect';reflectPeriod='daily';changeDate(selected)};
- detail.append(daily);panel.append(detail);
+ panel.prepend(detail);
 }
 
 function reviewDateGroupHeading(d,count,tag='h3'){
