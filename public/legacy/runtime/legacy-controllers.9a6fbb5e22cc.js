@@ -2179,7 +2179,9 @@ function openArchiveSearchResult(item){root.classList.add('archive-detail');cons
  }
  mode='archive';reviewTab='log';nav('records');document.getElementById('kx-archive').value='log';renderRecords();requestAnimationFrame(()=>{const row=[...document.querySelectorAll('#dayReviewBody .day-review-entry-row')].find(node=>node.dataset.recordId===item.id);if(row){row.scrollIntoView({block:'center',behavior:'smooth'});row.querySelector('.day-review-entry')?.click()}})
 }
-// Archive mood is a read-only view of existing Check-ins. Do not normalize or save days.
+// Archive mood is a read-only view of existing Check-ins AND Daily Reflection's
+// end-of-day check-in. All phases share a single source under db.days[d].checkins.
+// Do not normalize or save days, or infer mood from class notes.
 let archiveMoodView='records',archiveMoodMonth=date.slice(0,7),archiveMoodDate=date;
 // Mood browsing is view-only; expanded state and week anchor never enter stored day data.
 let archiveMoodExpanded=false,archiveMoodWeekEnd=date;
@@ -2188,14 +2190,22 @@ const archiveMoodText=(en,ko)=>KonaI18n.language==='ko'?ko:en;
 function archiveMoodEntries(d){
  const checkins=db.days[d]?.checkins||{};
  const rating=value=>value!==undefined&&value!==null&&value!==''&&Number.isInteger(Number(value))&&Number(value)>=1&&Number(value)<=5?Number(value):null;
- return ['morning','evening'].flatMap(phase=>{
+ const phases=[
+  ['morning',KonaI18n.t('Morning')],
+  ['noon',KonaI18n.t('Midday')],
+  ['evening',KonaI18n.t('Evening')],
+  ['night',KonaI18n.t('End-of-day')]
+ ];
+ return phases.flatMap(([phase,phaseLabel])=>{
   const c=checkins[phase];if(!c)return[];
+  // Only a real mood/energy assessment counts. A Midday class note or
+  // End-of-day reflection text alone must not generate a colored dot.
   const legacy=moodOf(c)||{};
   const energy=rating(c[phase+'Energy']??c[phase+KonaI18n.t('Energy')]??c.mood?.energy??c.mood?.e??legacy.e);
   const happiness=rating(c[phase+'Happiness']??c[phase+KonaI18n.t('Happiness')]??c.mood?.happiness??c.mood?.v??legacy.v);
   if(energy===null&&happiness===null&&!c.mood)return[];
   const name=energy!==null&&happiness!==null?konaFeeling({energy,happiness}):happiness!==null?KONA_MOOD_LABELS[happiness-1]:c.mood?konaFeeling(legacy):'';
-  return [{phase,phaseLabel:KonaI18n.t(phase==='morning'?'Morning':'Evening'),energy,happiness,
+  return [{phase,phaseLabel,energy,happiness,
    feeling:name||archiveMoodText('Mood recorded','감정 기록 있음'),time:validReflectHM(c.moodTime)}];
  });
 }
@@ -2258,12 +2268,13 @@ function archiveMoodRender(panel){
  for(const d of daysToShow){
   const entries=archiveMoodEntries(d),button=el('button',undefined,'archive-mood-day');button.type='button';button.dataset.moodDate=d;
   button.setAttribute('aria-pressed',String(d===selected));
-  const descriptions=entries.map(x=>x.phaseLabel+': '+x.feeling);
+  const descriptions=entries.map(x=>x.phaseLabel+': '+x.feeling+(x.energy!==null?' · '+KonaI18n.t('Energy')+' '+x.energy+'/5':'')+(x.happiness!==null?' · '+KonaI18n.t('Mood')+' '+x.happiness+'/5':''));
   button.setAttribute('aria-label',d+' · '+(descriptions.length?descriptions.join(' · '):archiveMoodText('No mood check-in','감정 체크인 없음')));
   button.append(el('span',String(Number(d.slice(8,10))),'archive-mood-day-number'));
   const dots=el('span',undefined,'archive-mood-dots');
   for(const e of entries){
    const dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);
+   dot.dataset.phase=e.phase;
    konaReviewMoodTone(dot,e.energy,e.happiness);dot.title=e.phaseLabel+': '+e.feeling;dots.append(dot)
   }
   button.append(dots);
@@ -2290,7 +2301,7 @@ function archiveMoodRender(panel){
   archiveSearch.querySelector('.archive-mood-calendar-toggle')?.focus({preventScroll:true});
  };
  panel.append(toggle);
- // The selected day's read-only check-ins appear immediately below the 7-day strip.
+ // Show all recorded mood phases, including the end-of-day reflection's night mood.
  const detail=el('section',undefined,'archive-mood-detail'),localDate=new Date(selected+'T12:00:00Z').toLocaleDateString(KonaI18n.dateLocale,{month:'long',day:'numeric',weekday:'short',timeZone:'UTC'});
  detail.append(el('h3',localDate));
  const entries=archiveMoodEntries(selected);
