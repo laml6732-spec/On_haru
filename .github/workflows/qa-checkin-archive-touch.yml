@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright-core@1.56.1
-      - run: npx playwright-core install --with-deps chromium
+      - run: command -v google-chrome >/dev/null || npx playwright-core install chromium
       - run: node scripts/verify-ui-static.mjs
       - run: python3 -m http.server 8080 --directory public > /tmp/onharu-ui.log 2>&1 &
       - run: node scripts/qa-checkin-archive-touch.mjs
