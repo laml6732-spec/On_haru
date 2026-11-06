@@ -43,6 +43,7 @@ try{
    if(closedAppearance.circleHeight!=='36px')throw Error('Closed circle height differs from emoji height');
    await more.click();
    if(await more.getAttribute('aria-expanded')!=='true')throw Error('More did not expand');
+   await page.waitForTimeout(100); // Let CSS state settle before sampling pseudoelement geometry.
    const openedAppearance=await caretAppearance();
    if(openedAppearance.glyph!=='⌃'||openedAppearance.expanded!=='true')throw Error('Open caret fallback not upward');
    for(const k of ['iconWidth','iconHeight','iconTop','iconLeft','strokeRight','strokeBottom','buttonWidth','buttonHeight','circleWidth','circleHeight']){
@@ -84,6 +85,7 @@ try{
    await page.screenshot({path:dir+'/'+width+'-'+theme+'-expanded.png',animations:'disabled'});
    await more.click();
    if(await more.getAttribute('aria-expanded')!=='false')throw Error('Less did not collapse');
+   await page.waitForTimeout(100);
    const closedAgain=await caretAppearance();
    if(closedAgain.transform!==closedAppearance.transform)throw Error('Caret rotation does not reset after collapse');
    if(closedAgain.buttonWidth!==openedAppearance.buttonWidth||closedAgain.buttonHeight!==openedAppearance.buttonHeight)throw Error('Toggle hitbox moved on collapse');
