@@ -1951,7 +1951,7 @@ box.replaceChildren();box.setAttribute('role','group');box.setAttribute('aria-la
 if(!panel){panel=document.createElement('section');panel.id='new-reflect-page';box.after(panel)}
 let reflectionSettingsShortcut=root.querySelector('#review-reflection-settings');if(!reflectionSettingsShortcut){reflectionSettingsShortcut=document.createElement('button');reflectionSettingsShortcut.id='review-reflection-settings';reflectionSettingsShortcut.type='button';reflectionSettingsShortcut.className='reflection-settings-link';reflectionSettingsShortcut.setAttribute('aria-label',KonaI18n.t("Reflection settings",true));reflectionSettingsShortcut.title=KonaI18n.t("Reflection settings",true);reflectionSettingsShortcut.textContent='⚙';box.after(reflectionSettingsShortcut)}
 let archiveSearch=root.querySelector('#archive-search');if(!archiveSearch){archiveSearch=document.createElement('section');archiveSearch.id='archive-search';archiveSearch.className='archive-search';const label=document.createElement('label');label.htmlFor='archive-search-input';label.textContent=KonaI18n.t("Search records");const row=document.createElement('div');row.className='archive-search-row';const input=document.createElement('input');input.id='archive-search-input';input.type='search';input.setAttribute('aria-label',KonaI18n.t("Search records",true));const clear=document.createElement('button');clear.id='archive-search-clear';clear.type='button';clear.textContent=KonaI18n.t("Clear");clear.setAttribute('aria-label',KonaI18n.t("Clear record search",true));const status=document.createElement('p');status.id='archive-search-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');const results=document.createElement('div');results.id='archive-search-results';row.append(input,clear);archiveSearch.append(label,row,status,results);const picker=root.querySelector('.kx-archive-select');if(picker)picker.after(archiveSearch);else navOld.before(archiveSearch)}
-window.__konaReflectControllerReady=true;let mode='reflect',reflectPeriod='daily',weeklyOffset=0,weeklySelectedDate='',ratingEditorOpen=false,weeklyRecordsExpanded=false,archivePeriod='all';
+window.__konaReflectControllerReady=true;let mode='reflect',reflectPeriod='daily',weeklyOffset=0,weeklySelectedDate='',ratingEditorOpen=false,weeklyRecordsExpanded=false,archivePeriod='all',archiveFiltersOpen=false;
 function el(tag,text,cls){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
 function validReflectHM(raw){
  if(typeof raw!=='string'||!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(raw.trim()))return null;
@@ -2244,10 +2244,19 @@ function archiveMoodRender(panel){
  detail.append(daily);panel.append(detail);
 }
 
+function reviewDateGroupHeading(d,count,tag='h3'){
+ const heading=el(tag,undefined,'review-date-header'+(tag==='h3'?' archive-date-group':''));
+ const today=nowLocal(),yesterday=dayAdd(today,-1);
+ const prefix=d===today?KonaI18n.t('Today'):d===yesterday?KonaI18n.t('Yesterday'):'';
+ heading.append(el('span',(prefix?prefix+' · ':'')+fmt(d),'review-date-label'),
+  el('small',count+' '+(count===1?KonaI18n.t('record'):KonaI18n.t('records')),'review-date-count'));
+ return heading;
+}
 function drawArchiveSearch(){
  const input=document.getElementById('archive-search-input'),results=document.getElementById('archive-search-results'),status=document.getElementById('archive-search-status');if(!input||!results||!status)return;
- archiveSearch.append(status);status.hidden=!!archiveDetailRecord;root.classList.add('review-modern-archive');root.classList.remove('archive-searching');other.forEach(p=>p.style.display='none');document.getElementById('archivedWeeklyReflection')?.remove();archiveSearch.querySelectorAll('.archive-back,.archive-filter-row,.archive-period-row,.review-archive-context,.review-saved-filters,.archive-mood-view-switch,.archive-mood-panel').forEach(n=>n.remove());
+ archiveSearch.append(status);status.hidden=!!archiveDetailRecord;root.classList.add('review-modern-archive');root.classList.remove('archive-searching');other.forEach(p=>p.style.display='none');document.getElementById('archivedWeeklyReflection')?.remove();archiveSearch.querySelectorAll('.archive-back,.archive-filter-disclosure,.archive-active-filters,.archive-filter-row,.archive-period-row,.review-archive-context,.review-saved-filters,.archive-mood-view-switch,.archive-mood-panel').forEach(n=>n.remove());
  const searchRow=archiveSearch.querySelector('.archive-search-row'),label=archiveSearch.querySelector('label[for="archive-search-input"]');
+ input.placeholder=archiveMoodText('Search records…','기록 검색…');
  searchRow.hidden=!!archiveDetailRecord;results.hidden=false;results.replaceChildren();status.textContent='';
  label?.style.removeProperty('display');searchRow.style.removeProperty('display');results.style.removeProperty('display');status.style.removeProperty('display');
  if(!archiveDetailRecord){
@@ -2272,27 +2281,56 @@ function drawArchiveSearch(){
  root.classList.remove('archive-detail');
  const savedTabs=el('div',undefined,'review-saved-filters');for(const [id,label] of [['all',KonaI18n.t("All records")],['saved',KonaI18n.t("Saved for later")]]){const b=el('button',label,'mini-btn');b.type='button';b.setAttribute('aria-pressed',String(id==='all'?archiveMeaning==='all':archiveMeaning!=='all'));b.onclick=()=>{if(!reviewCanEdit())return;archiveMeaning=id;drawArchiveSearch()};savedTabs.append(b)}searchRow.after(savedTabs);
  const filters=el('div',undefined,'archive-filter-row review-filters');
- function selectFilter(label,options,value,change){const wrap=el('label',undefined,'review-filter');wrap.append(el('span',label));const select=el('select');select.setAttribute('aria-label',label);for(const [id,text] of options)select.append(new Option(text,id));select.value=value;select.onchange=()=>{if(!reviewCanEdit())return;change(select.value);drawArchiveSearch()};wrap.append(select);filters.append(wrap)}
+ function selectFilter(label,options,value,change){const wrap=el('label',undefined,'review-filter');wrap.append(el('span',label));const select=el('select');select.setAttribute('aria-label',label);for(const [id,text] of options)select.append(new Option(text,id));select.value=value;select.onchange=()=>{if(!reviewCanEdit())return;archiveFiltersOpen=true;change(select.value);drawArchiveSearch()};wrap.append(select);filters.append(wrap)}
  selectFilter(KonaI18n.t("Type"),[['all',KonaI18n.t("All types")],['note',KonaI18n.t("Notes")],['check',KonaI18n.t("Check-ins")],['session',KonaI18n.t("Sessions")],['reflection',KonaI18n.t("Reflections")]],archiveType,v=>archiveType=v);
  const contexts=new Map();for(const record of all){if(record.scheduleId)contexts.set('schedule:'+record.scheduleId,record.scheduleLabel);if(record.sessionKind)contexts.set('kind:'+record.sessionKind,record.sessionKind[0].toUpperCase()+record.sessionKind.slice(1));if(record.kind==='class')contexts.set('kind:class',KonaI18n.t("Class review"))}
  selectFilter(KonaI18n.t("Context"),[['all',KonaI18n.t("All contexts")],...contexts],archiveContext,v=>archiveContext=v);
  selectFilter(KonaI18n.t("Period"),[['all',KonaI18n.t("All dates")],['week',KonaI18n.t("This week")],['month',KonaI18n.t("This month")],['date',KonaI18n.t("On a date")]],archivePeriod,v=>{archivePeriod=v;if(v==='date'&&!archiveExactDate)archiveExactDate=date});
  if(archiveMeaning!=='all')selectFilter(KonaI18n.t("Saved filter"),[['saved',KonaI18n.t("All saved")],['pinned',KonaI18n.t("📌 Pinned")],['highlighted',KonaI18n.t("Highlighted")],['revisit',KonaI18n.t("Revisited")]],archiveMeaning,v=>archiveMeaning=v);
- savedTabs.after(filters);const context=el('div',undefined,'review-archive-context');filters.after(context);if(archivePeriod==='date'){const picked=el('input');picked.type='date';picked.value=archiveExactDate;picked.setAttribute('aria-label',KonaI18n.t("Record date",true));picked.onchange=()=>{archiveExactDate=picked.value;drawArchiveSearch()};context.append(picked)}
- const reset=el('button',KonaI18n.t("Clear filters"));reset.type='button';reset.hidden=!query&&archiveType==='all'&&archiveContext==='all'&&archivePeriod==='all'&&archiveMeaning==='all';reset.onclick=()=>{input.value='';archiveType='all';archiveContext='all';archivePeriod='all';archiveExactDate='';archiveMeaning='all';drawArchiveSearch();input.focus()};context.append(status,reset);
+ const disclosure=el('details',undefined,'archive-filter-disclosure');
+ disclosure.open=archiveFiltersOpen;
+ disclosure.ontoggle=()=>{if(disclosure.isConnected)archiveFiltersOpen=disclosure.open};
+ const appliedCount=Number(archiveType!=='all')+Number(archiveContext!=='all')+Number(archivePeriod!=='all')+Number(archiveMeaning!=='all'&&archiveMeaning!=='saved');
+ const summary=el('summary',archiveMoodText('Filters','필터')+(appliedCount?' · '+appliedCount:''),'archive-filter-summary');
+ disclosure.append(summary,filters);
+ savedTabs.after(disclosure);
+ const context=el('div',undefined,'review-archive-context');
+ filters.after(context);
+ if(archivePeriod==='date'){const picked=el('input');picked.type='date';picked.value=archiveExactDate;picked.setAttribute('aria-label',KonaI18n.t("Record date",true));picked.onchange=()=>{archiveExactDate=picked.value;archiveFiltersOpen=true;drawArchiveSearch()};context.append(picked)}
+ const reset=el('button',KonaI18n.t("Clear filters"));reset.type='button';
+ reset.hidden=!query&&archiveType==='all'&&archiveContext==='all'&&archivePeriod==='all'&&archiveMeaning==='all';
+ reset.onclick=()=>{input.value='';archiveType='all';archiveContext='all';archivePeriod='all';archiveExactDate='';archiveMeaning='all';drawArchiveSearch();input.focus()};
+ context.append(reset);
+ const chips=el('div',undefined,'archive-active-filters');
+ function chip(label,value,clear){
+  if(!value)return;
+  const button=el('button',label+': '+value+' ×','archive-active-filter-chip');
+  button.type='button';button.setAttribute('aria-label',archiveMoodText('Clear ','해제: ')+label+' '+value);
+  button.onclick=()=>{clear();drawArchiveSearch()};
+  chips.append(button);
+ }
+ const typeLabels={note:KonaI18n.t('Notes'),check:KonaI18n.t('Check-ins'),session:KonaI18n.t('Sessions'),reflection:KonaI18n.t('Reflections')};
+ if(archiveType!=='all')chip(KonaI18n.t('Type'),typeLabels[archiveType]||archiveType,()=>archiveType='all');
+ if(archiveContext!=='all')chip(KonaI18n.t('Context'),contexts.get(archiveContext.replace(/^schedule:/,'schedule:'))||archiveContext.replace(/^kind:/,''),()=>archiveContext='all');
+ if(archivePeriod!=='all')chip(KonaI18n.t('Period'),archivePeriod==='date'?archiveExactDate:archivePeriod==='week'?KonaI18n.t('This week'):KonaI18n.t('This month'),()=>{archivePeriod='all';archiveExactDate=''});
+ disclosure.after(chips);chips.after(status);
+
  const matches=all.filter(r=>{
   const type=archiveType==='all'||archiveType==='note'&&['capture','event','free','anchor','class','meal'].includes(r.kind)||archiveType==='check'&&r.kind==='check'||archiveType==='session'&&r.kind==='session'||archiveType==='reflection'&&['reflection','weekly-reflection'].includes(r.kind);
   const related=archiveContext==='all'||archiveContext==='schedule:'+r.scheduleId||archiveContext==='kind:'+r.sessionKind||archiveContext==='kind:class'&&r.kind==='class';
   const period=archivePeriod==='date'?r.date===archiveExactDate:konaArchivePeriodMatch(r.date,archivePeriod,nowLocal());
   return type&&related&&period&&konaSavedRecordMatches(r,archiveMeaning)&&[r.title,r.noteTitle,r.body,r.feeling,r.scheduleLabel,r.recordedTime,(r.tags||[]).map(konaNoteTagEmoji).join(' ')].join('\n').toLocaleLowerCase().includes(query.toLocaleLowerCase());
  }).sort((a,b)=>b.date.localeCompare(a.date)||String(b.recordedTime||'').localeCompare(String(a.recordedTime||'')));
- status.textContent=matches.length+' '+(matches.length===1?KonaI18n.t("record"):KonaI18n.t("records"));if(!matches.length)results.append(el('p',query?KonaI18n.t("No matching records. Change your search or clear the filters."):KonaI18n.t("No records in this selection."),'archive-empty'));
- let groupDate='';for(const record of matches){if(groupDate!==record.date){groupDate=record.date;results.append(el('h3',fmt(record.date),'archive-date-group'))}const button=el('button',undefined,'archive-search-result');button.type='button';button.dataset.recordDate=record.date;button.dataset.recordId=record.id;
+ status.textContent=matches.length+' '+(matches.length===1?KonaI18n.t("record"):KonaI18n.t("records"))+' · '+archiveMoodText('Newest first','최신순');if(!matches.length)results.append(el('p',query?KonaI18n.t("No matching records. Change your search or clear the filters."):KonaI18n.t("No records in this selection."),'archive-empty'));
+ const dateCounts=new Map();for(const record of matches)dateCounts.set(record.date,(dateCounts.get(record.date)||0)+1);
+ let groupDate='';for(const record of matches){if(groupDate!==record.date){groupDate=record.date;results.append(reviewDateGroupHeading(record.date,dateCounts.get(record.date)))}const button=el('button',undefined,'archive-search-result');button.type='button';button.dataset.recordDate=record.date;button.dataset.recordId=record.id;
   const preview=el('span',undefined,'archive-search-preview'),text=[record.noteTitle&&record.noteTitle!==record.scheduleLabel?record.noteTitle:'',record.body||record.feeling||record.title].filter(Boolean).join('\n');reviewHighlight(preview,konaNoteDisplay(text,record.tags),query);konaApplyNoteTagIcon(preview,record.tags);
   const kind=record.kind==='check'?KonaI18n.t("Check-in"):record.kind==='session'?KonaI18n.t("Session"):['reflection','weekly-reflection'].includes(record.kind)?record.type:KonaI18n.t("Note");const linkedSchedule=record.scheduleLabel&&(record.scheduleId||record.kind==='meal')?record.scheduleLabel:'';
   const metadata=[record.recordedTime,kind].filter(Boolean).join(' · ');
-  if(linkedSchedule)button.append(el('small',linkedSchedule,'review-schedule-label'));
-  button.append(preview,el('span',metadata,'archive-search-meta'));
+  const line=el('span',undefined,'archive-result-head');
+  if(metadata)line.append(el('span',metadata,'archive-search-meta'));
+  if(linkedSchedule)line.append(el('small',linkedSchedule,'review-schedule-label'));
+  button.append(line,preview);
   button.setAttribute('aria-label',record.date+' · '+(linkedSchedule?linkedSchedule+' · ':'')+metadata+' · '+text.slice(0,100));button.onclick=()=>showReviewArchiveRecord(record);results.append(button)
  }
 }
@@ -2425,7 +2463,7 @@ const count=Object.values(db.weeklyReflections||{}).filter(x=>x?.reflected===tru
 const records=el('section',undefined,'weekly-records review-weekly-records');records.append(el('h3',KonaI18n.t("This week’s moments"),'review-section-heading'));
 if(!recordedDays)records.append(el('p',KonaI18n.t("No daily records this week. You can still write a reflection."),'reflection-help'));
 for(const entry of entries.filter(hasDayContent).reverse()){
- const day=el('section',undefined,'weekly-day'),heading=el('h4',fmt(entry.date)+' · '+entry.moments.length+KonaI18n.t(" records"));day.append(heading);
+ const day=el('section',undefined,'weekly-day'),heading=reviewDateGroupHeading(entry.date,entry.moments.length,'h4');day.append(heading);
  const sorted=[...entry.moments].sort((a,b)=>Number(b.pinned)-Number(a.pinned));for(const record of sorted.slice(0,2))day.append(reviewRow(record,{preview:true}));
  if(sorted.length>2){const extra=el('details',undefined,'review-more-records');extra.append(el('summary',(sorted.length-2)+KonaI18n.t(" more records")));for(const record of sorted.slice(2))extra.append(reviewRow(record,{preview:true}));day.append(extra)}
  if(reflectionHasText(entry.reflection)){const saved=el('button',entry.reflection.insight||KonaI18n.t("Daily reflection"),'review-reflection-preview');saved.type='button';saved.onclick=()=>{if(!reviewCanEdit())return;reflectPeriod='daily';changeDate(entry.date)};day.append(saved)}records.append(day)
