@@ -1,0 +1,35 @@
+name: On_HARU Mood seven-day calendar QA
+on:
+  push:
+    branches: ['fix/archive-mood-seven-day-2026-11-05']
+    paths: ['public/legacy/**', 'scripts/qa-mood-week.mjs', '.github/workflows/qa-mood-week.yml']
+  workflow_dispatch:
+jobs:
+  mood-visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: command -v google-chrome >/dev/null || npx playwright-core install chromium
+      - run: node scripts/verify-ui-static.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-mood-week.log 2>&1 &
+      - run: node scripts/qa-mood-week.mjs
+      - run: node scripts/qa-archive-mood-tooltip.mjs
+      - run: node scripts/qa-review-hierarchy.mjs
+      - run: node scripts/qa-archive-compact.mjs
+      - run: node scripts/ui-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-mood-week-screenshots
+          path: |
+            test-results/mood-week/
+            test-results/archive-mood-tooltip/
+            test-results/review-hierarchy/
+            test-results/archive-compact/
+            test-results/onharu-ui/
+          retention-days: 14
