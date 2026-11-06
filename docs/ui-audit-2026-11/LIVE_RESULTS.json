@@ -1,10 +1,10 @@
 {
-  "runId": "42150985156",
-  "sourceCommit": "67fce9f4ef487dee49533b15b7b5ce5b5604a8b8",
+  "runId": "42152115738",
+  "sourceCommit": "e78ea9d1b6878cff9effc2f067d43d8e10462dc0",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
-    "release": "archivethreegroupsv120261105",
+    "release": "reviewallmergev220261105",
     "verifier": "hash-content-v2",
     "cases": [
       {
@@ -12,8 +12,8 @@
         "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
-        "expectedSha256": "54e93a834b5b5bf8dfaf4faf9fde10a40c0a2ab4e63a93935839b9701de0e5a6",
-        "actualSha256": "54e93a834b5b5bf8dfaf4faf9fde10a40c0a2ab4e63a93935839b9701de0e5a6",
+        "expectedSha256": "16a5eb800ae09540867bf84567032c80b3aa9309fda704a73659fff6ec3cfaec",
+        "actualSha256": "16a5eb800ae09540867bf84567032c80b3aa9309fda704a73659fff6ec3cfaec",
         "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
@@ -25,7 +25,7 @@
         "path": "app.7cb1b71d4eb6.css",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=archivethreegroupsv120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=reviewallmergev220261105",
         "expectedSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "actualSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "hashMatch": true,
@@ -39,9 +39,9 @@
         "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=archivethreegroupsv120261105",
-        "expectedSha256": "c32d4050696e7962ed8fd3d1011c95fec7ecf345ca91aadfc3765c7f2b211cda",
-        "actualSha256": "c32d4050696e7962ed8fd3d1011c95fec7ecf345ca91aadfc3765c7f2b211cda",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=reviewallmergev220261105",
+        "expectedSha256": "a953d885c6ded01970388098cb582a80cee3b596ac1599ddde9d2ea677bf572f",
+        "actualSha256": "a953d885c6ded01970388098cb582a80cee3b596ac1599ddde9d2ea677bf572f",
         "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
@@ -53,7 +53,7 @@
         "path": "runtime/settings.58b48f87b05a.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=archivethreegroupsv120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=reviewallmergev220261105",
         "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "hashMatch": true,
@@ -67,9 +67,9 @@
         "path": "sw.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=archivethreegroupsv120261105",
-        "expectedSha256": "ec7860129b8486dc8f6653667e6434e12845b35aa7ed9c8fd6050fef545a428f",
-        "actualSha256": "ec7860129b8486dc8f6653667e6434e12845b35aa7ed9c8fd6050fef545a428f",
+        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=reviewallmergev220261105",
+        "expectedSha256": "901829ed15a7106a872f38455384977886f37fbdcca26fb574e99edf4e478184",
+        "actualSha256": "901829ed15a7106a872f38455384977886f37fbdcca26fb574e99edf4e478184",
         "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
@@ -698,62 +698,62 @@
         "ok": true
       }
     ],
-    "release": "archivethreegroupsv120261105"
+    "release": "reviewallmergev220261105"
   },
   "runs": [
     {
-      "id": 42150985371,
-      "sha": "67fce9f4ef487dee49533b15b7b5ce5b5604a8b8",
-      "name": "OnHaru static UI checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42150985370,
-      "sha": "67fce9f4ef487dee49533b15b7b5ce5b5604a8b8",
-      "name": "OnHaru metrics privacy and regression checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42150985296,
-      "sha": "67fce9f4ef487dee49533b15b7b5ce5b5604a8b8",
-      "name": "On_HARU Review schedule tags in Daily Weekly Archive",
-      "status": "in_progress",
-      "conclusion": null
-    },
-    {
-      "id": 42150985283,
-      "sha": "67fce9f4ef487dee49533b15b7b5ce5b5604a8b8",
+      "id": 42152115840,
+      "sha": "e78ea9d1b6878cff9effc2f067d43d8e10462dc0",
       "name": "On_HARU Archive Mood tooltip QA",
-      "status": "in_progress",
-      "conclusion": null
-    },
-    {
-      "id": 42150985213,
-      "sha": "67fce9f4ef487dee49533b15b7b5ce5b5604a8b8",
-      "name": "On_HARU Review Weekly Archive hierarchy QA",
       "status": "completed",
-      "conclusion": "success"
+      "conclusion": "failure"
     },
     {
-      "id": 42150985175,
-      "sha": "67fce9f4ef487dee49533b15b7b5ce5b5604a8b8",
-      "name": "QA On_HARU time-of-day appearance",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42150985156,
-      "sha": "67fce9f4ef487dee49533b15b7b5ce5b5604a8b8",
+      "id": 42152115738,
+      "sha": "e78ea9d1b6878cff9effc2f067d43d8e10462dc0",
       "name": "OnHaru Workers production verification",
       "status": "in_progress",
       "conclusion": null
     },
     {
-      "id": 42150985152,
-      "sha": "67fce9f4ef487dee49533b15b7b5ce5b5604a8b8",
-      "name": "On_HARU Capture emoji grid visual regression",
+      "id": 42152115725,
+      "sha": "e78ea9d1b6878cff9effc2f067d43d8e10462dc0",
+      "name": "OnHaru metrics privacy and regression checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42152115712,
+      "sha": "e78ea9d1b6878cff9effc2f067d43d8e10462dc0",
+      "name": "QA On_HARU time-of-day appearance",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42152115704,
+      "sha": "e78ea9d1b6878cff9effc2f067d43d8e10462dc0",
+      "name": "On_HARU Review schedule tags in Daily Weekly Archive",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42152115695,
+      "sha": "e78ea9d1b6878cff9effc2f067d43d8e10462dc0",
+      "name": "On_HARU Review Weekly Archive hierarchy QA",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42152115689,
+      "sha": "e78ea9d1b6878cff9effc2f067d43d8e10462dc0",
+      "name": "On_HARU Check-in and Archive Mood touch regression",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42152115679,
+      "sha": "e78ea9d1b6878cff9effc2f067d43d8e10462dc0",
+      "name": "OnHaru static UI checks",
       "status": "completed",
       "conclusion": "success"
     }
