@@ -29,8 +29,26 @@ try{
    if(await tags.count()!==15)throw Error('Expected 15 tags');
    const collapsed=await page.locator('#konaCaptureTagTray .kona-tag-chip:visible').count();
    if(collapsed!==7)throw Error('Expected seven collapsed tags, got '+collapsed);
+   const caretAppearance=()=>more.evaluate(el=>{
+     const a=getComputedStyle(el,'::after'),circle=getComputedStyle(el,'::before'),b=el.getBoundingClientRect();
+     return {glyph:el.textContent,expanded:el.getAttribute('aria-expanded'),
+       iconWidth:a.width,iconHeight:a.height,iconTop:a.top,iconLeft:a.left,
+       strokeRight:a.borderRightWidth,strokeBottom:a.borderBottomWidth,
+       transform:a.transform,buttonWidth:b.width,buttonHeight:b.height,
+       circleWidth:circle.width,circleHeight:circle.height};
+   });
+   const closedAppearance=await caretAppearance();
+   if(closedAppearance.glyph!=='⌄'||closedAppearance.expanded!=='false')throw Error('Closed caret fallback not downward');
+   if(closedAppearance.iconWidth!=='10px'||closedAppearance.iconHeight!=='10px')throw Error('Closed chevron incorrect size');
+   if(closedAppearance.circleWidth!=='32px'||closedAppearance.circleHeight!=='32px')throw Error('Circle size changed');
    await more.click();
    if(await more.getAttribute('aria-expanded')!=='true')throw Error('More did not expand');
+   const openedAppearance=await caretAppearance();
+   if(openedAppearance.glyph!=='⌃'||openedAppearance.expanded!=='true')throw Error('Open caret fallback not upward');
+   for(const k of ['iconWidth','iconHeight','iconTop','iconLeft','strokeRight','strokeBottom','buttonWidth','buttonHeight','circleWidth','circleHeight']){
+     if(openedAppearance[k]!==closedAppearance[k])throw Error('Caret '+k+' differs between expanded and collapsed');
+   }
+   if(openedAppearance.transform===closedAppearance.transform)throw Error('Caret did not rotate for expanded state');
    const data=await page.evaluate(()=>{
     const items=[...document.querySelectorAll('#konaCaptureTagTray .kona-tag-chip')], more=document.querySelector('#page-capture #qc-v2 .kona-tag-tray-toggle');
     const box=el=>{const r=el.getBoundingClientRect();return{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height}};
@@ -63,6 +81,9 @@ try{
    await page.screenshot({path:dir+'/'+width+'-'+theme+'-expanded.png',animations:'disabled'});
    await more.click();
    if(await more.getAttribute('aria-expanded')!=='false')throw Error('Less did not collapse');
+   const closedAgain=await caretAppearance();
+   if(closedAgain.transform!==closedAppearance.transform)throw Error('Caret rotation does not reset after collapse');
+   if(closedAgain.buttonWidth!==openedAppearance.buttonWidth||closedAgain.buttonHeight!==openedAppearance.buttonHeight)throw Error('Toggle hitbox moved on collapse');
    results.push({width,theme,pass:!errors.length,errors,geom:data});
    console.log('PASS '+width+'/'+theme+' pin visible, selectable, no overlaps');
   }catch(e){results.push({width,theme,pass:false,error:String(e),errors});console.error('FAIL '+width+'/'+theme+' '+e)}
