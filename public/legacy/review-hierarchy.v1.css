@@ -242,7 +242,7 @@ body .app #page-records #new-reflect-page .review-weekly-records .weekly-day{
 body .app #page-records #new-reflect-page .review-weekly-records .weekly-day>.review-date-header{
   margin:0 0 7px!important;min-height:38px!important;
   padding:7px 10px!important;border:0!important;border-radius:9px!important;
-  background:color-mix(in srgb,var(--surface) 89%,#4b8462 11%)!important;
+  /* Keep the shared Weekly/Archive date-background token from index.html. */
   color:var(--ink)!important;
 }
 body .app #page-records #new-reflect-page .review-weekly-records .weekly-day>.review-date-header :is(.review-date-label,.review-date-count){
