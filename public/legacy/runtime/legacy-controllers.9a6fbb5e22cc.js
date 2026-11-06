@@ -2181,6 +2181,9 @@ function openArchiveSearchResult(item){root.classList.add('archive-detail');cons
 }
 // Archive mood is a read-only view of existing Check-ins. Do not normalize or save days.
 let archiveMoodView='records',archiveMoodMonth=date.slice(0,7),archiveMoodDate=date;
+// Mood browsing is view-only; expanded state and week anchor never enter stored day data.
+let archiveMoodExpanded=false,archiveMoodWeekEnd=date;
+const archiveMoodShiftDay=(d,days)=>new Date(Date.parse(d+'T12:00:00Z')+days*86400000).toISOString().slice(0,10);
 const archiveMoodText=(en,ko)=>KonaI18n.language==='ko'?ko:en;
 function archiveMoodEntries(d){
  const checkins=db.days[d]?.checkins||{};
@@ -2200,42 +2203,94 @@ function archiveMoodRender(panel){
  const month=archiveMoodMonth.match(/^(\d{4})-(\d{2})$/);
  if(!month)return;
  const year=Number(month[1]),number=Number(month[2]);if(number<1||number>12)return;
- const selected=archiveMoodDate.startsWith(archiveMoodMonth)?archiveMoodDate:archiveMoodMonth+'-01';
- const title=new Date(Date.UTC(year,number-1,1)).toLocaleDateString(KonaI18n.dateLocale,{year:'numeric',month:'long',timeZone:'UTC'});
- const heading=el('div',undefined,'archive-mood-heading'),monthTitle=el('strong',title);
+ const selected=archiveMoodExpanded&&!archiveMoodDate.startsWith(archiveMoodMonth)?archiveMoodMonth+'-01':archiveMoodDate;
+ const weekStart=archiveMoodShiftDay(archiveMoodWeekEnd,-6);
+ const monthTitle=new Date(Date.UTC(year,number-1,1)).toLocaleDateString(KonaI18n.dateLocale,{year:'numeric',month:'long',timeZone:'UTC'});
+ const weekTitle=short(weekStart)+' – '+short(archiveMoodWeekEnd);
+ const title=archiveMoodExpanded?monthTitle:weekTitle;
+ panel.classList.toggle('archive-mood-compact',!archiveMoodExpanded);
+ const heading=el('div',undefined,'archive-mood-heading'),periodTitle=el('strong',title);
  const info=el('details',undefined,'archive-mood-info'),infoToggle=el('summary','i'),infoTooltip=el('p',
   archiveMoodText('Color: energy × mood · Ring: energy only · No dot: unrated.','색 점: 에너지×기분 · 빈 원: 에너지만 · 점 없음: 평가 없음.'),
   'archive-mood-info-tooltip');
  infoToggle.setAttribute('aria-label',archiveMoodText('Explain calendar dots','달력 점 설명'));
  infoTooltip.setAttribute('role','tooltip');info.append(infoToggle,infoTooltip);
- const monthLabel=el('div',undefined,'archive-mood-month-label');monthLabel.append(monthTitle,info);
- for(const [text,shift,name] of [['‹',-1,archiveMoodText('Previous month','이전 달')],['›',1,archiveMoodText('Next month','다음 달')]]){
-  const button=el('button',text,'archive-mood-arrow');button.type='button';button.setAttribute('aria-label',name);
-  button.onclick=()=>{if(!reviewCanEdit())return;const moved=new Date(Date.UTC(year,number-1+shift,1));archiveMoodMonth=moved.toISOString().slice(0,7);archiveMoodDate=archiveMoodMonth+'-01';drawArchiveSearch()};
-  if(shift<0)heading.append(button);else heading.append(monthLabel,button);
+ const periodLabel=el('div',undefined,'archive-mood-month-label');periodLabel.append(periodTitle,info);
+ for(const [text,shift] of [['‹',-1],['›',1]]){
+  const label=archiveMoodExpanded
+   ?archiveMoodText(shift<0?'Previous month':'Next month',shift<0?'이전 달':'다음 달')
+   :archiveMoodText(shift<0?'Previous 7 days':'Next 7 days',shift<0?'이전 7일':'다음 7일');
+  const button=el('button',text,'archive-mood-arrow');button.type='button';button.setAttribute('aria-label',label);
+  button.onclick=()=>{
+   if(!reviewCanEdit())return;
+   if(archiveMoodExpanded){
+    const moved=new Date(Date.UTC(year,number-1+shift,1));
+    archiveMoodMonth=moved.toISOString().slice(0,7);
+    archiveMoodDate=archiveMoodMonth+'-01';
+   }else{
+    archiveMoodWeekEnd=archiveMoodShiftDay(archiveMoodWeekEnd,shift*7);
+    archiveMoodDate=archiveMoodWeekEnd;
+    archiveMoodMonth=archiveMoodDate.slice(0,7);
+   }
+   drawArchiveSearch();
+  };
+  if(shift<0)heading.append(button);else heading.append(periodLabel,button);
  }
  panel.append(heading);
  const weekdays=el('div',undefined,'archive-mood-weekdays');
- for(const en of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'])weekdays.append(el('span',KonaI18n.t(en).slice(0,3)));
+ const daysToShow=archiveMoodExpanded?Array.from({length:new Date(Date.UTC(year,number,0)).getUTCDate()},(_,i)=>archiveMoodMonth+'-'+String(i+1).padStart(2,'0'))
+  :Array.from({length:7},(_,i)=>archiveMoodShiftDay(weekStart,i));
+ if(archiveMoodExpanded){
+  for(const en of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'])weekdays.append(el('span',KonaI18n.t(en).slice(0,3)));
+ }else{
+  for(const d of daysToShow){
+   const weekday=new Intl.DateTimeFormat(KonaI18n.dateLocale,{weekday:'short',timeZone:'UTC'}).format(new Date(d+'T12:00:00Z'));
+   weekdays.append(el('span',weekday));
+  }
+ }
  panel.append(weekdays);
- const grid=el('div',undefined,'archive-mood-grid');grid.setAttribute('role','group');grid.setAttribute('aria-label',title);
- const leading=new Date(Date.UTC(year,number-1,1)).getUTCDay(),days=new Date(Date.UTC(year,number,0)).getUTCDate();
- for(let i=0;i<leading;i++){const blank=el('span',undefined,'archive-mood-blank');blank.setAttribute('aria-hidden','true');grid.append(blank)}
- for(let n=1;n<=days;n++){
-  const d=archiveMoodMonth+'-'+String(n).padStart(2,'0'),entries=archiveMoodEntries(d);
-  const button=el('button',undefined,'archive-mood-day');button.type='button';button.dataset.moodDate=d;
+ const grid=el('div',undefined,'archive-mood-grid'+(archiveMoodExpanded?' archive-mood-month-grid':' archive-mood-week-grid'));
+ grid.setAttribute('role','group');grid.setAttribute('aria-label',title);
+ if(archiveMoodExpanded){
+  const leading=new Date(Date.UTC(year,number-1,1)).getUTCDay();
+  for(let i=0;i<leading;i++){const blank=el('span',undefined,'archive-mood-blank');blank.setAttribute('aria-hidden','true');grid.append(blank)}
+ }
+ for(const d of daysToShow){
+  const entries=archiveMoodEntries(d),button=el('button',undefined,'archive-mood-day');button.type='button';button.dataset.moodDate=d;
   button.setAttribute('aria-pressed',String(d===selected));
   const descriptions=entries.map(x=>x.phaseLabel+': '+x.feeling);
   button.setAttribute('aria-label',d+' · '+(descriptions.length?descriptions.join(' · '):archiveMoodText('No mood check-in','감정 체크인 없음')));
-  button.append(el('span',String(n),'archive-mood-day-number'));
+  button.append(el('span',String(Number(d.slice(8,10))),'archive-mood-day-number'));
   const dots=el('span',undefined,'archive-mood-dots');
-  for(const e of entries){const dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);konaReviewMoodTone(dot,e.energy,e.happiness);dot.title=e.phaseLabel+': '+e.feeling;dots.append(dot)}
+  for(const e of entries){
+   const dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);
+   konaReviewMoodTone(dot,e.energy,e.happiness);dot.title=e.phaseLabel+': '+e.feeling;dots.append(dot)
+  }
   button.append(dots);
-  button.onclick=()=>{if(!reviewCanEdit())return;archiveMoodDate=d;drawArchiveSearch();archiveSearch.querySelector('[data-mood-date="'+d+'"]')?.focus({preventScroll:true})};
+  button.onclick=()=>{
+   if(!reviewCanEdit())return;
+   archiveMoodDate=d;
+   archiveMoodMonth=d.slice(0,7);
+   drawArchiveSearch();
+   archiveSearch.querySelector('[data-mood-date="'+d+'"]')?.focus({preventScroll:true});
+  };
   grid.append(button);
  }
  panel.append(grid);
- // The mood legend is now available from the month heading info tooltip.
+ const toggle=el('button',archiveMoodExpanded
+  ?archiveMoodText('Show 7 days','7일만 보기')
+  :archiveMoodText('View full month','월간 달력 보기'),'archive-mood-calendar-toggle');
+ toggle.type='button';toggle.setAttribute('aria-expanded',String(archiveMoodExpanded));
+ toggle.onclick=()=>{
+  if(!reviewCanEdit())return;
+  archiveMoodExpanded=!archiveMoodExpanded;
+  archiveMoodMonth=archiveMoodDate.slice(0,7);
+  if(!archiveMoodExpanded)archiveMoodWeekEnd=archiveMoodDate;
+  drawArchiveSearch();
+  archiveSearch.querySelector('.archive-mood-calendar-toggle')?.focus({preventScroll:true});
+ };
+ panel.append(toggle);
+ // The selected day's read-only check-ins appear immediately below the 7-day strip.
  const detail=el('section',undefined,'archive-mood-detail'),localDate=new Date(selected+'T12:00:00Z').toLocaleDateString(KonaI18n.dateLocale,{month:'long',day:'numeric',weekday:'short',timeZone:'UTC'});
  detail.append(el('h3',localDate));
  const entries=archiveMoodEntries(selected);

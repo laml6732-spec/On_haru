@@ -105,10 +105,15 @@ body .app #page-records #archive-search .archive-filter-disclosure .review-filte
 
 /* Keep the 7-column Mood calendar; improve date and helper legibility. */
 body .app #page-records #archive-search .archive-mood-heading .archive-mood-info>summary{
-  width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;
-  border:1.5px solid currentColor!important;border-radius:50%!important;
+  width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
+  position:relative!important;border:0!important;border-radius:50%!important;
+  background:transparent!important;
   font-family:var(--font-ui)!important;font-size:15px!important;font-weight:750!important;
   color:var(--ink)!important;line-height:1!important;
+}
+body .app #page-records #archive-search .archive-mood-heading .archive-mood-info>summary::before{
+  content:"";position:absolute;inset:8px;border:1.5px solid currentColor;border-radius:50%;
+  pointer-events:none;
 }
 body .app #page-records #archive-search .archive-mood-weekdays,
 body .app #page-records #archive-search .archive-mood-day-number,
@@ -350,4 +355,69 @@ html[data-appearance=dark] body .app #page-records #archive-search .archive-sear
   body .app #page-records #archive-search .archive-toolbar>#archive-search-status{
     font-size:calc(10.5px * var(--kona-ui-scale,1))!important;
   }
+}
+
+
+/* Mood 7-day-first view: all dots use the existing month-calendar tone system. */
+body .app #page-records #archive-search .archive-mood-panel.archive-mood-compact{
+  padding-bottom:12px!important;
+}
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-heading{
+  margin:0 0 7px!important;gap:4px!important;
+}
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-heading .archive-mood-month-label{
+  gap:6px!important;min-width:0!important;
+}
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-heading strong{
+  font-size:calc(13px * var(--kona-ui-scale,1))!important;
+  font-weight:700!important;white-space:nowrap!important;
+}
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-weekdays{
+  margin:0 0 2px!important;gap:2px!important;
+  font-size:calc(10.5px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search .archive-mood-week-grid{
+  margin:0 0 2px!important;gap:2px!important;
+}
+body .app #page-records #archive-search .archive-mood-week-grid .archive-mood-day{
+  min-height:48px!important;height:48px!important;
+  gap:4px!important;
+}
+body .app #page-records #archive-search .archive-mood-calendar-toggle{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  min-height:44px!important;width:100%!important;
+  margin:0 0 4px!important;padding:7px 10px!important;
+  border:0!important;border-radius:6px!important;box-shadow:none!important;
+  background:transparent!important;color:var(--ink)!important;
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;font-weight:600!important;
+  cursor:pointer!important;
+}
+body .app #page-records #archive-search .archive-mood-calendar-toggle::after{
+  content:"⌄";display:inline-block;margin-left:7px;font-size:15px;line-height:1!important;
+}
+body .app #page-records #archive-search .archive-mood-calendar-toggle[aria-expanded="true"]::after{
+  transform:rotate(180deg);
+}
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-detail{
+  margin:0!important;padding:10px 0 0!important;
+}
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-detail>h3{
+  margin-bottom:4px!important;font-size:calc(13px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-item{
+  padding:8px 0!important;
+}
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-open-daily{
+  margin-top:8px!important;
+}
+html[data-appearance=dark] body .app #page-records #archive-search .archive-mood-calendar-toggle{
+  color:var(--ink)!important;background:transparent!important;
+}
+@media(max-width:340px){
+ body .app #page-records #archive-search .archive-mood-compact .archive-mood-heading strong{
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;
+ }
+ body .app #page-records #archive-search .archive-mood-week-grid .archive-mood-day{
+  min-height:44px!important;height:44px!important;
+ }
 }
