@@ -62,14 +62,15 @@ try{
        count:status.textContent.trim(),firstRecordFraction:Number((r(first).top/innerHeight).toFixed(3))};
    });
    Object.assign(result,state);
+   console.log('ARCHIVE_LAYOUT '+JSON.stringify({width,theme,search:state.search,filter:state.filter,saved:state.saved,status:state.status,firstRecordFraction:state.firstRecordFraction}));
+   await shot(page,width+'-'+theme+'-archive');
    if(Math.abs(state.search.top-state.filter.top)>5)throw Error('Search/Filters not on the same row');
-   if(Math.abs(state.saved.top-state.status.top)>11)throw Error('Saved tabs/count not aligned');
+   if(Math.abs((state.saved.top+state.saved.bottom)/2-(state.status.top+state.status.bottom)/2)>6)throw Error('Saved tabs/count not vertically centered');
    if(state.toolbarCount!==2)throw Error('Saved toolbar must contain tabs and count only');
    if(!state.noOverflow)throw Error('Archive page overflows');
    if(state.selected!=='All records')throw Error('All records not initially selected');
    if(width<600&&state.firstRecordFraction>0.48)throw Error('First Archive record starts too low: '+state.firstRecordFraction);
    if(await page.locator('.archive-filter-disclosure').evaluate(e=>e.open))throw Error('Filters should start collapsed');
-   await shot(page,width+'-'+theme+'-archive');
    await page.locator('#archive-search-input').fill('QA-ARCHIVE-COMPACT');
    const results=page.locator('#archive-search-results .archive-search-result');
    if(await results.count()!==2)throw Error('Search results mismatch');
