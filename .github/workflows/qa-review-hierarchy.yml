@@ -1,7 +1,7 @@
 name: On_HARU Review Weekly Archive hierarchy QA
 on:
   push:
-    branches: [main, 'fix/review-weekly-archive-hierarchy-2026-11-05']
+    branches: [main, 'fix/review-weekly-archive-hierarchy-2026-11-05', 'fix/review-hierarchy-qa-compat-2026-11-05']
     paths: ['public/legacy/**','scripts/qa-review-hierarchy.mjs','.github/workflows/qa-review-hierarchy.yml']
   workflow_dispatch:
 jobs:
