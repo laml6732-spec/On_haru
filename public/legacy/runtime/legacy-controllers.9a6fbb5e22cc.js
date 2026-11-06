@@ -2235,7 +2235,7 @@ function archiveMoodRender(panel){
   const button=el('button',text,'archive-mood-arrow');button.type='button';button.setAttribute('aria-label',label);
   if(shift>0){
    const next=archiveMoodExpanded?new Date(Date.UTC(year,number,1)).toISOString().slice(0,7):archiveMoodShiftDay(archiveMoodWeekEnd,7);
-   button.disabled=archiveMoodExpanded?next>today.slice(0,7):next>today;
+   button.disabled=archiveMoodExpanded?next>today.slice(0,7):archiveMoodWeekEnd>=today;
   }
   button.onclick=()=>{
    if(!reviewCanEdit())return;
@@ -2244,7 +2244,8 @@ function archiveMoodRender(panel){
     archiveMoodMonth=moved.toISOString().slice(0,7);
     archiveMoodDate=archiveMoodMonth+'-01';
    }else{
-    archiveMoodWeekEnd=archiveMoodShiftDay(archiveMoodWeekEnd,shift*7);
+    const shifted=archiveMoodShiftDay(archiveMoodWeekEnd,shift*7);
+    archiveMoodWeekEnd=shift>0&&shifted>today?today:shifted;
     archiveMoodDate=archiveMoodWeekEnd;
     archiveMoodMonth=archiveMoodDate.slice(0,7);
    }
