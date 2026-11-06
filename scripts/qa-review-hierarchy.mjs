@@ -33,6 +33,16 @@ try{
             text:'QA-ARCHIVE-HIERARCHY '+id+' long preview to test search and opening the full detailed record.',
             scheduleId:evt?.id||'',scheduleTitle:evt?.title||'',tags:[]
           }];
+          if(d==='2026-11-05'){
+            dayData.quickCaptureEntries.push({
+              id:'qa-independent',time:'12:44',title:'Independent note',
+              text:'QA-PERSONAL-SAMPLE',scheduleId:'',tags:[]
+            });
+            dayData.sessions=[...(dayData.sessions||[]),{
+              id:'qa-prayer',start:'12:46',seconds:600,kind:'prayer',
+              task:'QA prayer',note:'QA-PRACTICE-SAMPLE'
+            }];
+          }
         }
       },theme);
       await page.locator('.tabs [data-page="records"]').click();
@@ -50,6 +60,10 @@ try{
       await disclosure.waitFor();
       if(await disclosure.evaluate(e=>e.open))throw Error('Filter pane should default to closed');
       const top=await page.locator('#archive-search .archive-saved-filters').count();
+      const todayCategories=await page.locator('#archive-search-results .archive-record-category').allTextContents();
+      if(!['Schedule-linked','Prayer · Focus · Devotion','Unlinked notes'].every(label=>todayCategories.some(t=>t.includes(label))))throw Error('All three semantic sections not visible');
+      if(!await page.locator('#archive-search-results .archive-search-result').filter({hasText:'QA-PRACTICE-SAMPLE'}).count())throw Error('Prayer record missing');
+      if(!await page.locator('#archive-search-results .archive-search-result').filter({hasText:'QA-PERSONAL-SAMPLE'}).count())throw Error('Independent note missing');
       const baseline=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
       if(baseline>1)throw Error('Archive overflow on initial view '+baseline);
       await page.screenshot({path:out+'/'+width+'-'+theme+'-archive-collapsed.png',animations:'disabled'});
@@ -62,6 +76,9 @@ try{
       const first=await heads.first().evaluate(e=>{const c=getComputedStyle(e);return{bg:c.backgroundColor,date:e.querySelector('.review-date-label')?.textContent,count:e.querySelector('.review-date-count')?.textContent}});
       if(first.bg!==result.weekly.bg)throw Error('Weekly/Archive date header backgrounds differ');
       if(!first.count?.includes('1 record'))throw Error('Archive date count missing');
+      const groupLabels=await page.locator('#archive-search-results .archive-record-category').allTextContents();
+      if(groupLabels.length!==2||!groupLabels.every(s=>s.includes('Schedule-linked')))throw Error('Category headings missing');
+      if(await page.locator('#archive-search-results .archive-record-schedule-title').count()!==2)throw Error('Schedule names not grouped');
       const firstRow=rows.first();
       const order=await firstRow.evaluate(e=>[...e.children].map(x=>x.className));
       if(order[0]!=='archive-result-head'||order[1]!=='archive-search-preview')throw Error('Metadata not first '+order);
@@ -70,7 +87,7 @@ try{
       await disclosure.locator('summary').click();
       if(!await disclosure.evaluate(e=>e.open))throw Error('Filters cannot expand');
       const type=page.locator('#archive-search .archive-filter-row select[aria-label="Type"]');
-      await type.selectOption('note');
+      await type.selectOption('schedule');
       const reopened=page.locator('#archive-search .archive-filter-disclosure');
       if(!await reopened.evaluate(e=>e.open))throw Error('Filter pane collapsed after selecting type');
       if(await rows.count()!==2)throw Error('Type filter incorrectly removed notes');

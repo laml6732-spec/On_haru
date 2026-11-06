@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="reviewhierarchyfixv120261105"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
+<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="archivethreegroupsv120261105"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
 <style id="onharu-launch-edge-fix">
 /* True-alpha watercolor launch image; do not blend or mask its transparent edges. */
 #launchScreen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;isolation:isolate;background:var(--onharu-launch-bg,#FDFDFB)!important;overflow:hidden}
@@ -49,7 +49,7 @@ html[data-onharu-daypart="night"]{--onharu-launch-bg:radial-gradient(ellipse at 
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&amp;family=Fredoka:wght@600&amp;family=Gaegu&amp;family=Manrope:wght@300&amp;family=Nunito:wght@400;600;700&amp;family=Pacifico&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=reviewhierarchyfixv120261105">
+<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=archivethreegroupsv120261105">
 <style id="onharu-capture-sheep-visibility">
 /* Keep the original listening sheep artwork while giving it legibility at emoji size.
    This affects only its Capture tag. Selection remains a single green ring. */
@@ -678,6 +678,22 @@ html[data-appearance="dark"] body .app #page-records #archive-search .archive-ac
   background:#304C3A!important;color:#DCEBDE!important;border-color:#66866D!important;
 }
 </style>
+
+<style id="onharu-archive-semantic-groups">
+body .app #page-records #archive-search-results .archive-record-category{
+ display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+ margin:16px 0 5px;padding:8px 2px 6px;border-bottom:1px solid var(--line,#dce5df);
+ color:var(--text,#355749);font-size:calc(13px * var(--kona-ui-scale,1));font-weight:750;line-height:1.45;
+}
+body .app #page-records #archive-search-results .archive-record-category small{
+ font-size:calc(11px * var(--kona-ui-scale,1));font-weight:600;opacity:.68;
+}
+body .app #page-records #archive-search-results .archive-record-schedule-title{
+ margin:9px 0 3px;padding:0 2px;color:var(--text,#355749);
+ font-size:calc(12px * var(--kona-ui-scale,1));font-weight:700;line-height:1.5;overflow-wrap:anywhere;
+}
+body .app #page-records #archive-search-results .archive-record-schedule-title + .archive-search-result{margin-top:0}
+</style>
 </head>
 <body>
 <div id="launchScreen" role="status" aria-label="On_Haru"><img id="launchArt" alt="On_Haru" fetchpriority="high"></div>
@@ -954,7 +970,7 @@ html[data-appearance="dark"] body .app #page-records #archive-search .archive-ac
 
 
 
-<script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=reviewhierarchyfixv120261105"></script><script src="./runtime/settings.58b48f87b05a.js?rev=reviewhierarchyfixv120261105"></script>
+<script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=archivethreegroupsv120261105"></script><script src="./runtime/settings.58b48f87b05a.js?rev=archivethreegroupsv120261105"></script>
 <!-- Cloudflare Web Analytics: On_HARU workers.dev -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"f9b29e261a624202a5e611671cd6e2b9"}'></script>
 </body></html>
