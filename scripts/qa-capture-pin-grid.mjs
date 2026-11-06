@@ -40,9 +40,15 @@ try{
     for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++)if(intersect(box(visible[i]),box(visible[j])))overlaps.push([visible[i].dataset.tag,visible[j].dataset.tag]);
     const btn=box(more), pinEl=items.find(el=>el.dataset.tag==='meaning_remember'), sheepEl=items.find(el=>el.dataset.tag==='meaning_listening');
     const pin=box(pinEl), sheep=box(sheepEl), computed=getComputedStyle(pinEl);
+    const centers=items.slice(0,7).map(el=>{const r=box(el);return r.left+r.width/2});
+    const spacing=centers.slice(1).map((v,i)=>v-centers[i]);
+    const pitch=spacing.reduce((acc,v)=>acc+v,0)/spacing.length;
+    const buttonCenterX=(btn.left+btn.right)/2, sheepCenterX=(sheep.left+sheep.right)/2;
+    const buttonCenterY=(btn.top+btn.bottom)/2, sheepCenterY=(sheep.top+sheep.bottom)/2;
+    const alignment={sheepToButtonGap:btn.left-sheep.right,centerPitchError:Math.abs(buttonCenterX-(sheepCenterX+pitch)),verticalCenterError:Math.abs(buttonCenterY-sheepCenterY),pitch};
     const blocked=visible.filter(el=>intersect(box(el),btn)).map(el=>el.dataset.tag);
     const center=el=>{const r=box(el);return document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)};
-    return{visibleCount:visible.length,overlaps,blocked,button:btn,pin,sheep,pinDisplay:computed.display,pinGridRow:computed.gridRowStart,pinGridColumn:computed.gridColumnStart,pinHit:center(pinEl)===pinEl||pinEl.contains(center(pinEl)),moreHit:center(more)===more||more.contains(center(more)),scrollOverflow:document.documentElement.scrollWidth>innerWidth+1};
+    return{visibleCount:visible.length,overlaps,blocked,button:btn,pin,sheep,alignment,pinDisplay:computed.display,pinGridRow:computed.gridRowStart,pinGridColumn:computed.gridColumnStart,pinHit:center(pinEl)===pinEl||pinEl.contains(center(pinEl)),moreHit:center(more)===more||more.contains(center(more)),scrollOverflow:document.documentElement.scrollWidth>innerWidth+1};
    });
    if(data.visibleCount!==15)throw Error('Expanded tag count '+data.visibleCount);
    if(data.pinDisplay==='none'||data.pinGridRow!=='2'||data.pinGridColumn!=='2')throw Error('Pin not in row 2 / column 2');
@@ -50,6 +56,8 @@ try{
    if(data.button.width<44||data.button.height<44||!data.moreHit)throw Error('More touch target regression');
    if(data.blocked.length||data.overlaps.length)throw Error('Overlapping targets: '+JSON.stringify({blocked:data.blocked,overlaps:data.overlaps}));
    if(data.scrollOverflow)throw Error('Horizontal overflow');
+   if(data.alignment.sheepToButtonGap<1.5||data.alignment.sheepToButtonGap>14)throw Error('Toggle gap not aligned: '+JSON.stringify(data.alignment));
+   if(data.alignment.centerPitchError>10||data.alignment.verticalCenterError>3)throw Error('Toggle not on same emoji grid: '+JSON.stringify(data.alignment));
    await page.locator('#konaCaptureTagTray .kona-tag-chip[data-tag="meaning_remember"]').click();
    if(await page.locator('#konaCaptureTagTray .kona-tag-chip[data-tag="meaning_remember"]').getAttribute('aria-pressed')!=='true')throw Error('Pin tag cannot be selected');
    await page.screenshot({path:dir+'/'+width+'-'+theme+'-expanded.png',animations:'disabled'});

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="pinrowv120261105"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
+<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="togglealignv120261105"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
 <style id="onharu-launch-edge-fix">
 /* True-alpha watercolor launch image; do not blend or mask its transparent edges. */
 #launchScreen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;isolation:isolate;background:#FDFDFB!important;overflow:hidden}
@@ -42,7 +42,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&amp;family=Fredoka:wght@600&amp;family=Gaegu&amp;family=Manrope:wght@300&amp;family=Nunito:wght@400;600;700&amp;family=Pacifico&amp;display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
-<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=pinrowv120261105">
+<link rel="stylesheet" href="./app.7cb1b71d4eb6.css?rev=togglealignv120261105">
 <style id="onharu-capture-sheep-visibility">
 /* Keep the original listening sheep artwork while giving it legibility at emoji size.
    This affects only its Capture tag. Selection remains a single green ring. */
@@ -276,7 +276,7 @@ html[data-appearance="dark"] body .app #page-records #archive-search .archive-mo
 <style id="onharu-2026-touch-targets">
 /* Make Write More physically 44x44 without growing the 32px visible circle.
    Move the hit box into the blank right padding rather than over the sheep tag.
-   Keep its vertical midpoint unchanged (old 36px at top 2px => center 20px). */
+   Center the visible circle beside the sheep while retaining a 44px hit box. */
 body .app #page-capture #qc-v2 .kona-capture-tag-row{
   overflow:visible!important;
 }
@@ -285,10 +285,14 @@ body .app #page-capture #qc-v2 .kona-tag-tray-toggle{
   box-sizing:border-box!important;
   width:44px!important;min-width:44px!important;max-width:44px!important;
   height:44px!important;min-height:44px!important;
-  top:-2px!important;bottom:auto!important;right:-16px!important;
+  top:-4px!important;bottom:auto!important;right:-8px!important;
   padding:0!important;border:0!important;border-radius:50%!important;
   background:transparent!important;box-shadow:none!important;
   isolation:isolate!important;cursor:pointer!important;
+}
+/* At 320px the 44px hit target needs 2px more clearance from the sheep. */
+@media(max-width:375px){
+  body .app #page-capture #qc-v2 .kona-tag-tray-toggle{right:-12px!important;}
 }
 body .app #page-capture #qc-v2 .kona-tag-tray-toggle::before{
   content:"";position:absolute;pointer-events:none;
@@ -620,7 +624,7 @@ body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTra
 
 
 
-<script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=pinrowv120261105"></script><script src="./runtime/settings.58b48f87b05a.js?rev=pinrowv120261105"></script>
+<script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=togglealignv120261105"></script><script src="./runtime/settings.58b48f87b05a.js?rev=togglealignv120261105"></script>
 <!-- Cloudflare Web Analytics: On_HARU workers.dev -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"f9b29e261a624202a5e611671cd6e2b9"}'></script>
 </body></html>
