@@ -1,7 +1,7 @@
 name: On_HARU Capture emoji grid visual regression
 on:
   push:
-    branches: [main, 'fix/capture-pin-visible-expanded-2026-11-05', 'fix/write-tag-toggle-alignment-2026-11-05']
+    branches: [main, 'fix/write-toggle-grid-aligned-on-main-2026-11-05']
     paths: ['public/legacy/**', 'scripts/qa-capture-pin-grid.mjs', '.github/workflows/qa-capture-pin-grid.yml']
   workflow_dispatch:
 jobs:

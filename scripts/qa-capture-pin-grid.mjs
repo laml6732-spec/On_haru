@@ -29,8 +29,27 @@ try{
    if(await tags.count()!==15)throw Error('Expected 15 tags');
    const collapsed=await page.locator('#konaCaptureTagTray .kona-tag-chip:visible').count();
    if(collapsed!==7)throw Error('Expected seven collapsed tags, got '+collapsed);
+   const caretAppearance=()=>more.evaluate(el=>{
+     const a=getComputedStyle(el,'::after'),circle=getComputedStyle(el,'::before'),b=el.getBoundingClientRect();
+     return {glyph:el.textContent,expanded:el.getAttribute('aria-expanded'),
+       iconWidth:a.width,iconHeight:a.height,iconTop:a.top,iconLeft:a.left,
+       strokeRight:a.borderRightWidth,strokeBottom:a.borderBottomWidth,
+       transform:a.transform,buttonWidth:b.width,buttonHeight:b.height,
+       circleWidth:circle.width,circleHeight:circle.height};
+   });
+   const closedAppearance=await caretAppearance();
+   if(closedAppearance.glyph!=='⌄'||closedAppearance.expanded!=='false')throw Error('Closed caret fallback not downward');
+   if(closedAppearance.iconWidth!=='10px'||closedAppearance.iconHeight!=='10px')throw Error('Closed chevron incorrect size');
+   if(closedAppearance.circleHeight!=='36px')throw Error('Closed circle height differs from emoji height');
    await more.click();
    if(await more.getAttribute('aria-expanded')!=='true')throw Error('More did not expand');
+   await page.waitForTimeout(100); // Let CSS state settle before sampling pseudoelement geometry.
+   const openedAppearance=await caretAppearance();
+   if(openedAppearance.glyph!=='⌃'||openedAppearance.expanded!=='true')throw Error('Open caret fallback not upward');
+   for(const k of ['iconWidth','iconHeight','iconTop','iconLeft','strokeRight','strokeBottom','buttonWidth','buttonHeight','circleWidth','circleHeight']){
+     if(openedAppearance[k]!==closedAppearance[k])throw Error('Caret '+k+' differs between expanded and collapsed');
+   }
+   if(openedAppearance.transform===closedAppearance.transform)throw Error('Caret did not rotate for expanded state');
    const data=await page.evaluate(()=>{
     const items=[...document.querySelectorAll('#konaCaptureTagTray .kona-tag-chip')], more=document.querySelector('#page-capture #qc-v2 .kona-tag-tray-toggle');
     const box=el=>{const r=el.getBoundingClientRect();return{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height}};
@@ -38,8 +57,8 @@ try{
     const visible=items.filter(el=>getComputedStyle(el).display!=='none'&&box(el).width>0);
     const overlaps=[];
     for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++)if(intersect(box(visible[i]),box(visible[j])))overlaps.push([visible[i].dataset.tag,visible[j].dataset.tag]);
-    const btn=box(more), pinEl=items.find(el=>el.dataset.tag==='meaning_remember'), sheepEl=items.find(el=>el.dataset.tag==='meaning_listening');
-    const pin=box(pinEl), sheep=box(sheepEl), computed=getComputedStyle(pinEl);
+    const btn=box(more), pinEl=items.find(el=>el.dataset.tag==='meaning_remember'), sheepEl=items.find(el=>el.dataset.tag==='meaning_listening'), frustratedEl=items.find(el=>el.dataset.tag==='face_frustrated');
+    const pin=box(pinEl), sheep=box(sheepEl), frustrated=box(frustratedEl), computed=getComputedStyle(pinEl);
     const centers=items.slice(0,7).map(el=>{const r=box(el);return r.left+r.width/2});
     const spacing=centers.slice(1).map((v,i)=>v-centers[i]);
     const pitch=spacing.reduce((acc,v)=>acc+v,0)/spacing.length;
@@ -48,21 +67,28 @@ try{
     const alignment={sheepToButtonGap:btn.left-sheep.right,centerPitchError:Math.abs(buttonCenterX-(sheepCenterX+pitch)),verticalCenterError:Math.abs(buttonCenterY-sheepCenterY),pitch};
     const blocked=visible.filter(el=>intersect(box(el),btn)).map(el=>el.dataset.tag);
     const center=el=>{const r=box(el);return document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)};
-    return{visibleCount:visible.length,overlaps,blocked,button:btn,pin,sheep,alignment,pinDisplay:computed.display,pinGridRow:computed.gridRowStart,pinGridColumn:computed.gridColumnStart,pinHit:center(pinEl)===pinEl||pinEl.contains(center(pinEl)),moreHit:center(more)===more||more.contains(center(more)),scrollOverflow:document.documentElement.scrollWidth>innerWidth+1};
+    return{visibleCount:visible.length,overlaps,blocked,button:btn,pin,sheep,frustrated,alignment,pinDisplay:computed.display,pinGridRow:computed.gridRowStart,pinGridColumn:computed.gridColumnStart,pinHit:center(pinEl)===pinEl||pinEl.contains(center(pinEl)),moreHit:center(more)===more||more.contains(center(more)),scrollOverflow:document.documentElement.scrollWidth>innerWidth+1};
    });
    if(data.visibleCount!==15)throw Error('Expanded tag count '+data.visibleCount);
    if(data.pinDisplay==='none'||data.pinGridRow!=='2'||data.pinGridColumn!=='2')throw Error('Pin not in row 2 / column 2');
    if(data.pin.width<=0||data.pin.height<=0||!data.pinHit)throw Error('Pin not visible / clickable');
-   if(data.button.width<44||data.button.height<44||!data.moreHit)throw Error('More touch target regression');
+   if(data.button.height<44||data.button.width<24||!data.moreHit)throw Error('More touch target regression');
+   if(Math.abs(data.button.width-data.frustrated.width)>.7)throw Error('Toggle width differs from 😤 emoji');
+   if(Math.abs(parseFloat(openedAppearance.circleWidth)-data.frustrated.width)>.7||Math.abs(parseFloat(openedAppearance.circleHeight)-data.frustrated.height)>.7)throw Error('Toggle visible circle diameter differs from 😤 emoji');
+   if(Math.abs((data.button.left+data.button.width/2)-(data.frustrated.left+data.frustrated.width/2))>.7)throw Error('Toggle not aligned to eighth column above 😤');
    if(data.blocked.length||data.overlaps.length)throw Error('Overlapping targets: '+JSON.stringify({blocked:data.blocked,overlaps:data.overlaps}));
    if(data.scrollOverflow)throw Error('Horizontal overflow');
    if(data.alignment.sheepToButtonGap<1.5||data.alignment.sheepToButtonGap>14)throw Error('Toggle gap not aligned: '+JSON.stringify(data.alignment));
-   if(data.alignment.centerPitchError>10||data.alignment.verticalCenterError>3)throw Error('Toggle not on same emoji grid: '+JSON.stringify(data.alignment));
+   if(data.alignment.centerPitchError>1||data.alignment.verticalCenterError>1)throw Error('Toggle not on same emoji grid: '+JSON.stringify(data.alignment));
    await page.locator('#konaCaptureTagTray .kona-tag-chip[data-tag="meaning_remember"]').click();
    if(await page.locator('#konaCaptureTagTray .kona-tag-chip[data-tag="meaning_remember"]').getAttribute('aria-pressed')!=='true')throw Error('Pin tag cannot be selected');
    await page.screenshot({path:dir+'/'+width+'-'+theme+'-expanded.png',animations:'disabled'});
    await more.click();
    if(await more.getAttribute('aria-expanded')!=='false')throw Error('Less did not collapse');
+   await page.waitForTimeout(100);
+   const closedAgain=await caretAppearance();
+   if(closedAgain.transform!==closedAppearance.transform)throw Error('Caret rotation does not reset after collapse');
+   if(closedAgain.buttonWidth!==openedAppearance.buttonWidth||closedAgain.buttonHeight!==openedAppearance.buttonHeight)throw Error('Toggle hitbox moved on collapse');
    results.push({width,theme,pass:!errors.length,errors,geom:data});
    console.log('PASS '+width+'/'+theme+' pin visible, selectable, no overlaps');
   }catch(e){results.push({width,theme,pass:false,error:String(e),errors});console.error('FAIL '+width+'/'+theme+' '+e)}
