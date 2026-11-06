@@ -2377,7 +2377,8 @@ function drawArchiveSearch(){
      bySchedule.get(id).push(record);
     }
     for(const scheduled of bySchedule.values()){
-     // Schedule labels live with each record, matching Daily/Weekly chips.
+     results.append(el('h5',scheduled[0].scheduleLabel||archiveMoodText('Linked schedule','연결된 일정'),'archive-record-schedule-title'));
+     // Visible schedule chips stay inside each record, matching Daily/Weekly.
      for(const record of scheduled)addArchiveRecord(record);
     }
    }else for(const record of records)addArchiveRecord(record);
