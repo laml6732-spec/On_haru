@@ -255,3 +255,99 @@ body .app #page-records #new-reflect-page .review-weekly-records .weekly-day>.re
    display:none!important;
  }
 }
+
+
+/* Archive compact controls v2: search/filter on one row; saved toggle/count below.
+   Restrict scope to Records (Mood uses its own calendar and controls). */
+body .app #page-records #archive-search .archive-search-row{
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;
+  column-gap:8px!important;row-gap:4px!important;align-items:start!important;
+  width:100%!important;min-width:0!important;margin:3px 0 0!important;
+}
+body .app #page-records #archive-search .archive-search-row .archive-search-input-wrap{
+  position:relative!important;grid-column:1!important;grid-row:1!important;
+  display:flex!important;align-items:center!important;min-width:0!important;width:100%!important;
+}
+body .app #page-records #archive-search .archive-search-row .archive-search-input-wrap #archive-search-input{
+  flex:1 1 auto!important;min-width:0!important;width:100%!important;
+  padding-right:42px!important;margin:0!important;
+}
+body .app #page-records #archive-search .archive-search-row .archive-search-input-wrap #archive-search-clear{
+  position:absolute!important;right:0!important;top:0!important;
+  min-width:44px!important;min-height:44px!important;
+  margin:0!important;padding:6px!important;z-index:2!important;
+  color:var(--ink)!important;
+}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure{
+  grid-column:2!important;grid-row:1!important;display:block!important;
+  min-width:0!important;margin:0!important;padding:0!important;
+}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure>summary{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  min-height:44px!important;min-width:64px!important;
+  padding:8px 10px!important;margin:0!important;
+  background:var(--surface)!important;border:1px solid var(--line)!important;
+  border-radius:9px!important;color:var(--ink)!important;
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;
+  line-height:1.25!important;white-space:nowrap!important;
+}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure[open]{
+  grid-column:1/-1!important;grid-row:2!important;min-width:0!important;
+  margin:0!important;
+}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure[open]>.archive-filter-row{
+  width:100%!important;min-width:0!important;
+}
+body .app #page-records #archive-search .archive-toolbar{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  flex-wrap:nowrap!important;gap:8px!important;
+  min-height:34px!important;margin:1px 0 2px!important;padding:0!important;
+  width:100%!important;min-width:0!important;
+}
+body .app #page-records #archive-search .archive-toolbar>.review-saved-filters{
+  flex:1 1 auto!important;display:flex!important;align-items:center!important;
+  flex-wrap:nowrap!important;gap:5px!important;
+  width:auto!important;min-width:0!important;margin:0!important;padding:0!important;
+}
+body .app #page-records #archive-search .archive-toolbar>.review-saved-filters>button{
+  flex:0 1 auto!important;min-height:36px!important;min-width:0!important;
+  margin:0!important;padding:7px 8px!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+  line-height:1.2!important;white-space:nowrap!important;
+}
+body .app #page-records #archive-search .archive-toolbar>#archive-search-status{
+  flex:0 0 auto!important;align-self:center!important;
+  min-height:0!important;margin:0!important;padding:0!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+  font-weight:500!important;line-height:1.3!important;white-space:nowrap!important;
+  color:var(--ink)!important;
+}
+body .app #page-records #archive-search .archive-active-filters{
+  margin:4px 0!important;
+}
+body .app #page-records #archive-search-results>.review-date-header:first-child{
+  margin-top:8px!important;
+}
+html[data-appearance=dark] body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure>summary{
+  background:var(--surface)!important;border-color:var(--line)!important;color:var(--ink)!important;
+}
+@media(max-width:360px){
+  body .app #page-records #archive-search .archive-search-row{
+    column-gap:5px!important;
+  }
+  body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure>summary{
+    padding:7px 8px!important;min-width:58px!important;
+  }
+  body .app #page-records #archive-search .archive-toolbar{
+    gap:4px!important;
+  }
+  body .app #page-records #archive-search .archive-toolbar>.review-saved-filters{
+    gap:3px!important;
+  }
+  body .app #page-records #archive-search .archive-toolbar>.review-saved-filters>button{
+    padding:7px 6px!important;font-size:calc(10.5px * var(--kona-ui-scale,1))!important;
+  }
+  body .app #page-records #archive-search .archive-toolbar>#archive-search-status{
+    font-size:calc(10.5px * var(--kona-ui-scale,1))!important;
+  }
+}
