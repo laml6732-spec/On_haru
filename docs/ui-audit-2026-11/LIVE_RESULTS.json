@@ -9,14 +9,14 @@
     "cases": [
       {
         "path": "/",
-        "ok": false,
+        "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
         "expectedSha256": "36a7dc11d0ad039cfdcda9bbdf449139c1fe316421ac0365b37d32b458c4af73",
-        "actualSha256": "0472d73d3880817693f7be634ac2141d96c528f0ec17db8e06bf859a7aca15de",
-        "hashMatch": false,
+        "actualSha256": "36a7dc11d0ad039cfdcda9bbdf449139c1fe316421ac0365b37d32b458c4af73",
+        "hashMatch": true,
         "urlMatch": true,
-        "bodyReleaseMatch": false,
+        "bodyReleaseMatch": true,
         "workerRelease": null,
         "releaseHeaderPresent": false,
         "releaseEvidence": "sha256 + same-origin path + HTML/SW embedded release; header optional but checked when present"
@@ -37,12 +37,12 @@
       },
       {
         "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
-        "ok": false,
+        "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=archivecompactv220261106",
         "expectedSha256": "2b3599d689a204282dcafacb1593e712fc63e0aa66d1fb066f69cf227763ca4f",
-        "actualSha256": "388760978d4a6c0e8ed2025f5ce529c013021fe33c40bac81690d9f316212ffc",
-        "hashMatch": false,
+        "actualSha256": "2b3599d689a204282dcafacb1593e712fc63e0aa66d1fb066f69cf227763ca4f",
+        "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
         "workerRelease": null,
@@ -65,14 +65,14 @@
       },
       {
         "path": "sw.js",
-        "ok": false,
+        "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=archivecompactv220261106",
         "expectedSha256": "bf652b07c0c80ccf7dc3e8f7115ebcf05d9043b3358e87da9db06aeb78e28070",
-        "actualSha256": "dfeed46feced90534920668c0f2db17dc39ecba92815072437ab0366ee591017",
-        "hashMatch": false,
+        "actualSha256": "bf652b07c0c80ccf7dc3e8f7115ebcf05d9043b3358e87da9db06aeb78e28070",
+        "hashMatch": true,
         "urlMatch": true,
-        "bodyReleaseMatch": false,
+        "bodyReleaseMatch": true,
         "workerRelease": null,
         "releaseHeaderPresent": false,
         "releaseEvidence": "sha256 + same-origin path + HTML/SW embedded release; header optional but checked when present"
@@ -698,7 +698,7 @@
         "ok": true
       }
     ],
-    "release": "weeklycompactv120261105"
+    "release": "archivecompactv220261106"
   },
   "runs": [
     {
@@ -758,5 +758,5 @@
       "conclusion": "success"
     }
   ],
-  "allPassed": false
+  "allPassed": true
 }
