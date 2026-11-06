@@ -2193,10 +2193,16 @@ function archiveMoodRender(panel){
  const selected=archiveMoodDate.startsWith(archiveMoodMonth)?archiveMoodDate:archiveMoodMonth+'-01';
  const title=new Date(Date.UTC(year,number-1,1)).toLocaleDateString(KonaI18n.dateLocale,{year:'numeric',month:'long',timeZone:'UTC'});
  const heading=el('div',undefined,'archive-mood-heading'),monthTitle=el('strong',title);
+ const info=el('details',undefined,'archive-mood-info'),infoToggle=el('summary','ⓘ'),infoTooltip=el('p',
+  archiveMoodText('Color: energy × mood · Ring: energy only · No dot: unrated.','색 점: 에너지×기분 · 빈 원: 에너지만 · 점 없음: 평가 없음.'),
+  'archive-mood-info-tooltip');
+ infoToggle.setAttribute('aria-label',archiveMoodText('Explain calendar dots','달력 점 설명'));
+ infoTooltip.setAttribute('role','tooltip');info.append(infoToggle,infoTooltip);
+ const monthLabel=el('div',undefined,'archive-mood-month-label');monthLabel.append(monthTitle,info);
  for(const [text,shift,name] of [['‹',-1,archiveMoodText('Previous month','이전 달')],['›',1,archiveMoodText('Next month','다음 달')]]){
   const button=el('button',text,'archive-mood-arrow');button.type='button';button.setAttribute('aria-label',name);
   button.onclick=()=>{if(!reviewCanEdit())return;const moved=new Date(Date.UTC(year,number-1+shift,1));archiveMoodMonth=moved.toISOString().slice(0,7);archiveMoodDate=archiveMoodMonth+'-01';drawArchiveSearch()};
-  if(shift<0)heading.append(button);else heading.append(monthTitle,button);
+  if(shift<0)heading.append(button);else heading.append(monthLabel,button);
  }
  panel.append(heading);
  const weekdays=el('div',undefined,'archive-mood-weekdays');
@@ -2219,7 +2225,7 @@ function archiveMoodRender(panel){
   grid.append(button);
  }
  panel.append(grid);
- const legend=el('p',archiveMoodText('Color: energy × mood · Ring: energy only · No dot: unrated.','색 점: 에너지×기분 · 빈 원: 에너지만 · 점 없음: 평가 없음.'),'archive-mood-legend');panel.append(legend);
+ // The mood legend is now available from the month heading info tooltip.
  const detail=el('section',undefined,'archive-mood-detail'),localDate=new Date(selected+'T12:00:00Z').toLocaleDateString(KonaI18n.dateLocale,{month:'long',day:'numeric',weekday:'short',timeZone:'UTC'});
  detail.append(el('h3',localDate));
  const entries=archiveMoodEntries(selected);
