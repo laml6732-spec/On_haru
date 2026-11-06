@@ -192,7 +192,7 @@ const short=d=>new Intl.DateTimeFormat(KonaI18n.dateLocale,{month:'short',day:'n
 // Display timestamps in the app's configured local time zone. Stored ISO timestamps stay untouched.
 function reviewFollowupLocalDate(raw){
  if(typeof raw!=='string')return '';
- if(/^\\d{4}-\\d{2}-\\d{2}$/.test(raw))return raw;
+ if(/^\d{4}-\d{2}-\d{2}$/.test(raw))return raw;
  const parsed=new Date(raw);
  if(!Number.isFinite(parsed.getTime()))return raw.slice(0,10);
  const parts=new Intl.DateTimeFormat('en-US',{timeZone:zoneInfo().id,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(parsed);
