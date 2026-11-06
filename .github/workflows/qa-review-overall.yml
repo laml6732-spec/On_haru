@@ -1,0 +1,33 @@
+name: On_HARU Review all views visual QA
+on:
+  push:
+    branches: ['fix/review-complete-hierarchy-2026-11-05']
+    paths: ['public/legacy/**','scripts/qa-review-overall.mjs','scripts/qa-review-contrast.mjs','.github/workflows/qa-review-overall.yml']
+  workflow_dispatch:
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: command -v google-chrome >/dev/null || npx playwright-core install chromium
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-review.log 2>&1 &
+      - run: node scripts/verify-ui-static.mjs
+      - run: node scripts/qa-review-overall.mjs
+      - run: node scripts/qa-review-contrast.mjs
+      - run: node scripts/qa-review-hierarchy.mjs
+      - run: node scripts/qa-review-mood-palette.mjs
+      - run: node scripts/qa-review-labels.mjs
+      - run: node scripts/ui-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-review-overall-screenshots
+          path: test-results/review-overall/
+          retention-days: 14
