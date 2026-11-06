@@ -1,0 +1,33 @@
+name: On_HARU Weekly compact Review QA
+on:
+  push:
+    branches: ['fix/weekly-compact-review-2026-11-05']
+    paths: ['public/legacy/**', 'scripts/qa-weekly-compact.mjs', '.github/workflows/qa-weekly-compact.yml']
+  workflow_dispatch:
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: command -v google-chrome >/dev/null || npx playwright-core install chromium
+      - run: node scripts/verify-ui-static.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-weekly.log 2>&1 &
+      - run: node scripts/qa-weekly-compact.mjs
+      - run: node scripts/qa-review-overall.mjs
+      - run: node scripts/qa-review-hierarchy.mjs
+      - run: node scripts/ui-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-weekly-compact-visual
+          path: |
+            test-results/weekly-compact/
+            test-results/review-overall/
+            test-results/review-hierarchy/
+            test-results/onharu-ui/
+          retention-days: 14
