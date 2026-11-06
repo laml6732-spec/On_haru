@@ -62,6 +62,9 @@ try{
       const first=await heads.first().evaluate(e=>{const c=getComputedStyle(e);return{bg:c.backgroundColor,date:e.querySelector('.review-date-label')?.textContent,count:e.querySelector('.review-date-count')?.textContent}});
       if(first.bg!==result.weekly.bg)throw Error('Weekly/Archive date header backgrounds differ');
       if(!first.count?.includes('1 record'))throw Error('Archive date count missing');
+      const groupLabels=await page.locator('#archive-search-results .archive-record-category').allTextContents();
+      if(groupLabels.length!==2||!groupLabels.every(s=>s.includes('Schedule-linked')))throw Error('Category headings missing');
+      if(await page.locator('#archive-search-results .archive-record-schedule-title').count()!==2)throw Error('Schedule names not grouped');
       const firstRow=rows.first();
       const order=await firstRow.evaluate(e=>[...e.children].map(x=>x.className));
       if(order[0]!=='archive-result-head'||order[1]!=='archive-search-preview')throw Error('Metadata not first '+order);
@@ -70,7 +73,7 @@ try{
       await disclosure.locator('summary').click();
       if(!await disclosure.evaluate(e=>e.open))throw Error('Filters cannot expand');
       const type=page.locator('#archive-search .archive-filter-row select[aria-label="Type"]');
-      await type.selectOption('note');
+      await type.selectOption('schedule');
       const reopened=page.locator('#archive-search .archive-filter-disclosure');
       if(!await reopened.evaluate(e=>e.open))throw Error('Filter pane collapsed after selecting type');
       if(await rows.count()!==2)throw Error('Type filter incorrectly removed notes');
