@@ -60,11 +60,13 @@ try{
    if(width<600&&placement.fraction>0.48)throw Error('Mood daily detail starts below 48%: '+placement.fraction);
    if(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>1)throw Error('Horizontal overflow');
    await snap(page,width+'-'+theme+'-week');
-   const info=page.locator('.archive-mood-info');
-   await info.locator('summary').click();
-   if(!await info.evaluate(e=>e.open))throw Error('Dot tooltip failed');
-   if(!await page.locator('.archive-mood-info-tooltip').isVisible())throw Error('Tooltip hidden');
-   await info.locator('summary').click();
+   const legend=page.locator('.archive-mood-visible-legend');
+   if(!await legend.isVisible())throw Error('Four-phase permanent Mood legend is missing');
+   if(await legend.locator('.archive-mood-legend-item').count()!==4)throw Error('Legend does not describe all four phases');
+   if(await page.locator('.archive-mood-info').count())throw Error('Hidden info tooltip should no longer be used');
+   if(!await page.locator('.archive-mood-color-explainer').innerText().then(x=>x.includes('mood')&&x.includes('energy')))throw Error('Mood/energy tone explanation is absent');
+   if(!await page.locator('.archive-mood-detail').evaluate(x=>x.compareDocumentPosition(document.querySelector('.archive-mood-heading'))&Node.DOCUMENT_POSITION_FOLLOWING))throw Error('Selected day must appear before period navigation');
+   if(!await page.locator('.archive-mood-arrow').last().isDisabled())throw Error('Forward arrow allows future 7-day interval');
    await week.locator('[data-mood-date="2026-11-04"]').click();
    if(!await page.locator('.archive-mood-detail>h3').innerText().then(x=>x.includes('November 4')))throw Error('Cannot select another day');
    await page.locator('.archive-mood-arrow').first().click();
@@ -93,7 +95,7 @@ try{
    if(!await page.locator('#archive-search-input').isVisible())throw Error('Archive Records view lost');
    if(errors.length)throw Error('Page errors '+errors.join(' / '));
    report.ok=true;
-   console.log('MOOD_WEEK_PASS '+JSON.stringify({width,theme,detailFraction:placement.fraction,sevenDays:true,fullMonth:true,keyboardInfo:true,dataUnchanged:true}));
+   console.log('MOOD_WEEK_PASS '+JSON.stringify({width,theme,detailFraction:placement.fraction,sevenDays:true,fullMonth:true,visibleLegend:true,selectedFirst:true,dataUnchanged:true}));
   }catch(e){report.ok=false;report.error=String(e);report.pageErrors=errors;console.error('MOOD_WEEK_FAIL '+width+' '+theme+' '+e);await page.screenshot({path:folder+'/'+width+'-'+theme+'-failure.png'}).catch(()=>{})}
   finally{reports.push(report);await context.close()}
  }
