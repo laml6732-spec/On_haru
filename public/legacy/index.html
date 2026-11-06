@@ -2,14 +2,14 @@
 <style id="onharu-launch-edge-fix">
 /* True-alpha watercolor launch image; do not blend or mask its transparent edges. */
 #launchScreen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;isolation:isolate;background:var(--onharu-launch-bg,#FDFDFB)!important;overflow:hidden}
-#launchScreen #launchArt{display:block;width:min(94vw,540px)!important;height:auto!important;max-height:84svh!important;aspect-ratio:1/1!important;background:transparent!important;border:0!important;box-shadow:none!important;object-fit:contain!important;mix-blend-mode:normal!important;-webkit-mask-image:none!important;mask-image:none!important}
+#launchScreen #launchArt{display:block;width:min(94vw,540px)!important;height:auto!important;max-height:84svh!important;aspect-ratio:1/1!important;background:transparent!important;border:0!important;box-shadow:none!important;object-fit:contain!important;mix-blend-mode:normal!important;-webkit-mask-image:none!important;mask-image:none!important;filter:var(--onharu-launch-art-filter,none)!important}
 
 /* Time-of-day color wash behind the unchanged transparent launch illustration.
    Device-local clock: morning 05-11, day 11-17, evening 17-20, night 20-05. */
-html[data-onharu-daypart="morning"]{--onharu-launch-bg:radial-gradient(ellipse at 50% 40%,#fff9f4 0%,#fce7df 62%,#f3e4dc 100%)}
-html[data-onharu-daypart="day"]{--onharu-launch-bg:radial-gradient(ellipse at 50% 40%,#fdfdfb 0%,#e7f5f1 65%,#dfedf1 100%)}
-html[data-onharu-daypart="evening"]{--onharu-launch-bg:radial-gradient(ellipse at 50% 40%,#fff6ef 0%,#f8e1dd 60%,#ead9e7 100%)}
-html[data-onharu-daypart="night"]{--onharu-launch-bg:radial-gradient(ellipse at 50% 40%,#f4f2f6 0%,#e1e5f1 60%,#cbd6e7 100%)}
+html[data-onharu-daypart="morning"]{--onharu-launch-bg:radial-gradient(ellipse at 50% 40%,#fff9f4 0%,#fce7df 62%,#f3e4dc 100%);--onharu-launch-art-filter:sepia(.10) saturate(1.08) hue-rotate(-8deg)}
+html[data-onharu-daypart="day"]{--onharu-launch-bg:radial-gradient(ellipse at 50% 40%,#fdfdfb 0%,#e7f5f1 65%,#dfedf1 100%);--onharu-launch-art-filter:none}
+html[data-onharu-daypart="evening"]{--onharu-launch-bg:radial-gradient(ellipse at 50% 40%,#fff6ef 0%,#f8e1dd 60%,#ead9e7 100%);--onharu-launch-art-filter:sepia(.18) saturate(1.13) hue-rotate(-13deg)}
+html[data-onharu-daypart="night"]{--onharu-launch-bg:radial-gradient(ellipse at 50% 40%,#f4f2f6 0%,#e1e5f1 60%,#cbd6e7 100%);--onharu-launch-art-filter:brightness(.88) saturate(.85) hue-rotate(12deg)}
 </style><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="manifest" href="./manifest.webmanifest"><link id="onharu-tab-icon" rel="icon" type="image/png" sizes="512x512" href="./icons/onharu-face-wave-512.png"><link rel="apple-touch-icon" href="./icons/onharu-face-wave-512.png"><script id="onharu-daypart-theme" src="./runtime/daypart-theme.v1.js"></script><title>On_Haru</title><meta name="description" content="On_HARU — plan, capture, focus, reflect.">
 <!-- Use local/system fonts so an unreachable font CDN cannot hold up the first render. -->
 

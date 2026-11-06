@@ -27,7 +27,15 @@ jobs:
       - run: node --test scripts/test-daypart-theme.mjs
       - run: node scripts/verify-ui-static.mjs
       - run: npm install --no-save --no-package-lock playwright-core@1.56.1
-      - run: npx playwright-core install --with-deps chromium
+      - name: Use runner Chromium or install browser only if absent
+        run: |
+          if command -v google-chrome >/dev/null; then
+            echo "Using system Google Chrome"
+          elif command -v chromium >/dev/null; then
+            echo "Using system Chromium"
+          else
+            npx playwright-core install chromium
+          fi
       - run: python3 -m http.server 8080 --directory public > /tmp/onharu-daypart-server.log 2>&1 &
       - run: node scripts/ui-pwa.mjs
       - run: node scripts/ui-smoke.mjs
