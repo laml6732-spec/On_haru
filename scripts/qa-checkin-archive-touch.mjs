@@ -77,15 +77,23 @@ try{
      await page.screenshot({path:artifacts+'/'+label+'-archive-mood.png',animations:'disabled'});
      await page.locator('.tabs [data-page="focus"]').click();
      results.focus=await page.evaluate(()=>{
-       const el=document.querySelector('#page-focus');
-       if(!el)return {visible:0,small:[]};
-       const buttons=[...el.querySelectorAll('button')].filter(e=>{
-         const r=e.getBoundingClientRect(),c=getComputedStyle(e);
-         return r.width>0&&r.height>0&&c.visibility!=='hidden'&&c.display!=='none';
-       });
-       return{visible:buttons.length,small:buttons.filter(e=>{const r=e.getBoundingClientRect();return r.width<40||r.height<40})
-         .slice(0,12).map(e=>({id:e.id,text:e.textContent?.trim().slice(0,20),w:Math.round(e.getBoundingClientRect().width),h:Math.round(e.getBoundingClientRect().height)}))};
+       const root=document.querySelector('#page-focus');
+       const rect=e=>{const b=e.getBoundingClientRect();return{width:b.width,height:b.height,x:b.x,y:b.y}};
+       const presets=[...root.querySelectorAll('#focusDurations button')].filter(e=>rect(e).width>0&&rect(e).height>0);
+       const timerToggle=root.querySelector('#quietTimerToggle');
+       const tools=root.querySelector('#listeningTools');
+       const toggleVisible=timerToggle&&rect(timerToggle).width>0&&rect(timerToggle).height>0&&!tools.hidden;
+       return {presets:presets.map(e=>({text:e.textContent.trim(),...rect(e)})),
+          toggleVisible, toggle:toggleVisible?rect(timerToggle):null,
+          overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth)};
      });
+     if(results.focus.presets.length!==5)throw Error('Focus duration presets missing: '+JSON.stringify(results.focus));
+     if(results.focus.presets.some(x=>x.width<43.9||x.height<43.9))throw Error('Focus duration touch targets under 44px: '+JSON.stringify(results.focus));
+     if(results.focus.toggleVisible&&(results.focus.toggle.height<43.9))throw Error('Focus timer toggle under 44px: '+JSON.stringify(results.focus));
+     if(results.focus.overflow>1)throw Error('Focus content horizontal overflow');
+     await page.locator('#focusDurations button').filter({hasText:'5'}).first().click();
+     if(!(await page.locator('#focusClock').textContent())?.includes('05:00'))throw Error('Focus duration selection not reflected in timer');
+     await page.screenshot({path:artifacts+'/'+label+'-focus-presets.png',animations:'disabled'});
      if(errors.length)throw Error('JS page exceptions: '+errors.join('; '));
      cases.push({...results,passed:true});
      console.log('PASS '+label+' Check-in / Archive Mood interactions + layout');
