@@ -1,0 +1,26 @@
+name: On_HARU Archive Mood tooltip QA
+on:
+  push:
+    branches: [main, 'fix/archive-mood-legend-tooltip-2026-11-05']
+    paths: ['public/legacy/**', 'scripts/qa-archive-mood-tooltip.mjs', '.github/workflows/qa-archive-mood-tooltip.yml']
+  workflow_dispatch:
+jobs:
+  archive-mood-tooltip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: command -v google-chrome >/dev/null || npx playwright-core install chromium
+      - run: node scripts/verify-ui-static.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-archive-mood-tooltip.log 2>&1 &
+      - run: node scripts/qa-archive-mood-tooltip.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-archive-mood-tooltip
+          path: test-results/archive-mood-tooltip/
+          retention-days: 14
