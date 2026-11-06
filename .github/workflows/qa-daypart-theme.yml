@@ -1,0 +1,47 @@
+name: QA On_HARU time-of-day appearance
+on:
+  push:
+    branches: [main, 'feat/onharu-time-of-day-appearance-2026-11-05']
+    paths:
+      - 'public/legacy/index.html'
+      - 'public/legacy/sw.js'
+      - 'public/legacy/runtime/daypart-theme.v1.js'
+      - 'scripts/test-daypart-theme.mjs'
+      - '.github/workflows/qa-daypart-theme.yml'
+  pull_request:
+    paths:
+      - 'public/legacy/index.html'
+      - 'public/legacy/sw.js'
+      - 'public/legacy/runtime/daypart-theme.v1.js'
+      - 'scripts/test-daypart-theme.mjs'
+      - '.github/workflows/qa-daypart-theme.yml'
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/test-daypart-theme.mjs
+      - run: node scripts/verify-ui-static.mjs
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - name: Use runner Chromium or install browser only if absent
+        run: |
+          if command -v google-chrome >/dev/null; then
+            echo "Using system Google Chrome"
+          elif command -v chromium >/dev/null; then
+            echo "Using system Chromium"
+          else
+            npx playwright-core install chromium
+          fi
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-daypart-server.log 2>&1 &
+      - run: node scripts/ui-pwa.mjs
+      - run: node scripts/ui-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-daypart-qa
+          path: test-results/
+          retention-days: 7
