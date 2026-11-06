@@ -189,6 +189,16 @@ const monthAdd=(m,n)=>{let [y,x]=m.split('-').map(Number);return new Date(Date.U
 const monday=d=>dayAdd(d,-((weekday(d)+6)%7));
 const fmt=d=>new Intl.DateTimeFormat(KonaI18n.dateLocale,{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'}).format(parseDay(d));
 const short=d=>new Intl.DateTimeFormat(KonaI18n.dateLocale,{month:'short',day:'numeric',timeZone:'UTC'}).format(parseDay(d));
+// Display timestamps in the app's configured local time zone. Stored ISO timestamps stay untouched.
+function reviewFollowupLocalDate(raw){
+ if(typeof raw!=='string')return '';
+ if(/^\\d{4}-\\d{2}-\\d{2}$/.test(raw))return raw;
+ const parsed=new Date(raw);
+ if(!Number.isFinite(parsed.getTime()))return raw.slice(0,10);
+ const parts=new Intl.DateTimeFormat('en-US',{timeZone:zoneInfo().id,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(parsed);
+ const part=type=>parts.find(x=>x.type===type)?.value||'';
+ return part('year')+'-'+part('month')+'-'+part('day');
+}
 const mins=s=>+s.slice(0,2)*60 + +s.slice(3,5);
 const hm=m=>{m=Math.max(0,Math.min(1439,Math.round(m)));return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
 const uid=()=>'e'+Math.random().toString(36).slice(2,10);
@@ -2108,7 +2118,7 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
   else controls.append(konaEventReviewTags(record.date,record.sourceId,reviewAfterChange));
   const sourceDay=db.days[record.date],sourceNote=record.kind==='capture'?sourceDay.quickCaptureEntries?.find(q=>q.id===record.sourceId):null,laterEntries=sourceNote?.laterReflections||sourceDay.eventNoteReflections?.[record.sourceId]||[];
   const revisit=el('button',KonaI18n.t("Revisit later"),'note-revisit');revisit.type='button';revisit.onclick=()=>{if(!reviewCanEdit())return;openKonaInput({title:KonaI18n.t("Later reflection"),placeholder:KonaI18n.t("What changed in your understanding or response?"),multiline:true,saveLabel:KonaI18n.t("Save reflection"),onSave:text=>{if(!text.trim())return false;const ok=guardedMutation(()=>{const v=day(record.date),entry={text:text.trim(),createdAt:new Date().toISOString()};if(record.kind==='capture'){const q=v.quickCaptureEntries.find(q=>q.id===record.sourceId);q.laterReflections??=[];q.laterReflections.push(entry)}else{v.eventNoteReflections??={};v.eventNoteReflections[record.sourceId]??=[];v.eventNoteReflections[record.sourceId].push(entry)}},KonaI18n.t("Later reflection was not saved."));if(ok)reviewAfterChange();return ok}})};controls.append(revisit);
-  for(const entry of laterEntries){const part=el('section',undefined,'review-note-followup');part.append(el('small',KonaI18n.t("Later reflection · ")+entry.createdAt.slice(0,10)),el('p',entry.text));body.append(part)}
+  for(const entry of laterEntries){const part=el('section',undefined,'review-note-followup');part.append(el('small',KonaI18n.t("Later reflection · ")+reviewFollowupLocalDate(entry.createdAt)),el('p',entry.text));body.append(part)}
   const marked=reviewImportant(record),highlight=el('button',marked?KonaI18n.t("Remove highlight"):KonaI18n.t("Highlight · Important"),'note-highlight-toggle');highlight.type='button';highlight.setAttribute('aria-pressed',String(marked));highlight.onclick=()=>{if(!reviewCanEdit())return;const ok=guardedMutation(()=>{const v=day(record.date);v.important??=[];if(marked){v.important=v.important.filter(id=>id!==record.sourceId);if(record.kind==='capture'){const q=v.quickCaptureEntries.find(q=>q.id===record.sourceId);q.important=false;q.tags=(q.tags||[]).filter(t=>t!=='important')}else if(v.eventNoteTags?.[record.sourceId])v.eventNoteTags[record.sourceId]=v.eventNoteTags[record.sourceId].filter(t=>t!=='important')}else v.important.push(record.sourceId)},KonaI18n.t("Highlight was not saved."));if(ok)reviewAfterChange()};controls.append(highlight);
   const remove=el('button',KonaI18n.t("Delete"),'review-delete');remove.type='button';remove.onclick=async()=>{if(!reviewCanEdit()||!await onHaruConfirm(KonaI18n.t("Delete this note?")))return;const ok=guardedMutation(()=>{if(record.kind==='capture')db.days[record.date].quickCaptureEntries=db.days[record.date].quickCaptureEntries.filter(q=>q.id!==record.sourceId);else deleteEventNote(record.date,record.sourceId)},KonaI18n.t("Delete failed. The record was kept."));if(ok)reviewAfterChange()};controls.append(remove);
  }
@@ -2474,7 +2484,7 @@ function appendReflectionContext(parent,draft,onChange,includeFollowup=false){
  const details=el('details',undefined,'reflection-context');details.append(el('summary',KonaI18n.t("Additional notes · optional")));const lab=el('label',KonaI18n.t("Anything else you would like to record"),'weekly-form-label'),field=el('textarea');field.setAttribute('aria-label',KonaI18n.t("Additional notes",true));field.value=draft.additionalNotes??[draft.scripture&&KonaI18n.t("Scripture or context: ")+draft.scripture,draft.discernment&&KonaI18n.t("Further prayer or conversation: ")+draft.discernment].filter(Boolean).join('\n\n');field.placeholder=KonaI18n.t("Anything else you would like to record…",true);field.oninput=()=>{draft.additionalNotes=field.value;onChange()};lab.append(field);details.append(lab);parent.append(details);
  const later=el('details',undefined,'reflection-later');later.append(el('summary',KonaI18n.t("Revisit this reflection later")));
  if(draft.followup)later.append(el('p',draft.followup,'reflection-saved-text'));
- for(const entry of draft.followups||[]){later.append(el('small',entry.createdAt.slice(0,10)),el('p',entry.text,'reflection-saved-text'))}
+ for(const entry of draft.followups||[]){later.append(el('small',reviewFollowupLocalDate(entry.createdAt)),el('p',entry.text,'reflection-saved-text'))}
  const add=el('button',KonaI18n.t("Add later reflection"),'mini-btn');add.type='button';add.onclick=()=>{const recordDate=date;openKonaInput({title:KonaI18n.t("Later reflection"),placeholder:KonaI18n.t("What changed in your understanding or response?"),multiline:true,saveLabel:KonaI18n.t("Save reflection"),onSave:text=>{if(!text.trim())return false;const ok=guardedMutation(()=>{const r=day(recordDate).reflectionNotes??={};r.followups??=[];r.followups.push({text:text.trim(),createdAt:new Date().toISOString()})},KonaI18n.t("Reflection was not saved."));if(ok){renderRecords();toast(KonaI18n.t("Later reflection saved"))}return ok}})};later.append(add);parent.append(later)
 }
 
@@ -2484,13 +2494,41 @@ function drawWeekly(){
 if(weeklySelectedDate!==date){weeklyOffset=0;weeklySelectedDate=date}
 const reviewDay=db.settings.weeklyReflectionDay===1?1:0,base=weeklyReflectionPeriod(date,reviewDay),start=dayAdd(base.start,weeklyOffset*7),end=dayAdd(start,6),scheduled=dayAdd(start,reviewDay===1?7:6);
 const record=weeklyReflectionRecord(db,start);
-const heading=el('div',undefined,'rv-head'),titleGroup=el('div',undefined,'rv-head-title');titleGroup.append(el('h2',KonaI18n.t("Weekly Reflection")),el('small',fmt(start)+' – '+fmt(end),'rv-selected-period'));const navigation=el('div',undefined,'rv-nav');
-for(const [label,delta,title] of [['‹',-1,KonaI18n.t("Previous reflection week")],[KonaI18n.t("This week"),0,KonaI18n.t("Current reflection week")],['›',1,KonaI18n.t("Next reflection week")]]){const b=el('button',label);b.type='button';b.setAttribute('aria-label',title);b.onclick=()=>{weeklyOffset=delta===0?0:weeklyOffset+delta;renderRecords()};navigation.append(b)}heading.append(titleGroup,navigation);panel.append(heading);
+// Weekly is already named in the Review tabs: show only one compact week navigator.
+const heading=el('nav',undefined,'weekly-compact-header');
+heading.setAttribute('aria-label',KonaI18n.t("Weekly Reflection",true));
+const sameMonth=start.slice(0,7)===end.slice(0,7);
+const endLabel=sameMonth?(KonaI18n.dateLocale.startsWith('ko')?Number(end.slice(8,10))+'일':String(Number(end.slice(8,10)))):short(end);
+const periodText=short(start)+' – '+endLabel+(start.slice(0,4)===nowLocal().slice(0,4)?'':' · '+start.slice(0,4));
+const period=el('strong',periodText,'weekly-period-text');
+const weekArrow=(label,delta,title)=>{const b=el('button',label,'weekly-nav-arrow');b.type='button';b.setAttribute('aria-label',title);b.onclick=()=>{weeklyOffset+=delta;renderRecords()};return b};
+heading.append(
+ weekArrow('‹',-1,KonaI18n.t("Previous reflection week")),
+ period,
+ weekArrow('›',1,KonaI18n.t("Next reflection week"))
+);
+if(weeklyOffset!==0){const current=el('button',KonaI18n.t("This week"),'weekly-jump-current');current.type='button';current.setAttribute('aria-label',KonaI18n.t("Current reflection week"));current.onclick=()=>{weeklyOffset=0;renderRecords()};heading.append(current)}
+panel.append(heading);
 const dates=Array.from({length:7},(_,i)=>dayAdd(start,i)),entries=dates.map(d=>({date:d,moments:reviewRecords(d),reflection:db.days[d]?.reflectionNotes||{},reflected:!!db.days[d]?.reflected}));
 const hasDayContent=x=>x.moments.length||reflectionHasText(x.reflection);
 const {momentCount,recordedDays}=reviewWeekSummary(entries);
-panel.append(el('p',recordedDays+' '+(recordedDays===1?KonaI18n.t("day"):KonaI18n.t("days"))+KonaI18n.t(" recorded · ")+momentCount+KonaI18n.t(" records")+(recordedDays<2?KonaI18n.t(" · Not enough days for a trend"):''),'weekly-summary'));
-const feelings=el('details',undefined,'weekly-feeling-summary');feelings.setAttribute('aria-label',KonaI18n.t('Recorded feelings'));for(const entry of entries){const checks=entry.moments.filter(r=>r.kind==='check'&&(r.feeling||r.energy));const latest=checks.at(-1);if(latest){const summary=el('button',fmt(entry.date)+' · '+(latest.feeling||KonaI18n.t("Unfinished")));summary.type='button';summary.onclick=()=>{reflectPeriod='daily';changeDate(entry.date)};feelings.append(summary)}}if(feelings.childNodes.length){feelings.prepend(el('summary',KonaI18n.t('Recorded feelings')+' · '+feelings.childNodes.length+' '+KonaI18n.t('days')));panel.append(feelings)}
+// Keep statistics secondary and expandable feelings inline with the summary.
+const meta=el('div',undefined,'weekly-compact-meta');
+meta.append(el('span',recordedDays+' '+(recordedDays===1?KonaI18n.t("day"):KonaI18n.t("days"))+KonaI18n.t(" recorded · ")+momentCount+KonaI18n.t(" records"),'weekly-compact-count'));
+const feelings=el('details',undefined,'weekly-compact-feelings');
+feelings.setAttribute('aria-label',KonaI18n.t('Recorded feelings'));
+let feelingDays=0;
+for(const entry of entries){
+ const checks=entry.moments.filter(r=>r.kind==='check'&&(r.feeling||r.energy));
+ const latest=checks.at(-1);
+ if(latest){feelingDays++;const open=el('button',fmt(entry.date)+' · '+(latest.feeling||KonaI18n.t("Unfinished")));open.type='button';open.onclick=()=>{reflectPeriod='daily';changeDate(entry.date)};feelings.append(open)}
+}
+if(feelingDays){
+ const label=KonaI18n.t('Recorded feelings')+' · '+feelingDays+' '+(feelingDays===1?KonaI18n.t('day'):KonaI18n.t('days'));
+ feelings.prepend(el('summary',label));
+ meta.append(feelings);
+}
+panel.append(meta);
 panel.append(el('h3',KonaI18n.t("Weekly reflection"),'rv-writing-heading'));
 const status=el('span',tutorialPractice?KonaI18n.t("Practice only · not saved"):reflectionHasText(record)?KonaI18n.t("Saved"):KonaI18n.t("Autosave"),'rv-save-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');const retry=el('button',KonaI18n.t("Retry weekly save"),'mini-btn');retry.type='button';retry.hidden=true;const feedback=el('div',undefined,'rv-save-feedback');feedback.append(status,retry);panel.append(feedback);
 const draft={...record},current=()=>db.weeklyReflections[start]||record;
@@ -2511,7 +2549,7 @@ field('action',KonaI18n.t("Next step · optional"),KonaI18n.t("One practical res
 appendReflectionContext(panel,draft,persistWeekly);
 complete=el('button',current().reflected?KonaI18n.t("Reopen review"):KonaI18n.t("Finish review"),'rv-done');complete.type='button';complete.setAttribute('aria-label',current().reflected?KonaI18n.t("Undo week reflected",true):KonaI18n.t("Mark week reflected",true));complete.disabled=!current().reflected&&!canComplete();complete.onclick=()=>{if((!current().reflected&&!canComplete())||!persistWeekly())return;const ok=commitWeeklyReflection(db,start,{reflected:!current().reflected},()=>save()||!!tutorialPractice);if(ok)renderRecords();else{status.textContent=KonaI18n.t("Not saved · retry or back up");retry.hidden=false}};completeReason=el('small',KonaI18n.t("Add a daily record or write a weekly note to enable this."),'rv-done-reason');completeReason.id='weeklyReflectionDisabledReason';complete.setAttribute('aria-describedby','weeklyReflectionDisabledReason');completeReason.hidden=!complete.disabled;const controls=el('div',undefined,'rv-controls');controls.append(complete,completeReason);const writingHeading=panel.querySelector('.rv-writing-heading'),toolbar=el('div',undefined,'rv-writing-toolbar');writingHeading.before(toolbar);toolbar.append(writingHeading);panel.append(controls);
 const count=Object.values(db.weeklyReflections||{}).filter(x=>x?.reflected===true).length;panel.append(el('p',count+' '+(count===1?KonaI18n.t("week"):KonaI18n.t("weeks"))+KonaI18n.t(" revisited · A record of reflection, not a measure of faith."),'weekly-count'));
-const records=el('section',undefined,'weekly-records review-weekly-records');records.append(el('h3',KonaI18n.t("This week’s moments"),'review-section-heading'));
+const records=el('section',undefined,'weekly-records review-weekly-records');
 if(!recordedDays)records.append(el('p',KonaI18n.t("No daily records this week. You can still write a reflection."),'reflection-help'));
 for(const entry of entries.filter(hasDayContent).reverse()){
  const day=el('section',undefined,'weekly-day'),heading=reviewDateGroupHeading(entry.date,entry.moments.length,'h4');day.append(heading);
