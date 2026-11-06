@@ -634,3 +634,13 @@ body .app #page-records #archive-search .archive-mood-compact .archive-mood-deta
 body .app #page-records #archive-search .archive-mood-compact .archive-mood-detail>h3{
   margin:0 0 9px!important;
 }
+
+
+/* Keep Daily Review a secondary text action in dark mode as well. */
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-open-daily{
+  background:transparent!important;
+  border:0!important;
+  color:var(--ink)!important;
+  box-shadow:none!important;
+  text-decoration:underline!important;
+}
