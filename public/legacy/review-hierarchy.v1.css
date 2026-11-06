@@ -625,3 +625,12 @@ body .app #page-records #archive-search .archive-mood-open-daily{
   body .app #page-records #archive-search .archive-mood-legend-item{gap:3px!important}
   body .app #page-records #archive-search .archive-mood-visible-legend{column-gap:7px!important}
 }
+
+
+/* Match compact Mood specificity: primary summary is above the calendar, not below it. */
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-detail{
+  margin:0 0 9px!important;padding:7px 0 12px!important;
+}
+body .app #page-records #archive-search .archive-mood-compact .archive-mood-detail>h3{
+  margin:0 0 9px!important;
+}
