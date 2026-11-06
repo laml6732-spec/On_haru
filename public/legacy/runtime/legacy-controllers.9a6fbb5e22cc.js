@@ -2278,6 +2278,9 @@ function drawArchiveSearch(){
  archiveSearch.append(status);status.hidden=!!archiveDetailRecord;root.classList.add('review-modern-archive');root.classList.remove('archive-searching');other.forEach(p=>p.style.display='none');document.getElementById('archivedWeeklyReflection')?.remove();archiveSearch.querySelectorAll('.archive-toolbar,.archive-back,.archive-filter-disclosure,.archive-active-filters,.archive-filter-row,.archive-period-row,.review-archive-context,.review-saved-filters,.archive-mood-view-switch,.archive-mood-panel').forEach(n=>n.remove());
  const searchRow=archiveSearch.querySelector('.archive-search-row'),label=archiveSearch.querySelector('label[for="archive-search-input"]');
  input.placeholder=archiveMoodText('Search records…','기록 검색…');
+ // Preserve the input/clear controls across Archive rerenders while putting Filters beside search.
+ let searchWrap=searchRow.querySelector('.archive-search-input-wrap');
+ if(!searchWrap){searchWrap=el('div',undefined,'archive-search-input-wrap');searchRow.prepend(searchWrap);searchWrap.append(input,document.getElementById('archive-search-clear'))}
  searchRow.hidden=!!archiveDetailRecord;results.hidden=false;results.replaceChildren();status.textContent='';
  label?.style.removeProperty('display');searchRow.style.removeProperty('display');results.style.removeProperty('display');status.style.removeProperty('display');
  if(!archiveDetailRecord){
@@ -2314,7 +2317,7 @@ function drawArchiveSearch(){
  const appliedCount=Number(archiveType!=='all')+Number(archiveContext!=='all')+Number(archivePeriod!=='all')+Number(archiveMeaning!=='all'&&archiveMeaning!=='saved');
  const summary=el('summary',archiveMoodText('Filters','필터')+(appliedCount?' · '+appliedCount:''),'archive-filter-summary');
  disclosure.append(summary,filters);
- savedTabs.after(disclosure);
+ searchRow.append(disclosure);
  const context=el('div',undefined,'review-archive-context');
  filters.after(context);
  if(archivePeriod==='date'){const picked=el('input');picked.type='date';picked.value=archiveExactDate;picked.setAttribute('aria-label',KonaI18n.t("Record date",true));picked.onchange=()=>{archiveExactDate=picked.value;archiveFiltersOpen=true;drawArchiveSearch()};context.append(picked)}
@@ -2334,7 +2337,7 @@ function drawArchiveSearch(){
  if(archiveType!=='all')chip(KonaI18n.t('Type'),typeLabels[archiveType]||archiveType,()=>archiveType='all');
  if(archiveContext!=='all')chip(KonaI18n.t('Context'),contexts.get(archiveContext.replace(/^schedule:/,'schedule:'))||archiveContext.replace(/^kind:/,''),()=>archiveContext='all');
  if(archivePeriod!=='all')chip(KonaI18n.t('Period'),archivePeriod==='date'?archiveExactDate:archivePeriod==='week'?KonaI18n.t('This week'):KonaI18n.t('This month'),()=>{archivePeriod='all';archiveExactDate=''});
- toolbar.after(chips);chips.after(status);
+ toolbar.after(chips);toolbar.append(status);
 
  const matches=all.filter(r=>{
   const type=archiveType==='all'||archiveSemanticGroup(r)===archiveType;
@@ -2342,7 +2345,10 @@ function drawArchiveSearch(){
   const period=archivePeriod==='date'?r.date===archiveExactDate:konaArchivePeriodMatch(r.date,archivePeriod,nowLocal());
   return type&&related&&period&&konaSavedRecordMatches(r,archiveMeaning)&&[r.title,r.noteTitle,r.body,r.feeling,r.scheduleLabel,r.recordedTime,(r.tags||[]).map(konaNoteTagEmoji).join(' ')].join('\n').toLocaleLowerCase().includes(query.toLocaleLowerCase());
  }).sort((a,b)=>b.date.localeCompare(a.date)||String(b.recordedTime||'').localeCompare(String(a.recordedTime||'')));
- status.textContent=matches.length+' '+(matches.length===1?KonaI18n.t("record"):KonaI18n.t("records"))+' · '+archiveMoodText('Newest first','최신순');if(!matches.length)results.append(el('p',query?KonaI18n.t("No matching records. Change your search or clear the filters."):KonaI18n.t("No records in this selection."),'archive-empty'));
+ status.textContent=matches.length+' '+(matches.length===1?KonaI18n.t("record"):KonaI18n.t("records"));
+ status.title=archiveMoodText('Newest first','최신순');
+ status.setAttribute('aria-label',status.textContent+' · '+status.title);
+ if(!matches.length)results.append(el('p',query?KonaI18n.t("No matching records. Change your search or clear the filters."):KonaI18n.t("No records in this selection."),'archive-empty'));
 
  const dateCounts=new Map(),byDate=new Map();
  for(const record of matches){
