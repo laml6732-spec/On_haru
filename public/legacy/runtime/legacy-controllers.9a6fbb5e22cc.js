@@ -2283,8 +2283,11 @@ function drawArchiveSearch(){
  status.textContent=matches.length+' '+(matches.length===1?KonaI18n.t("record"):KonaI18n.t("records"));if(!matches.length)results.append(el('p',query?KonaI18n.t("No matching records. Change your search or clear the filters."):KonaI18n.t("No records in this selection."),'archive-empty'));
  let groupDate='';for(const record of matches){if(groupDate!==record.date){groupDate=record.date;results.append(el('h3',fmt(record.date),'archive-date-group'))}const button=el('button',undefined,'archive-search-result');button.type='button';button.dataset.recordDate=record.date;button.dataset.recordId=record.id;
   const preview=el('span',undefined,'archive-search-preview'),text=[record.noteTitle&&record.noteTitle!==record.scheduleLabel?record.noteTitle:'',record.body||record.feeling||record.title].filter(Boolean).join('\n');reviewHighlight(preview,konaNoteDisplay(text,record.tags),query);konaApplyNoteTagIcon(preview,record.tags);
-  const kind=record.kind==='check'?KonaI18n.t("Check-in"):record.kind==='session'?KonaI18n.t("Session"):['reflection','weekly-reflection'].includes(record.kind)?record.type:KonaI18n.t("Note");const metadata=[record.recordedTime,kind,record.scheduleLabel].filter(Boolean).join(' · ');button.append(preview,el('span',metadata,'archive-search-meta'));
-  button.setAttribute('aria-label',record.date+' · '+metadata+' · '+text.slice(0,100));button.onclick=()=>showReviewArchiveRecord(record);results.append(button)
+  const kind=record.kind==='check'?KonaI18n.t("Check-in"):record.kind==='session'?KonaI18n.t("Session"):['reflection','weekly-reflection'].includes(record.kind)?record.type:KonaI18n.t("Note");const linkedSchedule=record.scheduleLabel&&(record.scheduleId||record.kind==='meal')?record.scheduleLabel:'';
+  const metadata=[record.recordedTime,kind].filter(Boolean).join(' · ');
+  if(linkedSchedule)button.append(el('small',linkedSchedule,'review-schedule-label'));
+  button.append(preview,el('span',metadata,'archive-search-meta'));
+  button.setAttribute('aria-label',record.date+' · '+(linkedSchedule?linkedSchedule+' · ':'')+metadata+' · '+text.slice(0,100));button.onclick=()=>showReviewArchiveRecord(record);results.append(button)
  }
 }
 
