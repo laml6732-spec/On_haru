@@ -620,6 +620,18 @@ body .app #page-records #archive-search #archive-search-status{
   margin:9px 0 3px!important;min-height:20px!important;color:#617769!important;
   font-size:calc(11px * var(--kona-ui-scale,1))!important;
 }
+/* A legacy blanket rule hides .archive-back. Restore it ONLY while
+   viewing an Archive record detail so users can return to filtered results. */
+body .app #page-records.archive-detail #archive-search .archive-back{
+  display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;
+  min-height:44px!important;box-sizing:border-box!important;
+  padding:9px 0!important;margin:0 0 8px!important;
+  background:transparent!important;border:0!important;
+  color:#375F4A!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;
+}
+html[data-appearance="dark"] body .app #page-records.archive-detail #archive-search .archive-back{
+  color:#D3E8D8!important;
+}
 /* Metadata and optional schedule tag share a compact row ABOVE the content.
    The entire row remains the original clickable record button. */
 body .app #page-records #archive-search-results .archive-search-result{
