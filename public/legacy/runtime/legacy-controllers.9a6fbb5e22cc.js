@@ -2355,8 +2355,9 @@ function drawArchiveSearch(){
   const metadata=[record.recordedTime,archivePracticeName(record)].filter(Boolean).join(' · ');
   const line=el('span',undefined,'archive-result-head');
   if(metadata)line.append(el('span',metadata,'archive-search-meta'));
-  button.append(line,preview);
   const linkedSchedule=archiveSemanticGroup(record)==='schedule'?record.scheduleLabel:'';
+  if(linkedSchedule)line.append(el('small',linkedSchedule,'review-schedule-label'));
+  button.append(line,preview);
   button.setAttribute('aria-label',record.date+' · '+(linkedSchedule?linkedSchedule+' · ':'')+metadata+' · '+text.slice(0,100));
   button.onclick=()=>showReviewArchiveRecord(record);results.append(button);
  }
@@ -2376,7 +2377,7 @@ function drawArchiveSearch(){
      bySchedule.get(id).push(record);
     }
     for(const scheduled of bySchedule.values()){
-     results.append(el('h5',scheduled[0].scheduleLabel||archiveMoodText('Linked schedule','연결된 일정'),'archive-record-schedule-title'));
+     // Schedule labels live with each record, matching Daily/Weekly chips.
      for(const record of scheduled)addArchiveRecord(record);
     }
    }else for(const record of records)addArchiveRecord(record);
