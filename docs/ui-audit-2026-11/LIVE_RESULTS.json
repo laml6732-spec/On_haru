@@ -1,10 +1,10 @@
 {
-  "runId": "42138658328",
-  "sourceCommit": "ed566d262a2b11af2fae202f915177c5716ec3b8",
+  "runId": "42139080358",
+  "sourceCommit": "cc44f6fa11f631dfcbcd890ac7472b319121df2d",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
-    "release": "daypartv120261105",
+    "release": "togglegridv220261105",
     "verifier": "hash-content-v2",
     "cases": [
       {
@@ -12,8 +12,8 @@
         "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
-        "expectedSha256": "12c5e4e7086bdf698eeb10431e799a77db89f72bf283025a086f0aeab6fa9411",
-        "actualSha256": "12c5e4e7086bdf698eeb10431e799a77db89f72bf283025a086f0aeab6fa9411",
+        "expectedSha256": "534e3d35dd8aa6dbda2bed48a043fe78094789d196b92a37f7e96b60211b42f1",
+        "actualSha256": "534e3d35dd8aa6dbda2bed48a043fe78094789d196b92a37f7e96b60211b42f1",
         "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
@@ -25,7 +25,7 @@
         "path": "app.7cb1b71d4eb6.css",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=daypartv120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=togglegridv220261105",
         "expectedSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "actualSha256": "da60ffeb31e2fd6290d43d0d55c55308c77fa7ad6bfac2564e01e9f970fcf832",
         "hashMatch": true,
@@ -39,9 +39,9 @@
         "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=daypartv120261105",
-        "expectedSha256": "fe2f185796733efb02fb98d6fae368cf59813101b6bc2be4e5743240811ff3b2",
-        "actualSha256": "fe2f185796733efb02fb98d6fae368cf59813101b6bc2be4e5743240811ff3b2",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=togglegridv220261105",
+        "expectedSha256": "5a70d6507130893fc46caf2f7ad7deccae04bc91ee482856c95a7fc0f0f0990f",
+        "actualSha256": "5a70d6507130893fc46caf2f7ad7deccae04bc91ee482856c95a7fc0f0f0990f",
         "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
@@ -53,7 +53,7 @@
         "path": "runtime/settings.58b48f87b05a.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=daypartv120261105",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=togglegridv220261105",
         "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "hashMatch": true,
@@ -67,9 +67,9 @@
         "path": "sw.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=daypartv120261105",
-        "expectedSha256": "16cb216506b68ca4ab7c8b747d5d1746b2a3b77cdec6be9dd77d8b571cb5fd10",
-        "actualSha256": "16cb216506b68ca4ab7c8b747d5d1746b2a3b77cdec6be9dd77d8b571cb5fd10",
+        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=togglegridv220261105",
+        "expectedSha256": "5ed69c43dc07c74674e1f2b80b26a4d8b2177e1bc43f8c2cfaf57f16adf7a701",
+        "actualSha256": "5ed69c43dc07c74674e1f2b80b26a4d8b2177e1bc43f8c2cfaf57f16adf7a701",
         "hashMatch": true,
         "urlMatch": true,
         "bodyReleaseMatch": true,
@@ -698,62 +698,62 @@
         "ok": true
       }
     ],
-    "release": "daypartv120261105"
+    "release": "togglegridv220261105"
   },
   "runs": [
     {
-      "id": 42138658379,
-      "sha": "ed566d262a2b11af2fae202f915177c5716ec3b8",
+      "id": 42139080390,
+      "sha": "cc44f6fa11f631dfcbcd890ac7472b319121df2d",
       "name": "OnHaru metrics privacy and regression checks",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 42138658377,
-      "sha": "ed566d262a2b11af2fae202f915177c5716ec3b8",
-      "name": "QA On_HARU time-of-day appearance",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42138658343,
-      "sha": "ed566d262a2b11af2fae202f915177c5716ec3b8",
+      "id": 42139080381,
+      "sha": "cc44f6fa11f631dfcbcd890ac7472b319121df2d",
       "name": "On_HARU Capture emoji grid visual regression",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 42138658338,
-      "sha": "ed566d262a2b11af2fae202f915177c5716ec3b8",
-      "name": "OnHaru static UI checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42138658328,
-      "sha": "ed566d262a2b11af2fae202f915177c5716ec3b8",
+      "id": 42139080358,
+      "sha": "cc44f6fa11f631dfcbcd890ac7472b319121df2d",
       "name": "OnHaru Workers production verification",
       "status": "in_progress",
       "conclusion": null
     },
     {
-      "id": 42138576313,
-      "sha": "48b324d9f36e62a43f2cd8e41c8b21afcaeb3b3e",
-      "name": "On_HARU Capture emoji grid visual regression",
+      "id": 42139080277,
+      "sha": "cc44f6fa11f631dfcbcd890ac7472b319121df2d",
+      "name": "OnHaru static UI checks",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 42138561208,
-      "sha": "48a1170b53fa9c89aef30f3f9ba27f47153aee5f",
+      "id": 42139080249,
+      "sha": "cc44f6fa11f631dfcbcd890ac7472b319121df2d",
+      "name": "QA On_HARU time-of-day appearance",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42139038412,
+      "sha": "b50e62d19dabce569ca293ad35710e2cf367168e",
       "name": "OnHaru metrics privacy and regression checks",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 42138561193,
-      "sha": "48a1170b53fa9c89aef30f3f9ba27f47153aee5f",
+      "id": 42139038360,
+      "sha": "b50e62d19dabce569ca293ad35710e2cf367168e",
       "name": "QA On_HARU time-of-day appearance",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 42138974003,
+      "sha": "b50e62d19dabce569ca293ad35710e2cf367168e",
+      "name": "On_HARU Capture emoji grid visual regression",
       "status": "completed",
       "conclusion": "success"
     }
