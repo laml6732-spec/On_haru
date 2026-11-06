@@ -51,6 +51,10 @@ try{
    if(await cards.count()!==4)throw Error('Expected four first-class mood cards');
    const scoreLabels=await cards.locator('.archive-mood-rating-row').allInnerTexts();
    if(scoreLabels.length!==4||scoreLabels.some(x=>!(/\/5/.test(x))))throw Error('Scores missing from one or more mood cards: '+scoreLabels);
+   const dailyLink=await detail.locator('.archive-mood-open-daily').evaluate(el=>{
+    const st=getComputedStyle(el);return {background:st.backgroundColor,underline:st.textDecorationLine,box:st.boxShadow};
+   });
+   if(!['transparent','rgba(0, 0, 0, 0)'].includes(dailyLink.background)||!dailyLink.underline.includes('underline'))throw Error('Daily Review link is too visually dominant: '+JSON.stringify(dailyLink));
    const structure=await page.evaluate(()=>{
     const bounds=s=>document.querySelector(s).getBoundingClientRect();
     const selected=bounds('.archive-mood-detail'),week=bounds('.archive-mood-heading'),legend=bounds('.archive-mood-visible-legend');
