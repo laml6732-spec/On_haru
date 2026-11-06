@@ -105,10 +105,15 @@ body .app #page-records #archive-search .archive-filter-disclosure .review-filte
 
 /* Keep the 7-column Mood calendar; improve date and helper legibility. */
 body .app #page-records #archive-search .archive-mood-heading .archive-mood-info>summary{
-  width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;
-  border:1.5px solid currentColor!important;border-radius:50%!important;
+  width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
+  position:relative!important;border:0!important;border-radius:50%!important;
+  background:transparent!important;
   font-family:var(--font-ui)!important;font-size:15px!important;font-weight:750!important;
   color:var(--ink)!important;line-height:1!important;
+}
+body .app #page-records #archive-search .archive-mood-heading .archive-mood-info>summary::before{
+  content:"";position:absolute;inset:8px;border:1.5px solid currentColor;border-radius:50%;
+  pointer-events:none;
 }
 body .app #page-records #archive-search .archive-mood-weekdays,
 body .app #page-records #archive-search .archive-mood-day-number,
