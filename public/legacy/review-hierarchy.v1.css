@@ -690,28 +690,28 @@ body .app #page-records #archive-search .archive-mood-trend-line{
   stroke-linecap:round!important;stroke-linejoin:round!important;
   vector-effect:non-scaling-stroke!important;
 }
-body .app #page-records #archive-search .archive-mood-trend-line.mood{
+body .app #page-records #archive-search .archive-mood-trend-line.trend-mood{
   stroke:var(--hero-ink)!important;
 }
-body .app #page-records #archive-search .archive-mood-trend-line.energy{
+body .app #page-records #archive-search .archive-mood-trend-line.trend-energy{
   stroke:var(--devo)!important;stroke-dasharray:5 3!important;
 }
-body .app #page-records #archive-search .archive-mood-trend-point.mood{
+body .app #page-records #archive-search .archive-mood-trend-point.trend-mood{
   fill:var(--hero-ink)!important;stroke:var(--bg)!important;stroke-width:1.25!important;
 }
-body .app #page-records #archive-search .archive-mood-trend-point.energy{
+body .app #page-records #archive-search .archive-mood-trend-point.trend-energy{
   fill:var(--devo)!important;stroke:var(--bg)!important;stroke-width:1.25!important;
 }
-html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-line.mood{
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-line.trend-mood{
   stroke:var(--ink)!important;
 }
-html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-point.mood{
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-point.trend-mood{
   fill:var(--ink)!important;
 }
-html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-line.energy{
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-line.trend-energy{
   stroke:#9AC7EB!important;
 }
-html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-point.energy{
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-point.trend-energy{
   fill:#9AC7EB!important;
 }
 body .app #page-records #archive-search .archive-mood-trend-key{
@@ -726,13 +726,13 @@ body .app #page-records #archive-search .archive-mood-trend-swatch{
   width:22px!important;height:0!important;display:inline-block!important;
   flex:0 0 22px!important;border-top:3px solid var(--hero-ink)!important;
 }
-body .app #page-records #archive-search .archive-mood-trend-swatch.energy{
+body .app #page-records #archive-search .archive-mood-trend-swatch.trend-energy{
   border-top-color:var(--devo)!important;border-top-style:dashed!important;
 }
-html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-swatch.mood{
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-swatch.trend-mood{
   border-top-color:var(--ink)!important;
 }
-html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-swatch.energy{
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-mood-trend-swatch.trend-energy{
   border-top-color:#9AC7EB!important;
 }
 body .app #page-records #archive-search .archive-mood-trend-dates{
