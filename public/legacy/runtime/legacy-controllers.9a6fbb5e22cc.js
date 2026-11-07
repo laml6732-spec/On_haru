@@ -2489,6 +2489,11 @@ function archiveRecordType(record){
  if(record.kind==='session')return 'session';
  return 'note';
 }
+// A legacy meal can be linked by label without an event ID.
+function archiveRecordContextKey(record){
+ if(record.scheduleId)return 'schedule:'+record.scheduleId;
+ return archiveSemanticGroup(record)==='schedule'&&record.scheduleLabel?'schedule-label:'+record.scheduleLabel:'none';
+}
 function archiveRecordTypeLabel(record){
  if(record.kind==='class')return archiveMoodText('Class note','수업 노트');
  if(record.kind==='weekly-reflection')return archiveMoodText('Weekly reflection','주간 회고');
@@ -2548,7 +2553,7 @@ function drawArchiveSearch(){
  const filters=el('div',undefined,'archive-filter-row review-filters');
  function selectFilter(label,options,value,change){const wrap=el('label',undefined,'review-filter');wrap.append(el('span',label));const select=el('select');select.setAttribute('aria-label',label);for(const [id,text] of options)select.append(new Option(text,id));select.value=value;select.onchange=()=>{if(!reviewCanEdit())return;archiveFiltersOpen=true;change(select.value);drawArchiveSearch()};wrap.append(select);filters.append(wrap)}
  selectFilter(KonaI18n.t("Type"),[['all',KonaI18n.t("All types")],['note',archiveMoodText('Notes','메모')],['checkin',archiveMoodText('Check-ins','체크인')],['reflection',archiveMoodText('Reflections','회고')],['session',archiveMoodText('Sessions','세션')]],archiveType,v=>archiveType=v);
- const contexts=new Map([['none',archiveMoodText('No schedule','일정 없음')]]);for(const record of all){if(record.scheduleId&&record.scheduleLabel)contexts.set('schedule:'+record.scheduleId,record.scheduleLabel)}
+ const contexts=new Map([['none',archiveMoodText('No schedule','일정 없음')]]);for(const record of all){const key=archiveRecordContextKey(record);if(key!=='none'&&record.scheduleLabel)contexts.set(key,record.scheduleLabel)}
  selectFilter(KonaI18n.t("Context"),[['all',KonaI18n.t("All contexts")],...contexts],archiveContext,v=>archiveContext=v);
  selectFilter(KonaI18n.t("Period"),[['all',KonaI18n.t("All dates")],['week',KonaI18n.t("This week")],['month',KonaI18n.t("This month")],['date',KonaI18n.t("On a date")]],archivePeriod,v=>{archivePeriod=v;if(v==='date'&&!archiveExactDate)archiveExactDate=date});
  const disclosure=el('details',undefined,'archive-filter-disclosure');
@@ -2581,7 +2586,7 @@ function drawArchiveSearch(){
 
  const matches=all.filter(r=>{
   const type=archiveType==='all'||archiveRecordType(r)===archiveType;
-  const related=archiveContext==='all'||archiveContext==='none'&&!r.scheduleId||archiveContext==='schedule:'+r.scheduleId;
+  const related=archiveContext==='all'||archiveContext===archiveRecordContextKey(r);
   const period=archivePeriod==='date'?r.date===archiveExactDate:konaArchivePeriodMatch(r.date,archivePeriod,nowLocal());
   return type&&related&&period&&(archiveMeaning!=='starred'||archiveManuallySaved(r))&&archiveRecordSearchText(r).includes(query.toLocaleLowerCase());
  }).sort((a,b)=>b.date.localeCompare(a.date)||String(b.recordedTime||'').localeCompare(String(a.recordedTime||'')));
