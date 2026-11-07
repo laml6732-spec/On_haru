@@ -774,3 +774,78 @@ body .app #page-records #archive-search .archive-mood-trend-empty{
  body .app #page-records #archive-search .archive-mood-trend-key{gap:11px!important}
  body .app #page-records #archive-search .archive-mood-trend-date{padding-inline:0!important}
 }
+
+
+/* Records v4: one date heading, chronological rows, user notes before metadata. */
+body .app #page-records #archive-search-results>.review-date-header{
+  margin:14px 0 4px!important;min-height:34px!important;
+  padding:7px 9px!important;
+}
+body .app #page-records #archive-search-results .archive-search-result-wrap{
+  grid-template-columns:minmax(0,1fr) 44px!important;gap:0!important;
+  border-bottom:1px solid var(--line)!important;
+}
+body .app #page-records #archive-search-results .archive-search-result-wrap>.archive-record-compact{
+  display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;
+  align-items:start!important;gap:9px!important;
+  margin:0!important;padding:12px 0!important;
+  min-height:66px!important;border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;
+}
+body .app #page-records #archive-search-results .archive-record-time{
+  display:block!important;padding:2px 0 0!important;margin:0!important;
+  color:var(--ink)!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+  font-weight:500!important;line-height:1.45!important;
+  font-variant-numeric:tabular-nums!important;white-space:nowrap!important;
+}
+body .app #page-records #archive-search-results .archive-record-content{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  gap:4px!important;min-width:0!important;width:100%!important;
+}
+body .app #page-records #archive-search-results .archive-record-title{
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;overflow:hidden!important;
+  color:var(--ink)!important;font-size:calc(14px * var(--kona-ui-scale,1))!important;
+  font-weight:700!important;line-height:1.4!important;overflow-wrap:anywhere!important;
+}
+body .app #page-records #archive-search-results .archive-record-content>.archive-search-preview{
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;overflow:hidden!important;
+  margin:0!important;padding:0!important;white-space:pre-wrap!important;
+  color:var(--ink)!important;font-size:calc((var(--reading-size,13.5px)) * var(--kona-ui-scale,1))!important;
+  line-height:1.4!important;font-weight:450!important;overflow-wrap:anywhere!important;
+}
+body .app #page-records #archive-search-results .archive-record-meta{
+  display:flex!important;flex-wrap:wrap!important;align-items:center!important;
+  gap:3px 6px!important;min-width:0!important;
+  margin:1px 0 0!important;color:var(--sub)!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+  font-weight:500!important;line-height:1.5!important;
+}
+body .app #page-records #archive-search-results .archive-record-meta>span{
+  display:inline-flex!important;align-items:center!important;gap:3px!important;
+  min-width:0!important;max-width:100%!important;overflow-wrap:anywhere!important;
+  color:var(--sub)!important;
+}
+body .app #page-records #archive-search-results .archive-record-meta>span:not(:first-child)::before{
+  content:'·';color:var(--sub);margin-right:1px;
+}
+body .app #page-records #archive-search-results .archive-record-meta .kona-sheep-icon{
+  width:15px!important;height:15px!important;object-fit:contain!important;
+}
+body .app #page-records #archive-search-results .archive-save-toggle{
+  font-size:calc(20px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search-results .archive-record-compact:focus-visible,
+body .app #page-records #archive-search-results .archive-save-toggle:focus-visible{
+  outline:2px solid var(--hero-ink)!important;outline-offset:2px!important;
+}
+@media(max-width:360px){
+  body .app #page-records #archive-search-results .archive-search-result-wrap>.archive-record-compact{
+    grid-template-columns:39px minmax(0,1fr)!important;gap:7px!important;
+  }
+  body .app #page-records #archive-search-results .archive-record-meta{
+    font-size:calc(10.5px * var(--kona-ui-scale,1))!important;
+  }
+}
