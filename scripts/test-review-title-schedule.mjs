@@ -10,7 +10,7 @@ function getFunction(name){
  assert.ok(match,'Missing '+name);
  return match[0];
 }
-const names=['archiveSemanticGroup','archivePracticeName','reviewSameTitleAsSchedule',
+const names=['archiveSemanticGroup','archivePracticeName','reviewSameTitleAsSchedule','archiveRecordContextKey',
  'archiveRecordType','archiveRecordTypeLabel','archiveRecordTagLabel','archiveRecordText',
  'reviewArchivePreview','archiveRecordSearchText'];
 const tags=[['meaning_insight','💡 Insight'],['meaning_question','❓ Question'],['meaning_listening','🐑 Hearing God’s Voice']];
@@ -42,6 +42,9 @@ assert.ok(api.archiveRecordSearchText(tagged).includes('question'),'secondary ta
 assert.ok(api.archiveRecordSearchText(tagged).includes('small group'),'schedule not searchable');
 assert.ok(api.archiveRecordSearchText(tagged).includes('community'),'title not searchable');
 assert.equal(api.archiveRecordTagLabel('meaning_listening'),'🐑 Hearing God’s Voice');
+assert.equal(api.archiveRecordContextKey({kind:'capture',scheduleId:'sg',scheduleLabel:'Small Group'}),'schedule:sg');
+assert.equal(api.archiveRecordContextKey({kind:'meal',scheduleLabel:'Dinner'}),'schedule-label:Dinner');
+assert.equal(api.archiveRecordContextKey({kind:'capture',scheduleId:'',scheduleLabel:'Personal note'}),'none');
 for(const marker of [
  "const title=grouped&&sameAsSchedule?'':String(record.noteTitle||'').trim();",
  "if(!grouped&&record.scheduleId&&!sameAsSchedule)body.append",
