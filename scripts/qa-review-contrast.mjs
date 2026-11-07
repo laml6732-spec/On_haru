@@ -68,9 +68,13 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
      console.log('AUDIT '+JSON.stringify(rows.at(-1)));
    };
    if(view==='weekly'){
-     await page.locator('#new-reflect-page .weekly-feeling-summary>summary').click();
-     await checkExpanded('weekly-feelings-open');
-     await page.locator('#new-reflect-page .weekly-feeling-summary>summary').click();
+     // This disclosure is absent in the current compact Weekly layout.
+     const feelings=page.locator('#new-reflect-page .weekly-feeling-summary>summary');
+     if(await feelings.count()&&await feelings.isVisible()){
+       await feelings.click();
+       await checkExpanded('weekly-feelings-open');
+       await feelings.click();
+     }
    }
    if(view==='archive'){
      await page.locator('#archive-search .archive-filter-disclosure>summary').click();
