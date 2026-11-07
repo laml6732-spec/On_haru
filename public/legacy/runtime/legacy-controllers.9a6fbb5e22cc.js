@@ -316,7 +316,7 @@ const nowLocal=()=>new Intl.DateTimeFormat('en-CA',{timeZone:zoneInfo().id,year:
 const timeLocal=()=>new Intl.DateTimeFormat('en-GB',{timeZone:zoneInfo().id,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date());
 
 /* ===== 상태 ===== */
-let date=nowLocal(),page='today',phase='morning',scheduleSub='events',calendarMonth=date.slice(0,7),reviewWeek=monday(date),chartDays=7,recView='cal',reviewTab='log',calendarMode='entries',reviewUndo=null;
+let date=nowLocal(),page='today',phase='morning',scheduleSub='events',calendarMonth=date.slice(0,7),reviewWeek=monday(date),chartDays=7,recView='cal',reviewTab='log',calendarMode='mood',reviewUndo=null;
 let editEvent=null,editFrom='',editTask=null,selectedEvent=null;
 let sessKind=db.settings.timerMode||'prayer',sessDurMin=db.settings.timerPresets?.[db.settings.timerMode||'prayer']??10,focusTaskKey=db.settings.timerSelections?.focus||'',focusPrayerId=db.settings.timerSelections?.prayer||'',afterTaskKey=null;
 const idleSess=()=>({started:false,running:false,paused:false,kind:'focus',dur:0,acc:0,runStart:0,startDate:'',startHM:'',title:'',taskKey:'',prayerId:'',note:'',sessionId:'',awaitingSave:false,goalReached:false});
@@ -411,6 +411,11 @@ const moodColor=(m,boost=0)=>konaMoodShade(m?.e,m?.v);
 const scoreColor=(sc,boost=0)=>konaMoodShade(sc?.e,sc?.v);
 const moodChip=m=>KonaI18n.format("<span class=\"mchip\" style=\"background:⟪0⟫\">⟪1⟫</span>",[moodColor(m),escapeHTML(konaFeeling(m)||moodEnglishNames[m.id]||m.n)],false);
 function dayScore(d){const v=db.days[d];if(!v)return null;const ms=PHASES.map(p=>moodOf(v.checkins?.[p])).filter(Boolean);if(!ms.length)return null;return{e:ms.reduce((s,m)=>s+m.e,0)/ms.length,v:ms.reduce((s,m)=>s+m.v,0)/ms.length,n:ms.length}}
+function reviewCalendarScore(d){
+ const pairs=archiveMoodEntries(d).filter(x=>Number.isInteger(x.energy)&&Number.isInteger(x.happiness));
+ if(!pairs.length)return null;
+ return {e:Math.round(pairs.reduce((a,x)=>a+x.energy,0)/pairs.length),v:Math.round(pairs.reduce((a,x)=>a+x.happiness,0)/pairs.length),n:pairs.length};
+}
 const lastMood=d=>{for(const p of ['evening','noon','morning']){const m=moodOf(readCheck(d,p));if(m)return m}return null};
 const hasDevotion=d=>(db.days[d]?.sessions||[]).some(s=>s.kind==='devotion'||s.kind==='prayer');
 function dayHasData(d){const v=db.days[d];return !!(v&&(v.headline||v.emoji||Object.values(v.meals||{}).some(x=>String(x||'').trim())||Object.values(v.eventNoteTitles||{}).some(Boolean)||Object.values(v.timeNotes||{}).some(slot=>Object.values(slot).some(n=>n?.text?.trim()))||PHASES.some(p=>hasCheck(v.checkins?.[p]))||classReviewHasContent(v.checkins?.noon)||(v.sessions||[]).length))}
@@ -1208,11 +1213,11 @@ function renderCalendar(){
   KORDER.forEach(d=>root.append(el('div','weekday',d)));
   const [y,m]=calendarMonth.split('-').map(Number),dim=new Date(Date.UTC(y,m,0,12)).getUTCDate(),size=Math.ceil((offset+dim)/7)*7;
   for(let i=0;i<size;i++){
-    const d=dayAdd(first,i-offset),v=db.days[d]||{},mo=d.slice(0,7)===calendarMonth,sug=headlineSuggest(d),sc=dayScore(d),ans=answeredOn(d);
+    const d=dayAdd(first,i-offset),v=db.days[d]||{},mo=d.slice(0,7)===calendarMonth,sug=headlineSuggest(d),sc=reviewCalendarScore(d),ans=answeredOn(d);
     const hasEntries=dayHasData(d)||Object.values(v.eventNotes||{}).some(x=>typeof x==='string'?x.trim():false),dot=calendarMode==='mood'&&sc?KonaI18n.format("<i class=\"calendar-dot mood-dot\" style=\"background:⟪0⟫\" aria-label=\"Mood recorded\"></i>",[scoreColor(sc)],false):calendarMode==='entries'&&hasEntries?KonaI18n.markup("<i class=\"calendar-dot entries-dot\" aria-label=\"Entry recorded\"></i>"):'';
     const b=el('button','daycell compact'+(!mo?' dim':'')+(d===date?' active':'')+(d===nowLocal()?' today':'')+(hasDevotion(d)?' dv':''),KonaI18n.format("<span class=\"num\">⟪0⟫</span>⟪1⟫⟪2⟫",[+d.slice(-2),v.reflected?KonaI18n.markup("<img class=\"reflected-flower\" src=\"./assets/hibiscus-task-done.png\" alt=\"Reflected\">"):dot,ans.length?KonaI18n.markup("<span class=\"rb\" aria-label=\"Answered prayer\">🌈</span>"):''],false));
     b.classList.toggle('empty',!hasEntries&&!sc&&!ans.length&&!hasDevotion(d)&&!v.reflected);b.setAttribute('aria-label',fmt(d)+(v.reflected?KonaI18n.t(" · Reflected",true):hasEntries?KonaI18n.t(" · Records saved",true):''));
-    if(calendarMode==='mood'&&sc)b.style.background=scoreColor(sc,.17);
+    if(calendarMode==='mood'&&sc){konaReviewMoodTone(b,sc.e,sc.v);b.setAttribute('aria-label',b.getAttribute('aria-label')+' · '+archiveMoodText('Mood ','기분 ')+sc.v+'/5 · '+archiveMoodText('Energy ','에너지 ')+sc.e+'/5')}
     b.type='button';
     b.onclick=()=>{
       changeDate(d);renderDayReview();
@@ -2066,7 +2071,7 @@ function reviewSection(section){
  }
  group.append(bar,content);return group;
 }
-let reviewActiveEdit=null,archiveDetailRecord=null,archiveReturnState=null,archiveType='all',archiveContext='all',archiveMeaning='all',archiveExactDate='';
+let reviewActiveEdit=null,archiveDetailRecord=null,archiveReturnState=null,archiveType='all',archiveLink='all',archiveContext='all',archiveMeaning='all',archiveExactDate='';
 document.addEventListener('click',event=>{if(!reviewActiveEdit||!reviewActiveEdit.dirty()||!event.target.closest('button,summary,a'))return;const current=reviewActiveEdit.element;if(current?.contains(event.target))return;event.preventDefault();event.stopImmediatePropagation();toast(KonaI18n.t("Save or cancel the note you are editing first."));},true);
 document.addEventListener('change',event=>{if(reviewActiveEdit?.dirty()&&event.target.id==='datePicker'){event.preventDefault();event.stopImmediatePropagation();event.target.value=date;toast(KonaI18n.t("Save or cancel your note before changing the date."))}},true);
 function reviewCanEdit(){if(!reviewActiveEdit)return true;if(reviewActiveEdit.dirty()){toast(KonaI18n.t("Save or cancel the note you are editing first."));return false}reviewActiveEdit.cancel();return true}
@@ -2167,7 +2172,7 @@ function archiveToggleSaved(record){
 }
 
 function showReviewArchiveRecord(record,edit=false){
- if(!reviewCanEdit())return;if(!archiveDetailRecord)archiveReturnState={query:document.getElementById('archive-search-input').value,scroll:window.scrollY,type:archiveType,context:archiveContext,period:archivePeriod,exact:archiveExactDate,meaning:archiveMeaning};archiveDetailRecord={date:record.date,id:record.id};mode='archive';root.classList.add('archive-detail');renderRecords();requestAnimationFrame(()=>{document.getElementById('archive-search-results')?.scrollIntoView({block:'start'});if(edit){const row=document.querySelector('#archive-search-results .review-record');if(row)reviewInlineNote(record,row)}})
+ if(!reviewCanEdit())return;if(!archiveDetailRecord)archiveReturnState={query:document.getElementById('archive-search-input').value,scroll:window.scrollY,type:archiveType,link:archiveLink,context:archiveContext,period:archivePeriod,exact:archiveExactDate,meaning:archiveMeaning};archiveDetailRecord={date:record.date,id:record.id};mode='archive';root.classList.add('archive-detail');renderRecords();requestAnimationFrame(()=>{document.getElementById('archive-search-results')?.scrollIntoView({block:'start'});if(edit){const row=document.querySelector('#archive-search-results .review-record');if(row)reviewInlineNote(record,row)}})
 }
 
 function archiveSearchItems(){
@@ -2466,10 +2471,15 @@ function reviewDateGroupHeading(d,count,tag='h3'){
  return heading;
 }
 // Archive groups are derived only from existing schedule IDs and session kinds.
-function archiveSemanticGroup(record){
- if(record.kind==='session')return 'practice';
- if((record.scheduleId&&String(record.scheduleId).trim())||(record.kind==='meal'&&record.scheduleLabel))return 'schedule';
- return 'personal';
+function archiveSemanticGroup(record){return record.kind==='session'?'practice':'records'}
+function archiveRecordHasSchedule(record){
+ if(record.scheduleId&&String(record.scheduleId).trim())return true;
+ if(record.kind==='meal'&&record.scheduleLabel)return true;
+ if(record.kind==='session'){
+  const id=String(record.id||'').replace(/^s-/,'');
+  return (db.days?.[record.date]?.sessions||[]).some(s=>!!s.eventId&&(String(s.id||'')===id||(!s.id&&s.start===id)));
+ }
+ return false;
 }
 function archivePracticeName(record){
  if(record.kind!=='session')return '';
@@ -2501,7 +2511,7 @@ function drawArchiveSearch(){
  }
  const all=reviewArchiveRecords(),query=input.value.trim();const clear=document.getElementById('archive-search-clear');if(clear)clear.hidden=!query;
  if(archiveDetailRecord){
-  const back=el('button',KonaI18n.t("← Back to results"),'archive-back');back.type='button';back.onclick=()=>{if(!reviewCanEdit())return;const saved=archiveReturnState;archiveDetailRecord=null;root.classList.remove('archive-detail');if(saved){input.value=saved.query;archiveType=saved.type;archiveContext=saved.context;archivePeriod=saved.period;archiveExactDate=saved.exact;archiveMeaning=saved.meaning||'all'}drawArchiveSearch();requestAnimationFrame(()=>window.scrollTo(0,saved?.scroll||0))};archiveSearch.prepend(back);
+  const back=el('button',KonaI18n.t("← Back to results"),'archive-back');back.type='button';back.onclick=()=>{if(!reviewCanEdit())return;const saved=archiveReturnState;archiveDetailRecord=null;root.classList.remove('archive-detail');if(saved){input.value=saved.query;archiveType=saved.type;archiveLink=saved.link||'all';archiveContext=saved.context;archivePeriod=saved.period;archiveExactDate=saved.exact;archiveMeaning=saved.meaning||'all'}drawArchiveSearch();requestAnimationFrame(()=>window.scrollTo(0,saved?.scroll||0))};archiveSearch.prepend(back);
   const record=all.find(r=>r.date===archiveDetailRecord.date&&r.id===archiveDetailRecord.id);if(!record){results.append(el('p',KonaI18n.t("This record is no longer available. Your other records are unchanged."),'archive-empty'));return}
   results.append(el('h3',fmt(record.date),'archive-date-group'));const row=reviewRow(record);results.append(row);if(record.kind==='reflection'||record.kind==='weekly-reflection')konaBindEditTarget(row.querySelector('.rv-note-preview'),KonaI18n.t("Open reflection · ")+record.date,()=>{if(!reviewCanEdit())return;archiveDetailRecord=null;if(date!==record.date)changeDate(record.date);if(record.kind==='weekly-reflection')openWeeklyAt(record.date);else{mode='reflect';reflectPeriod='daily';renderRecords();reviewJumpToReflection()}});else if(record.kind==='meal')konaBindEditTarget(row.querySelector('.rv-note-preview'),KonaI18n.t("Change meal note · ")+record.date,()=>{if(date!==record.date)changeDate(record.date);const event=dayEvents(record.date).find(e=>e.id===record.sourceId);if(event)openMealLog(event)});return;
  }
@@ -2620,8 +2630,11 @@ const reflectionSaveStates=new Map();
 function reflectionSaveResult(){return tutorialPractice?KonaI18n.t("Practice only · not saved"):save()?KonaI18n.t("Saved"):KonaI18n.t("Not saved · retry or back up")}
 function draw(){
 if(page!=='records')return;const focus=mode==='reflect',searching=mode==='archive'&&!!document.getElementById('archive-search-input')?.value.trim();root.classList.toggle('reflect-open',focus);root.classList.toggle('review-modern-archive',!focus);if(focus)root.classList.remove('archive-searching');panel.dataset.period=reflectPeriod;navOld.style.display='none';other.forEach(p=>p.style.display=focus||searching?'none':'');panel.hidden=!focus;reflectionSettingsShortcut.hidden=!focus;archiveSearch.hidden=focus;const settingsArea=document.getElementById('kx-settings');if(settingsArea)settingsArea.hidden=false;const archivePickerLabel=root.querySelector('.kx-archive-select');if(archivePickerLabel)archivePickerLabel.hidden=focus;box.querySelectorAll('button').forEach(b=>{const selected=b.id==='rev-archive'?mode==='archive':mode==='reflect'&&((b.id==='rev-weekly')===(reflectPeriod==='weekly'));b.classList.toggle('on',selected);b.setAttribute('aria-pressed',String(selected))});if(!focus){drawArchiveSearch();return}
+const originalCal=document.getElementById('viewCal');
+if(originalCal&&originalCal.parentElement===panel)root.querySelector('[data-review-panel="log"]')?.prepend(originalCal);
 panel.replaceChildren();
 if(reflectPeriod==='weekly'){drawWeekly();return}
+if(originalCal)panel.append(originalCal);
 const header=el('div',undefined,'rv-head rv-daily-head'),titleGroup=el('div',undefined,'rv-head-title');titleGroup.hidden=true;const change=el('div',undefined,'rv-nav');
 for(const [x,shift] of [['‹',-1],[KonaI18n.t("Today"),0],['›',1]]){const b=el('button',x);b.type='button';b.setAttribute('aria-label',shift===-1?KonaI18n.t("Previous day",true):shift===1?KonaI18n.t("Next day",true):KonaI18n.t("Go to today",true));b.title=shift===-1?KonaI18n.t("Previous day",true):shift===1?KonaI18n.t("Next day",true):KonaI18n.t("Go to today",true);b.onclick=()=>changeDate(shift?dayAdd(date,shift):nowLocal());change.append(b)}
 header.append(titleGroup);panel.append(header);
@@ -2686,7 +2699,7 @@ box.querySelector('#rev-reflect').onclick=()=>{if(!reviewCanEdit())return;mode='
 function openReflectionSettings(){const field=document.getElementById('weeklyReflectionDay');field.value=String(db.settings.weeklyReflectionDay===1?1:0);document.getElementById('weeklyReflectionSettingsStatus').textContent='';openSheet('weeklyReflectionSettingsModal')}
 document.getElementById('saveWeeklyReflectionSettings').onclick=()=>{const old=db.settings.weeklyReflectionDay,value=Number(document.getElementById('weeklyReflectionDay').value);if(value!==0&&value!==1)return;db.settings.weeklyReflectionDay=value;if(!save()&&!tutorialPractice){db.settings.weeklyReflectionDay=old;document.getElementById('weeklyReflectionSettingsStatus').textContent=KonaI18n.t("Not saved. Please retry.");return}weeklyOffset=0;closeSheet('weeklyReflectionSettingsModal');renderRecords()};
 const appSettings=document.getElementById('kx-settings');if(appSettings){const button=el('button',KonaI18n.t("Reflection settings"),'mini-btn reflection-settings-open');button.type='button';button.onclick=openReflectionSettings;appSettings.append(button)}
-window.konaOpenArchiveTab=tab=>{if(!['log','week','mood','class'].includes(tab))return;reviewTab=tab;const picker=document.getElementById('kx-archive');if(picker){picker.value=tab;picker.dataset.searchScope=tab}nav('records');document.getElementById('rev-archive')?.click()};
+window.konaOpenArchiveTab=tab=>{if(!['log','week','mood','class'].includes(tab))return;if(tab==='mood'){nav('records');document.getElementById('rev-reflect')?.click();return}reviewTab=tab;const picker=document.getElementById('kx-archive');if(picker){picker.value=tab;picker.dataset.searchScope=tab}nav('records');document.getElementById('rev-archive')?.click()};
 window.konaOpenArchiveRecord=(recordDate,recordId,edit=false)=>{const record=reviewRecords(recordDate).find(r=>r.id==='q-'+recordId);if(!record){toast(KonaI18n.t("The original record could not be found."));return false}nav('records');showReviewArchiveRecord(record,edit);return true};
 
 document.getElementById('konaReflectShortcut')?.addEventListener('click',()=>{reflectPeriod='daily';mode='reflect';renderRecords()});
@@ -2775,7 +2788,7 @@ for(const entry of entries.filter(hasDayContent).reverse()){
  if(sorted.length>3){const extra=el('details',undefined,'review-more-records');extra.append(el('summary',(sorted.length-3)+KonaI18n.t(" more records")));for(const record of sorted.slice(3))extra.append(reviewRow(record,{preview:true}));day.append(extra)}
  if(reflectionHasText(entry.reflection)){const saved=el('button',entry.reflection.insight||KonaI18n.t("Daily reflection"),'review-reflection-preview');saved.type='button';saved.onclick=()=>{if(!reviewCanEdit())return;reflectPeriod='daily';changeDate(entry.date)};day.append(saved)}records.append(day)
 }
-panel.insertBefore(records,panel.querySelector('.rv-writing-toolbar'));
+const sources=el('details',undefined,'review-weekly-source');sources.append(el('summary',archiveMoodText('Browse this week’s original records','이번 주 원본 기록 보기')),records);panel.append(sources);
 
 }
 
