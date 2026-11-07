@@ -2586,8 +2586,11 @@ function drawArchiveSearch(){
   const preview=el('span',undefined,'archive-search-preview');
   const title=String(record.noteTitle||record.title||'').trim(),body=String(record.body||record.feeling||'').trim();
   const text=[title,body&&body!==title?body:''].filter(Boolean).join('\n');
-  reviewHighlight(preview,konaNoteDisplay(text,record.tags),query);
-  konaApplyNoteTagIcon(preview,record.tags);
+  if(title){const heading=el('strong',undefined,'archive-result-title');reviewHighlight(heading,title,query);preview.append(heading)}
+  if(body&&body!==title){
+   const summary=el('span',undefined,'archive-result-body');reviewHighlight(summary,konaNoteDisplay(body,record.tags),query);
+   konaApplyNoteTagIcon(summary,record.tags);preview.append(summary);
+  }
   const metadata=[record.recordedTime,archivePracticeName(record)].filter(Boolean).join(' · ');
   const line=el('span',undefined,'archive-result-head');
   if(metadata)line.append(el('span',metadata,'archive-search-meta'));
