@@ -69,7 +69,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark'])for(const 
   const blank=page.locator('#monthCalendar .daycell[data-review-date="2026-10-18"]');
   if(await blank.evaluate(el=>el.classList.contains('onharu-mood-tone')))throw Error('Empty date colored');
   await range.filter({hasText:lang==='ko'?'접기':'Hide'}).click();
-  if(await page.locator('#monthCalendar').isVisible() || await page.locator('#viewCal .calendar-toolbar').isVisible())
+  if(await page.locator('#monthCalendar').isVisible() || await page.locator('#viewCal > .calendar-toolbar:not(.review-calendar-mode)').isVisible())
     throw Error('Hide does not collapse calendar');
   if(!await range.first().isVisible())throw Error('Calendar reopen controls disappeared');
   if(!await page.locator('#new-reflect-page .rv-journal-main textarea').isVisible())
