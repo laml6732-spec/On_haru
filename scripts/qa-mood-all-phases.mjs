@@ -44,8 +44,8 @@ try{
    await page.locator('.archive-mood-view-switch button').filter({hasText:'Mood'}).click();
    const chart=page.locator('.archive-mood-trend');
    if(!await chart.isVisible())throw Error('Expected End-of-day weekly chart');
-   if(await chart.locator('.archive-mood-trend-point.mood').count()!==2)throw Error('Only two days have End-of-day mood scores');
-   if(await chart.locator('.archive-mood-trend-point.energy').count()!==2)throw Error('Only two days have End-of-day energy scores');
+   if(await chart.locator('.archive-mood-trend-point.trend-mood').count()!==2)throw Error('Only two days have End-of-day mood scores');
+   if(await chart.locator('.archive-mood-trend-point.trend-energy').count()!==2)throw Error('Only two days have End-of-day energy scores');
    if(!await chart.locator('.archive-mood-trend-date[data-mood-date="2026-11-03"]').getAttribute('aria-label').then(x=>x.includes('No End-of-day')))throw Error('Class or text-only day created a graph score');
    if(!await chart.locator('.archive-mood-trend-date[data-mood-date="2026-11-02"]').getAttribute('aria-label').then(x=>x.includes('No End-of-day')))throw Error('Legacy Midday incorrectly included in End-of-day graph');
    const daily=page.locator('.archive-mood-detail');
