@@ -11,7 +11,7 @@ const browser=await chromium.launch({executablePath:binary,headless:true,args:['
 const report=[];
 const shot=async(page,id)=>{
   await page.screenshot({path:out+'/'+id+'.png',animations:'disabled'});
-  if(id==='390-light-archive'){
+  if(id==='390-light-archive'||id==='390-dark-archive'){
     const b64=(await page.screenshot({type:'jpeg',quality:42,animations:'disabled'})).toString('base64');
     console.log('SHOT_BEGIN '+id);
     for(let i=0;i<b64.length;i+=4000)console.log('SHOT '+b64.slice(i,i+4000));
