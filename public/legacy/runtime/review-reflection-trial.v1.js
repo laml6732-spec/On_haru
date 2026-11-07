@@ -106,6 +106,8 @@
   archive?.addEventListener('click', () => {
     if (openingMood) return;
     activeMood = false;
+    archive.classList.add('on');
+    archive.setAttribute('aria-pressed', 'true');
     const records = root.querySelector('.archive-mood-view-switch button:first-child');
     if (records && records.getAttribute('aria-pressed') !== 'true') records.click();
     syncTabs();
