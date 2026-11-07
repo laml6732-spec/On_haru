@@ -68,7 +68,7 @@ try{
    if(Math.abs((state.saved.top+state.saved.bottom)/2-(state.status.top+state.status.bottom)/2)>6)throw Error('Saved tabs/count not vertically centered');
    if(state.toolbarCount!==2)throw Error('Saved toolbar must contain tabs and count only');
    if(!state.noOverflow)throw Error('Archive page overflows');
-   if(state.selected!=='All records')throw Error('All records not initially selected');
+   if(state.selected!=='All')throw Error('All records not initially selected');
    if(width<600&&state.firstRecordFraction>0.48)throw Error('First Archive record starts too low: '+state.firstRecordFraction);
    if(await page.locator('.archive-filter-disclosure').evaluate(e=>e.open))throw Error('Filters should start collapsed');
    await page.locator('#archive-search-input').fill('QA-ARCHIVE-COMPACT');
@@ -77,7 +77,7 @@ try{
    const disclosure=page.locator('#archive-search .archive-filter-disclosure');
    await disclosure.locator('summary').click();
    if(!await disclosure.evaluate(e=>e.open))throw Error('Filter panel did not expand');
-   await page.locator('.archive-filter-row select[aria-label="Type"]').selectOption('schedule');
+   await page.locator('.archive-filter-row select[aria-label="Type"]').selectOption('note');
    const fresh=page.locator('#archive-search .archive-filter-disclosure');
    if(!await fresh.evaluate(e=>e.open))throw Error('Filter panel collapsed unexpectedly');
    if(await results.count()!==2)throw Error('Type filtering changed matched records');
@@ -89,9 +89,9 @@ try{
    if(filtersLayout.controlsTop<filtersLayout.searchTop+35||filtersLayout.overflow>1)throw Error('Expanded filter layout overlaps search or overflows');
    await shot(page,width+'-'+theme+'-filters');
    await page.locator('.archive-search-row .archive-filter-disclosure>summary').click();
-   await page.locator('.review-saved-filters button').filter({hasText:'Saved for later'}).click();
-   if(await page.locator('.review-saved-filters button').filter({hasText:'Saved for later'}).getAttribute('aria-pressed')!=='true')throw Error('Saved state lost after rerender');
-   await page.locator('.review-saved-filters button').filter({hasText:'All records'}).click();
+   await page.locator('.review-saved-filters button').filter({hasText:'Starred'}).click();
+   if(await page.locator('.review-saved-filters button').filter({hasText:'Starred'}).getAttribute('aria-pressed')!=='true')throw Error('Saved state lost after rerender');
+   await page.locator('.review-saved-filters button').filter({hasText:'All'}).click();
    if(await results.count()!==2)throw Error('All records did not restore search');
    await page.locator('.archive-mood-view-switch button').filter({hasText:'Mood'}).click();
    if(await page.locator('.archive-mood-panel').count()!==1)throw Error('Mood subview missing');
