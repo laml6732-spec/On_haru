@@ -316,7 +316,7 @@ const nowLocal=()=>new Intl.DateTimeFormat('en-CA',{timeZone:zoneInfo().id,year:
 const timeLocal=()=>new Intl.DateTimeFormat('en-GB',{timeZone:zoneInfo().id,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date());
 
 /* ===== 상태 ===== */
-let date=nowLocal(),page='today',phase='morning',scheduleSub='events',calendarMonth=date.slice(0,7),reviewWeek=monday(date),chartDays=7,recView='cal',reviewTab='log',calendarMode='mood',reviewUndo=null;
+let date=nowLocal(),page='today',phase='morning',scheduleSub='events',calendarMonth=date.slice(0,7),reviewWeek=monday(date),chartDays=7,recView='cal',reviewTab='log',calendarMode='mood',calendarView='week',calendarAnchor=date,reviewUndo=null;
 let editEvent=null,editFrom='',editTask=null,selectedEvent=null;
 let sessKind=db.settings.timerMode||'prayer',sessDurMin=db.settings.timerPresets?.[db.settings.timerMode||'prayer']??10,focusTaskKey=db.settings.timerSelections?.focus||'',focusPrayerId=db.settings.timerSelections?.prayer||'',afterTaskKey=null;
 const idleSess=()=>({started:false,running:false,paused:false,kind:'focus',dur:0,acc:0,runStart:0,startDate:'',startHM:'',title:'',taskKey:'',prayerId:'',note:'',sessionId:'',awaitingSave:false,goalReached:false});
@@ -481,7 +481,7 @@ function nav(p,opt={}){
 }
 window.history.replaceState({yeramingDts:true,page,phase,scheduleSub,recView},'',location.href);
 window.addEventListener('popstate',e=>{const s=e.state;if(s?.yeramingDts)nav(s.page,{phase:s.phase,sub:s.scheduleSub,view:s.recView,skipHistory:true});else if(page!=='capture')nav('capture',{skipHistory:true})});
-function changeDate(d){closeRecordPreview();if(!/^\d{4}-\d{2}-\d{2}$/.test(d))return;date=d;reviewWeek=monday(d);calendarMonth=d.slice(0,7);if(!editEvent)$('eventSince').value=d;if(!editTask)$('taskSince').value=d;render()}
+function changeDate(d){closeRecordPreview();if(!/^\d{4}-\d{2}-\d{2}$/.test(d))return;date=d;reviewWeek=monday(d);calendarMonth=d.slice(0,7);if(calendarView==='week'&&(d>calendarAnchor||d<dayAdd(calendarAnchor,-6)))calendarAnchor=d;if(!editEvent)$('eventSince').value=d;if(!editTask)$('taskSince').value=d;render()}
 function render(){
   renderHeader();
   ({capture:renderCapture,today:renderToday,schedule:renderSchedule,checkin:renderCheck,focus:renderFocus,records:renderRecords})[page]();
@@ -1215,21 +1215,73 @@ function renderClassNotes(){
 }
 // L9: 칸 바탕 = 그날 기분 색, 대표 이모지는 직접 고른 날만 / L4: 응답한 날 🌈
 function renderCalendar(){
-  const first=calendarMonth+'-01',offset=(weekday(first)+6)%7,root=$('monthCalendar');root.replaceChildren();
-  $('calHeading').textContent=new Intl.DateTimeFormat(KonaI18n.dateLocale,{month:'long',year:'numeric',timeZone:'UTC'}).format(parseDay(calendarMonth+'-01'));
-  $$('#calendarMode button').forEach(b=>b.classList.toggle('active',b.dataset.mode===calendarMode));
-  KORDER.forEach(d=>root.append(el('div','weekday',d)));
-  const [y,m]=calendarMonth.split('-').map(Number),dim=new Date(Date.UTC(y,m,0,12)).getUTCDate(),size=Math.ceil((offset+dim)/7)*7;
+  const card=$('viewCal'),root=$('monthCalendar'),toolbar=card.querySelector('.calendar-toolbar');
+  // The selector always remains visible, including when the calendar itself is folded away.
+  let picker=card.querySelector('.review-calendar-range');
+  if(!picker){
+    picker=el('div','review-calendar-range');
+    picker.setAttribute('role','group');
+    picker.setAttribute('aria-label',KonaI18n.language==='ko'?'달력 보기':'Calendar view');
+    for(const [key,label] of [['week',KonaI18n.language==='ko'?'7일':'7 days'],['month',KonaI18n.language==='ko'?'한 달':'Month'],['hidden',KonaI18n.language==='ko'?'접기':'Hide']]){
+      const button=el('button','review-calendar-range-option',label);button.type='button';button.dataset.calendarView=key;
+      button.onclick=()=>{
+        calendarView=key;
+        if(key==='week')calendarAnchor=date;
+        if(key==='month')calendarMonth=date.slice(0,7);
+        renderCalendar();
+      };
+      picker.append(button);
+    }
+    card.prepend(picker);
+  }
+  picker.setAttribute('aria-label',KonaI18n.language==='ko'?'달력 보기':'Calendar view');
+  for(const button of picker.querySelectorAll('button')){
+    const key=button.dataset.calendarView;
+    button.textContent=key==='week'?(KonaI18n.language==='ko'?'7일':'7 days'):
+      key==='month'?(KonaI18n.language==='ko'?'한 달':'Month'):(KonaI18n.language==='ko'?'접기':'Hide');
+    const selected=key===calendarView;
+    button.classList.toggle('active',selected);button.setAttribute('aria-pressed',String(selected));
+  }
+  const visible=calendarView!=='hidden';
+  card.classList.toggle('review-calendar-hidden',!visible);
+  toolbar.hidden=!visible;root.hidden=!visible;
+  root.replaceChildren();
+  if(!visible)return;
+  const rolling=calendarView==='week';
+  const first=rolling?dayAdd(calendarAnchor,-6):calendarMonth+'-01';
+  const offset=rolling?0:(weekday(first)+6)%7;
+  const [y,m]=calendarMonth.split('-').map(Number);
+  const dim=new Date(Date.UTC(y,m,0,12)).getUTCDate();
+  const size=rolling?7:Math.ceil((offset+dim)/7)*7;
+  const spanStart=rolling?first:calendarMonth+'-01';
+  const spanEnd=rolling?calendarAnchor:dayAdd(calendarMonth+'-01',dim-1);
+  const dformat=d=>new Intl.DateTimeFormat(KonaI18n.dateLocale,{month:'short',day:'numeric',timeZone:'UTC'}).format(parseDay(d));
+  const period=spanStart.slice(0,7)===spanEnd.slice(0,7)
+    ?dformat(spanStart)+' – '+Number(spanEnd.slice(-2))+(KonaI18n.dateLocale.startsWith('ko')?'일':'')
+    :dformat(spanStart)+' – '+dformat(spanEnd);
+  $('calHeading').textContent=rolling?period:new Intl.DateTimeFormat(KonaI18n.dateLocale,{month:'long',year:'numeric',timeZone:'UTC'}).format(parseDay(spanStart));
+  $('calPrev').setAttribute('aria-label',rolling?(KonaI18n.language==='ko'?'이전 7일':'Previous 7 days'):KonaI18n.t('Previous month',true));
+  $('calNext').setAttribute('aria-label',rolling?(KonaI18n.language==='ko'?'다음 7일':'Next 7 days'):KonaI18n.t('Next month',true));
+  const headingIndex=rolling?(weekday(first)+6)%7:0;
+  for(let i=0;i<7;i++)root.append(el('div','weekday',KORDER[(headingIndex+i)%7]));
   for(let i=0;i<size;i++){
-    const d=dayAdd(first,i-offset),v=db.days[d]||{},mo=d.slice(0,7)===calendarMonth,sug=headlineSuggest(d),sc=reviewCalendarScore(d),ans=answeredOn(d);
-    const hasEntries=dayHasData(d)||Object.values(v.eventNotes||{}).some(x=>typeof x==='string'?x.trim():false),dot=calendarMode==='mood'&&sc?KonaI18n.format("<i class=\"calendar-dot mood-dot\" style=\"background:⟪0⟫\" aria-label=\"Mood recorded\"></i>",[scoreColor(sc)],false):calendarMode==='entries'&&hasEntries?KonaI18n.markup("<i class=\"calendar-dot entries-dot\" aria-label=\"Entry recorded\"></i>"):'';
+    const d=dayAdd(first,i-offset),v=db.days[d]||{},mo=rolling||d.slice(0,7)===calendarMonth,
+      sc=reviewCalendarScore(d),ans=answeredOn(d);
+    const hasEntries=dayHasData(d)||Object.values(v.eventNotes||{}).some(x=>typeof x==='string'?x.trim():false);
+    const dot=calendarMode==='mood'&&sc?KonaI18n.format("<i class=\"calendar-dot mood-dot\" style=\"background:⟪0⟫\" aria-label=\"Mood recorded\"></i>",[scoreColor(sc)],false):
+      calendarMode==='entries'&&hasEntries?KonaI18n.markup("<i class=\"calendar-dot entries-dot\" aria-label=\"Entry recorded\"></i>"):'';
     const b=el('button','daycell compact'+(!mo?' dim':'')+(d===date?' active':'')+(d===nowLocal()?' today':'')+(hasDevotion(d)?' dv':''),KonaI18n.format("<span class=\"num\">⟪0⟫</span>⟪1⟫⟪2⟫",[+d.slice(-2),v.reflected?KonaI18n.markup("<img class=\"reflected-flower\" src=\"./assets/hibiscus-task-done.png\" alt=\"Reflected\">"):dot,ans.length?KonaI18n.markup("<span class=\"rb\" aria-label=\"Answered prayer\">🌈</span>"):''],false));
-    b.dataset.reviewDate=d;b.classList.toggle('empty',!hasEntries&&!sc&&!ans.length&&!hasDevotion(d)&&!v.reflected);b.setAttribute('aria-label',fmt(d)+(v.reflected?KonaI18n.t(" · Reflected",true):hasEntries?KonaI18n.t(" · Records saved",true):''));
-    if(calendarMode==='mood'&&sc){konaReviewMoodTone(b,sc.e,sc.v);b.setAttribute('aria-label',b.getAttribute('aria-label')+' · '+KonaI18n.t('Mood')+' '+sc.v+'/5 · '+KonaI18n.t('Energy')+' '+sc.e+'/5')}
+    b.dataset.reviewDate=d;
+    b.classList.toggle('empty',!hasEntries&&!sc&&!ans.length&&!hasDevotion(d)&&!v.reflected);
+    b.setAttribute('aria-label',fmt(d)+(v.reflected?KonaI18n.t(" · Reflected",true):hasEntries?KonaI18n.t(" · Records saved",true):''));
+    if(calendarMode==='mood'&&sc){
+      konaReviewMoodTone(b,sc.e,sc.v);
+      b.setAttribute('aria-label',b.getAttribute('aria-label')+' · '+KonaI18n.t('Mood')+' '+sc.v+'/5 · '+KonaI18n.t('Energy')+' '+sc.e+'/5');
+    }
     b.type='button';
     b.onclick=()=>{
       changeDate(d);renderDayReview();
-      if(ans.length)openChoices(`🌈 ${fmt(d)}`,[...ans.map(p=>({label:p.title,sub:p.note||'–'})),{label:'이날로 이동',fn:()=>{changeDate(d);nav('today')}}]);
+      if(ans.length)openChoices('🌈 '+fmt(d),[...ans.map(p=>({label:p.title,sub:p.note||'–'})),{label:KonaI18n.t('Go to this day'),fn:()=>{changeDate(d);nav('today')}}]);
       else{changeDate(d);renderDayReview();document.querySelector('#dayReviewCard')?.scrollIntoView({block:'nearest',behavior:'smooth'})}
     };
     root.append(b);
@@ -1512,7 +1564,7 @@ $$('#viewSeg button').forEach(b=>b.onclick=()=>{recView=b.dataset.view;renderRec
 $$('[data-review-tab]').forEach(b=>b.onclick=()=>{reviewTab=b.dataset.reviewTab;renderRecords()});
 $('classPinnedOnly').onclick=()=>{classPinnedOnly=!classPinnedOnly;renderClassNotes()};
 $$('#calendarMode button').forEach(b=>b.onclick=()=>{calendarMode=b.dataset.mode;renderCalendar()});
-$('calPrev').onclick=()=>{calendarMonth=monthAdd(calendarMonth,-1);renderCalendar()};$('calNext').onclick=()=>{calendarMonth=monthAdd(calendarMonth,1);renderCalendar()};
+$('calPrev').onclick=()=>{if(calendarView==='week')calendarAnchor=dayAdd(calendarAnchor,-7);else calendarMonth=monthAdd(calendarMonth,-1);renderCalendar()};$('calNext').onclick=()=>{if(calendarView==='week')calendarAnchor=dayAdd(calendarAnchor,7);else calendarMonth=monthAdd(calendarMonth,1);renderCalendar()};
 $('weekPrev').onclick=()=>{reviewWeek=dayAdd(reviewWeek,-7);renderWeek()};$('weekNext').onclick=()=>{reviewWeek=dayAdd(reviewWeek,7);renderWeek()};
 
 let lectureUndo=null,activeSessionNote=null,journalFilter='all';

@@ -112,3 +112,35 @@ body .app #page-records #new-reflect-page #viewCal .review-calendar-mode{
 body .app #page-records #new-reflect-page #viewCal #monthCalendar{
   margin-top:8px!important;
 }
+
+/* Daily Review calendar: one small range selector instead of a large new card. */
+body .app #page-records #new-reflect-page #viewCal .review-calendar-range {
+  display:flex!important;justify-content:flex-end!important;align-items:center!important;
+  gap:3px!important;margin:0 0 5px!important;padding:0!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;
+}
+body .app #page-records #new-reflect-page #viewCal .review-calendar-range-option {
+  min-width:0!important;min-height:44px!important;padding:8px 11px!important;
+  border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;
+  font-weight:600!important;color:var(--sub)!important;white-space:nowrap!important;
+}
+body .app #page-records #new-reflect-page #viewCal .review-calendar-range-option[aria-pressed="true"] {
+  color:var(--ink)!important;border-bottom-color:var(--hero-ink,#276c52)!important;
+}
+body .app #page-records #viewCal .calendar-toolbar[hidden],
+body .app #page-records #viewCal #monthCalendar[hidden] {
+  display:none!important;
+}
+body .app #page-records #viewCal.review-calendar-hidden {
+  margin-bottom:8px!important;padding-bottom:5px!important;
+}
+body .app #page-records #viewCal.review-calendar-hidden .review-calendar-range {
+  margin-bottom:0!important;
+}
+@media(max-width:350px) {
+  body .app #page-records #new-reflect-page #viewCal .review-calendar-range-option {
+    padding:8px 9px!important;font-size:calc(11px * var(--kona-ui-scale,1))!important;
+  }
+}
