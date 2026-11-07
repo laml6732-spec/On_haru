@@ -2309,8 +2309,8 @@ function archiveMoodRender(panel){
   }
   const legend=el('div',undefined,'archive-mood-trend-key');
   for(const [axis,label,cssClass] of [
-   ['happiness',archiveMoodText('Mood','기분'),'mood'],
-   ['energy',archiveMoodText('Energy','에너지'),'energy']
+   ['happiness',archiveMoodText('Mood','기분'),'trend-mood'],
+   ['energy',archiveMoodText('Energy','에너지'),'trend-energy']
   ]){
    const sample=el('span',undefined,'archive-mood-trend-swatch '+cssClass);
    sample.setAttribute('aria-hidden','true');
