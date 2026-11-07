@@ -1,0 +1,41 @@
+name: On_HARU Records v4 UI QA
+on:
+  push:
+    branches: ['fix/records-title-schedule-dedupe-20261106']
+    paths:
+      - 'public/legacy/**'
+      - 'scripts/test-review-title-schedule.mjs'
+      - 'scripts/qa-review-hierarchy.mjs'
+      - 'scripts/qa-archive-compact.mjs'
+      - 'scripts/qa-review-contrast.mjs'
+      - 'scripts/qa-end-of-day-trend-saved.mjs'
+      - '.github/workflows/qa-records-v4.yml'
+  workflow_dispatch:
+jobs:
+  records-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: command -v google-chrome >/dev/null || npx playwright-core install chromium
+      - run: node scripts/test-review-title-schedule.mjs
+      - run: node scripts/verify-ui-static.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-records-v4.log 2>&1 &
+      - run: node scripts/qa-review-hierarchy.mjs
+      - run: node scripts/qa-archive-compact.mjs
+      - run: node scripts/qa-end-of-day-trend-saved.mjs
+      - run: node scripts/qa-review-contrast.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: records-v4-screenshots
+          path: |
+            test-results/review-hierarchy/
+            test-results/archive-compact/
+            test-results/end-of-day-trend-saved/
+            test-results/review-overall/
+          retention-days: 14
