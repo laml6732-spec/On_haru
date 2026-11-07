@@ -35,7 +35,7 @@
 - Disabled and busy actions explain why or show progress; never imply a save or deletion has completed early.
 
 ## 4. Compact lists, readable records
-- Keep user-written titles distinct from body text; omit an identical event title already shown by its parent, without changing stored text.
+- Record anatomy: one metadata line (time, kind, relevant context), optional bold user title, body. Omit context identical to the title and suppress tags/labels already expressed by kind or title; never rewrite stored text.
 - List rows are compact: clear title/preview first, then one concise metadata line; suppress repetition when the parent date or event already supplies context.
 - Long record bodies preserve line breaks, natural wrapping, and paragraphs. Do not apply list-density rules to expanded reading text.
 - Use `--type-title`, `--type-body`, `--type-label`, `--type-meta`, `--reading-size`, and `--kona-ui-scale` before new pixel values.
@@ -115,7 +115,7 @@
 - **Focus:** ocean/immersive timer may depart from list density, but Start/Pause/Finish, notes, and prayer choices remain usable in both themes.
 - **Review Daily/Weekly:** writing is calmer and roomier than Archive results; groups, dates, related notes, and edit actions have distinct weight.
 - **Archive Records:** compact search/filter controls, date headers and three semantic groups; retain ☆/★ Saved for later toggle and its selected state using current record flags.
-- **Mood:** expose mood with a five-level line-face SVG plus text/value; energy uses its own label/value, not the face. This is proposed presentation, not a shipped feature. Keep all recorded phases accessible.
+- **Mood:** one line-face icon and existing mood×energy color beside the date; no separate summary, visible score, phase/time or energy bar in default reading. Exact values/phase remain available through an accessible name or explicit detail.
 - **Settings/tutorial:** language/theme/text scale, backup/restore/help, familiar launch/sheep artwork, and safe reset are protected.
 - **High risk:** backup/restore/reset, storage schema, recurring edits, focus timers, PWA cache/release, and modal focus require functional regression and rollback evidence.
 - **Medium risk:** navigation/date boundaries, selected states, responsive overflow, i18n, contrast, dark theme require viewport/theme screenshots and interactions.
