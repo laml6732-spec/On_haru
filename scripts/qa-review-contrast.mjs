@@ -76,9 +76,9 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
      await page.locator('#archive-search .archive-filter-disclosure>summary').click();
      await checkExpanded('archive-filters-open');
      await page.locator('#archive-search .archive-filter-disclosure>summary').click();
-     await page.locator('#archive-search .review-saved-filters button').filter({hasText:'Saved for later'}).click();
+     await page.locator('#archive-search .review-saved-filters button').filter({hasText:'Starred'}).click();
      await checkExpanded('archive-saved-selected');
-     await page.locator('#archive-search .review-saved-filters button').filter({hasText:'All records'}).click();
+     await page.locator('#archive-search .review-saved-filters button').filter({hasText:'All'}).click();
    }
    if(view==='mood'){
      await page.locator('#archive-search .archive-mood-info>summary').click();
