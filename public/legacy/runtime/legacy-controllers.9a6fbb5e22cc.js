@@ -1221,8 +1221,8 @@ function renderCalendar(){
   if(!picker){
     picker=el('div',undefined,'review-calendar-range');
     picker.setAttribute('role','group');
-    picker.setAttribute('aria-label',KonaI18n.t('Calendar view',true));
-    for(const [key,label] of [['week',KonaI18n.t('7 days')],['month',KonaI18n.t('Month')],['hidden',KonaI18n.t('Hide')]]){
+    picker.setAttribute('aria-label',KonaI18n.language==='ko'?'달력 보기':'Calendar view');
+    for(const [key,label] of [['week',KonaI18n.language==='ko'?'7일':'7 days'],['month',KonaI18n.language==='ko'?'한 달':'Month'],['hidden',KonaI18n.language==='ko'?'접기':'Hide']]){
       const button=el('button',label,'review-calendar-range-option');button.type='button';button.dataset.calendarView=key;
       button.onclick=()=>{
         calendarView=key;
@@ -1256,8 +1256,8 @@ function renderCalendar(){
     ?dformat(spanStart)+' – '+Number(spanEnd.slice(-2))+(KonaI18n.dateLocale.startsWith('ko')?'일':'')
     :dformat(spanStart)+' – '+dformat(spanEnd);
   $('calHeading').textContent=rolling?period:new Intl.DateTimeFormat(KonaI18n.dateLocale,{month:'long',year:'numeric',timeZone:'UTC'}).format(parseDay(spanStart));
-  $('calPrev').setAttribute('aria-label',rolling?KonaI18n.t('Previous 7 days',true):KonaI18n.t('Previous month',true));
-  $('calNext').setAttribute('aria-label',rolling?KonaI18n.t('Next 7 days',true):KonaI18n.t('Next month',true));
+  $('calPrev').setAttribute('aria-label',rolling?(KonaI18n.language==='ko'?'이전 7일':'Previous 7 days'):KonaI18n.t('Previous month',true));
+  $('calNext').setAttribute('aria-label',rolling?(KonaI18n.language==='ko'?'다음 7일':'Next 7 days'):KonaI18n.t('Next month',true));
   const headingIndex=rolling?(weekday(first)+6)%7:0;
   for(let i=0;i<7;i++)root.append(el('div','weekday',KORDER[(headingIndex+i)%7]));
   for(let i=0;i<size;i++){
