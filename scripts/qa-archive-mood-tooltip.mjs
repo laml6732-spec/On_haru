@@ -30,18 +30,15 @@ try{
    await page.locator('.tabs [data-page="records"]').click();
    await page.locator('#rev-archive').click();
    await page.locator('.archive-mood-view-switch button').filter({hasText:'Mood'}).click();
-   const legend=page.locator('#archive-search .archive-mood-visible-legend');
+   const legend=page.locator('#archive-search .archive-mood-trend-key');
    await legend.waitFor({state:'visible'});
    if(await page.locator('.archive-mood-info').count())throw Error('Deprecated hidden info disclosure still exists');
-   if(await legend.locator('.archive-mood-legend-item').count()!==4)throw Error('Expected four visible phase labels');
+   if(await legend.locator('.archive-mood-trend-key-item').count()!==2)throw Error('Expected Mood and Energy series key');
    const text=await legend.innerText();
-   if(!['Morning','Midday','Evening','End of day','Color = mood × energy'].every(x=>text.includes(x)))throw Error('Legend explanation incomplete: '+text);
-   const shapes=await legend.locator('.archive-mood-legend-shape').evaluateAll(xs=>xs.map(x=>({phase:x.dataset.phase,radius:getComputedStyle(x).borderRadius,transform:getComputedStyle(x).transform})));
-   if(shapes.map(x=>x.phase).join('|')!=='morning|noon|evening|night')throw Error('Shape order does not map to stored check-in phases');
-   if(shapes[0].radius===shapes[1].radius||shapes[2].transform==='none'||shapes[3].radius===shapes[0].radius)throw Error('Color-independent phase shapes are not distinguishable');
+   if(!text.includes('Mood')||!text.includes('Energy'))throw Error('Graph legend incomplete: '+text);
    const geometry=await page.evaluate(()=>{
     const get=s=>document.querySelector(s).getBoundingClientRect();
-    const heading=get('.archive-mood-heading'),left=get('.archive-mood-arrow:first-child'),right=get('.archive-mood-arrow:last-child'),title=get('.archive-mood-month-label'),legend=get('.archive-mood-visible-legend');
+    const heading=get('.archive-mood-heading'),left=get('.archive-mood-arrow:first-child'),right=get('.archive-mood-arrow:last-child'),title=get('.archive-mood-month-label'),legend=get('.archive-mood-trend-key');
     return {centerError:Math.abs((left.x+right.x+right.width)/2-(title.x+title.width/2)),leftSize:[left.width,left.height],rightSize:[right.width,right.height],legendY:legend.y,overflow:document.documentElement.scrollWidth-innerWidth};
    });
    if(geometry.centerError>1.5)throw Error('Date range is not centered: '+JSON.stringify(geometry));
@@ -50,7 +47,11 @@ try{
    if(!await page.locator('.archive-mood-arrow').last().isDisabled())throw Error('Future navigation button not disabled');
    await page.screenshot({path:artifacts+'/'+width+'-'+theme+'-permanent-legend.png',animations:'disabled'});
    await page.locator('.archive-mood-calendar-toggle').click();
-   if(!await legend.isVisible())throw Error('Legend hidden in monthly view');
+   const monthLegend=page.locator('.archive-mood-visible-legend');
+   if(!await monthLegend.isVisible())throw Error('Four-phase legend hidden in full-month view');
+   if(await monthLegend.locator('.archive-mood-legend-item').count()!==4)throw Error('Monthly four-phase legend incomplete');
+   const shapes=await monthLegend.locator('.archive-mood-legend-shape').evaluateAll(xs=>xs.map(x=>({phase:x.dataset.phase,radius:getComputedStyle(x).borderRadius,transform:getComputedStyle(x).transform})));
+   if(shapes.map(x=>x.phase).join('|')!=='morning|noon|evening|night')throw Error('Full month phase order changed');
    if(await page.locator('.archive-mood-month-grid .archive-mood-day').count()!==30)throw Error('Monthly calendar missing');
    await page.locator('.archive-mood-arrow').first().click();
    if(await page.locator('.archive-mood-month-grid .archive-mood-day').count()!==31)throw Error('Previous month navigation failed');
