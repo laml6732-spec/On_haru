@@ -1,0 +1,51 @@
+name: On_HARU End-of-day trend and Saved for later QA
+on:
+  push:
+    branches: ['feat/end-of-day-mood-trend-saved-2026-11-06']
+    paths:
+      - 'public/legacy/**'
+      - 'scripts/qa-end-of-day-trend-saved.mjs'
+      - 'scripts/qa-mood-week.mjs'
+      - 'scripts/qa-mood-all-phases.mjs'
+      - 'scripts/qa-mood-hierarchy-v2.mjs'
+      - 'scripts/qa-archive-mood-tooltip.mjs'
+      - 'scripts/qa-checkin-archive-touch.mjs'
+      - '.github/workflows/qa-end-of-day-trend-saved.yml'
+  workflow_dispatch:
+jobs:
+  visual-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: command -v google-chrome >/dev/null || npx playwright-core install chromium
+      - run: node scripts/verify-ui-static.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-chart-qa.log 2>&1 &
+      - run: node scripts/qa-end-of-day-trend-saved.mjs
+      - run: node scripts/qa-mood-week.mjs
+      - run: node scripts/qa-mood-all-phases.mjs
+      - run: node scripts/qa-mood-hierarchy-v2.mjs
+      - run: node scripts/qa-archive-mood-tooltip.mjs
+      - run: node scripts/qa-checkin-archive-touch.mjs
+      - run: node scripts/qa-archive-compact.mjs
+      - run: node scripts/qa-review-hierarchy.mjs
+      - run: node scripts/ui-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: end-of-day-trend-saved-screenshots
+          path: |
+            test-results/end-of-day-trend-saved/
+            test-results/mood-week/
+            test-results/mood-all-phases/
+            test-results/mood-hierarchy-v2/
+            test-results/archive-mood-tooltip/
+            test-results/checkin-archive-touch/
+            test-results/archive-compact/
+            test-results/review-hierarchy/
+            test-results/onharu-ui/
+          retention-days: 14
