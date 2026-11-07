@@ -72,8 +72,11 @@ for(const width of [320,390,1024])for(const theme of ['light','dark'])for(const 
   if(await page.locator('#monthCalendar').isVisible() || await page.locator('#viewCal > .calendar-toolbar:not(.review-calendar-mode)').isVisible())
     throw Error('Hide does not collapse calendar');
   if(!await range.first().isVisible())throw Error('Calendar reopen controls disappeared');
+  const writeReflection=page.locator('#new-reflect-page .review-write-reflection');
+  if(!await writeReflection.isVisible())throw Error('Reflection action not accessible when calendar hidden');
+  if(!await page.locator('#new-reflect-page .rv-journal-main textarea').isVisible())await writeReflection.click();
   if(!await page.locator('#new-reflect-page .rv-journal-main textarea').isVisible())
-    throw Error('Reflection editor not reachable when calendar hidden');
+    throw Error('Reflection editor cannot be opened when calendar hidden');
   await page.screenshot({path:out+'/'+width+'-'+theme+'-'+lang+'-hidden.png'});
   await range.filter({hasText:lang==='ko'?'7일':'7 days'}).click();
   if(await page.locator('#monthCalendar .daycell').count()!==7)throw Error('Reopen 7 days failed');
