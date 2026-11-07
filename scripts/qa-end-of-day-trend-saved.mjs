@@ -46,10 +46,10 @@ try{
    if(!await trend.isVisible())throw Error('Seven-day End-of-day graph not visible');
    if(await page.locator('.archive-mood-week-grid').count())throw Error('Old multi-phase dot week still shown');
    const points=await page.evaluate(()=>({
-    mood:[...document.querySelectorAll('.archive-mood-trend-point.mood circle')].map(x=>({cx:x.getAttribute('cx'),cy:x.getAttribute('cy')})),
-    energy:[...document.querySelectorAll('.archive-mood-trend-point.energy rect')].map(x=>({x:x.getAttribute('x'),y:x.getAttribute('y')})),
-    moodPath:document.querySelector('.archive-mood-trend-line.mood')?.getAttribute('d'),
-    energyPath:document.querySelector('.archive-mood-trend-line.energy')?.getAttribute('d'),
+    mood:[...document.querySelectorAll('.archive-mood-trend-point.trend-mood circle')].map(x=>({cx:x.getAttribute('cx'),cy:x.getAttribute('cy')})),
+    energy:[...document.querySelectorAll('.archive-mood-trend-point.trend-energy rect')].map(x=>({x:x.getAttribute('x'),y:x.getAttribute('y')})),
+    moodPath:document.querySelector('.archive-mood-trend-line.trend-mood')?.getAttribute('d'),
+    energyPath:document.querySelector('.archive-mood-trend-line.trend-energy')?.getAttribute('d'),
     yaxis:[...document.querySelectorAll('.archive-mood-trend-axis')].map(x=>x.textContent),
     dates:[...document.querySelectorAll('.archive-mood-trend-date')].map(x=>x.dataset.moodDate),
     overflow:document.documentElement.scrollWidth-innerWidth
