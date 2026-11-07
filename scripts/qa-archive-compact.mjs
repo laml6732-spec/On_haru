@@ -40,7 +40,7 @@ try{
        data.quickCaptureEntries=[...(data.quickCaptureEntries||[]),{
          id:'qa-archive-compact-'+d,time:'11:30',createdAt:d+'T20:30:00Z',
          title:'Compact archive sample',text:'QA-ARCHIVE-COMPACT linked note '+d,
-         scheduleId:event?.id||'',scheduleTitle:event?.title||'',tags:[]
+         scheduleId:event?.id||'',scheduleTitle:event?.title||'',tags:d==='2026-11-05'?['meaning_insight','meaning_question']:[]
        }];
        if(d==='2026-11-05'){
          data.quickCaptureEntries.push({id:'qa-free-note',time:'12:20',title:'Personal note',text:'Independent archive note',scheduleId:'',tags:[]});
