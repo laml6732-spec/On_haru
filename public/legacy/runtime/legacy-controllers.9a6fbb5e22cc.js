@@ -412,7 +412,15 @@ const scoreColor=(sc,boost=0)=>konaMoodShade(sc?.e,sc?.v);
 const moodChip=m=>KonaI18n.format("<span class=\"mchip\" style=\"background:⟪0⟫\">⟪1⟫</span>",[moodColor(m),escapeHTML(konaFeeling(m)||moodEnglishNames[m.id]||m.n)],false);
 function dayScore(d){const v=db.days[d];if(!v)return null;const ms=PHASES.map(p=>moodOf(v.checkins?.[p])).filter(Boolean);if(!ms.length)return null;return{e:ms.reduce((s,m)=>s+m.e,0)/ms.length,v:ms.reduce((s,m)=>s+m.v,0)/ms.length,n:ms.length}}
 function reviewCalendarScore(d){
- const pairs=archiveMoodEntries(d).filter(x=>Number.isInteger(x.energy)&&Number.isInteger(x.happiness));
+ const checks=db.days[d]?.checkins||{},pairs=[];
+ const rating=value=>value!==undefined&&value!==null&&value!==''&&Number.isInteger(Number(value))&&Number(value)>=1&&Number(value)<=5?Number(value):null;
+ for(const phase of ['morning','noon','evening','night']){
+  const c=checks[phase];if(!c)continue;
+  const legacy=moodOf(c)||{};
+  const energy=rating(c[phase+'Energy']??c[phase+KonaI18n.t('Energy')]??c.mood?.energy??c.mood?.e??legacy.e);
+  const happiness=rating(c[phase+'Happiness']??c[phase+KonaI18n.t('Happiness')]??c.mood?.happiness??c.mood?.v??legacy.v);
+  if(energy!==null&&happiness!==null)pairs.push({energy,happiness});
+ }
  if(!pairs.length)return null;
  return {e:Math.round(pairs.reduce((a,x)=>a+x.energy,0)/pairs.length),v:Math.round(pairs.reduce((a,x)=>a+x.happiness,0)/pairs.length),n:pairs.length};
 }
@@ -1217,7 +1225,7 @@ function renderCalendar(){
     const hasEntries=dayHasData(d)||Object.values(v.eventNotes||{}).some(x=>typeof x==='string'?x.trim():false),dot=calendarMode==='mood'&&sc?KonaI18n.format("<i class=\"calendar-dot mood-dot\" style=\"background:⟪0⟫\" aria-label=\"Mood recorded\"></i>",[scoreColor(sc)],false):calendarMode==='entries'&&hasEntries?KonaI18n.markup("<i class=\"calendar-dot entries-dot\" aria-label=\"Entry recorded\"></i>"):'';
     const b=el('button','daycell compact'+(!mo?' dim':'')+(d===date?' active':'')+(d===nowLocal()?' today':'')+(hasDevotion(d)?' dv':''),KonaI18n.format("<span class=\"num\">⟪0⟫</span>⟪1⟫⟪2⟫",[+d.slice(-2),v.reflected?KonaI18n.markup("<img class=\"reflected-flower\" src=\"./assets/hibiscus-task-done.png\" alt=\"Reflected\">"):dot,ans.length?KonaI18n.markup("<span class=\"rb\" aria-label=\"Answered prayer\">🌈</span>"):''],false));
     b.classList.toggle('empty',!hasEntries&&!sc&&!ans.length&&!hasDevotion(d)&&!v.reflected);b.setAttribute('aria-label',fmt(d)+(v.reflected?KonaI18n.t(" · Reflected",true):hasEntries?KonaI18n.t(" · Records saved",true):''));
-    if(calendarMode==='mood'&&sc){konaReviewMoodTone(b,sc.e,sc.v);b.setAttribute('aria-label',b.getAttribute('aria-label')+' · '+archiveMoodText('Mood ','기분 ')+sc.v+'/5 · '+archiveMoodText('Energy ','에너지 ')+sc.e+'/5')}
+    if(calendarMode==='mood'&&sc){konaReviewMoodTone(b,sc.e,sc.v);b.setAttribute('aria-label',b.getAttribute('aria-label')+' · '+KonaI18n.t('Mood')+' '+sc.v+'/5 · '+KonaI18n.t('Energy')+' '+sc.e+'/5')}
     b.type='button';
     b.onclick=()=>{
       changeDate(d);renderDayReview();
