@@ -2042,7 +2042,7 @@ function reviewDailySections(records,events){
  return sections.filter(x=>x.records.length>0||x.events.length>0);
 }
 let reviewFilter='all',reviewFilterScroll=0;
-function reviewImportant(r){const v=db.days[r.date]||{};return !!(r.important||(v.important||[]).includes(r.sourceId)||(r.tags||[]).includes('important'))}
+function reviewImportant(r){const v=db.days[r.date]||{},id=r.sourceId??r.id;return !!(r.important||(v.important||[]).includes(id)||(r.tags||[]).includes('important'))}
 function reviewMatchesFilter(r){return reviewFilter==='all'||(reviewFilter==='important'?reviewImportant(r):(r.tags||[]).some(tag=>tag===reviewFilter||({meaning_insight:['lesson'],meaning_remember:['remember'],meaning_question:['question'],meaning_prayer:['prayer'],meaning_quote:['conversation'],meaning_thought:['writing','thought'],meaning_scripture:['devotion'],meaning_connection:['comfort']})[reviewFilter]?.includes(tag)))}
 let reviewUI={};try{reviewUI=JSON.parse(sessionStorage.getItem('kona.review.ui.v3')||'{}')||{}}catch{}
 function reviewUISet(key,value){reviewUI[key]=value;try{sessionStorage.setItem('kona.review.ui.v3',JSON.stringify(reviewUI))}catch{}}
@@ -2295,7 +2295,7 @@ function archiveMoodRender(panel){
   const svgNs='http://www.w3.org/2000/svg';
   const svg=document.createElementNS(svgNs,'svg');
   svg.setAttribute('viewBox','0 0 360 132');svg.setAttribute('class','archive-mood-trend-svg');
-  svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
+  svg.setAttribute('role','img');svg.setAttribute('focusable','false');
   const shape=(tag,props,parent=svg)=>{
    const node=document.createElementNS(svgNs,tag);
    for(const [key,value] of Object.entries(props||{}))node.setAttribute(key,String(value));
@@ -2337,7 +2337,7 @@ function archiveMoodRender(panel){
   const description=scores.map(({date:day,night})=>day+': '+(night?
    archiveMoodText('Mood ','기분 ')+(night.happiness??'–')+'/5 · '+archiveMoodText('Energy ','에너지 ')+(night.energy??'–')+'/5':
    archiveMoodText('No End-of-day scores','하루 마무리 점수 없음'))).join('; ');
-  trend.setAttribute('role','img');trend.setAttribute('aria-label',description);
+  svg.setAttribute('aria-label',description);
   const dates=el('div',undefined,'archive-mood-trend-dates');
   for(const {date:day,night} of scores){
    const dayBtn=el('button',undefined,'archive-mood-trend-date');
