@@ -45,9 +45,9 @@ try{
      await page.locator('#rev-archive').click();
      const moodToggle=page.locator('.archive-mood-view-switch button').filter({hasText:'Mood'}).first();
      await moodToggle.click();
-     // Mood is seven-day-first now: verify the compact strip before testing full-month interactions.
-     const compactDays=page.locator('#archive-search .archive-mood-week-grid .archive-mood-day');
-     if(await compactDays.count()!==7)throw Error('Initial Mood strip must contain seven days');
+     // Mood starts with a 7-day End-of-day dual-series chart before full-month interactions.
+     const compactDays=page.locator('#archive-search .archive-mood-trend-date');
+     if(await compactDays.count()!==7)throw Error('Initial End-of-day graph must show seven date targets');
      const calendarToggle=page.locator('#archive-search .archive-mood-calendar-toggle');
      if(await calendarToggle.getAttribute('aria-expanded')!=='false')throw Error('Mood calendar should start collapsed');
      await calendarToggle.click();

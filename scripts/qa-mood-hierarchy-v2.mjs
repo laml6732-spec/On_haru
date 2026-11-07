@@ -57,7 +57,7 @@ try{
    if(!['transparent','rgba(0, 0, 0, 0)'].includes(dailyLink.background)||!dailyLink.underline.includes('underline'))throw Error('Daily Review link is too visually dominant: '+JSON.stringify(dailyLink));
    const structure=await page.evaluate(()=>{
     const bounds=s=>document.querySelector(s).getBoundingClientRect();
-    const selected=bounds('.archive-mood-detail'),week=bounds('.archive-mood-heading'),legend=bounds('.archive-mood-visible-legend');
+    const selected=bounds('.archive-mood-detail'),week=bounds('.archive-mood-heading'),legend=bounds('.archive-mood-trend-key');
     const selectedBtn=document.querySelector('.archive-mood-view-switch>button[aria-pressed="true"]');
     const style=getComputedStyle(selectedBtn), card=document.querySelector('.archive-mood-entry-grid .archive-mood-item'),name=card.querySelector('.archive-mood-feeling-name');
     const textColor=getComputedStyle(name).color,backColor=getComputedStyle(card).backgroundColor;
@@ -79,7 +79,7 @@ try{
    if(structure.centerDifference>1.5)throw Error('Calendar header not centered '+structure.centerDifference);
    if(!structure.futureDisabled)throw Error('Forward arrow must be disabled at today');
    if(structure.navSizes.flat().some(x=>x<43.9)||structure.overflow>1)throw Error('Touch or horizontal overflow failure '+JSON.stringify(structure));
-   if(await panel.locator('.archive-mood-visible-legend .archive-mood-legend-item').count()!==4)throw Error('Four phases not explained permanently');
+   if(await panel.locator('.archive-mood-trend-key .archive-mood-trend-key-item').count()!==2)throw Error('Mood and Energy graph keys must both be visible');
    await snapshot(page,width+'-'+theme+'-'+lang+'-recorded');
    await panel.locator('.archive-mood-calendar-toggle').click();
    if(await panel.locator('.archive-mood-month-grid [data-mood-date="2026-11-06"]').isDisabled()!==true)throw Error('Future mood day is selectable');
@@ -95,9 +95,9 @@ try{
    // The last interval may have fewer than 7 new days; forward must clamp to today.
    await panel.locator('.archive-mood-calendar-toggle').click();
    await panel.locator('.archive-mood-arrow').last().click();
-   const range=await panel.locator('.archive-mood-week-grid .archive-mood-day').evaluateAll(xs=>xs.map(x=>x.dataset.moodDate));
+   const range=await panel.locator('.archive-mood-trend-date').evaluateAll(xs=>xs.map(x=>x.dataset.moodDate));
    if(range[6]!=='2026-11-05')throw Error('Cannot return to current partial 7-day interval: '+range);
-   await panel.locator('.archive-mood-week-grid [data-mood-date="2026-11-05"]').click();
+   await panel.locator('.archive-mood-trend-date[data-mood-date="2026-11-05"]').click();
    await page.evaluate(()=>{day('2026-11-05').checkins={}});
    await page.locator('.archive-mood-view-switch button').first().click();
    await page.locator('.archive-mood-view-switch button').last().click();
@@ -108,7 +108,7 @@ try{
    if(!await page.locator('#page-checkin').evaluate(x=>x.classList.contains('active')))throw Error('Empty state did not open Check-in tab');
    if(errors.length)throw Error('Page JS errors '+errors.join(' | '));
    row.passed=true;
-   console.log('MOOD_HIERARCHY_PASS '+JSON.stringify({width,theme,lang,detailFraction:Math.round(structure.detailFraction*100)/100,contrast:Math.round(structure.contrast*100)/100,centerDifference:Math.round(structure.centerDifference*100)/100,fourCards:true,fourLegendKeys:true,emptyCta:true,latestMood:true,dataIntact:true}));
+   console.log('MOOD_HIERARCHY_PASS '+JSON.stringify({width,theme,lang,detailFraction:Math.round(structure.detailFraction*100)/100,contrast:Math.round(structure.contrast*100)/100,centerDifference:Math.round(structure.centerDifference*100)/100,fourCards:true,twoSeriesKey:true,emptyCta:true,latestMood:true,dataIntact:true}));
   }catch(e){row.passed=false;row.error=String(e);row.pageErrors=errors;console.error('MOOD_HIERARCHY_FAIL '+width+' '+theme+' '+lang+' '+e);await page.screenshot({path:folder+'/'+width+'-'+theme+'-'+lang+'-FAILED.png'}).catch(()=>{})}
   finally{results.push(row);await context.close()}
  }

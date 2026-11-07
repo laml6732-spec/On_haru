@@ -2042,7 +2042,7 @@ function reviewDailySections(records,events){
  return sections.filter(x=>x.records.length>0||x.events.length>0);
 }
 let reviewFilter='all',reviewFilterScroll=0;
-function reviewImportant(r){const v=db.days[r.date]||{};return !!(r.important||(v.important||[]).includes(r.sourceId)||(r.tags||[]).includes('important'))}
+function reviewImportant(r){const v=db.days[r.date]||{},id=r.sourceId??r.id;return !!(r.important||(v.important||[]).includes(id)||(r.tags||[]).includes('important'))}
 function reviewMatchesFilter(r){return reviewFilter==='all'||(reviewFilter==='important'?reviewImportant(r):(r.tags||[]).some(tag=>tag===reviewFilter||({meaning_insight:['lesson'],meaning_remember:['remember'],meaning_question:['question'],meaning_prayer:['prayer'],meaning_quote:['conversation'],meaning_thought:['writing','thought'],meaning_scripture:['devotion'],meaning_connection:['comfort']})[reviewFilter]?.includes(tag)))}
 let reviewUI={};try{reviewUI=JSON.parse(sessionStorage.getItem('kona.review.ui.v3')||'{}')||{}}catch{}
 function reviewUISet(key,value){reviewUI[key]=value;try{sessionStorage.setItem('kona.review.ui.v3',JSON.stringify(reviewUI))}catch{}}
@@ -2137,6 +2137,35 @@ function reviewArchiveRecords(){
  const rows=[];for(const d of Object.keys(db.days||{}).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d))){rows.push(...reviewRecords(d));const v=db.days[d],f=v.reflectionNotes;if(reflectionHasText(f))rows.push({id:'daily-reflection',date:d,kind:'reflection',type:KonaI18n.t("Daily reflection"),title:KonaI18n.t("Daily reflection"),body:Object.entries(f).filter(([,v])=>typeof v==='string'&&v.trim()).map(([,v])=>v).join('\n'),tags:[],recordedTime:null});for(const [id,body] of Object.entries(v.meals||{}))if(String(body||'').trim()&&!konaReviewMirroredMeal(v,id,body)){const event=dayEvents(d).find(e=>e.id===id);rows.push({id:'meal-'+id,sourceId:id,date:d,kind:'meal',type:KonaI18n.t("Meal"),title:event?.title||KonaI18n.t("Meal"),scheduleLabel:event?.title||'',body:String(body),tags:v.eventNoteTags?.[id]||[],recordedTime:event?.start||null})}}
  for(const [d,r] of Object.entries(db.weeklyReflections||{}))if(reflectionHasText(r))rows.push({id:'weekly-reflection',date:d,kind:'weekly-reflection',type:KonaI18n.t("Weekly reflection"),title:KonaI18n.t("Weekly reflection"),body:Object.entries(r).filter(([,v])=>typeof v==='string'&&v.trim()).map(([,v])=>v).join('\n'),tags:[],recordedTime:null});return rows;
 }
+
+function archiveSavedKey(record){return String(record.sourceId??record.id??'')}
+function archiveManuallySaved(record){
+ const id=archiveSavedKey(record),v=db.days[record.date]||{};
+ return !!id&&((v.important||[]).includes(id)||reviewImportant(record));
+}
+function archiveToggleSaved(record){
+ if(!reviewCanEdit())return;
+ const id=archiveSavedKey(record);if(!id)return;
+ const marked=archiveManuallySaved(record);
+ const ok=guardedMutation(()=>{
+  const v=day(record.date);v.important??=[];
+  v.important=v.important.filter(k=>k!==id);
+  if(!marked)v.important.push(id);
+  if(record.kind==='capture'){
+   const capture=(v.quickCaptureEntries||[]).find(q=>q.id===id);
+   if(capture){capture.important=!marked;capture.tags=(capture.tags||[]).filter(t=>t!=='important');}
+  }
+  if(marked&&v.eventNoteTags?.[id])v.eventNoteTags[id]=v.eventNoteTags[id].filter(t=>t!=='important');
+ },archiveMoodText('Could not change Saved for later. Please retry.','다시 볼 기록 표시를 변경하지 못했어요. 다시 시도해 주세요.'));
+ if(!ok)return;
+ const previousScroll=window.scrollY;
+ drawArchiveSearch();
+ requestAnimationFrame(()=>{
+  const target=[...document.querySelectorAll('.archive-save-toggle')].find(x=>x.dataset.recordId===record.id&&x.dataset.recordDate===record.date);
+  target?.focus({preventScroll:true});window.scrollTo(0,previousScroll);
+ });
+}
+
 function showReviewArchiveRecord(record,edit=false){
  if(!reviewCanEdit())return;if(!archiveDetailRecord)archiveReturnState={query:document.getElementById('archive-search-input').value,scroll:window.scrollY,type:archiveType,context:archiveContext,period:archivePeriod,exact:archiveExactDate,meaning:archiveMeaning};archiveDetailRecord={date:record.date,id:record.id};mode='archive';root.classList.add('archive-detail');renderRecords();requestAnimationFrame(()=>{document.getElementById('archive-search-results')?.scrollIntoView({block:'start'});if(edit){const row=document.querySelector('#archive-search-results .review-record');if(row)reviewInlineNote(record,row)}})
 }
@@ -2254,62 +2283,119 @@ function archiveMoodRender(panel){
   if(shift<0)heading.append(button);else heading.append(periodLabel,button);
  }
  panel.append(heading);
- const weekdays=el('div',undefined,'archive-mood-weekdays');
- const daysToShow=archiveMoodExpanded?Array.from({length:new Date(Date.UTC(year,number,0)).getUTCDate()},(_,i)=>archiveMoodMonth+'-'+String(i+1).padStart(2,'0'))
-  :Array.from({length:7},(_,i)=>archiveMoodShiftDay(weekStart,i));
- if(archiveMoodExpanded){
-  for(const en of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'])weekdays.append(el('span',KonaI18n.t(en).slice(0,3)));
- }else{
-  for(const d of daysToShow){
-   const weekday=new Intl.DateTimeFormat(KonaI18n.dateLocale,{weekday:'short',timeZone:'UTC'}).format(new Date(d+'T12:00:00Z'));
-   weekdays.append(el('span',weekday));
+ // Week view is specifically the seven most recent End-of-day scores.
+ // Full-month browsing keeps the existing date calendar and all four phases.
+ if(!archiveMoodExpanded){
+  const scores=Array.from({length:7},(_,i)=>{
+   const d=archiveMoodShiftDay(weekStart,i);
+   return {date:d,night:archiveMoodEntries(d).find(e=>e.phase==='night')||null};
+  });
+  const trend=el('section',undefined,'archive-mood-trend');
+  trend.setAttribute('aria-label',archiveMoodText('Seven-day End-of-day mood and energy chart','최근 7일 하루 마무리 기분·에너지 그래프'));
+  const svgNs='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNs,'svg');
+  svg.setAttribute('viewBox','0 0 360 132');svg.setAttribute('class','archive-mood-trend-svg');
+  svg.setAttribute('role','img');svg.setAttribute('focusable','false');
+  const shape=(tag,props,parent=svg)=>{
+   const node=document.createElementNS(svgNs,tag);
+   for(const [key,value] of Object.entries(props||{}))node.setAttribute(key,String(value));
+   parent.append(node);return node;
+  };
+  const x=i=>33+i*52,y=v=>12+(5-v)*24;
+  for(const score of [5,3,1]){
+   shape('line',{x1:33,y1:y(score),x2:345,y2:y(score),class:'archive-mood-trend-gridline'});
+   const txt=shape('text',{x:12,y:y(score)+4,class:'archive-mood-trend-axis'});
+   txt.textContent=String(score);
   }
- }
- panel.append(weekdays);
- const grid=el('div',undefined,'archive-mood-grid'+(archiveMoodExpanded?' archive-mood-month-grid':' archive-mood-week-grid'));
- grid.setAttribute('role','group');grid.setAttribute('aria-label',title);
- if(archiveMoodExpanded){
+  const legend=el('div',undefined,'archive-mood-trend-key');
+  for(const [axis,label,cssClass] of [
+   ['happiness',archiveMoodText('Mood','기분'),'trend-mood'],
+   ['energy',archiveMoodText('Energy','에너지'),'trend-energy']
+  ]){
+   const sample=el('span',undefined,'archive-mood-trend-swatch '+cssClass);
+   sample.setAttribute('aria-hidden','true');
+   const item=el('span',undefined,'archive-mood-trend-key-item');
+   item.append(sample,el('span',label));legend.append(item);
+   let path='',previous=false;
+   for(let i=0;i<scores.length;i++){
+    const value=scores[i].night?.[axis];
+    if(!Number.isInteger(value)){previous=false;continue}
+    path+=(previous?' L':' M')+x(i)+' '+y(value);previous=true;
+   }
+   if(path.trim())shape('path',{d:path.trim(),class:'archive-mood-trend-line '+cssClass});
+   for(let i=0;i<scores.length;i++){
+    const value=scores[i].night?.[axis];
+    if(!Number.isInteger(value))continue;
+    const group=shape('g',{class:'archive-mood-trend-point '+cssClass});
+    if(axis==='happiness')shape('circle',{cx:x(i),cy:y(value),r:4.2},group);
+    else shape('rect',{x:x(i)-4,y:y(value)-4,width:8,height:8,transform:'rotate(45 '+x(i)+' '+y(value)+')'},group);
+    const title=shape('title',{},group);
+    title.textContent=scores[i].date+' '+label+' '+value+'/5';
+   }
+  }
+  trend.append(svg,legend);
+  const description=scores.map(({date:day,night})=>day+': '+(night?
+   archiveMoodText('Mood ','기분 ')+(night.happiness??'–')+'/5 · '+archiveMoodText('Energy ','에너지 ')+(night.energy??'–')+'/5':
+   archiveMoodText('No End-of-day scores','하루 마무리 점수 없음'))).join('; ');
+  svg.setAttribute('aria-label',description);
+  const dates=el('div',undefined,'archive-mood-trend-dates');
+  for(const {date:day,night} of scores){
+   const dayBtn=el('button',undefined,'archive-mood-trend-date');
+   dayBtn.type='button';dayBtn.dataset.moodDate=day;
+   dayBtn.disabled=day>today;dayBtn.setAttribute('aria-pressed',String(day===selected));
+   const weekday=new Intl.DateTimeFormat(KonaI18n.dateLocale,{weekday:'short',timeZone:'UTC'}).format(new Date(day+'T12:00:00Z'));
+   dayBtn.append(el('small',weekday),el('strong',String(Number(day.slice(8)))));
+   dayBtn.setAttribute('aria-label',day+' · '+(night?
+    archiveMoodText('End-of-day mood ','하루 마무리 기분 ')+(night.happiness??'–')+'/5 · '+archiveMoodText('Energy ','에너지 ')+(night.energy??'–')+'/5':
+    archiveMoodText('No End-of-day score','하루 마무리 점수 없음')));
+   dayBtn.onclick=()=>{if(!reviewCanEdit())return;archiveMoodDate=day;archiveMoodMonth=day.slice(0,7);drawArchiveSearch();archiveSearch.querySelector('.archive-mood-trend-date[data-mood-date="'+day+'"]')?.focus({preventScroll:true})};
+   dates.append(dayBtn);
+  }
+  trend.append(dates);
+  if(!scores.some(({night})=>night&&(night.happiness!==null||night.energy!==null)))trend.append(el('p',archiveMoodText('No End-of-day ratings in these 7 days.','이 7일에는 하루 마무리 기분·에너지 점수가 없어요.'),'archive-mood-trend-empty'));
+  trend.append(el('p',archiveMoodText('End-of-day only · Scores from 1 to 5','하루 마무리 기록만 · 1~5점'),'archive-mood-trend-caption'));
+  panel.append(trend);
+ }else{
+  const weekdays=el('div',undefined,'archive-mood-weekdays');
+  for(const en of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'])weekdays.append(el('span',KonaI18n.t(en).slice(0,3)));
+  panel.append(weekdays);
+  const daysToShow=Array.from({length:new Date(Date.UTC(year,number,0)).getUTCDate()},(_,i)=>archiveMoodMonth+'-'+String(i+1).padStart(2,'0'));
+  const grid=el('div',undefined,'archive-mood-grid archive-mood-month-grid');
+  grid.setAttribute('role','group');grid.setAttribute('aria-label',title);
   const leading=new Date(Date.UTC(year,number-1,1)).getUTCDay();
   for(let i=0;i<leading;i++){const blank=el('span',undefined,'archive-mood-blank');blank.setAttribute('aria-hidden','true');grid.append(blank)}
- }
- for(const d of daysToShow){
-  const entries=archiveMoodEntries(d),button=el('button',undefined,'archive-mood-day');button.type='button';button.dataset.moodDate=d;
-  button.disabled=d>today;
-  button.setAttribute('aria-pressed',String(d===selected));
-  const descriptions=entries.map(x=>x.phaseLabel+': '+x.feeling+(x.energy!==null?' · '+KonaI18n.t('Energy')+' '+x.energy+'/5':'')+(x.happiness!==null?' · '+KonaI18n.t('Mood')+' '+x.happiness+'/5':''));
-  button.setAttribute('aria-label',d+' · '+(descriptions.length?descriptions.join(' · '):archiveMoodText('No mood check-in','감정 체크인 없음')));
-  button.append(el('span',String(Number(d.slice(8,10))),'archive-mood-day-number'));
-  const dots=el('span',undefined,'archive-mood-dots');
-  for(const e of entries){
-   const dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);
-   dot.dataset.phase=e.phase;dot.setAttribute('aria-hidden','true');
-   konaReviewMoodTone(dot,e.energy,e.happiness);dot.title=e.phaseLabel+': '+e.feeling;dots.append(dot)
+  for(const d of daysToShow){
+   const entries=archiveMoodEntries(d),button=el('button',undefined,'archive-mood-day');button.type='button';button.dataset.moodDate=d;
+   button.disabled=d>today;button.setAttribute('aria-pressed',String(d===selected));
+   const descriptions=entries.map(e=>e.phaseLabel+': '+e.feeling+(e.energy!==null?' · '+KonaI18n.t('Energy')+' '+e.energy+'/5':'')+(e.happiness!==null?' · '+KonaI18n.t('Mood')+' '+e.happiness+'/5':''));
+   button.setAttribute('aria-label',d+' · '+(descriptions.length?descriptions.join(' · '):archiveMoodText('No mood check-in','감정 체크인 없음')));
+   button.append(el('span',String(Number(d.slice(8,10))),'archive-mood-day-number'));
+   const dots=el('span',undefined,'archive-mood-dots');
+   for(const e of entries){
+    const dot=el('span',undefined,'archive-mood-dot');dot.dataset.level=String(e.happiness??0);
+    dot.dataset.phase=e.phase;dot.setAttribute('aria-hidden','true');
+    konaReviewMoodTone(dot,e.energy,e.happiness);dot.title=e.phaseLabel+': '+e.feeling;dots.append(dot);
+   }
+   button.append(dots);
+   button.onclick=()=>{if(!reviewCanEdit())return;archiveMoodDate=d;archiveMoodMonth=d.slice(0,7);drawArchiveSearch();archiveSearch.querySelector('[data-mood-date="'+d+'"]')?.focus({preventScroll:true})};
+   grid.append(button);
   }
-  button.append(dots);
-  button.onclick=()=>{
-   if(!reviewCanEdit())return;
-   archiveMoodDate=d;
-   archiveMoodMonth=d.slice(0,7);
-   drawArchiveSearch();
-   archiveSearch.querySelector('[data-mood-date="'+d+'"]')?.focus({preventScroll:true});
-  };
-  grid.append(button);
+  panel.append(grid);
+  const legend=el('div',undefined,'archive-mood-visible-legend');
+  legend.setAttribute('aria-label',archiveMoodText('Mood calendar key','감정 달력 범례'));
+  for(const [phase,label] of [
+   ['morning',archiveMoodText('Morning','오전')],
+   ['noon',archiveMoodText('Midday','낮')],
+   ['evening',archiveMoodText('Evening','저녁')],
+   ['night',archiveMoodText('End of day','하루 마무리')]
+  ]){
+   const item=el('span',undefined,'archive-mood-legend-item');
+   const dot=el('span',undefined,'archive-mood-legend-shape');dot.dataset.phase=phase;dot.setAttribute('aria-hidden','true');
+   item.append(dot,el('span',label));legend.append(item);
+  }
+  legend.append(el('span',archiveMoodText('Color = mood × energy','색상 = 기분 × 에너지'),'archive-mood-color-explainer'));
+  panel.append(legend);
  }
- panel.append(grid);
- const legend=el('div',undefined,'archive-mood-visible-legend');
- legend.setAttribute('aria-label',archiveMoodText('Mood calendar key','감정 달력 범례'));
- for(const [phase,label] of [
-  ['morning',archiveMoodText('Morning','오전')],
-  ['noon',archiveMoodText('Midday','낮')],
-  ['evening',archiveMoodText('Evening','저녁')],
-  ['night',archiveMoodText('End of day','하루 마무리')]
- ]){
-  const item=el('span',undefined,'archive-mood-legend-item');
-  const shape=el('span',undefined,'archive-mood-legend-shape');shape.dataset.phase=phase;shape.setAttribute('aria-hidden','true');
-  item.append(shape,el('span',label));legend.append(item);
- }
- legend.append(el('span',archiveMoodText('Color = mood × energy','색상 = 기분 × 에너지'),'archive-mood-color-explainer'));
- panel.append(legend);
  const toggle=el('button',archiveMoodExpanded
   ?archiveMoodText('Show 7 days','7일만 보기')
   :archiveMoodText('View full month','월간 달력 보기'),'archive-mood-calendar-toggle');
@@ -2465,7 +2551,7 @@ function drawArchiveSearch(){
  status.textContent=matches.length+' '+(matches.length===1?KonaI18n.t("record"):KonaI18n.t("records"));
  status.title=archiveMoodText('Newest first','최신순');
  status.setAttribute('aria-label',status.textContent+' · '+status.title);
- if(!matches.length)results.append(el('p',query?KonaI18n.t("No matching records. Change your search or clear the filters."):KonaI18n.t("No records in this selection."),'archive-empty'));
+ if(!matches.length)results.append(el('p',archiveMeaning!=='all'?archiveMoodText('No saved records here. Use the ☆ button beside a record in All records.','여기에는 표시한 기록이 없어요. 전체 기록에서 ☆ 버튼을 눌러 다시 볼 기록으로 표시하세요.'):query?KonaI18n.t("No matching records. Change your search or clear the filters."):KonaI18n.t("No records in this selection."),'archive-empty'));
 
  const dateCounts=new Map(),byDate=new Map();
  for(const record of matches){
@@ -2479,6 +2565,7 @@ function drawArchiveSearch(){
   ['personal',archiveMoodText('Unlinked notes','일정과 무관한 메모')]
  ];
  function addArchiveRecord(record){
+  const wrap=el('div',undefined,'archive-search-result-wrap');
   const button=el('button',undefined,'archive-search-result');button.type='button';
   button.dataset.recordDate=record.date;button.dataset.recordId=record.id;
   const preview=el('span',undefined,'archive-search-preview');
@@ -2492,7 +2579,15 @@ function drawArchiveSearch(){
   if(linkedSchedule)line.append(el('small',linkedSchedule,'review-schedule-label'));
   button.append(line,preview);
   button.setAttribute('aria-label',record.date+' · '+(linkedSchedule?linkedSchedule+' · ':'')+metadata+' · '+text.slice(0,100));
-  button.onclick=()=>showReviewArchiveRecord(record);results.append(button);
+  button.onclick=()=>showReviewArchiveRecord(record);
+  const saved=archiveManuallySaved(record);
+  const mark=el('button',saved?'★':'☆','archive-save-toggle');
+  mark.type='button';mark.dataset.recordDate=record.date;mark.dataset.recordId=record.id;
+  mark.setAttribute('aria-pressed',String(saved));
+  mark.setAttribute('aria-label',(saved?archiveMoodText('Remove from Saved for later','다시 볼 기록에서 해제'):archiveMoodText('Save for later','다시 볼 기록으로 표시'))+' · '+(record.noteTitle||record.title));
+  mark.title=saved?archiveMoodText('Unsave','표시 해제'):archiveMoodText('Save for later','다시 볼 기록으로 표시');
+  mark.onclick=()=>archiveToggleSaved(record);
+  wrap.append(button,mark);results.append(wrap);
  }
  for(const [day,dayRecords] of byDate){
   results.append(reviewDateGroupHeading(day,dateCounts.get(day)));
