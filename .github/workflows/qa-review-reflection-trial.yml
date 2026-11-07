@@ -1,0 +1,29 @@
+name: Review reflection-first trial QA
+on:
+  push:
+    branches:
+      - feature/review-reflection-first-20261106
+  workflow_dispatch:
+jobs:
+  preview-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check public/legacy/runtime/review-reflection-trial.v1.js
+      - run: node scripts/verify-ui-static.mjs
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-server.log 2>&1 &
+      - run: node scripts/qa-review-reflection-trial.mjs
+        env:
+          ONHARU_URL: http://127.0.0.1:8080/legacy/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: review-reflection-trial-screenshots
+          path: test-results/review-reflection-trial/
+          retention-days: 7

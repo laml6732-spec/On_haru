@@ -1,0 +1,156 @@
+/* On_HARU Review reflection-first trial: intentionally flat, no nested cards. */
+#page-records.onharu-reflection-trial #new-review-switch {
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:0!important;padding:0!important;margin:2px 0 10px!important;
+  border-bottom:1px solid var(--line)!important;background:transparent!important;
+}
+#page-records.onharu-reflection-trial #new-review-switch button {
+  min-width:0!important;min-height:44px!important;border:0!important;
+  border-radius:0!important;box-shadow:none!important;
+  background:transparent!important;color:var(--sub)!important;
+  padding:8px 2px!important;font-weight:650!important;
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;
+}
+#page-records.onharu-reflection-trial #new-review-switch button.on {
+  background:transparent!important;color:var(--ink)!important;
+  box-shadow:inset 0 -2px 0 var(--hero-ink)!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page {
+  min-width:0!important;padding:0!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page #viewCal {
+  display:block!important;position:static!important;width:100%!important;
+  margin:2px 0 12px!important;padding:8px 0 12px!important;
+  background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;
+  border-radius:0!important;box-shadow:none!important;
+}
+#page-records.onharu-reflection-trial #viewCal #kx-calendar {display:none!important}
+#page-records.onharu-reflection-trial #viewCal #calendarMode {
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  gap:2px!important;margin:4px auto 10px!important;padding:3px!important;
+  border:1px solid var(--line)!important;border-radius:10px!important;
+  background:var(--surface)!important;
+}
+#page-records.onharu-reflection-trial #viewCal .review-calendar-mode {
+  display:flex!important;justify-content:center!important;
+  margin:0!important;padding:0!important;
+}
+#page-records.onharu-reflection-trial #viewCal #calendarMode button {
+  min-height:38px!important;min-width:76px!important;
+  background:transparent!important;border:0!important;border-radius:8px!important;
+  color:var(--ink)!important;box-shadow:none!important;
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;
+}
+#page-records.onharu-reflection-trial #viewCal #calendarMode button.active {
+  background:var(--soft)!important;color:var(--ink)!important;
+}
+#page-records.onharu-reflection-trial #viewCal .daycell.compact.onharu-calendar-day-tone {
+  background:var(--onharu-calendar-light)!important;
+  color:#243b35!important;border-radius:8px!important;
+}
+html[data-appearance="dark"] body #page-records.onharu-reflection-trial #viewCal .daycell.compact.onharu-calendar-day-tone {
+  background:var(--onharu-calendar-dark)!important;color:#fff!important;
+}
+#page-records.onharu-reflection-trial #viewCal .daycell.compact.active {
+  outline:2px solid var(--hero-ink)!important;outline-offset:-2px!important;
+}
+#page-records.onharu-reflection-trial #viewCal .daycell.compact {
+  min-width:0!important;min-height:40px!important;
+  border-radius:8px!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .rv-head,
+#page-records.onharu-reflection-trial #new-reflect-page .weekly-compact-header {
+  border:0!important;background:transparent!important;box-shadow:none!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .review-reflection-summary {
+  display:none!important; /* editor already shows the saved reflection */
+}
+#page-records.onharu-reflection-trial #new-reflect-page .review-reflection-editor.onharu-reflection-primary {
+  display:block!important;margin:12px 0 8px!important;padding:0 0 12px!important;
+  border:0!important;border-bottom:1px solid var(--line)!important;
+  border-radius:0!important;background:transparent!important;box-shadow:none!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .review-top-reflection,
+#page-records.onharu-reflection-trial #new-reflect-page .rv-writing-toolbar,
+#page-records.onharu-reflection-trial #new-reflect-page .rv-label,
+#page-records.onharu-reflection-trial #new-reflect-page .rv-controls,
+#page-records.onharu-reflection-trial #new-reflect-page .weekly-form-label {
+  border:0!important;border-radius:0!important;
+  box-shadow:none!important;background:transparent!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page textarea {
+  border:1px solid var(--line)!important;border-radius:8px!important;
+  background:var(--surface)!important;color:var(--ink)!important;
+  min-height:76px!important;padding:10px!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .rv-timeline {
+  margin:10px 0 20px!important;padding:0!important;
+  border:0!important;background:transparent!important;box-shadow:none!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .review-v3-section,
+#page-records.onharu-reflection-trial #new-reflect-page .rv-timegroup,
+#page-records.onharu-reflection-trial #new-reflect-page .rv-linked-group,
+#page-records.onharu-reflection-trial #new-reflect-page .review-check-record {
+  border:0!important;border-radius:0!important;
+  box-shadow:none!important;background:transparent!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .review-section-bar {
+  border:0!important;border-top:1px solid var(--line)!important;
+  border-radius:0!important;background:transparent!important;box-shadow:none!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .review-fold-inner > *,
+#page-records.onharu-reflection-trial #new-reflect-page .review-weekly-records .review-record,
+#page-records.onharu-reflection-trial #new-reflect-page .review-weekly-records .weekly-day {
+  border-radius:0!important;box-shadow:none!important;background:transparent!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .weekly-compact-meta {
+  border-bottom:1px solid var(--line)!important;padding-bottom:10px!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .onharu-weekly-source {
+  margin:20px 0 0!important;padding:8px 0!important;border:0!important;
+  border-top:1px solid var(--line)!important;background:transparent!important;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .onharu-weekly-source > summary {
+  list-style:none!important;min-height:44px!important;display:flex!important;
+  align-items:center!important;color:var(--ink)!important;font-weight:650!important;
+  cursor:pointer;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .onharu-weekly-source > summary::after {
+  content:'⌄';margin-left:auto;
+}
+#page-records.onharu-reflection-trial #new-reflect-page .onharu-weekly-source[open] > summary::after {transform:rotate(180deg)}
+#page-records.onharu-reflection-trial #archive-search .archive-mood-view-switch {
+  display:none!important;
+}
+#page-records.onharu-reflection-trial.onharu-mood-active #archive-search .archive-mood-panel {
+  display:flex!important;flex-direction:column!important;
+  gap:8px!important;margin:0!important;border:0!important;
+  background:transparent!important;box-shadow:none!important;
+}
+#page-records.onharu-reflection-trial.onharu-mood-active .archive-mood-heading {order:0!important}
+#page-records.onharu-reflection-trial.onharu-mood-active .archive-mood-trend {order:1!important}
+#page-records.onharu-reflection-trial.onharu-mood-active .archive-mood-detail {order:2!important}
+#page-records.onharu-reflection-trial.onharu-mood-active .archive-mood-calendar-toggle {order:3!important}
+#page-records.onharu-reflection-trial.onharu-mood-active .archive-mood-month-grid,
+#page-records.onharu-reflection-trial.onharu-mood-active .archive-mood-weekdays,
+#page-records.onharu-reflection-trial.onharu-mood-active .archive-mood-visible-legend {order:2!important}
+#page-records.onharu-reflection-trial #archive-search .archive-mood-detail,
+#page-records.onharu-reflection-trial #archive-search .archive-mood-trend,
+#page-records.onharu-reflection-trial #archive-search .archive-mood-item {
+  border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important;
+}
+#page-records.onharu-reflection-trial #archive-search-results .archive-search-result-wrap,
+#page-records.onharu-reflection-trial #archive-search-results .archive-search-result {
+  border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important;
+}
+#page-records.onharu-reflection-trial #archive-search-results .archive-search-result-wrap {
+  border-bottom:1px solid var(--line)!important;
+}
+@media(max-width:350px) {
+  #page-records.onharu-reflection-trial #new-review-switch button {
+    font-size:calc(11px * var(--kona-ui-scale,1))!important;
+  }
+  #page-records.onharu-reflection-trial #viewCal .daycell.compact {min-height:38px!important}
+}
