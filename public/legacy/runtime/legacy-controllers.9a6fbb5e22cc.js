@@ -2551,7 +2551,7 @@ function drawArchiveSearch(){
  status.textContent=matches.length+' '+(matches.length===1?KonaI18n.t("record"):KonaI18n.t("records"));
  status.title=archiveMoodText('Newest first','최신순');
  status.setAttribute('aria-label',status.textContent+' · '+status.title);
- if(!matches.length)results.append(el('p',query?KonaI18n.t("No matching records. Change your search or clear the filters."):archiveMeaning!=='all'?archiveMoodText('No saved records yet. Use the ☆ button beside a record in All records.','아직 표시한 기록이 없어요. 전체 기록에서 ☆ 버튼을 눌러 다시 볼 기록으로 표시하세요.'):KonaI18n.t("No records in this selection."),'archive-empty'));
+ if(!matches.length)results.append(el('p',archiveMeaning!=='all'?archiveMoodText('No saved records here. Use the ☆ button beside a record in All records.','여기에는 표시한 기록이 없어요. 전체 기록에서 ☆ 버튼을 눌러 다시 볼 기록으로 표시하세요.'):query?KonaI18n.t("No matching records. Change your search or clear the filters."):KonaI18n.t("No records in this selection."),'archive-empty'));
 
  const dateCounts=new Map(),byDate=new Map();
  for(const record of matches){
