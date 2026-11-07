@@ -1234,8 +1234,12 @@ function renderCalendar(){
     }
     card.prepend(picker);
   }
+  picker.setAttribute('aria-label',KonaI18n.language==='ko'?'달력 보기':'Calendar view');
   for(const button of picker.querySelectorAll('button')){
-    const selected=button.dataset.calendarView===calendarView;
+    const key=button.dataset.calendarView;
+    button.textContent=key==='week'?(KonaI18n.language==='ko'?'7일':'7 days'):
+      key==='month'?(KonaI18n.language==='ko'?'한 달':'Month'):(KonaI18n.language==='ko'?'접기':'Hide');
+    const selected=key===calendarView;
     button.classList.toggle('active',selected);button.setAttribute('aria-pressed',String(selected));
   }
   const visible=calendarView!=='hidden';
