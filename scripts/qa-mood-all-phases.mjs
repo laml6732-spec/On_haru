@@ -65,6 +65,8 @@ try{
    await page.locator('.archive-mood-calendar-toggle').click();
    const fullMonthDay5=page.locator('.archive-mood-month-grid [data-mood-date="2026-11-05"]');
    if(await fullMonthDay5.locator('.archive-mood-dot').count()!==4)throw Error('Full month omits one of four phases');
+   const phases=await fullMonthDay5.locator('.archive-mood-dot').evaluateAll(xs=>xs.map(x=>x.dataset.phase));
+   if(phases.join('|')!=='morning|noon|evening|night')throw Error('Four-phase monthly marker order changed: '+phases);
    const legacyNoon=page.locator('.archive-mood-month-grid [data-mood-date="2026-11-02"] .archive-mood-dot');
    if(await legacyNoon.count()!==1||await legacyNoon.getAttribute('data-phase')!=='noon')throw Error('Month omitted legacy Midday mood');
    if(await page.locator('.archive-mood-month-grid [data-mood-date="2026-11-03"] .archive-mood-dot').count())throw Error('Month rendered unrated class notes as a mood');
