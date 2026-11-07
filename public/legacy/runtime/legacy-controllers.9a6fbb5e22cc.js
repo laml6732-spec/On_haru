@@ -1224,7 +1224,7 @@ function renderCalendar(){
     const d=dayAdd(first,i-offset),v=db.days[d]||{},mo=d.slice(0,7)===calendarMonth,sug=headlineSuggest(d),sc=reviewCalendarScore(d),ans=answeredOn(d);
     const hasEntries=dayHasData(d)||Object.values(v.eventNotes||{}).some(x=>typeof x==='string'?x.trim():false),dot=calendarMode==='mood'&&sc?KonaI18n.format("<i class=\"calendar-dot mood-dot\" style=\"background:⟪0⟫\" aria-label=\"Mood recorded\"></i>",[scoreColor(sc)],false):calendarMode==='entries'&&hasEntries?KonaI18n.markup("<i class=\"calendar-dot entries-dot\" aria-label=\"Entry recorded\"></i>"):'';
     const b=el('button','daycell compact'+(!mo?' dim':'')+(d===date?' active':'')+(d===nowLocal()?' today':'')+(hasDevotion(d)?' dv':''),KonaI18n.format("<span class=\"num\">⟪0⟫</span>⟪1⟫⟪2⟫",[+d.slice(-2),v.reflected?KonaI18n.markup("<img class=\"reflected-flower\" src=\"./assets/hibiscus-task-done.png\" alt=\"Reflected\">"):dot,ans.length?KonaI18n.markup("<span class=\"rb\" aria-label=\"Answered prayer\">🌈</span>"):''],false));
-    b.classList.toggle('empty',!hasEntries&&!sc&&!ans.length&&!hasDevotion(d)&&!v.reflected);b.setAttribute('aria-label',fmt(d)+(v.reflected?KonaI18n.t(" · Reflected",true):hasEntries?KonaI18n.t(" · Records saved",true):''));
+    b.dataset.reviewDate=d;b.classList.toggle('empty',!hasEntries&&!sc&&!ans.length&&!hasDevotion(d)&&!v.reflected);b.setAttribute('aria-label',fmt(d)+(v.reflected?KonaI18n.t(" · Reflected",true):hasEntries?KonaI18n.t(" · Records saved",true):''));
     if(calendarMode==='mood'&&sc){konaReviewMoodTone(b,sc.e,sc.v);b.setAttribute('aria-label',b.getAttribute('aria-label')+' · '+KonaI18n.t('Mood')+' '+sc.v+'/5 · '+KonaI18n.t('Energy')+' '+sc.e+'/5')}
     b.type='button';
     b.onclick=()=>{
