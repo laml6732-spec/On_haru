@@ -2084,6 +2084,12 @@ function reviewFeelingEditor(record,row,dimension='happiness'){
   if(ok){compactMoodDrafts.delete(record.date+'|'+record.phase);reviewAfterChange();toast(KonaI18n.t("Feeling saved"))}else status.textContent=KonaI18n.t("Not saved · retry.");
  }));editor.append(status);row.append(editor);editor.querySelector('input[aria-label="'+(dimension==='energy'?KonaI18n.t("Energy"):KonaI18n.t("Mood"))+'"]')?.focus({preventScroll:true});
 }
+// Preserve user-entered note titles; hide only duplicate schedule metadata.
+function reviewSameTitleAsSchedule(record){
+ const title=String(record.noteTitle||'').trim().replace(/\s+/g,' ').toLocaleLowerCase();
+ const schedule=String(record.scheduleLabel||'').trim().replace(/\s+/g,' ').toLocaleLowerCase();
+ return !!title&&!!schedule&&title===schedule;
+}
 function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
  if(['capture','event','free'].includes(record.kind))preview=konaReviewPreferences().previewLines>0&&!archiveDetailRecord;
  const isPersonal=record.kind==='free'||(record.kind==='capture'&&!record.scheduleId);
@@ -2096,11 +2102,12 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
  // Capture time is recorded at creation. An old free-note hour is only a slot, not a timestamp.
  const metaTime=record.kind==='capture'&&isPersonal?record.recordedTime:!['capture','event','free','class'].includes(record.kind)?time:'';
  if(metaTime)meta.append(el('time',metaTime));if(meta.childNodes.length)body.append(meta);
- if(!grouped&&record.scheduleId)body.append(el('small',record.scheduleLabel,'review-schedule-label'));
- const title=record.noteTitle&&record.noteTitle.trim().toLowerCase()!==String(record.scheduleLabel||record.title).trim().toLowerCase()?record.noteTitle:'';
+ const sameAsSchedule=reviewSameTitleAsSchedule(record);
+ const title=grouped&&sameAsSchedule?'':String(record.noteTitle||'').trim();
  const canInline=['capture','event','check','session','anchor','free'].includes(record.kind);
  if(record.kind==='session')konaBindEditTarget(meta,'Edit note · '+identity,()=>reviewInlineNote(record,row));
  if(title){const heading=el('strong',title,'rv-user-note-title');if(canInline)konaBindEditTarget(heading,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));body.append(heading)}
+ if(!grouped&&record.scheduleId&&!sameAsSchedule)body.append(el('small',record.scheduleLabel,'review-schedule-label'));
  if(record.kind!=='class'&&(record.body||(!title&&record.tags?.length))){const text=el('p',record.body,'rv-note-preview'+(preview?' review-preview':''));if(canInline)konaBindEditTarget(text,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));else if(record.kind==='class')konaBindEditTarget(text,KonaI18n.t("Open class review · ")+identity,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);nav('checkin',{phase:'noon'})});if(/\n\s*\n/.test(text.textContent)){const paragraphs=text.textContent.split(/\n\s*\n/);text.replaceChildren(...paragraphs.map(value=>el('span',value,'review-text-paragraph')))}body.append(text);if(preview){const more=el('button',KonaI18n.t("Read more"),'review-preview-more');more.type='button';more.onclick=()=>{text.classList.toggle('review-expanded');more.textContent=text.classList.contains('review-expanded')?KonaI18n.t("Show less"):KonaI18n.t("Read more")};body.append(more);requestAnimationFrame(()=>{if(more.isConnected)reviewSyncPreviews(body)})}}
  if(record.kind==='class'){
   const c=db.days[record.date]?.checkins?.noon||{},heading=el('h4',konaReviewClassHeading(record.date,c),'review-class-title');konaBindEditTarget(heading,KonaI18n.t("Open class notes · ")+record.date,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);konaOpenReviewEditor(record.date,record.id)});
@@ -2476,6 +2483,12 @@ function archivePracticeName(record){
  const labels={prayer:archiveMoodText('Prayer','기도'),focus:archiveMoodText('Focus','포커스'),devotion:archiveMoodText('Devotion','묵상')};
  return labels[record.sessionKind]||archiveMoodText('Practice','활동');
 }
+function reviewArchivePreview(record){
+ const title=String(record.noteTitle||'').trim();
+ const linked=archiveSemanticGroup(record)==='schedule'&&!!record.scheduleLabel;
+ const details=record.body||record.feeling||(!title&&!linked?record.title:'');
+ return [title,details].filter(Boolean).join('\n');
+}
 function drawArchiveSearch(){
  const input=document.getElementById('archive-search-input'),results=document.getElementById('archive-search-results'),status=document.getElementById('archive-search-status');if(!input||!results||!status)return;
  archiveSearch.append(status);status.hidden=!!archiveDetailRecord;root.classList.add('review-modern-archive');root.classList.remove('archive-searching');other.forEach(p=>p.style.display='none');document.getElementById('archivedWeeklyReflection')?.remove();archiveSearch.querySelectorAll('.archive-toolbar,.archive-back,.archive-filter-disclosure,.archive-active-filters,.archive-filter-row,.archive-period-row,.review-archive-context,.review-saved-filters,.archive-mood-view-switch,.archive-mood-panel').forEach(n=>n.remove());
@@ -2569,13 +2582,13 @@ function drawArchiveSearch(){
   const button=el('button',undefined,'archive-search-result');button.type='button';
   button.dataset.recordDate=record.date;button.dataset.recordId=record.id;
   const preview=el('span',undefined,'archive-search-preview');
-  const text=[record.noteTitle&&record.noteTitle!==record.scheduleLabel?record.noteTitle:'',record.body||record.feeling||record.title].filter(Boolean).join('\n');
+  const text=reviewArchivePreview(record);
   reviewHighlight(preview,konaNoteDisplay(text,record.tags),query);
   konaApplyNoteTagIcon(preview,record.tags);
   const metadata=[record.recordedTime,archivePracticeName(record)].filter(Boolean).join(' · ');
   const line=el('span',undefined,'archive-result-head');
   if(metadata)line.append(el('span',metadata,'archive-search-meta'));
-  const linkedSchedule=archiveSemanticGroup(record)==='schedule'?record.scheduleLabel:'';
+  const linkedSchedule=archiveSemanticGroup(record)==='schedule'&&!reviewSameTitleAsSchedule(record)?record.scheduleLabel:'';
   if(linkedSchedule)line.append(el('small',linkedSchedule,'review-schedule-label'));
   button.append(line,preview);
   button.setAttribute('aria-label',record.date+' · '+(linkedSchedule?linkedSchedule+' · ':'')+metadata+' · '+text.slice(0,100));
