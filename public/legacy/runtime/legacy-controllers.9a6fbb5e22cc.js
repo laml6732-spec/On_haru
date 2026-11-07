@@ -1219,11 +1219,11 @@ function renderCalendar(){
   // The selector always remains visible, including when the calendar itself is folded away.
   let picker=card.querySelector('.review-calendar-range');
   if(!picker){
-    picker=el('div',undefined,'review-calendar-range');
+    picker=el('div','review-calendar-range');
     picker.setAttribute('role','group');
     picker.setAttribute('aria-label',KonaI18n.language==='ko'?'달력 보기':'Calendar view');
     for(const [key,label] of [['week',KonaI18n.language==='ko'?'7일':'7 days'],['month',KonaI18n.language==='ko'?'한 달':'Month'],['hidden',KonaI18n.language==='ko'?'접기':'Hide']]){
-      const button=el('button',label,'review-calendar-range-option');button.type='button';button.dataset.calendarView=key;
+      const button=el('button','review-calendar-range-option',label);button.type='button';button.dataset.calendarView=key;
       button.onclick=()=>{
         calendarView=key;
         if(key==='week')calendarAnchor=date;
