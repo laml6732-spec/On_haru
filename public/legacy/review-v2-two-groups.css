@@ -103,3 +103,12 @@ body .app #page-records #archive-search-results .archive-result-body{
   color:var(--sub)!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;
   font-weight:400!important;line-height:1.5!important;
 }
+
+/* Collapse the unused Entries/Mood wrapper, not just its hidden buttons. */
+body .app #page-records #new-reflect-page #viewCal .review-calendar-mode{
+  display:none!important;height:0!important;min-height:0!important;
+  margin:0!important;padding:0!important;
+}
+body .app #page-records #new-reflect-page #viewCal #monthCalendar{
+  margin-top:8px!important;
+}
