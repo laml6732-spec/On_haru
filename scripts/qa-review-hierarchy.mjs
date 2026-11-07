@@ -29,7 +29,7 @@ try{
           const evt=dayEvents(d).find(e=>e?.id)||dayEvents(d)[0];
           const dayData=day(d);
           dayData.quickCaptureEntries=[...(dayData.quickCaptureEntries||[]),{
-            id,time:'14:43',createdAt:d+'T20:43:00Z',title:'QA-AH title',
+            id,time:'14:43',createdAt:d+'T20:43:00Z',title:d==='2026-11-05'?(evt?.title||'QA-AH title'):'QA-AH title',
             text:'QA-ARCHIVE-HIERARCHY '+id+' long preview to test search and opening the full detailed record.',
             scheduleId:evt?.id||'',scheduleTitle:evt?.title||'',tags:[]
           }];
@@ -60,8 +60,7 @@ try{
       await disclosure.waitFor();
       if(await disclosure.evaluate(e=>e.open))throw Error('Filter pane should default to closed');
       const top=await page.locator('#archive-search .archive-saved-filters').count();
-      const todayCategories=await page.locator('#archive-search-results .archive-record-category').allTextContents();
-      if(!['Schedule-linked','Prayer · Focus · Devotion','Unlinked notes'].every(label=>todayCategories.some(t=>t.includes(label))))throw Error('All three semantic sections not visible');
+      if(await page.locator('#archive-search-results .archive-record-category').count())throw Error('Records should not show nested category headings');
       if(!await page.locator('#archive-search-results .archive-search-result').filter({hasText:'QA-PRACTICE-SAMPLE'}).count())throw Error('Prayer record missing');
       if(!await page.locator('#archive-search-results .archive-search-result').filter({hasText:'QA-PERSONAL-SAMPLE'}).count())throw Error('Independent note missing');
       const baseline=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
@@ -76,18 +75,18 @@ try{
       const first=await heads.first().evaluate(e=>{const c=getComputedStyle(e);return{bg:c.backgroundColor,date:e.querySelector('.review-date-label')?.textContent,count:e.querySelector('.review-date-count')?.textContent}});
       if(first.bg!==result.weekly.bg)throw Error('Weekly/Archive date header backgrounds differ');
       if(!first.count?.includes('1 record'))throw Error('Archive date count missing');
-      const groupLabels=await page.locator('#archive-search-results .archive-record-category').allTextContents();
-      if(groupLabels.length!==2||!groupLabels.every(s=>s.includes('Schedule-linked')))throw Error('Category headings missing');
-      if(await page.locator('#archive-search-results .archive-record-schedule-title').count()!==2)throw Error('Schedule names not grouped');
+      if(await page.locator('#archive-search-results .archive-record-category, #archive-search-results .archive-record-schedule-title').count())throw Error('Records still have nested category/schedule headings');
       const firstRow=rows.first();
       const order=await firstRow.evaluate(e=>[...e.children].map(x=>x.className));
-      if(order[0]!=='archive-result-head'||order[1]!=='archive-search-preview')throw Error('Metadata not first '+order);
+      if(order[0]!=='archive-record-time'||order[1]!=='archive-record-content')throw Error('Time/text order incorrect '+order);
+      if(!await firstRow.locator('.archive-record-title').count())throw Error('Explicit title not shown');
+      if(await firstRow.locator('.archive-record-context').count())throw Error('Duplicate schedule label displayed beside identical user title');
       const clamp=await firstRow.locator('.archive-search-preview').evaluate(e=>getComputedStyle(e).webkitLineClamp);
-      if(clamp!=='2')throw Error('Record preview not two lines: '+clamp);
+      if(clamp!=='2')throw Error('Record body preview not two lines: '+clamp);
       await disclosure.locator('summary').click();
       if(!await disclosure.evaluate(e=>e.open))throw Error('Filters cannot expand');
       const type=page.locator('#archive-search .archive-filter-row select[aria-label="Type"]');
-      await type.selectOption('schedule');
+      await type.selectOption('note');
       const reopened=page.locator('#archive-search .archive-filter-disclosure');
       if(!await reopened.evaluate(e=>e.open))throw Error('Filter pane collapsed after selecting type');
       if(await rows.count()!==2)throw Error('Type filter incorrectly removed notes');
@@ -105,11 +104,11 @@ try{
       if(!detail.includes('QA-ARCHIVE-HIERARCHY'))throw Error('Full record detail missing');
       await page.locator('#archive-search .archive-back').click();
       if(await rows.count()!==1)throw Error('Archive back did not restore combined filters');
-      // Both All records / Saved for later tabs must control their selected states.
-      await page.locator('#archive-search .review-saved-filters button').filter({hasText:'Saved for later'}).click();
-      const selected=await page.locator('#archive-search .review-saved-filters button').filter({hasText:'Saved for later'}).getAttribute('aria-pressed');
-      if(selected!=='true')throw Error('Saved for later tab selection invalid');
-      await page.locator('#archive-search .review-saved-filters button').filter({hasText:'All records'}).click();
+      // All/Starred tabs must control their selected states.
+      await page.locator('#archive-search .review-saved-filters button').filter({hasText:'Starred'}).click();
+      const selected=await page.locator('#archive-search .review-saved-filters button').filter({hasText:'Starred'}).getAttribute('aria-pressed');
+      if(selected!=='true')throw Error('Starred tab selection invalid');
+      await page.locator('#archive-search .review-saved-filters button').filter({hasText:'All'}).click();
       if(await rows.count()!==1)throw Error('All records tab did not restore results');
       // Bottom dock must not permanently obscure last result when scrolled into view.
       await rows.last().scrollIntoViewIfNeeded();
