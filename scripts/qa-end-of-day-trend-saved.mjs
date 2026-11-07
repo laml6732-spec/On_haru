@@ -67,7 +67,7 @@ try{
    const nonEnd=page.locator('.archive-mood-trend-date[data-mood-date="2026-11-03"]');
    if(!await nonEnd.getAttribute('aria-label').then(s=>s.includes(lang==='ko'?'하루 마무리':'No End-of-day')))throw Error('Only Morning day should have no End-of-day graph score');
    await nonEnd.click();
-   if(!await page.locator('.archive-mood-detail').innerText().then(s=>s.includes(lang==='en'?'Morning':'오전')))throw Error('Selected-day detail lost Morning check-in');
+   if(await page.locator('.archive-mood-detail .archive-mood-item').count()!==1)throw Error('Selected-day detail lost Morning check-in');
    if(!await page.locator('.archive-mood-trend-date[data-mood-date="2026-11-03"]').getAttribute('aria-pressed').then(x=>x==='true'))throw Error('Day selection lost');
    await page.locator('.archive-mood-calendar-toggle').click();
    if(await page.locator('.archive-mood-month-grid [data-mood-date="2026-11-03"] .archive-mood-dot').count()!==1)throw Error('Monthly 4-phase history not preserved');
