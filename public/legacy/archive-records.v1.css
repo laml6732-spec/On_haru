@@ -1,0 +1,211 @@
+
+/* Archive > Records: compact, reflection-first list. Scoped to this screen only. */
+body .app #page-records #archive-search .archive-search-row{
+  display:flex!important;align-items:center!important;gap:7px!important;
+  position:relative!important;width:100%!important;min-width:0!important;
+  margin:4px 0 8px!important;
+}
+body .app #page-records #archive-search .archive-search-row::before,
+body .app #page-records #archive-search .archive-search-row::after{display:none!important;content:none!important}
+body .app #page-records #archive-search .archive-search-row .archive-records-search-button,
+body .app #page-records #archive-search .archive-search-row .archive-records-search-back{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  flex:0 0 44px!important;width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
+  padding:0!important;margin:0!important;border:1px solid var(--line)!important;
+  border-radius:10px!important;background:var(--surface)!important;color:var(--ink)!important;
+  position:relative!important;box-shadow:none!important;
+}
+body .app #page-records #archive-search .archive-search-row .archive-records-search-button svg,
+body .app #page-records #archive-search .archive-search-row .archive-filter-summary svg{width:20px;height:20px;display:block;pointer-events:none}
+body .app #page-records #archive-search .archive-search-row .archive-records-star-button{
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;
+  flex:1 1 auto!important;min-width:0!important;height:44px!important;min-height:44px!important;
+  padding:5px 8px!important;margin:0!important;border:1px solid var(--line)!important;
+  border-radius:10px!important;color:var(--ink)!important;background:var(--surface)!important;
+  box-shadow:none!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;font-weight:650!important;
+  white-space:nowrap!important;overflow:hidden!important;
+}
+body .app #page-records #archive-search .archive-search-row .archive-records-star-button[aria-pressed="true"]{
+  background:var(--hero-ink)!important;color:var(--surface)!important;border-color:var(--hero-ink)!important;
+}
+body .app #page-records #archive-search .archive-search-row .archive-records-star-button .archive-star-icon{
+  font-size:19px!important;line-height:1!important;
+}
+body .app #page-records #archive-search .archive-search-row .archive-star-count{font-variant-numeric:tabular-nums;white-space:nowrap}
+body .app #page-records #archive-search .archive-search-row .archive-search-input-wrap{
+  display:flex!important;align-items:center!important;position:relative!important;
+  flex:1 1 auto!important;width:auto!important;min-width:0!important;margin:0!important;
+  grid-column:auto!important;grid-row:auto!important;
+}
+body .app #page-records #archive-search .archive-search-row .archive-search-input-wrap[hidden]{display:none!important}
+body .app #page-records #archive-search .archive-search-row .archive-search-input-wrap #archive-search-input{
+  height:44px!important;min-height:44px!important;min-width:0!important;
+  padding:8px 45px 8px 12px!important;margin:0!important;background:var(--surface)!important;
+}
+body .app #page-records #archive-search .archive-search-row .archive-search-input-wrap #archive-search-clear{
+  position:absolute!important;top:0!important;right:0!important;
+  width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:0!important;margin:0!important;border:0!important;background:transparent!important;
+}
+body .app #page-records #archive-search .archive-search-row .archive-search-input-wrap #archive-search-clear[hidden]{display:none!important}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure{
+  flex:0 0 44px!important;display:block!important;position:relative!important;
+  width:44px!important;min-width:44px!important;margin:0!important;padding:0!important;
+  grid-column:auto!important;grid-row:auto!important;
+}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure[hidden]{display:none!important}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure>summary{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  box-sizing:border-box!important;width:44px!important;height:44px!important;
+  min-width:44px!important;min-height:44px!important;padding:0!important;margin:0!important;
+  border:1px solid var(--line)!important;border-radius:10px!important;
+  background:var(--surface)!important;color:var(--ink)!important;
+  list-style:none!important;position:relative!important;
+}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure>summary::-webkit-details-marker{display:none}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure[open]{
+  grid-column:auto!important;grid-row:auto!important;margin:0!important;
+}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure[open]>.archive-filter-row{
+  position:absolute!important;z-index:30!important;top:calc(100% + 8px)!important;right:0!important;
+  width:min(320px,calc(100vw - 36px))!important;box-sizing:border-box!important;
+  padding:12px!important;border:1px solid var(--line)!important;border-radius:12px!important;
+  background:var(--surface)!important;box-shadow:0 12px 26px #203F3228!important;
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure[open]>.review-archive-context{
+  position:absolute!important;z-index:31!important;top:calc(100% + 186px)!important;right:0!important;
+  width:min(320px,calc(100vw - 36px))!important;
+  padding:8px 12px 12px!important;background:var(--surface)!important;
+}
+body .app #page-records #archive-search .archive-records-search-button[data-active="true"]::after,
+body .app #page-records #archive-search .archive-filter-summary[data-active="true"]::after{
+  content:""!important;position:absolute!important;right:6px!important;top:5px!important;
+  width:6px!important;height:6px!important;border-radius:50%!important;background:#368165!important;
+}
+body .app #page-records #archive-search .archive-toolbar,
+body .app #page-records #archive-search .archive-active-filters{
+  display:none!important;
+}
+body .app #page-records #archive-search #archive-search-status{
+  position:absolute!important;width:1px!important;height:1px!important;
+  padding:0!important;margin:-1px!important;overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+}
+body .app #page-records #archive-search .archive-records-condition-strip{
+  position:sticky!important;top:0!important;z-index:11!important;
+  min-height:36px!important;display:flex!important;align-items:center!important;gap:7px!important;
+  margin:0!important;padding:4px 8px!important;box-sizing:border-box!important;
+  background:var(--soft)!important;color:var(--ink)!important;border-radius:7px!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;line-height:1.3!important;
+}
+body .app #page-records #archive-search .archive-records-condition-strip .archive-condition-text{
+  min-width:0!important;flex:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+body .app #page-records #archive-search .archive-records-condition-strip button{
+  min-width:44px!important;min-height:32px!important;padding:2px 4px!important;
+  border:0!important;background:transparent!important;color:var(--hero-ink)!important;
+  font-weight:700!important;white-space:nowrap!important;
+}
+body .app #page-records #archive-search-results>.review-date-header{
+  position:sticky!important;top:0!important;z-index:10!important;
+  margin:12px 0 4px!important;padding:8px 10px!important;
+}
+body .app #page-records #archive-search.archive-records-has-condition #archive-search-results>.review-date-header{
+  top:36px!important;
+}
+body .app #page-records #archive-search-results .archive-search-result-wrap{
+  position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr) 44px!important;
+  align-items:stretch!important;gap:4px!important;min-width:0!important;
+  border-bottom:1px solid var(--line)!important;
+}
+body .app #page-records #archive-search-results .archive-search-result-wrap>.archive-search-result{
+  min-width:0!important;width:100%!important;min-height:54px!important;
+  padding:9px 2px!important;border:0!important;box-shadow:none!important;
+  background:transparent!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  cursor:pointer!important;text-align:left!important;
+}
+body .app #page-records #archive-search-results .archive-search-result-wrap.archive-record-expanded{
+  background:color-mix(in srgb,var(--soft) 50%,transparent)!important;
+  border-left:2px solid var(--line)!important;
+}
+body .app #page-records #archive-search-results .archive-record-type{display:inline-flex!important;align-items:center!important;flex:none!important;font-size:12px!important;color:var(--sub)!important}
+body .app #page-records #archive-search-results .archive-record-mood-dot{
+  display:inline-block!important;width:7px!important;height:7px!important;
+  flex:0 0 7px!important;border-radius:50%!important;
+}
+body .app #page-records #archive-search-results .archive-search-result .archive-search-preview{
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;
+  overflow:hidden!important;white-space:pre-wrap!important;word-break:keep-all!important;
+  overflow-wrap:break-word!important;line-height:1.5!important;
+}
+body .app #page-records #archive-search-results .archive-record-expanded .archive-search-result .archive-search-preview{
+  display:block!important;-webkit-line-clamp:unset!important;overflow:visible!important;
+  white-space:pre-wrap!important;
+}
+body .app #page-records #archive-search-results .archive-record-chevron{
+  display:inline-block!important;align-self:flex-end!important;
+  font-size:14px!important;line-height:1!important;color:var(--sub)!important;
+}
+body .app #page-records #archive-search-results .archive-record-chevron[hidden]{display:none!important}
+body .app #page-records #archive-search-results .archive-record-extra{
+  display:flex!important;align-items:center!important;flex-wrap:wrap!important;
+  gap:8px!important;padding:4px 0 8px!important;color:var(--sub)!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #archive-search-results .archive-record-extra[hidden]{display:none!important}
+body .app #page-records #archive-search-results .archive-record-extra button{
+  margin-left:auto!important;min-height:36px!important;min-width:44px!important;
+  padding:4px 8px!important;border:1px solid var(--line)!important;border-radius:8px!important;
+  background:var(--surface)!important;color:var(--ink)!important;
+}
+body .app #page-records #archive-search-results .archive-save-toggle,
+body .app #page-records #archive-search-results .archive-save-toggle[aria-pressed="true"]{
+  background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;min-width:44px!important;width:44px!important;min-height:44px!important;
+}
+body .app #page-records #archive-search-results .archive-save-toggle[aria-pressed="true"]{
+  color:var(--hero-ink)!important;
+}
+body .app #page-records #archive-search-results .archive-record-anchor{
+  border-left:3px solid var(--hero-ink)!important;
+  background:var(--soft)!important;border-radius:7px!important;
+  padding:8px 10px!important;margin:4px 0 6px!important;
+}
+body .app #page-records #archive-search-results .archive-record-anchor-label{
+  display:block!important;color:var(--hero-ink)!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;font-weight:750!important;margin-bottom:3px!important;
+}
+body .app #page-records #archive-search-results .archive-record-anchor-body{
+  margin:0!important;color:var(--ink)!important;font-size:calc(13px * var(--kona-ui-scale,1))!important;
+  line-height:1.5!important;white-space:pre-wrap!important;word-break:keep-all!important;overflow-wrap:break-word!important;
+}
+body .app #page-records #archive-search-results .archive-empty-clear{
+  min-height:44px!important;margin-top:8px!important;padding:8px 12px!important;
+  border:1px solid var(--line)!important;border-radius:9px!important;
+  background:var(--surface)!important;color:var(--ink)!important;
+}
+body .app #page-records #archive-search.archive-records-controls-folded .archive-search-row,
+body .app #page-records #archive-search.archive-records-controls-folded .archive-mood-view-switch{display:none!important}
+body .app #page-records #archive-search .archive-records-search-button:focus-visible,
+body .app #page-records #archive-search .archive-records-star-button:focus-visible,
+body .app #page-records #archive-search .archive-filter-summary:focus-visible,
+body .app #page-records #archive-search-results .archive-search-result:focus-visible,
+body .app #page-records #archive-search-results .archive-save-toggle:focus-visible{
+  outline:2px solid var(--hero-ink)!important;outline-offset:2px!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-records-star-button[aria-pressed="true"]{
+  background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-record-anchor{
+  background:#283E32!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search .archive-records-condition-strip{
+  background:#2D4235!important;color:var(--ink)!important;
+}
+@media(max-width:360px){
+  body .app #page-records #archive-search .archive-search-row{gap:4px!important}
+  body .app #page-records #archive-search .archive-records-star-button .archive-star-name{display:none!important}
+  body .app #page-records #archive-search .archive-records-star-button{padding:5px 4px!important}
+}
