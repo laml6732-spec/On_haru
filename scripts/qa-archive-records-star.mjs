@@ -10,7 +10,7 @@ const browser=await chromium.launch({executablePath:binary,headless:true,args:['
 const failures=[];
 for(const width of [320,360,390,1024])for(const theme of ['light','dark']){
  const context=await browser.newContext({viewport:{width,height:850},isMobile:width<600,hasTouch:width<600,locale:'en-US',timezoneId:'Pacific/Honolulu',serviceWorkers:'block',reducedMotion:'reduce'});
- const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+ const page=await context.newPage();page.setDefaultTimeout(7000);const errors=[];page.on('pageerror',e=>errors.push(String(e)));
  try{
   await page.clock.setFixedTime(new Date('2026-11-09T09:30:00-10:00'));
   await page.goto(target,{waitUntil:'domcontentloaded'});
