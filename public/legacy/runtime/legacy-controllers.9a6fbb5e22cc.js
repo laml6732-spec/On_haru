@@ -2628,7 +2628,7 @@ function drawArchiveSearch(){
  }
  for(const d of sortedDates){
   const dayRecords=byDate.get(d)||[],heading=reviewDateGroupHeading(d,dayRecords.length);if(!dayRecords.length)heading.querySelector('.review-date-count')?.remove();results.append(heading);
-  if(anchors.has(d)){const anchor=el('section',undefined,'archive-record-anchor');anchor.append(el('span',archiveMoodText('Anchor','앵커'),'archive-record-anchor-label'));anchor.append(el('p',anchors.get(d),'archive-record-anchor-body'));results.append(anchor)}
+  if(anchors.has(d)){const anchor=el('section',undefined,'archive-record-anchor');anchor.setAttribute('aria-label',archiveMoodText('Daily highlight','오늘의 핵심 기록'));anchor.append(el('p',anchors.get(d),'archive-record-anchor-body'));results.append(anchor)}
   for(const record of dayRecords)addArchiveRecord(record);
  }
 }
