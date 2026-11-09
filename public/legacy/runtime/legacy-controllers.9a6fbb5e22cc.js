@@ -2157,7 +2157,7 @@ function archiveToggleSaved(record){
    if(capture){capture.important=!marked;capture.tags=(capture.tags||[]).filter(t=>t!=='important');}
   }
   if(marked&&v.eventNoteTags?.[id])v.eventNoteTags[id]=v.eventNoteTags[id].filter(t=>t!=='important');
- },archiveMoodText('Could not change Saved for later. Please retry.','다시 볼 기록 표시를 변경하지 못했어요. 다시 시도해 주세요.'));
+ },archiveMoodText('Could not update star. Please retry.','별표를 변경하지 못했어요. 다시 시도해 주세요.'));
  if(!ok)return;
  const previousScroll=window.scrollY;
  drawArchiveSearch();
@@ -2560,7 +2560,7 @@ function drawArchiveSearch(){
  searchButton.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>';
  searchButton.onclick=()=>{archiveSearchOpen=true;drawArchiveSearch();requestAnimationFrame(()=>input.focus({preventScroll:true}))};
  const backButton=el('button','←','archive-records-search-back');backButton.type='button';backButton.setAttribute('aria-label',archiveMoodText('Close search','검색 닫기'));backButton.onclick=()=>{archiveSearchOpen=false;drawArchiveSearch()};
- const starButton=el('button',undefined,'archive-records-star-button'),starred=archiveMeaning!=='all';
+ const starButton=el('button',undefined,'archive-records-star-button'),starred=archiveMeaning==='saved';
  starButton.type='button';starButton.setAttribute('aria-pressed',String(starred));starButton.setAttribute('aria-label',starred?archiveMoodText('Show all records','전체 기록 보기'):archiveMoodText('Show starred records','별표한 기록 보기'));
  starButton.append(el('span',starred?'★':'☆','archive-star-icon'),el('span',archiveMoodText('Starred','별표'),'archive-star-name'),el('span',cap(starCount),'archive-star-count'));
  starButton.onclick=()=>{if(!reviewCanEdit())return;archiveMeaning=starred?'all':'saved';drawArchiveSearch()};
@@ -2569,7 +2569,8 @@ function drawArchiveSearch(){
  const activeCriteria=!!query||archiveMeaning!=='all'||archiveType!=='all'||archiveContext!=='all'||archivePeriod!=='all';archiveSearch.classList.toggle('archive-records-has-condition',activeCriteria);
  if(activeCriteria){
   const strip=el('div',undefined,'archive-records-condition-strip'),parts=[];
-  if(archiveMeaning!=='all')parts.push('★ '+archiveMoodText('Starred','별표'));
+  if(archiveMeaning==='saved')parts.push('★ '+archiveMoodText('Starred','별표'));
+  else if(archiveMeaning!=='all')parts.push(archiveMoodText('Saved filter','저장 필터'));
   if(query)parts.push('⌕ '+query);
   if(archiveType!=='all'||archiveContext!=='all'||archivePeriod!=='all')parts.push(archiveMoodText('Filters','필터')+' · '+appliedCount);
   parts.push(matches.length+' '+archiveMoodText('records','개 기록'));
