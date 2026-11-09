@@ -218,7 +218,7 @@ html[data-appearance="dark"] body .app #page-records #archive-search .archive-re
 }
 @media(max-width:360px){
   body .app #page-records #archive-search .archive-search-row{gap:4px!important}
-  body .app #page-records #archive-search .archive-records-star-button .archive-star-name{display:none!important}
+  body .app #page-records #archive-search .archive-records-star-button .archive-star-name{display:inline!important;min-width:0!important;font-size:calc(11px * var(--kona-ui-scale,1))!important}
   body .app #page-records #archive-search .archive-records-star-button{padding:5px 4px!important}
 }
 
