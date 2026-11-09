@@ -2067,6 +2067,7 @@ function reviewSection(section){
  group.append(bar,content);return group;
 }
 let reviewActiveEdit=null,archiveDetailRecord=null,archiveReturnState=null,archiveType='all',archiveContext='all',archiveMeaning='all',archiveExactDate='';
+let archiveSearchOpen=false;const archiveExpandedRecords=new Set();
 document.addEventListener('click',event=>{if(!reviewActiveEdit||!reviewActiveEdit.dirty()||!event.target.closest('button,summary,a'))return;const current=reviewActiveEdit.element;if(current?.contains(event.target))return;event.preventDefault();event.stopImmediatePropagation();toast(KonaI18n.t("Save or cancel the note you are editing first."));},true);
 document.addEventListener('change',event=>{if(reviewActiveEdit?.dirty()&&event.target.id==='datePicker'){event.preventDefault();event.stopImmediatePropagation();event.target.value=date;toast(KonaI18n.t("Save or cancel your note before changing the date."))}},true);
 function reviewCanEdit(){if(!reviewActiveEdit)return true;if(reviewActiveEdit.dirty()){toast(KonaI18n.t("Save or cancel the note you are editing first."));return false}reviewActiveEdit.cancel();return true}
@@ -2156,7 +2157,7 @@ function archiveToggleSaved(record){
    if(capture){capture.important=!marked;capture.tags=(capture.tags||[]).filter(t=>t!=='important');}
   }
   if(marked&&v.eventNoteTags?.[id])v.eventNoteTags[id]=v.eventNoteTags[id].filter(t=>t!=='important');
- },archiveMoodText('Could not change Saved for later. Please retry.','다시 볼 기록 표시를 변경하지 못했어요. 다시 시도해 주세요.'));
+ },archiveMoodText('Could not update star. Please retry.','별표를 변경하지 못했어요. 다시 시도해 주세요.'));
  if(!ok)return;
  const previousScroll=window.scrollY;
  drawArchiveSearch();
@@ -2478,13 +2479,13 @@ function archivePracticeName(record){
 }
 function drawArchiveSearch(){
  const input=document.getElementById('archive-search-input'),results=document.getElementById('archive-search-results'),status=document.getElementById('archive-search-status');if(!input||!results||!status)return;
- archiveSearch.append(status);status.hidden=!!archiveDetailRecord;root.classList.add('review-modern-archive');root.classList.remove('archive-searching');other.forEach(p=>p.style.display='none');document.getElementById('archivedWeeklyReflection')?.remove();archiveSearch.querySelectorAll('.archive-toolbar,.archive-back,.archive-filter-disclosure,.archive-active-filters,.archive-filter-row,.archive-period-row,.review-archive-context,.review-saved-filters,.archive-mood-view-switch,.archive-mood-panel').forEach(n=>n.remove());
+ archiveSearch.append(status);status.hidden=!!archiveDetailRecord;root.classList.add('review-modern-archive');root.classList.remove('archive-searching');other.forEach(p=>p.style.display='none');document.getElementById('archivedWeeklyReflection')?.remove();archiveSearch.querySelectorAll('.archive-toolbar,.archive-back,.archive-filter-disclosure,.archive-active-filters,.archive-filter-row,.archive-period-row,.review-archive-context,.review-saved-filters,.archive-mood-view-switch,.archive-mood-panel,.archive-records-search-button,.archive-records-search-back,.archive-records-star-button,.archive-records-condition-strip').forEach(n=>n.remove());
  const searchRow=archiveSearch.querySelector('.archive-search-row'),label=archiveSearch.querySelector('label[for="archive-search-input"]');
  input.placeholder=archiveMoodText('Search records…','기록 검색…');
  // Preserve the input/clear controls across Archive rerenders while putting Filters beside search.
  let searchWrap=searchRow.querySelector('.archive-search-input-wrap');
  if(!searchWrap){searchWrap=el('div',undefined,'archive-search-input-wrap');searchRow.prepend(searchWrap);searchWrap.append(input,document.getElementById('archive-search-clear'))}
- searchRow.hidden=!!archiveDetailRecord;results.hidden=false;results.replaceChildren();status.textContent='';
+ searchRow.hidden=!!archiveDetailRecord;searchWrap.hidden=!archiveSearchOpen;searchRow.dataset.archiveSearchMode=archiveSearchOpen?'input':'browse';results.hidden=false;results.replaceChildren();status.textContent='';
  label?.style.removeProperty('display');searchRow.style.removeProperty('display');results.style.removeProperty('display');status.style.removeProperty('display');
  if(!archiveDetailRecord){
   const switcher=el('div',undefined,'archive-mood-view-switch');switcher.setAttribute('role','group');switcher.setAttribute('aria-label',archiveMoodText('Archive view','아카이브 보기'));
@@ -2506,7 +2507,7 @@ function drawArchiveSearch(){
   results.append(el('h3',fmt(record.date),'archive-date-group'));const row=reviewRow(record);results.append(row);if(record.kind==='reflection'||record.kind==='weekly-reflection')konaBindEditTarget(row.querySelector('.rv-note-preview'),KonaI18n.t("Open reflection · ")+record.date,()=>{if(!reviewCanEdit())return;archiveDetailRecord=null;if(date!==record.date)changeDate(record.date);if(record.kind==='weekly-reflection')openWeeklyAt(record.date);else{mode='reflect';reflectPeriod='daily';renderRecords();reviewJumpToReflection()}});else if(record.kind==='meal')konaBindEditTarget(row.querySelector('.rv-note-preview'),KonaI18n.t("Change meal note · ")+record.date,()=>{if(date!==record.date)changeDate(record.date);const event=dayEvents(record.date).find(e=>e.id===record.sourceId);if(event)openMealLog(event)});return;
  }
  root.classList.remove('archive-detail');
- const savedTabs=el('div',undefined,'review-saved-filters');for(const [id,label] of [['all',KonaI18n.t("All records")],['saved',KonaI18n.t("Saved for later")]]){const b=el('button',label,'mini-btn');b.type='button';b.setAttribute('aria-pressed',String(id==='all'?archiveMeaning==='all':archiveMeaning!=='all'));b.onclick=()=>{if(!reviewCanEdit())return;archiveMeaning=id;drawArchiveSearch()};savedTabs.append(b)}const toolbar=el('div',undefined,'archive-toolbar');searchRow.after(toolbar);toolbar.append(savedTabs);
+ const toolbar=el('div',undefined,'archive-toolbar');searchRow.after(toolbar);
  const filters=el('div',undefined,'archive-filter-row review-filters');
  function selectFilter(label,options,value,change){const wrap=el('label',undefined,'review-filter');wrap.append(el('span',label));const select=el('select');select.setAttribute('aria-label',label);for(const [id,text] of options)select.append(new Option(text,id));select.value=value;select.onchange=()=>{if(!reviewCanEdit())return;archiveFiltersOpen=true;change(select.value);drawArchiveSearch()};wrap.append(select);filters.append(wrap)}
  selectFilter(KonaI18n.t("Type"),[['all',KonaI18n.t("All types")],['schedule',archiveMoodText('Schedule-linked','일정별')],['practice',archiveMoodText('Prayer · Focus · Devotion','기도 · 포커스 · 묵상')],['personal',archiveMoodText('Unlinked notes','일정과 무관한 메모')]],archiveType,v=>archiveType=v);
@@ -2518,8 +2519,10 @@ function drawArchiveSearch(){
  disclosure.open=archiveFiltersOpen;
  disclosure.ontoggle=()=>{if(disclosure.isConnected)archiveFiltersOpen=disclosure.open};
  const appliedCount=Number(archiveType!=='all')+Number(archiveContext!=='all')+Number(archivePeriod!=='all')+Number(archiveMeaning!=='all'&&archiveMeaning!=='saved');
- const summary=el('summary',archiveMoodText('Filters','필터')+(appliedCount?' · '+appliedCount:''),'archive-filter-summary');
- disclosure.append(summary,filters);
+ const summary=el('summary',undefined,'archive-filter-summary');summary.title=archiveMoodText('Filters','필터');summary.dataset.active=String(!!appliedCount);
+ summary.setAttribute('aria-label',summary.title+(appliedCount?' · '+appliedCount:''));
+ summary.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.5"/><circle cx="15" cy="17" r="2.5"/></svg>';
+ const popover=el('div',undefined,'archive-records-filter-popover');popover.append(filters);disclosure.append(summary,popover);
  searchRow.append(disclosure);
  const context=el('div',undefined,'review-archive-context');
  filters.after(context);
@@ -2540,77 +2543,93 @@ function drawArchiveSearch(){
  if(archiveType!=='all')chip(KonaI18n.t('Type'),typeLabels[archiveType]||archiveType,()=>archiveType='all');
  if(archiveContext!=='all')chip(KonaI18n.t('Context'),contexts.get(archiveContext.replace(/^schedule:/,'schedule:'))||archiveContext.replace(/^kind:/,''),()=>archiveContext='all');
  if(archivePeriod!=='all')chip(KonaI18n.t('Period'),archivePeriod==='date'?archiveExactDate:archivePeriod==='week'?KonaI18n.t('This week'):KonaI18n.t('This month'),()=>{archivePeriod='all';archiveExactDate=''});
- toolbar.after(chips);toolbar.append(status);
+ // Active filters are summarized in the slim sticky strip.
 
- const matches=all.filter(r=>{
+
+ const baseMatches=all.filter(r=>{
+  if(r.kind==='anchor')return false;
   const type=archiveType==='all'||archiveSemanticGroup(r)===archiveType;
   const related=archiveContext==='all'||archiveContext==='schedule:'+r.scheduleId||archiveContext==='kind:'+r.sessionKind||archiveContext==='kind:class'&&r.kind==='class';
   const period=archivePeriod==='date'?r.date===archiveExactDate:konaArchivePeriodMatch(r.date,archivePeriod,nowLocal());
-  return type&&related&&period&&konaSavedRecordMatches(r,archiveMeaning)&&[r.title,r.noteTitle,r.body,r.feeling,r.scheduleLabel,r.recordedTime,(r.tags||[]).map(konaNoteTagEmoji).join(' ')].join('\n').toLocaleLowerCase().includes(query.toLocaleLowerCase());
- }).sort((a,b)=>b.date.localeCompare(a.date)||String(b.recordedTime||'').localeCompare(String(a.recordedTime||'')));
+  return type&&related&&period&&[r.title,r.noteTitle,r.body,r.feeling,r.scheduleLabel,r.recordedTime,(r.tags||[]).map(konaNoteTagEmoji).join(' ')].join('\n').toLocaleLowerCase().includes(query.toLocaleLowerCase());
+ });
+ const matches=baseMatches.filter(r=>archiveMeaning==='all'||(archiveMeaning==='saved'?archiveManuallySaved(r):konaSavedRecordMatches(r,archiveMeaning)))
+  .sort((a,b)=>b.date.localeCompare(a.date)||String(b.recordedTime||'').localeCompare(String(a.recordedTime||'')));
+ const starCount=baseMatches.filter(archiveManuallySaved).length,cap=n=>n>99?'99+':String(n);
+ const searchButton=el('button',undefined,'archive-records-search-button');searchButton.type='button';searchButton.title=archiveMoodText('Search records','기록 검색');searchButton.setAttribute('aria-label',searchButton.title);searchButton.dataset.active=String(!!query);
+ searchButton.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>';
+ searchButton.onclick=()=>{archiveSearchOpen=true;drawArchiveSearch();requestAnimationFrame(()=>input.focus({preventScroll:true}))};
+ const backButton=el('button','←','archive-records-search-back');backButton.type='button';backButton.setAttribute('aria-label',archiveMoodText('Close search','검색 닫기'));backButton.onclick=()=>{archiveSearchOpen=false;drawArchiveSearch()};
+ const starButton=el('button',undefined,'archive-records-star-button'),starred=archiveMeaning==='saved';
+ starButton.type='button';starButton.setAttribute('aria-pressed',String(starred));starButton.setAttribute('aria-label',starred?archiveMoodText('Show all records','전체 기록 보기'):archiveMoodText('Show starred records','별표한 기록 보기'));
+ if(starred)starButton.append(el('span','★','archive-star-icon'));
+ starButton.append(el('span',starred?archiveMoodText('Starred','별표'):archiveMoodText('All','전체'),'archive-star-name'));
+ starButton.append(el('span',cap(starred?starCount:baseMatches.length),'archive-star-count'));
+ starButton.onclick=()=>{if(!reviewCanEdit())return;archiveMeaning=starred?'all':'saved';drawArchiveSearch()};
+ if(archiveSearchOpen){searchRow.prepend(backButton);disclosure.hidden=true}else{searchRow.prepend(searchButton);searchWrap.after(starButton);disclosure.hidden=false}
+ clear.textContent='×';clear.setAttribute('aria-label',archiveMoodText('Clear search','검색어 지우기'));
+ const activeCriteria=!!query||archiveMeaning!=='all'||archiveType!=='all'||archiveContext!=='all'||archivePeriod!=='all';archiveSearch.classList.toggle('archive-records-has-condition',activeCriteria);
+ if(activeCriteria){
+  const strip=el('div',undefined,'archive-records-condition-strip'),parts=[];
+  if(archiveMeaning==='saved')parts.push('★ '+archiveMoodText('Starred','별표'));
+  else if(archiveMeaning!=='all')parts.push(archiveMoodText('Saved filter','저장 필터'));
+  if(query)parts.push('⌕ '+query);
+  if(archiveType!=='all'||archiveContext!=='all'||archivePeriod!=='all')parts.push(archiveMoodText('Filters','필터')+' · '+appliedCount);
+  parts.push(matches.length+' '+archiveMoodText('records','개 기록'));
+  strip.append(el('span',parts.join(' · '),'archive-condition-text'));
+  const clearAll=el('button',archiveMoodText('Clear ×','해제 ×'),'archive-condition-clear');clearAll.type='button';clearAll.setAttribute('aria-label',archiveMoodText('Clear all filters','모든 필터 해제'));
+  clearAll.onclick=()=>{input.value='';archiveMeaning='all';archiveType='all';archiveContext='all';archivePeriod='all';archiveExactDate='';archiveFiltersOpen=false;archiveSearchOpen=false;drawArchiveSearch()};
+  strip.append(clearAll);toolbar.after(strip);
+ }
  status.textContent=matches.length+' '+(matches.length===1?KonaI18n.t("record"):KonaI18n.t("records"));
  status.title=archiveMoodText('Newest first','최신순');
  status.setAttribute('aria-label',status.textContent+' · '+status.title);
- if(!matches.length)results.append(el('p',archiveMeaning!=='all'?archiveMoodText('No saved records here. Use the ☆ button beside a record in All records.','여기에는 표시한 기록이 없어요. 전체 기록에서 ☆ 버튼을 눌러 다시 볼 기록으로 표시하세요.'):query?KonaI18n.t("No matching records. Change your search or clear the filters."):KonaI18n.t("No records in this selection."),'archive-empty'));
-
+ // Empty state is determined after checking Anchor-only days.
  const dateCounts=new Map(),byDate=new Map();
  for(const record of matches){
   dateCounts.set(record.date,(dateCounts.get(record.date)||0)+1);
   if(!byDate.has(record.date))byDate.set(record.date,[]);
   byDate.get(record.date).push(record);
  }
- const categories=[
-  ['schedule',archiveMoodText('Schedule-linked','일정별 기록')],
-  ['practice',archiveMoodText('Prayer · Focus · Devotion','기도 · 포커스 · 묵상')],
-  ['personal',archiveMoodText('Unlinked notes','일정과 무관한 메모')]
- ];
- function addArchiveRecord(record){
-  const wrap=el('div',undefined,'archive-search-result-wrap');
-  const button=el('button',undefined,'archive-search-result');button.type='button';
-  button.dataset.recordDate=record.date;button.dataset.recordId=record.id;
-  const preview=el('span',undefined,'archive-search-preview');
-  const text=[record.noteTitle&&record.noteTitle!==record.scheduleLabel?record.noteTitle:'',record.body||record.feeling||record.title].filter(Boolean).join('\n');
-  reviewHighlight(preview,konaNoteDisplay(text,record.tags),query);
-  konaApplyNoteTagIcon(preview,record.tags);
-  const metadata=[record.recordedTime,archivePracticeName(record)].filter(Boolean).join(' · ');
-  const line=el('span',undefined,'archive-result-head');
-  if(metadata)line.append(el('span',metadata,'archive-search-meta'));
-  const linkedSchedule=archiveSemanticGroup(record)==='schedule'?record.scheduleLabel:'';
-  if(linkedSchedule)line.append(el('small',linkedSchedule,'review-schedule-label'));
-  button.append(line,preview);
-  button.setAttribute('aria-label',record.date+' · '+(linkedSchedule?linkedSchedule+' · ':'')+metadata+' · '+text.slice(0,100));
-  button.onclick=()=>showReviewArchiveRecord(record);
-  const saved=archiveManuallySaved(record);
-  const mark=el('button',saved?'★':'☆','archive-save-toggle');
-  mark.type='button';mark.dataset.recordDate=record.date;mark.dataset.recordId=record.id;
-  mark.setAttribute('aria-pressed',String(saved));
-  mark.setAttribute('aria-label',(saved?archiveMoodText('Remove from Saved for later','다시 볼 기록에서 해제'):archiveMoodText('Save for later','다시 볼 기록으로 표시'))+' · '+(record.noteTitle||record.title));
-  mark.title=saved?archiveMoodText('Unsave','표시 해제'):archiveMoodText('Save for later','다시 볼 기록으로 표시');
-  mark.onclick=()=>archiveToggleSaved(record);
-  wrap.append(button,mark);results.append(wrap);
+
+ // Anchor is a date-scoped optional string already stored as db.days[d].headline.
+ const anchors=new Map();
+ for(const [d,v] of Object.entries(db.days||{})){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||!String(v?.headline||'').trim())continue;
+  const period=archivePeriod==='date'?d===archiveExactDate:konaArchivePeriodMatch(d,archivePeriod,nowLocal());
+  if(period)anchors.set(d,String(v.headline).trim());
  }
- for(const [day,dayRecords] of byDate){
-  results.append(reviewDateGroupHeading(day,dateCounts.get(day)));
-  for(const [key,label] of categories){
-   const records=dayRecords.filter(r=>archiveSemanticGroup(r)===key);
-   if(!records.length)continue;
-   const heading=el('h4',undefined,'archive-record-category');
-   heading.append(el('span',label),el('small',String(records.length)));
-   results.append(heading);
-   if(key==='schedule'){
-    const bySchedule=new Map();
-    for(const record of records){
-     const id=record.scheduleId||record.scheduleLabel||record.sourceId||record.id;
-     if(!bySchedule.has(id))bySchedule.set(id,[]);
-     bySchedule.get(id).push(record);
-    }
-    for(const scheduled of bySchedule.values()){
-     results.append(el('h5',scheduled[0].scheduleLabel||archiveMoodText('Linked schedule','연결된 일정'),'archive-record-schedule-title'));
-     // Visible schedule chips stay inside each record, matching Daily/Weekly.
-     for(const record of scheduled)addArchiveRecord(record);
-    }
-   }else for(const record of records)addArchiveRecord(record);
-  }
+ const dates=new Set(byDate.keys());
+ if(archiveMeaning==='all'&&archiveType==='all'&&archiveContext==='all'&&!query)for(const d of anchors.keys())dates.add(d);
+ const sortedDates=[...dates].sort((a,b)=>b.localeCompare(a));
+ if(!sortedDates.length){
+  results.append(el('p',archiveMoodText('No records match your criteria.','조건에 맞는 기록이 없어요'),'archive-empty'));
+  if(activeCriteria){const resetButton=el('button',archiveMoodText('Clear filters','필터 해제'),'archive-empty-clear');resetButton.type='button';resetButton.onclick=()=>{input.value='';archiveMeaning='all';archiveType='all';archiveContext='all';archivePeriod='all';archiveExactDate='';archiveFiltersOpen=false;archiveSearchOpen=false;drawArchiveSearch()};results.append(resetButton)}
+ }
+ function addArchiveRecord(record){
+  const key=record.date+'|'+record.id,expanded=archiveExpandedRecords.has(key);
+  const wrap=el('div',undefined,'archive-search-result-wrap'+(expanded?' archive-record-expanded':''));
+  const button=el('button',undefined,'archive-search-result');button.type='button';button.dataset.recordDate=record.date;button.dataset.recordId=record.id;button.setAttribute('aria-expanded',String(expanded));
+  const text=[record.noteTitle&&record.noteTitle!==record.scheduleLabel?record.noteTitle:'',record.body||record.feeling||record.title].filter(Boolean).join('\n');
+  const preview=el('span',undefined,'archive-search-preview');reviewHighlight(preview,konaNoteDisplay(text,record.tags),query);konaApplyNoteTagIcon(preview,record.tags);
+  const line=el('span',undefined,'archive-result-head'),type=el('span',record.kind==='check'?'◉':'✎','archive-record-type');
+  type.setAttribute('aria-label',record.kind==='check'?archiveMoodText('Check-in','체크인'):archiveMoodText('Note','기록'));line.append(type);
+  if(record.kind==='check'&&record.happiness!==null&&record.happiness!==undefined){const dot=el('span',undefined,'archive-record-mood-dot');dot.setAttribute('aria-hidden','true');if(konaReviewMoodTone(dot,record.energy,record.happiness))line.append(dot)}
+  const meta=[record.recordedTime,archivePracticeName(record)].filter(Boolean).join(' · ');if(meta)line.append(el('span',meta,'archive-search-meta'));
+  const schedule=archiveSemanticGroup(record)==='schedule'?record.scheduleLabel:'';if(schedule)line.append(el('small',schedule,'review-schedule-label'));
+  const chevron=el('span',expanded?'⌃':'⌄','archive-record-chevron');chevron.hidden=!expanded;button.append(line,preview,chevron);
+  button.setAttribute('aria-label',(expanded?archiveMoodText('Collapse','접기'):archiveMoodText('Expand','펼치기'))+' · '+record.date+' · '+text.slice(0,100));
+  button.onclick=()=>{if(expanded)archiveExpandedRecords.delete(key);else archiveExpandedRecords.add(key);drawArchiveSearch();requestAnimationFrame(()=>{const target=[...results.querySelectorAll('.archive-search-result')].find(x=>x.dataset.recordDate===record.date&&x.dataset.recordId===record.id);target?.focus({preventScroll:true});if(!expanded)target?.scrollIntoView({block:'nearest'})})};
+  if(!expanded)requestAnimationFrame(()=>{if(preview.isConnected)chevron.hidden=preview.scrollHeight<=preview.clientHeight+2});
+  const saved=archiveManuallySaved(record),mark=el('button',saved?'★':'☆','archive-save-toggle');mark.type='button';mark.dataset.recordDate=record.date;mark.dataset.recordId=record.id;mark.setAttribute('aria-pressed',String(saved));mark.setAttribute('aria-label',(saved?archiveMoodText('Remove star','별표 해제'):archiveMoodText('Star record','별표 표시'))+' · '+(record.noteTitle||record.title));mark.title=saved?archiveMoodText('Unstar','별표 해제'):archiveMoodText('Star','별표 표시');mark.onclick=e=>{e.stopPropagation();archiveToggleSaved(record)};
+  wrap.append(button,mark);
+  const extra=el('div',undefined,'archive-record-extra');extra.hidden=!expanded;const info=[record.kind==='check'?record.feeling:''].filter(Boolean);if(info.length)extra.append(el('span',info.join(' · ')));
+  const edit=el('button',archiveMoodText('Edit','수정'));edit.type='button';edit.onclick=e=>{e.stopPropagation();showReviewArchiveRecord(record,true)};extra.append(edit);wrap.append(extra);results.append(wrap);
+ }
+ for(const d of sortedDates){
+  const dayRecords=byDate.get(d)||[],heading=reviewDateGroupHeading(d,dayRecords.length);if(!dayRecords.length)heading.querySelector('.review-date-count')?.remove();results.append(heading);
+  if(anchors.has(d)){const anchor=el('section',undefined,'archive-record-anchor');anchor.setAttribute('aria-label',archiveMoodText('Daily highlight','오늘의 핵심 기록'));anchor.append(el('p',anchors.get(d),'archive-record-anchor-body'));results.append(anchor)}
+  for(const record of dayRecords)addArchiveRecord(record);
  }
 }
 
