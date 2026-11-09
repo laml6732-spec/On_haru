@@ -209,3 +209,35 @@ html[data-appearance="dark"] body .app #page-records #archive-search .archive-re
   body .app #page-records #archive-search .archive-records-star-button .archive-star-name{display:none!important}
   body .app #page-records #archive-search .archive-records-star-button{padding:5px 4px!important}
 }
+
+/* The existing advanced filter controls remain unchanged, inside one anchored popover. */
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure[open]>.archive-records-filter-popover{
+  display:block!important;position:absolute!important;z-index:30!important;
+  top:calc(100% + 8px)!important;right:0!important;
+  width:min(330px,calc(100vw - 32px))!important;max-width:calc(100vw - 32px)!important;
+  min-width:0!important;box-sizing:border-box!important;
+  padding:12px!important;border:1px solid var(--line)!important;border-radius:12px!important;
+  background:var(--surface)!important;box-shadow:0 12px 26px #203F3228!important;
+}
+body .app #page-records #archive-search .archive-search-row>.archive-filter-disclosure:not([open])>.archive-records-filter-popover{
+  display:none!important;
+}
+body .app #page-records #archive-search .archive-records-filter-popover>.archive-filter-row{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;min-width:0!important;margin:0!important;padding:0!important;
+}
+body .app #page-records #archive-search .archive-records-filter-popover>.review-archive-context{
+  position:static!important;display:flex!important;align-items:center!important;flex-wrap:wrap!important;
+  gap:8px!important;width:100%!important;margin-top:10px!important;padding:0!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;
+}
+body .app #page-records #archive-search-results .archive-record-extra{grid-column:1/-1!important}
+body .app #page-records #archive-search-results .archive-record-mood-dot.onharu-mood-tone{
+  background:var(--onharu-mood-light)!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-record-mood-dot.onharu-mood-tone{
+  background:var(--onharu-mood-dark)!important;
+}
+body .app #page-records #archive-search-results .archive-record-anchor-body,
+body .app #page-records #archive-search-results .archive-search-preview,
+body .app #page-records #archive-search-results .archive-record-extra{word-break:keep-all!important;overflow-wrap:break-word!important}
