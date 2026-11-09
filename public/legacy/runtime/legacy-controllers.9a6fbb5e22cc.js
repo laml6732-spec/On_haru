@@ -2562,7 +2562,9 @@ function drawArchiveSearch(){
  const backButton=el('button','←','archive-records-search-back');backButton.type='button';backButton.setAttribute('aria-label',archiveMoodText('Close search','검색 닫기'));backButton.onclick=()=>{archiveSearchOpen=false;drawArchiveSearch()};
  const starButton=el('button',undefined,'archive-records-star-button'),starred=archiveMeaning==='saved';
  starButton.type='button';starButton.setAttribute('aria-pressed',String(starred));starButton.setAttribute('aria-label',starred?archiveMoodText('Show all records','전체 기록 보기'):archiveMoodText('Show starred records','별표한 기록 보기'));
- starButton.append(el('span',starred?'★':'☆','archive-star-icon'),el('span',archiveMoodText('Starred','별표'),'archive-star-name'),el('span',cap(starCount),'archive-star-count'));
+ if(starred)starButton.append(el('span','★','archive-star-icon'));
+ starButton.append(el('span',starred?archiveMoodText('Starred','별표'):archiveMoodText('All','전체'),'archive-star-name'));
+ starButton.append(el('span',cap(starred?starCount:baseMatches.length),'archive-star-count'));
  starButton.onclick=()=>{if(!reviewCanEdit())return;archiveMeaning=starred?'all':'saved';drawArchiveSearch()};
  if(archiveSearchOpen){searchRow.prepend(backButton);disclosure.hidden=true}else{searchRow.prepend(searchButton);searchWrap.after(starButton);disclosure.hidden=false}
  clear.textContent='×';clear.setAttribute('aria-label',archiveMoodText('Clear search','검색어 지우기'));
@@ -2621,7 +2623,7 @@ function drawArchiveSearch(){
   if(!expanded)requestAnimationFrame(()=>{if(preview.isConnected)chevron.hidden=preview.scrollHeight<=preview.clientHeight+2});
   const saved=archiveManuallySaved(record),mark=el('button',saved?'★':'☆','archive-save-toggle');mark.type='button';mark.dataset.recordDate=record.date;mark.dataset.recordId=record.id;mark.setAttribute('aria-pressed',String(saved));mark.setAttribute('aria-label',(saved?archiveMoodText('Remove star','별표 해제'):archiveMoodText('Star record','별표 표시'))+' · '+(record.noteTitle||record.title));mark.title=saved?archiveMoodText('Unstar','별표 해제'):archiveMoodText('Star','별표 표시');mark.onclick=e=>{e.stopPropagation();archiveToggleSaved(record)};
   wrap.append(button,mark);
-  const extra=el('div',undefined,'archive-record-extra');extra.hidden=!expanded;const info=[record.recordedTime,schedule,record.kind==='check'?record.feeling:''].filter(Boolean);if(info.length)extra.append(el('span',info.join(' · ')));
+  const extra=el('div',undefined,'archive-record-extra');extra.hidden=!expanded;const info=[record.kind==='check'?record.feeling:''].filter(Boolean);if(info.length)extra.append(el('span',info.join(' · ')));
   const edit=el('button',archiveMoodText('Edit','수정'));edit.type='button';edit.onclick=e=>{e.stopPropagation();showReviewArchiveRecord(record,true)};extra.append(edit);wrap.append(extra);results.append(wrap);
  }
  for(const d of sortedDates){
