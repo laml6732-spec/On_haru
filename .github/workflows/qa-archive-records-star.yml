@@ -3,6 +3,9 @@ on:
   push:
     branches: ['feat/archive-records-compact-star-20261109']
     paths: ['public/legacy/**', 'scripts/qa-archive-records-star.mjs', '.github/workflows/qa-archive-records-star.yml']
+  pull_request:
+    branches: ['main']
+    paths: ['public/legacy/**', 'scripts/qa-archive-records-star.mjs', '.github/workflows/qa-archive-records-star.yml']
   workflow_dispatch:
 jobs:
   ui:
