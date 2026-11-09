@@ -127,8 +127,9 @@ body .app #page-records #archive-search-results .archive-search-result-wrap>.arc
   cursor:pointer!important;text-align:left!important;
 }
 body .app #page-records #archive-search-results .archive-search-result-wrap.archive-record-expanded{
-  background:color-mix(in srgb,var(--soft) 50%,transparent)!important;
-  border-left:2px solid var(--line)!important;
+  /* Keep expansion subtle and green; --soft is light blue even in dark mode. */
+  background:rgba(64,116,83,.045)!important;
+  border-left:2px solid #B7CCBB!important;
 }
 body .app #page-records #archive-search-results .archive-record-type{display:inline-flex!important;align-items:center!important;flex:none!important;font-size:12px!important;color:var(--sub)!important}
 body .app #page-records #archive-search-results .archive-record-mood-dot{
@@ -197,6 +198,17 @@ body .app #page-records #archive-search-results .archive-save-toggle:focus-visib
 }
 html[data-appearance="dark"] body .app #page-records #archive-search .archive-records-star-button[aria-pressed="true"]{
   background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-search-result-wrap.archive-record-expanded{
+  /* Avoid the pale blue --soft overlay that turned expanded notes gray. */
+  background:#21352B!important;
+  border-left-color:#61866D!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-record-expanded .archive-search-preview{
+  color:#E0E9E1!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-record-expanded :is(.archive-search-meta,.archive-record-extra,.archive-record-chevron){
+  color:#B6CBBC!important;
 }
 html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-record-anchor{
   background:#283E32!important;
