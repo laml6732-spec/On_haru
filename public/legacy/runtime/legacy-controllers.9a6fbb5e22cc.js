@@ -2575,7 +2575,7 @@ function drawArchiveSearch(){
   if(archiveType!=='all'||archiveContext!=='all'||archivePeriod!=='all')parts.push(archiveMoodText('Filters','필터')+' · '+appliedCount);
   parts.push(matches.length+' '+archiveMoodText('records','개 기록'));
   strip.append(el('span',parts.join(' · '),'archive-condition-text'));
-  const clearAll=el('button',archiveMoodText('Clear ×','해제 ×'));clearAll.type='button';clearAll.setAttribute('aria-label',archiveMoodText('Clear all filters','모든 필터 해제'));
+  const clearAll=el('button',archiveMoodText('Clear ×','해제 ×'),'archive-condition-clear');clearAll.type='button';clearAll.setAttribute('aria-label',archiveMoodText('Clear all filters','모든 필터 해제'));
   clearAll.onclick=()=>{input.value='';archiveMeaning='all';archiveType='all';archiveContext='all';archivePeriod='all';archiveExactDate='';archiveFiltersOpen=false;archiveSearchOpen=false;drawArchiveSearch()};
   strip.append(clearAll);toolbar.after(strip);
  }
