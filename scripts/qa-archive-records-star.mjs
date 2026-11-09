@@ -72,6 +72,11 @@ for(const width of [320,360,390,1024])for(const theme of ['light','dark']){
   if(!await q.locator('.archive-records-condition-strip').isVisible())throw Error('Active filter strip missing');
   await q.locator('.archive-condition-clear').click();
   if(await cards.count()!==3)throw Error('Clear all did not restore all records');
+  // Capture the compact browsing state rather than the already expanded QA rows.
+  if(await page.locator('.archive-record-expanded').count()===2){
+   await cards.first().click();await cards.nth(1).click();
+   if(await page.locator('.archive-record-expanded').count()!==0)throw Error('Could not collapse both notes');
+  }
   await page.screenshot({path:dir+'/'+width+'-'+theme+'-default.png',animations:'disabled'});
   await q.locator('.archive-records-search-button').click();
   if(!await page.locator('#archive-search-input').isVisible())throw Error('Search did not open');
