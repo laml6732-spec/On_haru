@@ -171,7 +171,7 @@ body .app #page-records #archive-search-results .archive-save-toggle[aria-presse
 }
 body .app #page-records #archive-search-results .archive-record-anchor{
   border-left:3px solid var(--hero-ink)!important;
-  background:var(--soft)!important;border-radius:7px!important;
+  background:#EDF3ED!important;border-radius:7px!important;
   padding:8px 10px!important;margin:4px 0 6px!important;
 }
 body .app #page-records #archive-search-results .archive-record-anchor-label{
@@ -257,3 +257,18 @@ body .app #page-records #archive-search-results .archive-record-extra{word-break
 /* Respect the controller's hidden state for Mood and record-edit detail. */
 body .app #page-records #archive-search .archive-search-row[hidden],
 body .app #page-records #archive-search #archive-search-results[hidden]{display:none!important}
+
+/* Readable Anchor label and transparent action stars in the dark palette. */
+html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-record-anchor-label{
+  color:#C3E2CB!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-record-anchor-body{
+  color:#E0E9E1!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-save-toggle,
+html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-save-toggle[aria-pressed="true"]{
+  background:transparent!important;box-shadow:none!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-save-toggle[aria-pressed="true"]{
+  color:#ABD5B6!important;
+}
