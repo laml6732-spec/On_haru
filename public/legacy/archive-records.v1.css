@@ -241,3 +241,7 @@ html[data-appearance="dark"] body .app #page-records #archive-search-results .ar
 body .app #page-records #archive-search-results .archive-record-anchor-body,
 body .app #page-records #archive-search-results .archive-search-preview,
 body .app #page-records #archive-search-results .archive-record-extra{word-break:keep-all!important;overflow-wrap:break-word!important}
+
+/* Respect the controller's hidden state for Mood and record-edit detail. */
+body .app #page-records #archive-search .archive-search-row[hidden],
+body .app #page-records #archive-search #archive-search-results[hidden]{display:none!important}
