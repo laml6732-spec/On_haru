@@ -42,6 +42,8 @@ for(const width of [320,360,390,1024])for(const theme of ['light','dark']){
   if((await star.locator('.archive-star-name').textContent()).trim()!=='All'||(await star.locator('.archive-star-count').textContent()).trim()!=='3')throw Error('Default toggle should read All 3');
   if((await star.locator('.archive-star-icon').count())!==0)throw Error('No star icon should appear in All mode');
   if(await q.locator('.archive-record-anchor').count()!==2)throw Error('Anchor + anchor-only day not visible');
+  if(await q.locator('.archive-record-anchor-label').count()!==0)throw Error('Daily highlight must not display an Anchor label');
+  if((await q.locator('.archive-record-anchor').first().innerText()).trim()!=='A quiet moment with God')throw Error('Highlight should contain only its original text');
   const dayHead=page.locator('#archive-search-results .review-date-header');
   if(await dayHead.count()!==3)throw Error('Wrong number of visible days');
   if(!(await dayHead.nth(1).innerText()).includes('Nov 8'))throw Error('Anchor-only date missing or out of order');
@@ -57,8 +59,8 @@ for(const width of [320,360,390,1024])for(const theme of ['light','dark']){
     return {background:outer.backgroundColor,text:preview.color};
    });
    if(tone.background!=='rgb(33, 53, 43)')throw Error('Dark expanded record has incorrect gray background: '+tone.background);
-   const anchorLabelTone=await page.locator('.archive-record-anchor-label').first().evaluate(el=>getComputedStyle(el).color);
-   if(anchorLabelTone!=='rgb(195, 226, 203)')throw Error('Anchor label not readable in dark mode: '+anchorLabelTone);
+   const highlightStyle=await page.locator('.archive-record-anchor').first().evaluate(el=>({background:getComputedStyle(el).backgroundImage,border:getComputedStyle(el).borderLeftWidth}));
+   if(!highlightStyle.background.includes('linear-gradient')||highlightStyle.border!=='4px')throw Error('Daily highlight style lost: '+JSON.stringify(highlightStyle));
    const savedMarkBg=await page.locator('.archive-save-toggle[aria-pressed="true"]').first().evaluate(el=>getComputedStyle(el).backgroundColor);
    if(savedMarkBg!=='rgba(0, 0, 0, 0)')throw Error('Dark saved star tile not transparent: '+savedMarkBg);
 
