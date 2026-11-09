@@ -57,6 +57,11 @@ for(const width of [320,360,390,1024])for(const theme of ['light','dark']){
     return {background:outer.backgroundColor,text:preview.color};
    });
    if(tone.background!=='rgb(33, 53, 43)')throw Error('Dark expanded record has incorrect gray background: '+tone.background);
+   const anchorLabelTone=await page.locator('.archive-record-anchor-label').first().evaluate(el=>getComputedStyle(el).color);
+   if(anchorLabelTone!=='rgb(195, 226, 203)')throw Error('Anchor label not readable in dark mode: '+anchorLabelTone);
+   const savedMarkBg=await page.locator('.archive-save-toggle[aria-pressed="true"]').first().evaluate(el=>getComputedStyle(el).backgroundColor);
+   if(savedMarkBg!=='rgba(0, 0, 0, 0)')throw Error('Dark saved star tile not transparent: '+savedMarkBg);
+
    const c=tone.text.match(/[0-9]+/g)?.map(Number)||[];
    if(c.length<3||Math.min(...c.slice(0,3))<170)throw Error('Dark expanded record text has inadequate contrast: '+tone.text);
   }
