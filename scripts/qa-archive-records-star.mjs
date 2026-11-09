@@ -39,7 +39,7 @@ for(const width of [320,360,390,1024])for(const theme of ['light','dark']){
   if(await q.locator('.review-saved-filters').count())throw Error('Redundant All/Saved tabs remain');
   const star=q.locator('.archive-records-star-button');
   if(await star.getAttribute('aria-pressed')!=='false')throw Error('Star filter should default off');
-  if((await star.textContent()).trim()!=='All 3')throw Error('Default toggle should read All 3, got: '+await star.textContent());
+  if((await star.locator('.archive-star-name').textContent()).trim()!=='All'||(await star.locator('.archive-star-count').textContent()).trim()!=='3')throw Error('Default toggle should read All 3');
   if((await star.locator('.archive-star-icon').count())!==0)throw Error('No star icon should appear in All mode');
   if(await q.locator('.archive-record-anchor').count()!==2)throw Error('Anchor + anchor-only day not visible');
   const dayHead=page.locator('#archive-search-results .review-date-header');
@@ -57,7 +57,7 @@ for(const width of [320,360,390,1024])for(const theme of ['light','dark']){
     return {background:outer.backgroundColor,text:preview.color};
    });
    if(tone.background!=='rgb(33, 53, 43)')throw Error('Dark expanded record has incorrect gray background: '+tone.background);
-   const c=tone.text.match(/\\d+/g)?.map(Number)||[];
+   const c=tone.text.match(/[0-9]+/g)?.map(Number)||[];
    if(c.length<3||Math.min(...c.slice(0,3))<170)throw Error('Dark expanded record text has inadequate contrast: '+tone.text);
   }
 
@@ -66,12 +66,13 @@ for(const width of [320,360,390,1024])for(const theme of ['light','dark']){
   if((firstText.match(/17:30/g)||[]).length!==1)throw Error('Time should appear exactly once per expanded note: '+firstText);
   await star.click();
   if(await q.locator('.archive-records-star-button').getAttribute('aria-pressed')!=='true')throw Error('Star filter did not activate');
-  if((await q.locator('.archive-records-star-button').textContent()).trim()!=='★Starred1')throw Error('Selected star toggle should read ★ Starred 1');
+  if((await q.locator('.archive-star-name').textContent()).trim()!=='Starred'||(await q.locator('.archive-star-count').textContent()).trim()!=='1')throw Error('Selected toggle should read ★ Starred 1');
   if(await cards.count()!==1)throw Error('Starred results should contain one record');
   if(await dayHead.count()!==1)throw Error('Other days should be hidden under Starred');
   if(!await q.locator('.archive-records-condition-strip').isVisible())throw Error('Active filter strip missing');
   await q.locator('.archive-condition-clear').click();
   if(await cards.count()!==3)throw Error('Clear all did not restore all records');
+  await page.screenshot({path:dir+'/'+width+'-'+theme+'-default.png',animations:'disabled'});
   await q.locator('.archive-records-search-button').click();
   if(!await page.locator('#archive-search-input').isVisible())throw Error('Search did not open');
   await page.locator('#archive-search-input').fill('QA MORNING');
