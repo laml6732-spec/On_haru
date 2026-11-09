@@ -50,6 +50,16 @@ for(const width of [320,360,390,1024])for(const theme of ['light','dark']){
   if(!(await cards.first().innerText()).includes('QA STAR EVENING'))throw Error('Records not ordered newest first');
   await cards.first().click();await cards.nth(1).click();
   if(await page.locator('.archive-record-expanded').count()!==2)throw Error('Two simultaneous expansions not supported');
+  if(theme==='dark'){
+   const tone=await page.locator('.archive-record-expanded').first().evaluate(el=>{
+    const outer=getComputedStyle(el),preview=getComputedStyle(el.querySelector('.archive-search-preview'));
+    return {background:outer.backgroundColor,text:preview.color};
+   });
+   if(tone.background!=='rgb(33, 53, 43)')throw Error('Dark expanded record has incorrect gray background: '+tone.background);
+   const c=tone.text.match(/\\d+/g)?.map(Number)||[];
+   if(c.length<3||Math.min(...c.slice(0,3))<170)throw Error('Dark expanded record text has inadequate contrast: '+tone.text);
+  }
+
   if(await page.locator('#archive-search-results .archive-record-extra:not([hidden])').count()!==2)throw Error('Expanded metadata not displayed');
   await star.click();
   if(await q.locator('.archive-records-star-button').getAttribute('aria-pressed')!=='true')throw Error('Star filter did not activate');
