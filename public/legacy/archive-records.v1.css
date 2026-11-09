@@ -170,17 +170,16 @@ body .app #page-records #archive-search-results .archive-save-toggle[aria-presse
   color:var(--hero-ink)!important;
 }
 body .app #page-records #archive-search-results .archive-record-anchor{
-  border-left:3px solid var(--hero-ink)!important;
-  background:#EDF3ED!important;border-radius:7px!important;
-  padding:8px 10px!important;margin:4px 0 6px!important;
-}
-body .app #page-records #archive-search-results .archive-record-anchor-label{
-  display:block!important;color:var(--hero-ink)!important;
-  font-size:calc(11px * var(--kona-ui-scale,1))!important;font-weight:750!important;margin-bottom:3px!important;
+  /* A short, unlabeled daily emphasis: color and a quiet accent do the work. */
+  border-left:4px solid #386D50!important;
+  background:linear-gradient(90deg,#E1EFE3 0%,#F0F6F0 100%)!important;
+  border-radius:7px!important;
+  padding:10px 12px!important;margin:5px 0 8px!important;
 }
 body .app #page-records #archive-search-results .archive-record-anchor-body{
-  margin:0!important;color:var(--ink)!important;font-size:calc(13px * var(--kona-ui-scale,1))!important;
-  line-height:1.5!important;white-space:pre-wrap!important;word-break:keep-all!important;overflow-wrap:break-word!important;
+  margin:0!important;color:#294D3A!important;
+  font-size:calc(13.5px * var(--kona-ui-scale,1))!important;font-weight:650!important;
+  line-height:1.55!important;white-space:pre-wrap!important;word-break:keep-all!important;overflow-wrap:break-word!important;
 }
 body .app #page-records #archive-search-results .archive-empty-clear{
   min-height:44px!important;margin-top:8px!important;padding:8px 12px!important;
@@ -211,7 +210,11 @@ html[data-appearance="dark"] body .app #page-records #archive-search-results .ar
   color:#B6CBBC!important;
 }
 html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-record-anchor{
-  background:#283E32!important;
+  background:linear-gradient(90deg,#2F4B3A 0%,#24392E 100%)!important;
+  border-left-color:#9DC5A8!important;
+}
+html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-record-anchor-body{
+  color:#EBF4EC!important;
 }
 html[data-appearance="dark"] body .app #page-records #archive-search .archive-records-condition-strip{
   background:#2D4235!important;color:var(--ink)!important;
@@ -259,9 +262,6 @@ body .app #page-records #archive-search .archive-search-row[hidden],
 body .app #page-records #archive-search #archive-search-results[hidden]{display:none!important}
 
 /* Readable Anchor label and transparent action stars in the dark palette. */
-html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-record-anchor-label{
-  color:#C3E2CB!important;
-}
 html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-record-anchor-body{
   color:#E0E9E1!important;
 }
