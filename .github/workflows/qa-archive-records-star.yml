@@ -1,0 +1,26 @@
+name: On_HARU Archive star compact QA
+on:
+  push:
+    branches: ['feat/archive-records-compact-star-20261109']
+    paths: ['public/legacy/**', 'scripts/qa-archive-records-star.mjs', '.github/workflows/qa-archive-records-star.yml']
+  workflow_dispatch:
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: command -v google-chrome >/dev/null || npx playwright-core install chromium
+      - run: node --check public/legacy/runtime/legacy-controllers.9a6fbb5e22cc.js
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-archive-star.log 2>&1 &
+      - run: node scripts/qa-archive-records-star.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: archive-records-star-visual
+          path: test-results/archive-records-star/
+          retention-days: 14
