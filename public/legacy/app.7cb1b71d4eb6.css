@@ -5124,3 +5124,77 @@ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-dai
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar{
  min-height:36px!important;padding:4px 10px!important;border-radius:10px!important;
 }
+/* Daily reference layout: one summary, flat tinted surfaces, real schedule tags. */
+body .app #page-records #new-reflect-page .rv-daily-summary{
+ border:1px solid #E3E6E3;border-left:4px solid #F0E4D4;border-radius:12px;
+ background:#fff;margin:6px 0 12px;overflow:visible;
+}
+body .app #page-records #new-reflect-page .rv-daily-summary .review-daily-anchor.rv-reference-anchor{
+ min-height:0!important;margin:0!important;padding:11px 27px 9px 31px!important;
+ border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+}
+body .app #page-records #new-reflect-page .rv-daily-summary .rv-anchor-ribbon{
+ left:9px!important;top:13px!important;width:16px!important;height:18px!important;
+ padding:0!important;border:0!important;background:transparent!important;clip-path:none!important;box-shadow:none!important;color:#64716B!important;
+}
+body .app #page-records #new-reflect-page .rv-daily-summary .rv-anchor-ribbon svg{width:16px!important;height:16px!important}
+body .app #page-records #new-reflect-page .rv-daily-summary .rv-anchor-text{
+ font-size:calc(13.5px * var(--kona-ui-scale,1))!important;font-weight:400!important;line-height:1.45!important;color:#45554D!important;
+}
+body .app #page-records #new-reflect-page .rv-daily-summary .rv-anchor-copy{gap:3px!important}
+body .app #page-records #new-reflect-page .rv-daily-summary .review-reflection-summary{
+ margin:0!important;padding:0 10px 10px!important;min-height:0!important;background:transparent!important;border:0!important;box-shadow:none!important;
+}
+body .app #page-records #new-reflect-page .rv-daily-summary .review-reflection-summary>h3{
+ font-size:calc(10.5px * var(--kona-ui-scale,1))!important;font-weight:400!important;line-height:1.4!important;color:#79857E!important;margin:2px 0 2px!important;
+}
+body .app #page-records #new-reflect-page .rv-daily-summary .review-reflection-summary>p{
+ margin:0!important;font-size:calc(13.5px * var(--kona-ui-scale,1))!important;line-height:1.45!important;color:#45554D!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section{
+ --daily-tint:#F6EBD4;--daily-heading:#AF8030;--daily-line:#D8BA7B;--daily-ink:#3C493F;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=afternoon]{--daily-tint:#DEEEE7;--daily-heading:#4F8A78;--daily-line:#9ABFAF}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=evening]{--daily-tint:#E9E1F4;--daily-heading:#8465AA;--daily-line:#B7A0D1}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=night]{--daily-tint:#E0E7F0;--daily-heading:#617998;--daily-line:#A6B7CB}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar{
+ background:transparent!important;color:var(--daily-heading)!important;border:0!important;border-left:3px solid var(--daily-heading)!important;
+ border-radius:0!important;padding:3px 7px!important;min-height:32px!important;margin:4px 0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar :is(.review-section-name,.review-section-count,.review-section-chevron){color:var(--daily-heading)!important}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin{
+ border:0!important;border-radius:9px!important;background:var(--daily-tint)!important;box-shadow:none!important;padding:8px 9px!important;margin:3px 0 5px!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin::before{display:none!important}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-header{grid-template-columns:23px minmax(0,1fr) auto!important;min-height:26px!important;gap:4px!important;margin-bottom:3px!important}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-daily-phase-icon{width:23px!important;height:26px!important;font-size:20px!important;border-radius:0!important;background:transparent!important}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{
+ background:var(--daily-tint)!important;border:0!important;border-left:2px solid var(--daily-line)!important;
+ border-radius:9px!important;box-shadow:none!important;padding:9px 10px!important;margin:5px 0 7px!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card::after{display:none!important}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card>h5.rv-daily-book-heading{
+ border:0!important;margin:0 0 5px!important;padding:0!important;font-size:calc(13.5px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .rv-daily-class-icon{font-size:17px!important}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-event-with-notes>h5{display:none!important}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-event-with-notes>.review-linked-rail{border:0!important;padding:0!important;margin:0!important}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record:not(.rv-daily-checkin){border:0!important;border-left:2px solid var(--daily-line)!important;padding:6px 8px!important;margin:5px 0!important;box-shadow:none!important}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .rv-daily-record{border:0!important;padding:0!important;margin:0!important}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record.review-is-important{background:var(--daily-tint)!important;border:0!important;border-radius:9px!important;padding:8px 9px!important}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record .rv-entry-body>.rv-daily-schedule-tag{
+ display:inline-block!important;max-width:100%!important;margin:4px 0 0!important;padding:2px 6px!important;
+ border:0!important;border-radius:8px!important;background:#EAF0EA!important;color:#465D50!important;
+ font-size:calc(10px * var(--kona-ui-scale,1))!important;font-weight:500!important;line-height:1.3!important;white-space:normal!important;overflow-wrap:anywhere!important;
+}
+/* Stronger tints in Dark keep the same phase distinction and readable ink. */
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-daily-summary{background:#202E28!important;border-color:#45564C!important;border-left-color:#736147!important}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-daily-summary :is(.rv-anchor-date,.rv-anchor-text,.review-reflection-summary>p){color:#E1E9E2!important}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-daily-summary .review-reflection-summary>h3{color:#AFBCB1!important}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section{--daily-tint:#3A3425;--daily-heading:#E0BD70;--daily-line:#897443;--daily-ink:#E9EADF}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=afternoon]{--daily-tint:#253D35;--daily-heading:#9BCDB8;--daily-line:#527F6C}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=evening]{--daily-tint:#373047;--daily-heading:#C8ACE8;--daily-line:#7D669B}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=night]{--daily-tint:#2D3748;--daily-heading:#A8C1DF;--daily-line:#607A9B}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record .rv-entry-body>.rv-daily-schedule-tag{background:#364D40!important;color:#DCE8DE!important}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-daily-summary .review-daily-anchor.rv-reference-anchor{background:transparent!important;border:0!important;box-shadow:none!important}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{background:var(--daily-tint)!important;border:0!important;border-left:2px solid var(--daily-line)!important;box-shadow:none!important}
