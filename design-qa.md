@@ -9,8 +9,9 @@ final result: blocked
 - Latest rendered implementation capture: unavailable. The cloud browser rejected the preview refresh with a URL-policy security block. No alternate browser route or automation was attempted.
 
 ## Changes prepared
+- Ordinary notes retain a slender 2px left rail plus a faint horizontal divider; check-in and class surfaces remain without left rails. Personal notes show their type label above both explicit and inferred titles.
 - Separate ordinary notes with a faint 1px horizontal divider and 6px vertical padding. Keep title/body spacing at 2px and omit an empty body when an untitled note has only one line. Check-in/class tinted surfaces have no extra divider.
-- Remove decorative left rails from timeline notes and book cards. Reduce title/body gap to 2px and ordinary note vertical padding/margins to 4px/2px, while retaining body font size and authored line breaks.
+- Remove decorative left rails from book cards; keep a slender rail on ordinary notes. Reduce title/body gap to 2px and ordinary note vertical padding/margins to 6px/0px, while retaining body font size and authored line breaks.
 - Keep emoji-to-title spacing close to 1.5 text spaces (0.375em) across check-ins, class headings and note tags.
 - Combine date, anchor and complete reflection into one restrained summary surface.
 - Use compact tint-only section bars, without a left border; Korean labels are 아침 / 낮 / 저녁.

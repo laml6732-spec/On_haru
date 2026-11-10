@@ -2209,6 +2209,7 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
    }
   }
  }
+ if(thoughtView&&isPersonal){meta.classList.add('rv-daily-personal-label');body.prepend(meta)}
  if(thoughtView&&!grouped&&record.scheduleId){
   const event=record.reviewEvent,source=(db.days[record.date]?.quickCaptureEntries||[]).find(q=>q.id===record.sourceId);
   const scheduleName=event?KonaI18n.eventLabel(event):record.scheduleLabel;
