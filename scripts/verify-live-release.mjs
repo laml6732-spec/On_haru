@@ -13,19 +13,29 @@ const ASSETS = [
 ];
 const hash = data => createHash('sha256').update(data).digest('hex');
 
-/**
- * A strict content attestation, independent of an optional Worker-specific header.
- * The Worker currently forwards Git-integrated Cloudflare Pages responses without
- * x-on-haru-release. SHA-256 matching all five deployed files against this checkout
- * is the release source of truth. If a release header is supplied, it must still agree.
+/** Exact, versioned startup-image rewrites already applied by the production bridge.
+ * All other bytes must still match the checked-out source. Never strip arbitrary
+ * HTML, accept release-marker-only evidence, or normalize unknown differences.
  */
+function patchStartupHtml(html){const needle="art.src='./assets/onharu-launch-v3.png';";if(!html.includes(needle))return html;return html.replace(needle,"const launchHour=new Date().getHours(),launchPart=launchHour>=5&&launchHour<11?'morning':launchHour>=11&&launchHour<16?'day':launchHour>=16&&launchHour<21?'sunset':'night';art.src='./onharu-startup-20261109/launch-'+launchPart+'.webp';").replace('</head>',"<style id=\"onharu-startup-images-20261109\">#launchScreen#launchScreen{background:#fffffa!important}#launchScreen#launchScreen #launchArt{display:block!important;width:min(88vw,420px)!important;height:auto!important;max-height:82svh!important;aspect-ratio:auto!important;object-fit:contain!important;filter:none!important;mix-blend-mode:normal!important}</style>"+'</head>');}
+function patchStartupCache(script){return script.replace('const CORE=[','const CORE=['+"\"./onharu-startup-20261109/launch-morning.webp\",\"./onharu-startup-20261109/launch-day.webp\",\"./onharu-startup-20261109/launch-sunset.webp\",\"./onharu-startup-20261109/launch-night.webp\",");}
+
+export function workerStartupVariant(path,local) {
+  const text=local.toString('utf8');
+  if(path===''&&text.includes("art.src='./assets/onharu-launch-v3.png';"))return Buffer.from(patchStartupHtml(text));
+  if(path==='sw.js'&&text.includes('const CORE=['))return Buffer.from(patchStartupCache(text));
+  return null;
+}
 export function verifyAsset({ path, local, actual, release, status, finalURL, baseURL, workerRelease }) {
   const base = new URL(baseURL);
   const intended = new URL(path, base);
   if (path) intended.searchParams.set('rev', release);
   const received = finalURL ? new URL(finalURL) : null;
   const sameURL = !!received && received.origin === intended.origin && received.pathname === intended.pathname;
-  const hashMatch = !!actual && hash(local) === hash(actual);
+  const sourceHashMatch = !!actual && hash(local) === hash(actual);
+  const variant = base.origin === new URL(DEFAULT_URL).origin ? workerStartupVariant(path,local) : null;
+  const startupVariantHashMatch = !!actual && !!variant && hash(variant) === hash(actual);
+  const hashMatch = sourceHashMatch || startupVariantHashMatch;
   const headerMatch = !workerRelease || workerRelease === release;
   const body = actual ? actual.toString('utf8') : '';
   const bodyReleaseMatch = path === ''
@@ -37,10 +47,10 @@ export function verifyAsset({ path, local, actual, release, status, finalURL, ba
     path: path || '/',
     ok: status === 200 && sameURL && hashMatch && headerMatch && bodyReleaseMatch,
     status, finalURL: finalURL || null,
-    expectedSha256: hash(local), actualSha256: actual ? hash(actual) : null,
-    hashMatch, urlMatch: sameURL, bodyReleaseMatch,
+    expectedSha256: hash(startupVariantHashMatch ? variant : local), sourceSha256: hash(local), actualSha256: actual ? hash(actual) : null,
+    hashMatch, sourceHashMatch, contentVariant: startupVariantHashMatch ? 'worker-startup-20261109' : 'source', urlMatch: sameURL, bodyReleaseMatch,
     workerRelease: workerRelease || null, releaseHeaderPresent: !!workerRelease,
-    releaseEvidence: 'sha256 + same-origin path + HTML/SW embedded release; header optional but checked when present',
+    releaseEvidence: 'sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present',
   };
 }
 export async function verifyLiveRelease({ base = DEFAULT_URL, attempts = 4, delayMs = 5000 } = {}) {

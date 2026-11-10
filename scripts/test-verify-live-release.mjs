@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { verifyAsset } from './verify-live-release.mjs';
+import { verifyAsset, workerStartupVariant } from './verify-live-release.mjs';
 
 const release = 'moodpalettev120261105';
 const baseURL = 'https://on-haru.laml6732.workers.dev/';
@@ -47,4 +47,25 @@ test('matching CSS content verifies with same-origin rev query but without heade
   const r=verifyAsset({path:'app.7cb1b71d4eb6.css',local:css,actual:css,release,status:200,
     finalURL:baseURL+'app.7cb1b71d4eb6.css?rev='+release,baseURL,workerRelease:null});
   assert.equal(r.ok,true);
+});
+
+const startupHtml=Buffer.from(html.toString()+"<head></head><script>art.src='./assets/onharu-launch-v3.png';</script>");
+test('production startup artwork rewrite attests every output byte',()=>{
+ const actual=workerStartupVariant('',startupHtml),result=check({local:startupHtml,actual});
+ assert.equal(result.ok,true);assert.equal(result.sourceHashMatch,false);assert.equal(result.contentVariant,'worker-startup-20261109');
+ assert.equal(check({local:startupHtml,actual:Buffer.from(actual.toString().replace('420px','421px'))}).ok,false);
+ assert.equal(check({local:startupHtml,actual:Buffer.concat([actual,Buffer.from('<script>unexpected()</script>')])}).ok,false);
+});
+test('production startup cache rewrite attests every output byte',()=>{
+ const local=Buffer.from(sw.toString()+'const CORE=["./index.html"];'),actual=workerStartupVariant('sw.js',local);
+ const args={path:'sw.js',local,actual,finalURL:baseURL+'sw.js'};
+ assert.equal(check(args).ok,true);
+ assert.equal(check({...args,actual:Buffer.from(actual.toString().replace('launch-night.webp','unknown.js'))}).ok,false);
+ assert.equal(check({...args,actual:Buffer.concat([actual,Buffer.from('unexpected()')])}).ok,false);
+});
+test('startup exception is restricted to production origin and HTML/SW assets',()=>{
+ const actual=workerStartupVariant('',startupHtml);
+ assert.equal(check({local:startupHtml,actual,baseURL:'http://localhost:8080/',finalURL:'http://localhost:8080/'}).ok,false);
+ assert.equal(workerStartupVariant('anything.js',startupHtml),null);
+ assert.equal(check({path:'anything.js',local:startupHtml,actual,finalURL:baseURL+'anything.js'}).ok,false);
 });
