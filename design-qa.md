@@ -14,7 +14,7 @@ final result: blocked
 - Increase morning gold, midday sage and evening lavender tints, including dark-theme counterparts.
 - Flatten check-in and class surfaces while retaining the book icon and a subtle class spine.
 - Keep actual selected emotion emoji and mood name; omit check-in occurrence time.
-- Keep each note's linked schedule name and event-time chip. Never infer a schedule link from capture time.
+- Show one linked schedule name and event-time chip at the top of each schedule group. Do not repeat it below individual notes or infer links from capture time.
 - Preserve plain-weight first-line headings for untitled notes and show reflection text in full.
 
 ## Fidelity surfaces

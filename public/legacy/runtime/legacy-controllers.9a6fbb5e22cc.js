@@ -2081,8 +2081,10 @@ objects.sort((a,b)=>priority(a)-priority(b)||a.time-b.time);
   const cluster=el('section',undefined,'rv-linked-group'+(isBook?' rv-daily-book-card':linked.has(event.id)?' rv-daily-event-with-notes':'')),heading=el('h5',undefined,'review-event-heading'+(isClassEvent?' rv-daily-class-chip':'')+(isBook?' rv-daily-book-heading':''));
   if(isClassEvent){const icon=el('span','📖','rv-daily-class-icon');icon.setAttribute('aria-hidden','true');heading.append(icon)}
   heading.append(el('span',KonaI18n.eventLabel(event),'rv-daily-class-name'));
-  if(!isClassEvent&&konaReviewPreferences().showTimes)heading.append(el('time',event.start+(event.end?'–'+event.end:''),'review-event-time'));
-  cluster.append(heading);
+  if(konaReviewPreferences().showTimes)heading.append(el('time',event.start+(event.end?'–'+event.end:''),'review-event-time'));
+  // One schedule label at the top of the entire linked group, never per note.
+  if(isBook){heading.classList.add('rv-daily-schedule-tag','rv-daily-group-schedule-tag');cluster.append(heading)}
+  else{const stamp=konaReviewPreferences().showTimes?event.start+(event.end?'–'+event.end:''):'';cluster.append(el('small',[KonaI18n.eventLabel(event),stamp].filter(Boolean).join(' '),'review-schedule-label rv-daily-schedule-tag rv-daily-group-schedule-tag'))}
   const records=linked.get(event.id)||[];if(records.length){const rail=el('div',undefined,'review-linked-rail'+(isBook?' rv-daily-class-rail':''));for(const record of records.slice(0,2))rail.append(reviewRow(record,{grouped:true,preview:false,thoughtView:true}));
    if(records.length>2){const rest=el('div',undefined,'review-linked-more');for(const record of records.slice(2))rest.append(reviewRow(record,{grouped:true,preview:false,thoughtView:true}));const moreKey=date+'|event|'+event.id,toggle=el('button',undefined,'review-group-more');toggle.type='button';rest.id='review-more-'+event.id.replace(/[^a-zA-Z0-9_-]/g,'_');toggle.setAttribute('aria-controls',rest.id);const apply=expanded=>{rest.hidden=!expanded;toggle.textContent=expanded?KonaI18n.t("Show less"):'+ '+(records.length-2)+' more '+(records.length===3?KonaI18n.t("note"):KonaI18n.t("notes"));toggle.setAttribute('aria-expanded',String(expanded));if(expanded)requestAnimationFrame(()=>reviewSyncPreviews(rest))};apply(!!reviewUI[moreKey]);toggle.onclick=()=>{if(!reviewCanEdit())return;const expanded=rest.hidden;reviewUISet(moreKey,expanded);apply(expanded)};rail.append(rest,toggle)}cluster.append(rail)}inner.append(cluster)
  }
@@ -2207,12 +2209,12 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
    }
   }
  }
- if(thoughtView&&record.scheduleId){
+ if(thoughtView&&!grouped&&record.scheduleId){
   const event=record.reviewEvent,source=(db.days[record.date]?.quickCaptureEntries||[]).find(q=>q.id===record.sourceId);
   const scheduleName=event?KonaI18n.eventLabel(event):record.scheduleLabel;
   const scheduleTime=event?.start?event.start+(event.end?'–'+event.end:''):source?.scheduleTime||'';
   const schedule=el('small',[scheduleName,scheduleTime].filter(Boolean).join(' '),'review-schedule-label rv-daily-schedule-tag');
-  if(schedule.textContent.trim())body.append(schedule);
+  if(schedule.textContent.trim())body.prepend(schedule);
  }
  row.append(body);return row;
 }
