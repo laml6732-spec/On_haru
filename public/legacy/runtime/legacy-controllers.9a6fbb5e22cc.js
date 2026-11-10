@@ -2152,7 +2152,13 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
   const recorded=record.kind==='class'?validReflectHM(db.days[record.date]?.checkins?.noon?.classReviewTime):['capture','check','session'].includes(record.kind)?validReflectHM(record.recordedTime):null;
   const recordedNode=recorded?el('time',recorded,'rv-daily-record-time'):null;
   const checkHeader=record.kind==='check'?body.querySelector('.review-check-header'):null;
-  if(checkHeader&&recordedNode)checkHeader.append(recordedNode);
+  const classPart=record.kind==='class'?body.querySelector('.review-class-part'):null;
+  if(classPart&&recordedNode){
+   // Put class record time on the right of its first section label; no extra row.
+   const head=el('div',undefined,'rv-daily-part-head'),label=classPart.querySelector('small');
+   if(label)head.append(label);
+   head.append(recordedNode);classPart.prepend(head);
+  }else if(checkHeader&&recordedNode)checkHeader.append(recordedNode);
   else{
    const title=body.querySelector(':scope > .rv-user-note-title');
    const meta=body.querySelector(':scope > .review-record-meta');
