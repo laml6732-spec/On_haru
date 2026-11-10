@@ -350,14 +350,31 @@ const KONA_ENERGY_COLORS=['#D8CAF0','#B9D7EE','#F4F1E9','#F8E399','#F3AB9B'];
 const KONA_ENERGY_LABELS=[KonaI18n.t("Depleted"),KonaI18n.t("Low"),KonaI18n.t("Steady"),KonaI18n.t("Energized"),KonaI18n.t("Full of energy")];
 const KONA_MOOD_LABELS=[KonaI18n.t("Rough"),KonaI18n.t("Low"),KonaI18n.t("Neutral"),KonaI18n.t("Good"),KonaI18n.t("Great")];
 // Rows: energy 1..5. Columns: mood 1..5. Stored legacy IDs stay intact.
+// Display-only feeling suggestions based on the pleasantness × activation model.
+// NOT a clinical assessment or an official 25-word Yale Mood Meter table.
+// Keep stored legacy mood IDs and numeric ratings unchanged.
+const konaEmotionWord=(en,ko)=>KonaI18n.language==='ko'?ko:en;
 const KONA_FEELINGS=[
- [KonaI18n.t("Depleted"),KonaI18n.t("Exhausted"),KonaI18n.t("Still"),KonaI18n.t("Relaxed"),KonaI18n.t("Serene")],
- [KonaI18n.t("Drained"),KonaI18n.t("Weary"),KonaI18n.t("Quiet"),KonaI18n.t("Calm"),KonaI18n.t("Peaceful")],
- [KonaI18n.t("Down"),KonaI18n.t("Uneasy"),KonaI18n.t("Neutral"),KonaI18n.t("Content"),KonaI18n.t("Happy")],
- [KonaI18n.t("Frustrated"),KonaI18n.t("Worried"),KonaI18n.t("Unsettled"),KonaI18n.t("Upbeat"),KonaI18n.t("Joyful")],
- [KonaI18n.t("Overwhelmed"),KonaI18n.t("Tense"),KonaI18n.t("Restless"),KonaI18n.t("Enthusiastic"),KonaI18n.t("Excited")]
+ [konaEmotionWord("Exhausted","탈진"),konaEmotionWord("Drained","기진맥진"),konaEmotionWord("Sleepy","졸림"),konaEmotionWord("Relaxed","편안함"),konaEmotionWord("Serene","평온함")],
+ [konaEmotionWord("Discouraged","낙담"),konaEmotionWord("Weary","고단함"),konaEmotionWord("Thoughtful","생각에 잠김"),konaEmotionWord("Calm","차분함"),konaEmotionWord("Peaceful","평안함")],
+ [konaEmotionWord("Upset","속상함"),konaEmotionWord("Uneasy","불편함"),konaEmotionWord("Neutral","보통"),konaEmotionWord("Pleased","기분 좋음"),konaEmotionWord("Happy","행복함")],
+ [konaEmotionWord("Frustrated","답답함"),konaEmotionWord("Worried","걱정됨"),konaEmotionWord("Alert","또렷함"),konaEmotionWord("Upbeat","활기참"),konaEmotionWord("Joyful","즐거움")],
+ [konaEmotionWord("Furious","격분"),konaEmotionWord("Anxious","불안함"),konaEmotionWord("Surprised","놀람"),konaEmotionWord("Enthusiastic","열정적임"),konaEmotionWord("Excited","신남")]
 ];
 function konaFeeling(m){if(!m)return '';const e=Number(m.e??m.energy),h=Number(m.v??m.happiness);return Number.isInteger(e)&&e>=1&&e<=5&&Number.isInteger(h)&&h>=1&&h<=5?KONA_FEELINGS[e-1][h-1]:''}
+const KONA_FEELING_EMOJIS=[
+ ['😩','😮‍💨','😴','😌','🌿'],
+ ['😞','😓','🤔','🙂','🕊️'],
+ ['😟','😕','😐','😊','😃'],
+ ['😤','😥','👀','😄','😁'],
+ ['😡','😰','😲','🤩','🥳']
+];
+function konaFeelingWithEmoji(m){
+ const feeling=konaFeeling(m);if(!feeling)return '';
+ const e=Number(m.e??m.energy),h=Number(m.v??m.happiness);
+ return KONA_FEELING_EMOJIS[e-1][h-1]+' '+feeling;
+}
+
 function konaEnergyLabel(e){return KONA_ENERGY_LABELS[e-1]||''}
 function konaFeelingIcon(dimension,level){
  if(dimension==='energy')return KonaI18n.markup("<svg viewBox=\"0 0 48 12\" aria-hidden=\"true\" focusable=\"false\">")+Array.from({length:5},(_,j)=>'<circle cx="'+(4+j*10)+'" cy="6" r="3" fill="currentColor" opacity="'+(j<level?'1':'.15')+'"/>').join('')+'</svg>';
@@ -752,7 +769,7 @@ function renderCompactMood(c){
  }
  grid.append(konaSlimScale('energy',draft.energy,draft.energy,v=>pick('energy',v)));
  grid.append(konaSlimScale('happiness',draft.happiness,draft.energy,v=>pick('happiness',v)));
- let summary=document.getElementById('checkFeelingSummary');if(!summary){summary=document.createElement('span');summary.id='checkFeelingSummary';summary.setAttribute('role','status')}summary.textContent=konaFeeling({e:draft.energy,v:draft.happiness});summary.hidden=phase==='noon';(document.getElementById('checkFlowHeading')||grid).append(summary)
+ let summary=document.getElementById('checkFeelingSummary');if(!summary){summary=document.createElement('span');summary.id='checkFeelingSummary';summary.setAttribute('role','status')}summary.textContent=konaFeelingWithEmoji({e:draft.energy,v:draft.happiness});summary.hidden=phase==='noon';(document.getElementById('checkFlowHeading')||grid).append(summary)
 }
 
 function renderCheck(){
