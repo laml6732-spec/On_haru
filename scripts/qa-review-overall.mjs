@@ -58,9 +58,8 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   item.views.weekly=await inspect('#new-reflect-page');
   await page.locator('#rev-archive').click();await photo(page,width+'-'+theme+'-archive');
   item.views.archive=await inspect('#archive-search');
-  await page.locator('.archive-mood-view-switch button').filter({hasText:'Mood'}).click();
-  await photo(page,width+'-'+theme+'-mood');
-  item.views.mood=await inspect('#archive-search');
+  if(await page.locator('.archive-mood-view-switch,.archive-mood-panel').count())throw Error('Archive Mood switcher should be removed');
+  if(!await page.locator('#archive-search .archive-records-star-button').isVisible())throw Error('Archive should open directly to Records');
  }catch(e){item.errors.push(String(e));console.log('ERROR '+width+' '+theme+' '+String(e))}
  console.log('VIEW '+JSON.stringify(item));
  await context.close();

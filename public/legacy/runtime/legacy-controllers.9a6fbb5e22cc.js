@@ -2487,19 +2487,7 @@ function drawArchiveSearch(){
  if(!searchWrap){searchWrap=el('div',undefined,'archive-search-input-wrap');searchRow.prepend(searchWrap);searchWrap.append(input,document.getElementById('archive-search-clear'))}
  searchRow.hidden=!!archiveDetailRecord;searchWrap.hidden=!archiveSearchOpen;searchRow.dataset.archiveSearchMode=archiveSearchOpen?'input':'browse';results.hidden=false;results.replaceChildren();status.textContent='';
  label?.style.removeProperty('display');searchRow.style.removeProperty('display');results.style.removeProperty('display');status.style.removeProperty('display');
- if(!archiveDetailRecord){
-  const switcher=el('div',undefined,'archive-mood-view-switch');switcher.setAttribute('role','group');switcher.setAttribute('aria-label',archiveMoodText('Archive view','아카이브 보기'));
-  for(const [key,name] of [['records',archiveMoodText('Records','기록')],['mood',archiveMoodText('Mood','감정')]]){
-   const button=el('button',name);button.type='button';button.setAttribute('aria-pressed',String(archiveMoodView===key));
-   button.onclick=()=>{if(!reviewCanEdit())return;archiveMoodView=key;drawArchiveSearch()};
-   switcher.append(button);
-  }
-  archiveSearch.prepend(switcher);
-  if(archiveMoodView==='mood'){
-   if(label)label.style.setProperty('display','none','important');searchRow.hidden=true;results.hidden=true;status.hidden=true;
-   const panel=el('div',undefined,'archive-mood-panel');archiveSearch.append(panel);archiveMoodRender(panel);return;
-  }
- }
+ // Archive opens directly to Records. Mood scores remain in stored Check-ins.
  const all=reviewArchiveRecords(),query=input.value.trim();const clear=document.getElementById('archive-search-clear');if(clear)clear.hidden=!query;
  if(archiveDetailRecord){
   const back=el('button',KonaI18n.t("← Back to results"),'archive-back');back.type='button';back.onclick=()=>{if(!reviewCanEdit())return;const saved=archiveReturnState;archiveDetailRecord=null;root.classList.remove('archive-detail');if(saved){input.value=saved.query;archiveType=saved.type;archiveContext=saved.context;archivePeriod=saved.period;archiveExactDate=saved.exact;archiveMeaning=saved.meaning||'all'}drawArchiveSearch();requestAnimationFrame(()=>window.scrollTo(0,saved?.scroll||0))};archiveSearch.prepend(back);

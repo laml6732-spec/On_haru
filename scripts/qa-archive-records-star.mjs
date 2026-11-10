@@ -36,6 +36,9 @@ for(const width of [320,360,390,1024])for(const theme of ['light','dark']){
   await page.locator('#rev-archive').click();
   const q=page.locator('#archive-search');
   await q.locator('.archive-records-star-button').waitFor();
+  if(await q.locator('.archive-mood-view-switch,.archive-mood-panel').count())throw Error('Archive should show Records directly without a Mood selector');
+  if(!await q.locator('.archive-search-row').isVisible())throw Error('Records controls should be visible immediately');
+  if(!await page.locator('.tabs [data-page="checkin"]').count())throw Error('Check-in tab must remain available');
   if(await q.locator('.review-saved-filters').count())throw Error('Redundant All/Saved tabs remain');
   const star=q.locator('.archive-records-star-button');
   if(await star.getAttribute('aria-pressed')!=='false')throw Error('Star filter should default off');
