@@ -4960,7 +4960,8 @@ body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.revie
  min-height:44px!important;padding:6px 11px!important;border-radius:12px!important;
 }
 body .app #page-records #new-reflect-page .rv-timeline :is(
- [data-daypart="morning"],[data-daypart="afternoon"],[data-daypart="evening"]
+ [data-daypart="morning"],[data-daypart="afternoon"],[data-daypart="evening"],
+ [data-daypart="night"],[data-daypart="untimed"]
 )>.review-section-bar .review-section-name{
  font-size:calc(13.5px * var(--kona-ui-scale,1) + 1.333333px)!important;
  font-weight:750!important;letter-spacing:0!important;
@@ -5102,4 +5103,24 @@ body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-li
 }
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card > h5.review-event-heading.rv-daily-class-chip.rv-daily-book-heading > .rv-daily-class-name{
  color:#EAF2E4!important;
+}
+
+/* Daily: inferred titles occupy the real title slot, with ordinary body weight. */
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record-head>.rv-user-note-title.rv-daily-inferred-title{
+ font-weight:400!important;font-size:calc(var(--reading-size,13.5px) * var(--kona-ui-scale,1))!important;
+ white-space:pre-wrap!important;word-break:keep-all!important;overflow-wrap:anywhere!important;
+}
+/* Saved reflections remain complete, regardless of memo-preview settings. */
+body .app #page-records #new-reflect-page .review-reflection-summary,
+body .app #page-records #new-reflect-page .review-reflection-summary>p{
+ display:block!important;white-space:pre-wrap!important;overflow:visible!important;
+ text-overflow:clip!important;-webkit-line-clamp:unset!important;line-clamp:unset!important;
+ max-height:none!important;height:auto!important;word-break:keep-all!important;overflow-wrap:anywhere!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-daily-phase-icon:empty{
+ visibility:hidden!important;
+}
+/* Compact daypart bars; retain clear text and a 36px collapse target. */
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar{
+ min-height:36px!important;padding:4px 10px!important;border-radius:10px!important;
 }
