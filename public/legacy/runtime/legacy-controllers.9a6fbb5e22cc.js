@@ -2189,7 +2189,7 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
   row.classList.add('rv-daily-record');
   if(record.kind!=='check'){
    // Actual recorded time, never a schedule start substituted as an occurrence time.
-   const recorded=record.kind==='class'?validReflectHM(db.days[record.date]?.checkins?.noon?.classReviewTime):['capture','session'].includes(record.kind)?validReflectHM(record.recordedTime):null;
+   const recorded=(record.scheduleId||record.reviewEvent)?null:record.kind==='class'?validReflectHM(db.days[record.date]?.checkins?.noon?.classReviewTime):['capture','session'].includes(record.kind)?validReflectHM(record.recordedTime):null;
    const recordedNode=recorded?el('time',recorded,'rv-daily-record-time'):null;
    const classPart=record.kind==='class'?body.querySelector('.review-class-part'):null;
    if(classPart&&recordedNode){
