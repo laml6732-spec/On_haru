@@ -5253,3 +5253,8 @@ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record .rv-entr
  font-size:calc(10.5px * var(--kona-ui-scale,1))!important;font-weight:400!important;line-height:1.35!important;color:#65786B!important;
 }
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record .rv-entry-body>.rv-daily-personal-label{color:#AFC1B3!important}
+/* Each personal note has its own neutral rail, separated from the next note. */
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-record.review-personal-note:not(.rv-daily-checkin){
+ border-left:2px solid #C5C9CD!important;margin:3px 0!important;padding:4px 8px!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-record.review-personal-note:not(.rv-daily-checkin){border-left-color:#7A8187!important}
