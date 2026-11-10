@@ -2114,24 +2114,24 @@ function reviewDailyFeelingEmoji(record){
  const e=record.energy??saved?.energy??legacy?.e,h=record.happiness??saved?.happiness??legacy?.v;
  return Number.isInteger(e)&&e>=1&&e<=5&&Number.isInteger(h)&&h>=1&&h<=5?MOODS[5-e][h-1].f:legacy?.f||'';
 }
-function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
- if(['capture','event','free'].includes(record.kind))preview=!thoughtView&&konaReviewPreferences().previewLines>0&&!archiveDetailRecord;
+function reviewRow(record,{grouped=false,preview=false,thoughtView=false,weeklyView=false}={}){
+ if(['capture','event','free'].includes(record.kind))preview=!thoughtView&&!weeklyView&&konaReviewPreferences().previewLines>0&&!archiveDetailRecord;
  const isPersonal=record.kind==='free'||(record.kind==='capture'&&!record.scheduleId);
  const row=el('article',undefined,'review-record rv-item');row.classList.toggle('review-check-record',record.kind==='check');row.classList.toggle('review-session-record',record.kind==='session');row.classList.toggle('review-class-record',record.kind==='class');row.classList.toggle('review-personal-note',isPersonal);row.classList.toggle('review-plan-note',!!record.reviewEvent&&['capture','event'].includes(record.kind));row.classList.toggle('review-empty-note',['check','session'].includes(record.kind)&&!String(record.body||'').trim());row.classList.toggle('review-is-important',reviewImportant(record));row.dataset.recordId=record.id;row.dataset.recordDate=record.date;row.dataset.entryId=record.id;
  const body=el('div',undefined,'rv-entry-body'),meta=el('div',undefined,'review-record-meta');const identity=record.date+' · '+(record.scheduleLabel||record.title||record.type)+' · '+record.id;
  const time=record.reviewEvent?(record.recordedTime&&(mins(record.recordedTime)<mins(record.reviewEvent.start)||mins(record.recordedTime)>=mins(record.reviewEvent.end))?KonaI18n.t("Written ")+record.recordedTime:''):record.recordedTime||'';
  const meaningful=record.kind==='check'?record.title.replace(/ check-in$/i,'')+' check-in':record.kind==='class'?'':record.kind==='session'?record.title+(record.sessionDuration?' · '+record.sessionDuration:''):record.kind==='anchor'?KonaI18n.t("Daily Anchor"):'';
- if(isPersonal)meta.append(el('span',KonaI18n.t("Personal note"),'review-type-label'));
+ if(isPersonal&&!weeklyView)meta.append(el('span',KonaI18n.t("Personal note"),'review-type-label'));
  if(meaningful){const name=el('span',meaningful);if(record.kind==='check')konaBindEditTarget(name,KonaI18n.t("Change check-in note · ")+identity,()=>reviewInlineNote(record,row));meta.append(name)}
  // Capture time is recorded at creation. An old free-note hour is only a slot, not a timestamp.
- const metaTime=thoughtView?'':record.kind==='capture'&&isPersonal?record.recordedTime:!['capture','event','free','class'].includes(record.kind)?time:'';
+ const metaTime=thoughtView||weeklyView?'':record.kind==='capture'&&isPersonal?record.recordedTime:!['capture','event','free','class'].includes(record.kind)?time:'';
  if(metaTime)meta.append(el('time',metaTime));if(meta.childNodes.length)body.append(meta);
  if(!thoughtView&&!grouped&&record.scheduleId)body.append(el('small',record.scheduleLabel,'review-schedule-label'));
  const title=record.noteTitle&&record.noteTitle.trim().toLowerCase()!==String(record.scheduleLabel||record.title).trim().toLowerCase()?record.noteTitle:'';
  const canInline=['capture','event','check','session','anchor','free'].includes(record.kind);
  if(record.kind==='session')konaBindEditTarget(meta,'Edit note · '+identity,()=>reviewInlineNote(record,row));
  if(title){const heading=el('strong',title,'rv-user-note-title');if(canInline)konaBindEditTarget(heading,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));body.append(heading)}
- if(record.kind!=='class'&&(record.body||(!title&&record.tags?.length))){const text=el('p',record.body,'rv-note-preview'+(preview?' review-preview':''));if(canInline)konaBindEditTarget(text,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));else if(record.kind==='class')konaBindEditTarget(text,KonaI18n.t("Open class review · ")+identity,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);nav('checkin',{phase:'noon'})});if(thoughtView&&!title&&['capture','event','free'].includes(record.kind)&&String(record.body||'').trim()){
+ if(record.kind!=='class'&&(record.body||(!title&&record.tags?.length))){const text=el('p',record.body,'rv-note-preview'+(preview?' review-preview':''));if(canInline)konaBindEditTarget(text,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));else if(record.kind==='class')konaBindEditTarget(text,KonaI18n.t("Open class review · ")+identity,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);nav('checkin',{phase:'noon'})});if((thoughtView||weeklyView)&&!title&&['capture','event','free'].includes(record.kind)&&String(record.body||'').trim()){
    // Use the first nonempty body line in the actual title position, display-only.
    // Keep the stored note unchanged and show this inferred title at normal weight.
    const lines=String(record.body).split(/\r?\n/),firstIndex=lines.findIndex(line=>line.trim());
@@ -2147,7 +2147,7 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
    // Preserve the existing Archive/Weekly heading and time layout.
    const heading=el('h4',konaReviewClassHeading(record.date,c),'review-class-title');konaBindEditTarget(heading,KonaI18n.t("Open class notes · ")+record.date,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);konaOpenReviewEditor(record.date,record.id)});
    const classHeader=el('div',undefined,'review-class-header'),classTime=validReflectHM(c.classReviewTime)||record.recordedTime;
-   classHeader.append(heading);if(classTime)classHeader.append(el('time',classTime,'review-class-time'));body.append(classHeader);
+   classHeader.append(heading);if(classTime&&!weeklyView)classHeader.append(el('time',classTime,'review-class-time'));body.append(classHeader);
   }
   for(const [key,label] of [['lectureQuote',KonaI18n.t("Memorable words")],['lectureReflection',KonaI18n.t("Reflection")],['classResponse',KonaI18n.t("Response")]])if(c[key]?.trim()){const part=el('section',undefined,'review-class-part');part.append(el('small',label),el('p',c[key]));body.append(part)}
  }
@@ -2170,7 +2170,7 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
    header.append(icon,name,right);body.prepend(header);
    row.classList.add('rv-daily-checkin','rv-daily-check-'+record.phase);
   }else{
-   const feelings=el('div',undefined,'review-feeling-values');feelings.append(button);
+   const feelings=el('div',undefined,'review-feeling-values');if(weeklyView)meta.prepend(el('span',reviewDailyFeelingEmoji(record)+' ','weekly-check-emoji'));feelings.append(button);
    const header=el('div',undefined,'review-check-header');header.append(meta,feelings);body.prepend(header);
   }
  }
@@ -2216,6 +2216,16 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
   const scheduleTime=event?.start?event.start+(event.end?'–'+event.end:''):source?.scheduleTime||'';
   const schedule=el('small',[scheduleName,scheduleTime].filter(Boolean).join(' '),'review-schedule-label rv-daily-schedule-tag');
   if(schedule.textContent.trim())body.prepend(schedule);
+ }
+ if(weeklyView){
+  row.classList.add('weekly-record');
+  if(isPersonal){
+   const header=el('div',undefined,'weekly-note-header'),title=body.querySelector(':scope > .rv-user-note-title');
+   if(title)header.append(title);
+   const written=record.kind==='capture'?validReflectHM(record.recordedTime):null;
+   if(written)header.append(el('time',written));
+   if(header.childNodes.length)body.prepend(header);
+  }
  }
  row.append(body);return row;
 }
@@ -2839,52 +2849,71 @@ panel.append(heading);
 const dates=Array.from({length:7},(_,i)=>dayAdd(start,i)),entries=dates.map(d=>({date:d,moments:reviewRecords(d),reflection:db.days[d]?.reflectionNotes||{},reflected:!!db.days[d]?.reflected}));
 const hasDayContent=x=>x.moments.length||reflectionHasText(x.reflection);
 const {momentCount,recordedDays}=reviewWeekSummary(entries);
-// Keep statistics secondary and expandable feelings inline with the summary.
+// The week summary stays quiet; feelings belong to their recorded day.
+const ko=KonaI18n.language==='ko',word=(en,kr)=>ko?kr:en;
 const meta=el('div',undefined,'weekly-compact-meta');
 meta.append(el('span',recordedDays+' '+(recordedDays===1?KonaI18n.t("day"):KonaI18n.t("days"))+KonaI18n.t(" recorded · ")+momentCount+KonaI18n.t(" records"),'weekly-compact-count'));
-const feelings=el('details',undefined,'weekly-compact-feelings');
-feelings.setAttribute('aria-label',KonaI18n.t('Recorded feelings'));
-let feelingDays=0;
-for(const entry of entries){
- const checks=entry.moments.filter(r=>r.kind==='check'&&(r.feeling||r.energy));
- const latest=checks.at(-1);
- if(latest){feelingDays++;const open=el('button',fmt(entry.date)+' · '+(latest.feeling||KonaI18n.t("Unfinished")));open.type='button';open.onclick=()=>{reflectPeriod='daily';changeDate(entry.date)};feelings.append(open)}
-}
-if(feelingDays){
- const label=KonaI18n.t('Recorded feelings')+' · '+feelingDays+' '+(feelingDays===1?KonaI18n.t('day'):KonaI18n.t('days'));
- feelings.prepend(el('summary',label));
- meta.append(feelings);
-}
 panel.append(meta);
-panel.append(el('h3',KonaI18n.t("Weekly reflection"),'rv-writing-heading'));
-const status=el('span',tutorialPractice?KonaI18n.t("Practice only · not saved"):reflectionHasText(record)?KonaI18n.t("Saved"):KonaI18n.t("Autosave"),'rv-save-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');const retry=el('button',KonaI18n.t("Retry weekly save"),'mini-btn');retry.type='button';retry.hidden=true;const feedback=el('div',undefined,'rv-save-feedback');feedback.append(status,retry);panel.append(feedback);
+const reflection=el('details',undefined,'weekly-reflection-disclosure'),reflectionToggle=el('summary',word('Write weekly reflection','주간 회고 작성'),'weekly-reflection-toggle');
+reflectionToggle.textContent=reflectionHasText(record)?word('Edit weekly reflection','주간 회고 수정'):reflectionToggle.textContent;
+const editor=el('div',undefined,'weekly-reflection-editor');reflection.append(reflectionToggle,editor);panel.append(reflection);
+editor.append(el('h3',KonaI18n.t("Weekly reflection"),'rv-writing-heading'));
+const status=el('span',tutorialPractice?KonaI18n.t("Practice only · not saved"):reflectionHasText(record)?KonaI18n.t("Saved"):KonaI18n.t("Autosave"),'rv-save-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');const retry=el('button',KonaI18n.t("Retry weekly save"),'mini-btn');retry.type='button';retry.hidden=true;const feedback=el('div',undefined,'rv-save-feedback');feedback.append(status,retry);editor.append(feedback);
 const draft={...record},current=()=>db.weeklyReflections[start]||record;
 const canComplete=()=>recordedDays>0||reflectionHasText(draft);
 let complete,completeReason;
 function syncComplete(){if(!complete)return;complete.disabled=!current().reflected&&!canComplete();complete.title=complete.disabled?KonaI18n.t("Add a daily record or write a weekly note first.",true):'';completeReason.hidden=!complete.disabled}
 function persistWeekly(){status.textContent=KonaI18n.t("Saving…");const ok=commitWeeklyReflection(db,start,draft,()=>save()||!!tutorialPractice);status.textContent=ok?(tutorialPractice?KonaI18n.t("Practice only · not saved"):KonaI18n.t("Saved")):KonaI18n.t("Not saved · retry or back up");retry.hidden=ok;syncComplete();return ok}
 retry.onclick=persistWeekly;
-function field(key,label,placeholder){const lab=el('label',undefined,'weekly-form-label '+(key==='insight'?'rv-journal-main':'')),input=el('textarea');input.value=draft[key]||'';input.placeholder=placeholder;input.setAttribute('aria-label',label);input.oninput=()=>{draft[key]=input.value;persistWeekly()};lab.append(input);if(key==='insight')panel.append(lab);else{const optional=el('details',undefined,'rv-next-step');optional.open=!!String(draft[key]||'').trim();optional.append(el('summary',label),lab);panel.append(optional)}}
+function field(key,label,placeholder){const lab=el('label',undefined,'weekly-form-label '+(key==='insight'?'rv-journal-main':'')),input=el('textarea');input.value=draft[key]||'';input.placeholder=placeholder;input.setAttribute('aria-label',label);input.oninput=()=>{draft[key]=input.value;persistWeekly()};lab.append(input);if(key==='insight')editor.append(lab);else{const optional=el('details',undefined,'rv-next-step');optional.open=!!String(draft[key]||'').trim();optional.append(el('summary',label),lab);editor.append(optional)}}
 field('insight',KonaI18n.t("What kept coming up this week?"),KonaI18n.t("A passage, lesson, question, or repeated theme…"));
 const responses=reflectionResponses(db,start);
 if(responses.length||String(draft.responseReview||'').trim()){
  const sources=el('details',undefined,'response-sources');sources.append(el('summary',KonaI18n.t("Previous next steps · ")+responses.length));
- for(const response of responses){const item=el('div',undefined,'response-source');item.append(el('small',response.kind==='weekly'?KonaI18n.t("Last weekly next step · ")+fmt(response.date):KonaI18n.t("Daily next step · ")+fmt(response.date)),el('p',response.text));if(response.kind==='daily'){const open=el('button',KonaI18n.t("Open Daily · ")+fmt(response.date),'mini-btn');open.type='button';open.onclick=()=>{reflectPeriod='daily';changeDate(response.date)};item.append(open)}sources.append(item)}panel.append(sources);
+ for(const response of responses){const item=el('div',undefined,'response-source');item.append(el('small',response.kind==='weekly'?KonaI18n.t("Last weekly next step · ")+fmt(response.date):KonaI18n.t("Daily next step · ")+fmt(response.date)),el('p',response.text));if(response.kind==='daily'){const open=el('button',KonaI18n.t("Open Daily · ")+fmt(response.date),'mini-btn');open.type='button';open.onclick=()=>{reflectPeriod='daily';changeDate(response.date)};item.append(open)}sources.append(item)}editor.append(sources);
  field('responseReview',KonaI18n.t("Looking back"),KonaI18n.t("What did I try, notice, or find difficult? It is okay if I am still working on it."));
 }
 field('action',KonaI18n.t("Next step · optional"),KonaI18n.t("One practical response in prayer, relationships, service, or daily life…"));
-appendReflectionContext(panel,draft,persistWeekly);
-complete=el('button',current().reflected?KonaI18n.t("Reopen review"):KonaI18n.t("Finish review"),'rv-done');complete.type='button';complete.setAttribute('aria-label',current().reflected?KonaI18n.t("Undo week reflected",true):KonaI18n.t("Mark week reflected",true));complete.disabled=!current().reflected&&!canComplete();complete.onclick=()=>{if((!current().reflected&&!canComplete())||!persistWeekly())return;const ok=commitWeeklyReflection(db,start,{reflected:!current().reflected},()=>save()||!!tutorialPractice);if(ok)renderRecords();else{status.textContent=KonaI18n.t("Not saved · retry or back up");retry.hidden=false}};completeReason=el('small',KonaI18n.t("Add a daily record or write a weekly note to enable this."),'rv-done-reason');completeReason.id='weeklyReflectionDisabledReason';complete.setAttribute('aria-describedby','weeklyReflectionDisabledReason');completeReason.hidden=!complete.disabled;const controls=el('div',undefined,'rv-controls');controls.append(complete,completeReason);const writingHeading=panel.querySelector('.rv-writing-heading'),toolbar=el('div',undefined,'rv-writing-toolbar');writingHeading.before(toolbar);toolbar.append(writingHeading);panel.append(controls);
-const count=Object.values(db.weeklyReflections||{}).filter(x=>x?.reflected===true).length;panel.append(el('p',count+' '+(count===1?KonaI18n.t("week"):KonaI18n.t("weeks"))+KonaI18n.t(" revisited · A record of reflection, not a measure of faith."),'weekly-count'));
+appendReflectionContext(editor,draft,persistWeekly);
+complete=el('button',current().reflected?KonaI18n.t("Reopen review"):KonaI18n.t("Finish review"),'rv-done');complete.type='button';complete.setAttribute('aria-label',current().reflected?KonaI18n.t("Undo week reflected",true):KonaI18n.t("Mark week reflected",true));complete.disabled=!current().reflected&&!canComplete();complete.onclick=()=>{if((!current().reflected&&!canComplete())||!persistWeekly())return;const ok=commitWeeklyReflection(db,start,{reflected:!current().reflected},()=>save()||!!tutorialPractice);if(ok)renderRecords();else{status.textContent=KonaI18n.t("Not saved · retry or back up");retry.hidden=false}};completeReason=el('small',KonaI18n.t("Add a daily record or write a weekly note to enable this."),'rv-done-reason');completeReason.id='weeklyReflectionDisabledReason';complete.setAttribute('aria-describedby','weeklyReflectionDisabledReason');completeReason.hidden=!complete.disabled;const controls=el('div',undefined,'rv-controls');controls.append(complete,completeReason);const writingHeading=editor.querySelector('.rv-writing-heading'),toolbar=el('div',undefined,'rv-writing-toolbar');writingHeading.before(toolbar);toolbar.append(writingHeading);editor.append(controls);
+const count=Object.values(db.weeklyReflections||{}).filter(x=>x?.reflected===true).length;editor.append(el('p',count+' '+(count===1?KonaI18n.t("week"):KonaI18n.t("weeks"))+KonaI18n.t(" revisited · A record of reflection, not a measure of faith."),'weekly-count'));
 const records=el('section',undefined,'weekly-records review-weekly-records');
 if(!recordedDays)records.append(el('p',KonaI18n.t("No daily records this week. You can still write a reflection."),'reflection-help'));
 for(const entry of entries.filter(hasDayContent).reverse()){
  const day=el('section',undefined,'weekly-day'),heading=reviewDateGroupHeading(entry.date,entry.moments.length,'h4');day.append(heading);
- const sorted=[...entry.moments].sort((a,b)=>Number(b.pinned)-Number(a.pinned));for(const record of sorted.slice(0,3))day.append(reviewRow(record,{preview:true}));
- if(sorted.length>3){const extra=el('details',undefined,'review-more-records');extra.append(el('summary',(sorted.length-3)+KonaI18n.t(" more records")));for(const record of sorted.slice(3))extra.append(reviewRow(record,{preview:true}));day.append(extra)}
- if(reflectionHasText(entry.reflection)){const saved=el('button',entry.reflection.insight||KonaI18n.t("Daily reflection"),'review-reflection-preview');saved.type='button';saved.onclick=()=>{if(!reviewCanEdit())return;reflectPeriod='daily';changeDate(entry.date)};day.append(saved)}records.append(day)
+ // Only end-of-day mood belongs in the weekly day header; never substitute another check-in.
+ const endOfDay=entry.moments.find(r=>r.kind==='check'&&r.phase==='night');
+ if(endOfDay&&(endOfDay.feeling||endOfDay.energy))heading.append(el('span',reviewDailyFeelingEmoji(endOfDay)+' '+(konaFeeling({energy:endOfDay.energy,happiness:endOfDay.happiness})||endOfDay.feeling||''),'weekly-day-mood'));
+ if(reflectionHasText(entry.reflection)){
+  const saved=el('section',undefined,'weekly-daily-reflection');saved.append(el('h5',word('Daily reflection','데일리 회고')));
+  const labels={insight:word('Reflection','회고'),action:word('Next step','다음 행동'),additionalNotes:word('Additional notes','추가 기록'),scripture:word('Scripture or context','말씀과 맥락'),discernment:word('Further prayer or conversation','더 기도하거나 나눌 내용'),followup:word('Later reflection','이후 회고')};
+  for(const [key,label] of Object.entries(labels))if(typeof entry.reflection[key]==='string'&&entry.reflection[key].trim()){
+   if(key!=='insight')saved.append(el('small',label));saved.append(el('p',entry.reflection[key],'reflection-saved-text'));
+  }
+  for(const followup of entry.reflection.followups||[])if(followup.text?.trim())saved.append(el('small',reviewFollowupLocalDate(followup.createdAt)),el('p',followup.text,'reflection-saved-text'));
+  const open=el('button',word('Open daily reflection','데일리 회고 열기'),'mini-btn');open.type='button';open.onclick=()=>{if(!reviewCanEdit())return;reflectPeriod='daily';changeDate(entry.date)};saved.append(open);day.append(saved);
+ }
+ const anchors=entry.moments.filter(r=>r.kind==='anchor'),notes=entry.moments.filter(r=>r.kind!=='anchor');
+ const important=notes.filter(r=>reviewImportant(r)||r.pinned),other=notes.filter(r=>!reviewImportant(r)&&!r.pinned);
+ const scheduleTags=new Set();
+ const appendNotes=(parent,list)=>{
+  const groups=new Map();for(const note of list){const key=note.scheduleId?'schedule:'+note.scheduleId:'note:'+note.id;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(note)}
+  for(const [key,group] of groups){
+   const wrap=el('div',undefined,'weekly-note-group'),first=group[0];
+   if(first.scheduleId&&!scheduleTags.has(key)){
+    const event=first.reviewEvent,source=db.days[entry.date]?.quickCaptureEntries?.find(q=>q.id===first.sourceId);
+    const name=event?KonaI18n.eventLabel(event):first.scheduleLabel,time=event?.start?event.start+(event.end?'–'+event.end:''):source?.scheduleTime||'';
+    const chip=el('small',[name,time].filter(Boolean).join(' · '),'weekly-schedule-chip');if(chip.textContent){wrap.append(chip);scheduleTags.add(key)}
+   }
+   for(const note of group)wrap.append(reviewRow(note,{grouped:true,weeklyView:true}));parent.append(wrap);
+  }
+ };
+ if(important.length){const highlights=el('section',undefined,'weekly-important-records');highlights.append(el('h5',word('Important records','중요 기록')));appendNotes(highlights,important);day.append(highlights)}
+ for(const anchor of anchors){const area=el('div',undefined,'weekly-anchor');area.append(el('small',word('Daily intention','하루의 방향')),el('p',anchor.body||anchor.content||''));day.append(area)}
+ if(other.length){const extra=el('details',undefined,'weekly-other-records');extra.append(el('summary',word('Other records','그 외 기록')+' · '+other.length));appendNotes(extra,other);day.append(extra)}
+ records.append(day);
 }
-panel.insertBefore(records,panel.querySelector('.rv-writing-toolbar'));
+panel.append(records);
 
 }
 

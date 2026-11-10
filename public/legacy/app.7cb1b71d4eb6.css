@@ -5258,3 +5258,39 @@ body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-da
  border-left:1.4px solid #C5C9CD!important;margin:3px 0!important;padding:4px 8px!important;
 }
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-record.review-personal-note:not(.rv-daily-checkin){border-left-color:#7A8187!important}
+
+/* Weekly is a reflection journal: one editor, then saved meaning before raw notes. */
+body .app #page-records #new-reflect-page[data-period=weekly]{font-family:var(--font-ui)!important;color:var(--ink)!important}
+body .app #page-records #new-reflect-page[data-period=weekly] :is(.weekly-reflection-disclosure,.weekly-day,.weekly-note-group,.weekly-record,.weekly-daily-reflection,.weekly-anchor){box-shadow:none!important;min-width:0;max-width:100%;background:transparent!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-compact-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-period-text{font-size:calc(21px * var(--kona-ui-scale,1))!important;font-weight:700!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-compact-meta{margin:4px 0 16px!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;color:var(--sub)!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-reflection-disclosure{margin:0 0 24px!important;border:0!important;padding:0!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-reflection-toggle{display:inline-flex!important;align-items:center;list-style:none;border:1px solid var(--line)!important;border-radius:12px!important;padding:8px 12px!important;min-height:36px!important;font-size:calc(15px * var(--kona-ui-scale,1))!important;font-weight:650!important;cursor:pointer;color:var(--ink)!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-reflection-toggle::-webkit-details-marker{display:none}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-reflection-editor{border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:12px}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-reflection-editor :is(.rv-writing-heading,.weekly-count){display:none!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-reflection-editor :is(textarea,.weekly-form-label){font-size:calc(15px * var(--kona-ui-scale,1))!important;font-weight:400!important;line-height:1.5!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-reflection-editor .rv-done{width:auto!important;min-height:30px!important;height:auto!important;padding:5px 12px!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;border-radius:8px!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-day{margin:0 0 24px!important;padding:0!important;border:0!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-day>.review-date-header{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin:0 0 12px!important;padding:0 0 8px!important;border-bottom:1px solid var(--line)!important;font-size:calc(17px * var(--kona-ui-scale,1))!important;font-weight:700!important;color:var(--ink)!important}
+body .app #page-records #new-reflect-page[data-period=weekly] :is(.review-date-count,.weekly-day-mood,.weekly-other-records>summary,.weekly-anchor>small,.weekly-daily-reflection>small){font-size:calc(12px * var(--kona-ui-scale,1))!important;font-weight:400!important;line-height:1.5!important;color:var(--sub)!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-day-mood{margin-left:auto}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-daily-reflection{border:1px solid var(--line)!important;border-radius:12px!important;padding:16px!important;margin:0 0 16px!important;white-space:normal!important}
+body .app #page-records #new-reflect-page[data-period=weekly] :is(.weekly-daily-reflection,.weekly-important-records)>h5{margin:0 0 4px!important;font-size:calc(16px * var(--kona-ui-scale,1))!important;font-weight:700!important;color:var(--ink)!important}
+body .app #page-records #new-reflect-page[data-period=weekly] :is(.reflection-saved-text,.rv-note-preview,.review-class-part p,.weekly-anchor p){font-size:calc(15px * var(--kona-ui-scale,1))!important;line-height:1.5!important;font-weight:400!important;white-space:pre-wrap!important;overflow:visible!important;max-height:none!important;display:block!important;-webkit-line-clamp:unset!important;text-overflow:clip!important;overflow-wrap:anywhere;margin:4px 0 0!important;color:var(--ink)!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-daily-reflection>small{display:block;margin-top:12px}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-important-records{margin-bottom:16px}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-record{border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;padding:8px 0!important;margin:8px 0!important;background:transparent!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-record.review-personal-note{border-left:2px solid var(--faint)!important;padding-left:10px!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-record :is(.rv-user-note-title,.review-class-title){font-size:calc(16px * var(--kona-ui-scale,1))!important;font-weight:650!important;line-height:1.5!important;margin:0!important;padding:0!important;color:var(--ink)!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-record .rv-daily-inferred-title{font-weight:400!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-note-header{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-note-header>.rv-user-note-title{min-width:0;overflow-wrap:anywhere}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-note-header>time{font-size:calc(12px * var(--kona-ui-scale,1))!important;font-weight:400!important;white-space:nowrap;color:var(--sub)!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-schedule-chip{display:inline-block!important;max-width:100%;border:1px solid var(--line)!important;border-radius:999px!important;padding:3px 9px!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;font-weight:400!important;line-height:1.5!important;white-space:normal!important;color:var(--ink)!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-anchor{border:0!important;padding:0!important;margin:0 0 12px!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-anchor p{font-size:calc(14px * var(--kona-ui-scale,1))!important;color:var(--sub)!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-other-records{border:0!important;border-top:1px solid var(--line)!important;padding:0!important;margin:0!important;background:transparent!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-other-records>summary{min-height:36px;padding:8px 0;cursor:pointer}
+body .app #page-records #new-reflect-page[data-period=weekly] .review-note-leading-emoji{margin-right:.375em!important}
