@@ -4997,3 +4997,15 @@ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-use
   margin-left:0!important;
  }
 }
+
+/* Stronger Daily-only spacing override for the inherited .review-v3-section
+   margins. Prevent the old 24px margin plus 7px flex gap from stacking. */
+body .app #page-records #new-reflect-page .rv-timeline{
+ gap:0!important;row-gap:0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline > .rv-timegroup.review-v3-section{
+ margin:11px 0 0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline > .rv-timegroup.review-v3-section:first-child{
+ margin-top:0!important;
+}
