@@ -1,44 +1,38 @@
-# Daily reference UI verification
+# Daily and Weekly review QA — 2026-11-10
 
-final result: blocked
+Final result: passed with viewport coverage limitations below.
 
-## Visual target
-- User-supplied screenshot: `/workspace/scratch/8cbe128023a9/upload/01-42206.webp` (691 × 1536 pixels).
-- Intended view: existing Daily Review, mobile, light theme; preserve the app's existing fonts, brand assets and real user data.
-- Existing baseline capture: `/workspace/shared/onharu-daily-updated.png`.
-- Latest rendered implementation capture: unavailable. The cloud browser rejected the preview refresh with a URL-policy security block. No alternate browser route or automation was attempted.
+## Changes
+- Daily retains the approved compact phase tint headers, mood emoji/name without written times, one schedule tag per linked group, full reflection, and independent 1.4px gray personal-note rails with the personal-note label.
+- Weekly starts with week navigation/counts and a closed write/edit reflection control. The editor retains autosave, retry, next step, scripture/discernment, and completion.
+- Each recorded day shows its saved daily reflection in full, explicitly highlighted/pinned records, a secondary daily intention, then closed other records. No arbitrary three-record preview and no duplication of important records in other records.
+- Weekly personal notes have a separate 2px rail, first-line fallback at regular weight, written time at right, and no personal-note label. Linked notes/check-ins have no written timestamps; schedule time belongs in one pill per schedule.
+- The original source/data schema and the existing production origin remain unchanged.
 
-## Changes prepared
-- Each personal note has an independent neutral gray 1.4px left rail (0.7× the previous width), with a 3px top/bottom margin so consecutive rails are visibly separated. Gray is #C5C9CD in Light and #7A8187 in Dark.
-- Schedule-linked notes never show a written/recorded timestamp; their shared schedule tag shows the event time only. Personal-note timestamps are retained.
-- Ordinary notes retain a slender 2px left rail plus a faint horizontal divider; check-in and class surfaces remain without left rails. Personal notes show their type label above both explicit and inferred titles.
-- Separate ordinary notes with a faint 1px horizontal divider and 6px vertical padding. Keep title/body spacing at 2px and omit an empty body when an untitled note has only one line. Check-in/class tinted surfaces have no extra divider.
-- Remove decorative left rails from book cards; keep a slender rail on ordinary notes. Reduce title/body gap to 2px and ordinary note vertical padding/margins to 6px/0px, while retaining body font size and authored line breaks.
-- Keep emoji-to-title spacing close to 1.5 text spaces (0.375em) across check-ins, class headings and note tags.
-- Combine date, anchor and complete reflection into one restrained summary surface.
-- Use compact tint-only section bars, without a left border; Korean labels are 아침 / 낮 / 저녁.
-- Increase morning gold, midday sage and evening lavender tints, including dark-theme counterparts.
-- Flatten check-in and class surfaces while retaining the book icon and a book-labelled flat class surface.
-- Keep actual selected emotion emoji and mood name; omit check-in occurrence time.
-- Show one linked schedule name and event-time chip at the top of each schedule group. Do not repeat it below individual notes or infer links from capture time.
-- Preserve plain-weight first-line headings for untitled notes and show reflection text in full.
+## Actual rendered inspection
+Cloudflare branch preview: https://ea3364ac.on-haru-pages.pages.dev/legacy/
+Commit: 277281931b5353eaa531bebb54ef050009c52438 (subsequent changes add the legacy responseReview field and square mood badges).
 
-## Fidelity surfaces
-- Typography: existing Pretendard and 13.5px body tokens retained; inferred titles remain weight 400. Requires rendered recheck.
-- Spacing: summary surfaces unified; small flat cards; compact 32px tint-only section toggles without a left border. Requires 320/390/1024px recheck.
-- Colors: stronger phase tints with explicit dark overrides. Requires rendered contrast and hierarchy check.
-- Assets: supplied brand and existing calendar/book assets reused; no reference image or personal content uploaded to GitHub. Mood emoji are explicitly required by the user.
-- Copy/content: original stored notes and schedule links are unchanged. Reflection text has no line clamp, ellipsis or height limit.
+Using synthetic notes entered through the UI, verified:
+- Korean Daily and Weekly render, the weekly tab is selected, and the saved reflection (447 characters) displays without truncation.
+- Closed weekly editor displays only its write/edit control; raw records start closed and can be opened.
+- Weekly insight and next step autosave; completion persists; reopening restores both values and offers undo completion.
+- Highlighting an untitled personal note places it only in Important records; the remaining note stays in Other records.
+- Untitled first-line heading computed weight is 400, no personal-note label is present in Weekly, and its personal rails compute to 2px.
+- Light and dark appearances render; dark body text is rgb(224,233,225) on rgb(24,35,31).
+- Current week and empty next week navigation work. Empty week shows its empty state while still allowing reflection writing.
+- Wide viewport and 340/454 CSS-pixel widths via normal browser zoom: no horizontal overflow. Browser device emulation is unavailable; exact 320/390/1024 device emulation was not rerun. Zoom changes viewport height too, so this is narrower coverage than a full device matrix.
+- The prior localhost error tab was not revisited or bypassed. The deployed HTTPS preview loaded normally.
 
-## Blocking findings
-- [P1] Latest browser-rendered evidence is missing. Compare a new screenshot against the supplied target at matched mobile size before declaring visual QA passed.
-- Recheck summary editing, reflection editing, section collapsing, schedule chips, all three phase tints, dark theme, and browser console errors.
+## Code verification
+- Static UI checks: 16 passed.
+- Node tests: 16 passed (5 Weekly renderer/save/recovery tests, 4 daypart tests, 7 live-release verifier tests).
+- Weekly tests cover full reflection/followup, ordering, important/raw disjoint sets, one linked schedule chip, end-of-day-only mood, autosave, complete, failed-save rollback, disabled empty-week completion, navigation, and Korean control text.
+- JavaScript parse and git diff whitespace checks passed. Existing CSS inventory remains diagnostic; no blanket stylesheet cleanup was attempted.
 
-## Verification performed
-- Existing static UI checks: 16 passed.
-- JavaScript parse and git diff whitespace checks passed.
-- No deployment, main merge, storage migration, or real user-data manipulation.
-
-## Comparison history
-- Baseline and target were opened before implementation.
-- The first post-change browser refresh was blocked by browser security policy. Therefore no completed post-change side-by-side comparison or visual pass is claimed.
+## Deployment and rollback
+- User explicitly authorized deployment. Production is GitHub main → on-haru-pages → the existing on-haru Worker origin.
+- Pre-release production commit: 8cae18d2203adb4929b968c131a745b0ead66b42.
+- Pre-release Cloudflare production deployment: 9fcc9e0c-9d42-494c-97a5-f897f2fa326d.
+- Rollback: revert the merge commit on main, or roll the Pages production deployment back to that deployment. No stored-user-data conversion is involved.
+- Production release attestation is performed after merging/deployment; do not infer deployment success from this document alone.

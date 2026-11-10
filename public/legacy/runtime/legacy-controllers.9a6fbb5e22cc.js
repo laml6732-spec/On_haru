@@ -2886,7 +2886,7 @@ for(const entry of entries.filter(hasDayContent).reverse()){
  if(endOfDay&&(endOfDay.feeling||endOfDay.energy))heading.append(el('span',reviewDailyFeelingEmoji(endOfDay)+' '+(konaFeeling({energy:endOfDay.energy,happiness:endOfDay.happiness})||endOfDay.feeling||''),'weekly-day-mood'));
  if(reflectionHasText(entry.reflection)){
   const saved=el('section',undefined,'weekly-daily-reflection');saved.append(el('h5',word('Daily reflection','데일리 회고')));
-  const labels={insight:word('Reflection','회고'),action:word('Next step','다음 행동'),additionalNotes:word('Additional notes','추가 기록'),scripture:word('Scripture or context','말씀과 맥락'),discernment:word('Further prayer or conversation','더 기도하거나 나눌 내용'),followup:word('Later reflection','이후 회고')};
+  const labels={insight:word('Reflection','회고'),responseReview:word('Looking back','돌아본 내용'),action:word('Next step','다음 행동'),additionalNotes:word('Additional notes','추가 기록'),scripture:word('Scripture or context','말씀과 맥락'),discernment:word('Further prayer or conversation','더 기도하거나 나눌 내용'),followup:word('Later reflection','이후 회고')};
   for(const [key,label] of Object.entries(labels))if(typeof entry.reflection[key]==='string'&&entry.reflection[key].trim()){
    if(key!=='insight')saved.append(el('small',label));saved.append(el('p',entry.reflection[key],'reflection-saved-text'));
   }

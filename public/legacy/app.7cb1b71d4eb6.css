@@ -5294,3 +5294,4 @@ body .app #page-records #new-reflect-page[data-period=weekly] .weekly-anchor p{f
 body .app #page-records #new-reflect-page[data-period=weekly] .weekly-other-records{border:0!important;border-top:1px solid var(--line)!important;padding:0!important;margin:0!important;background:transparent!important}
 body .app #page-records #new-reflect-page[data-period=weekly] .weekly-other-records>summary{min-height:36px;padding:8px 0;cursor:pointer}
 body .app #page-records #new-reflect-page[data-period=weekly] .review-note-leading-emoji{margin-right:.375em!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-record .review-feeling-value{border-radius:6px!important;box-shadow:none!important;font-size:calc(12px * var(--kona-ui-scale,1))!important}
