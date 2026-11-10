@@ -10,7 +10,7 @@ final result: blocked
 
 ## Changes prepared
 - Combine date, anchor and complete reflection into one restrained summary surface.
-- Replace filled section pills with compact color-rule headings; Korean labels are 아침 / 낮 / 저녁.
+- Use compact tint-only section bars, without a left border; Korean labels are 아침 / 낮 / 저녁.
 - Increase morning gold, midday sage and evening lavender tints, including dark-theme counterparts.
 - Flatten check-in and class surfaces while retaining the book icon and a subtle class spine.
 - Keep actual selected emotion emoji and mood name; omit check-in occurrence time.
@@ -19,7 +19,7 @@ final result: blocked
 
 ## Fidelity surfaces
 - Typography: existing Pretendard and 13.5px body tokens retained; inferred titles remain weight 400. Requires rendered recheck.
-- Spacing: summary surfaces unified; small flat cards; compact 32px section toggles. Requires 320/390/1024px recheck.
+- Spacing: summary surfaces unified; small flat cards; compact 32px tint-only section toggles without a left border. Requires 320/390/1024px recheck.
 - Colors: stronger phase tints with explicit dark overrides. Requires rendered contrast and hierarchy check.
 - Assets: supplied brand and existing calendar/book assets reused; no reference image or personal content uploaded to GitHub. Mood emoji are explicitly required by the user.
 - Copy/content: original stored notes and schedule links are unchanged. Reflection text has no line clamp, ellipsis or height limit.

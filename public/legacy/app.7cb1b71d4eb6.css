@@ -5158,7 +5158,7 @@ body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-d
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=evening]{--daily-tint:#E9E1F4;--daily-heading:#8465AA;--daily-line:#B7A0D1}
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=night]{--daily-tint:#E0E7F0;--daily-heading:#617998;--daily-line:#A6B7CB}
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar{
- background:transparent!important;color:var(--daily-heading)!important;border:0!important;border-left:3px solid var(--daily-heading)!important;
+ background:var(--daily-tint)!important;color:var(--daily-heading)!important;border:0!important;border-left:0!important;
  border-radius:0!important;padding:3px 7px!important;min-height:32px!important;margin:4px 0!important;
 }
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar :is(.review-section-name,.review-section-count,.review-section-chevron){color:var(--daily-heading)!important}
