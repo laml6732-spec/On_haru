@@ -2847,7 +2847,7 @@ heading.append(
  period,
  weekArrow('›',1,KonaI18n.t("Next reflection week"))
 );
-if(start!==monday(nowLocal())){const current=el('button',KonaI18n.t("This week"),'weekly-jump-current');current.type='button';current.setAttribute('aria-label',KonaI18n.t("Current reflection week"));current.onclick=()=>{weeklyOffset=Math.round((Date.parse(monday(nowLocal())+'T12:00:00Z')-Date.parse(base.start+'T12:00:00Z'))/604800000);renderRecords()};panel.append(current)}
+if(start!==monday(nowLocal())){const current=el('button',KonaI18n.t("This week"),'weekly-jump-current mini-btn');current.type='button';current.setAttribute('aria-label',KonaI18n.t("Current reflection week"));current.onclick=()=>{weeklyOffset=Math.round((Date.parse(monday(nowLocal())+'T12:00:00Z')-Date.parse(base.start+'T12:00:00Z'))/604800000);renderRecords()};panel.append(current)}
 overview.append(heading);
 const dates=Array.from({length:7},(_,i)=>dayAdd(start,i)),entries=dates.map(d=>({date:d,moments:reviewRecords(d),reflection:db.days[d]?.reflectionNotes||{},reflected:!!db.days[d]?.reflected}));
 const hasDayContent=x=>x.moments.length||reflectionHasText(x.reflection);
