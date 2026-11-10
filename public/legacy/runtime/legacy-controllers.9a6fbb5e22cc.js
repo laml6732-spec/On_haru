@@ -358,6 +358,19 @@ const KONA_FEELINGS=[
  [KonaI18n.t("Overwhelmed"),KonaI18n.t("Tense"),KonaI18n.t("Restless"),KonaI18n.t("Enthusiastic"),KonaI18n.t("Excited")]
 ];
 function konaFeeling(m){if(!m)return '';const e=Number(m.e??m.energy),h=Number(m.v??m.happiness);return Number.isInteger(e)&&e>=1&&e<=5&&Number.isInteger(h)&&h>=1&&h<=5?KONA_FEELINGS[e-1][h-1]:''}
+const KONA_FEELING_EMOJIS=[
+ ['🪫','😩','😶','😌','🌿'],
+ ['😓','😮‍💨','🤫','🙂','😌'],
+ ['😔','😟','😐','🙂','😊'],
+ ['😤','😰','😕','😄','😁'],
+ ['😵‍💫','😬','😣','🤩','🥳']
+];
+function konaFeelingWithEmoji(m){
+ const feeling=konaFeeling(m);if(!feeling)return '';
+ const e=Number(m.e??m.energy),h=Number(m.v??m.happiness);
+ return KONA_FEELING_EMOJIS[e-1][h-1]+' '+feeling;
+}
+
 function konaEnergyLabel(e){return KONA_ENERGY_LABELS[e-1]||''}
 function konaFeelingIcon(dimension,level){
  if(dimension==='energy')return KonaI18n.markup("<svg viewBox=\"0 0 48 12\" aria-hidden=\"true\" focusable=\"false\">")+Array.from({length:5},(_,j)=>'<circle cx="'+(4+j*10)+'" cy="6" r="3" fill="currentColor" opacity="'+(j<level?'1':'.15')+'"/>').join('')+'</svg>';
@@ -752,7 +765,7 @@ function renderCompactMood(c){
  }
  grid.append(konaSlimScale('energy',draft.energy,draft.energy,v=>pick('energy',v)));
  grid.append(konaSlimScale('happiness',draft.happiness,draft.energy,v=>pick('happiness',v)));
- let summary=document.getElementById('checkFeelingSummary');if(!summary){summary=document.createElement('span');summary.id='checkFeelingSummary';summary.setAttribute('role','status')}summary.textContent=konaFeeling({e:draft.energy,v:draft.happiness});summary.hidden=phase==='noon';(document.getElementById('checkFlowHeading')||grid).append(summary)
+ let summary=document.getElementById('checkFeelingSummary');if(!summary){summary=document.createElement('span');summary.id='checkFeelingSummary';summary.setAttribute('role','status')}summary.textContent=konaFeelingWithEmoji({e:draft.energy,v:draft.happiness});summary.hidden=phase==='noon';(document.getElementById('checkFlowHeading')||grid).append(summary)
 }
 
 function renderCheck(){
