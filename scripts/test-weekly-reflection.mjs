@@ -37,10 +37,14 @@ function fixture({moments=[],reflection={},saved={},fail=false,language='en'}={}
 }
 test('weekly editor and raw records start closed; no default fixed-three selection',()=>{
  const f=fixture({moments:[{id:'a',kind:'capture',body:'unmarked'}]});
- assert.equal(f.all('weekly-reflection-disclosure')[0].open,false);
+ const disclosure=f.all('weekly-reflection-disclosure')[0],editor=f.all('weekly-reflection-editor')[0];
+ assert.equal(disclosure.open,false);assert.equal(editor.hidden,true);
+ disclosure.open=true;disclosure.ontoggle();assert.equal(editor.hidden,false);
+ disclosure.open=false;disclosure.ontoggle();assert.equal(editor.hidden,true);
+ assert.equal(editor.parent,f.panel);
  assert.equal(f.all('weekly-other-records')[0].open,false);
  assert.equal(f.all('weekly-important-records').length,0);
- assert.equal(f.all('weekly-reflection-toggle')[0].textContent,'Write weekly reflection');
+ assert.equal(f.all('weekly-reflection-toggle')[0].textContent,'Reflect');
 });
 test('saved daily reflection stays complete before highlights; no duplicated records',()=>{
  const text='회고 전체 내용\n'.repeat(160),moments=[{id:'a',kind:'capture',body:'priority',important:true},{id:'b',kind:'check',body:'raw',phase:'morning'},{id:'c',kind:'anchor',body:'intention'}];
@@ -60,5 +64,5 @@ test('weekly input autosaves; completion saves; failed writes restore the prior 
  const broken=fixture({saved:{insight:'kept'},fail:true}),field=broken.all('rv-journal-main')[0].querySelector('textarea');field.value='unsaved';field.oninput();assert.equal(broken.db.weeklyReflections['2026-11-09'].insight,'kept');assert.equal(broken.all('rv-save-status')[0].textContent,'Not saved · retry or back up');
 });
 test('empty week completion disabled; week navigation and Korean control remain available',()=>{
- const f=fixture({language:'ko'});assert.equal(f.all('rv-done')[0].disabled,true);assert.equal(f.all('weekly-reflection-toggle')[0].textContent,'주간 회고 작성');f.all('weekly-nav-arrow')[0].onclick();assert.equal(f.c.weeklyOffset,-1);assert.equal(f.renders,1);
+ const f=fixture({language:'ko'});assert.equal(f.all('rv-done')[0].disabled,true);assert.equal(f.all('weekly-reflection-toggle')[0].textContent,'회고 쓰기');f.all('weekly-nav-arrow')[0].onclick();assert.equal(f.c.weeklyOffset,-1);assert.equal(f.renders,1);
 });

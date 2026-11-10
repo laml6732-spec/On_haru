@@ -5324,3 +5324,36 @@ body .app #page-records #new-reflect-page[data-period=weekly] .weekly-record .re
 body .app #page-records #new-reflect-page[data-period=weekly] .weekly-record .review-note-leading-emoji .kona-sheep-icon{
  width:1em!important;height:1em!important;margin:0!important;vertical-align:middle!important;object-fit:contain!important;
 }
+
+/* One weekly toolbar: date, compact record count, reflection action. */
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row{
+ display:grid!important;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;margin:0 0 20px!important;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-compact-header{
+ width:100%!important;margin:0!important;grid-template-columns:28px minmax(0,1fr) 28px!important;min-width:0!important;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-nav-arrow{
+ width:28px!important;min-width:28px!important;min-height:44px!important;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-period-text{
+ font-size:calc(14px * var(--kona-ui-scale,1))!important;white-space:nowrap!important;overflow-wrap:normal!important;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-compact-meta{
+ display:block!important;margin:0!important;font-size:calc(11px * var(--kona-ui-scale,1))!important;line-height:1.4!important;white-space:nowrap!important;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-count-short{display:none}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-reflection-disclosure{margin:0!important;min-width:0!important}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-reflection-toggle{
+ min-height:36px!important;padding:7px 10px!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;white-space:nowrap!important;
+}
+body .app #page-records #new-reflect-page[data-period=weekly]>.weekly-reflection-editor{margin:0 0 20px!important}
+body .app #page-records #new-reflect-page[data-period=weekly]>.weekly-reflection-editor[hidden]{display:none!important}
+@media(max-width:359px){
+ body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row{gap:5px}
+ body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-count-full{display:none}
+ body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-count-short{display:inline}
+ body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-period-text{font-size:calc(13px * var(--kona-ui-scale,1))!important}
+}
+/* Enlarged accessibility text may wrap groups rather than overflow the viewport. */
+:root[data-ui-enlarged=true] body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row{display:flex!important;flex-wrap:wrap}
+:root[data-ui-enlarged=true] body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-compact-header{width:auto!important;flex:1 1 150px}

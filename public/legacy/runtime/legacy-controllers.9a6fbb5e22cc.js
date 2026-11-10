@@ -2831,32 +2831,41 @@ function drawWeekly(){
 if(weeklySelectedDate!==date){weeklyOffset=0;weeklySelectedDate=date}
 const reviewDay=db.settings.weeklyReflectionDay===1?1:0,base=weeklyReflectionPeriod(date,reviewDay),start=dayAdd(base.start,weeklyOffset*7),end=dayAdd(start,6),scheduled=dayAdd(start,reviewDay===1?7:6);
 const record=weeklyReflectionRecord(db,start);
+const overview=el('div',undefined,'weekly-overview-row');panel.append(overview);
 // Weekly is already named in the Review tabs: show only one compact week navigator.
 const heading=el('nav',undefined,'weekly-compact-header');
 heading.setAttribute('aria-label',KonaI18n.t("Weekly Reflection",true));
 const sameMonth=start.slice(0,7)===end.slice(0,7);
 const endLabel=sameMonth?(KonaI18n.dateLocale.startsWith('ko')?Number(end.slice(8,10))+'일':String(Number(end.slice(8,10)))):short(end);
 const periodText=short(start)+' – '+endLabel+(start.slice(0,4)===nowLocal().slice(0,4)?'':' · '+start.slice(0,4));
-const period=el('strong',periodText,'weekly-period-text');
+const compactStart=KonaI18n.language==='ko'?Number(start.slice(5,7))+'/'+Number(start.slice(8,10)):short(start);
+const compactEnd=sameMonth?String(Number(end.slice(8,10))):KonaI18n.language==='ko'?Number(end.slice(5,7))+'/'+Number(end.slice(8,10)):short(end);
+const period=el('strong',compactStart+'–'+compactEnd,'weekly-period-text');period.setAttribute('aria-label',periodText);period.title=periodText;
 const weekArrow=(label,delta,title)=>{const b=el('button',label,'weekly-nav-arrow');b.type='button';b.setAttribute('aria-label',title);b.onclick=()=>{weeklyOffset+=delta;renderRecords()};return b};
 heading.append(
  weekArrow('‹',-1,KonaI18n.t("Previous reflection week")),
  period,
  weekArrow('›',1,KonaI18n.t("Next reflection week"))
 );
-if(start!==monday(nowLocal())){const current=el('button',KonaI18n.t("This week"),'weekly-jump-current');current.type='button';current.setAttribute('aria-label',KonaI18n.t("Current reflection week"));current.onclick=()=>{weeklyOffset=Math.round((Date.parse(monday(nowLocal())+'T12:00:00Z')-Date.parse(base.start+'T12:00:00Z'))/604800000);renderRecords()};heading.append(current)}
-panel.append(heading);
+if(start!==monday(nowLocal())){const current=el('button',KonaI18n.t("This week"),'weekly-jump-current mini-btn');current.type='button';current.setAttribute('aria-label',KonaI18n.t("Current reflection week"));current.onclick=()=>{weeklyOffset=Math.round((Date.parse(monday(nowLocal())+'T12:00:00Z')-Date.parse(base.start+'T12:00:00Z'))/604800000);renderRecords()};panel.append(current)}
+overview.append(heading);
 const dates=Array.from({length:7},(_,i)=>dayAdd(start,i)),entries=dates.map(d=>({date:d,moments:reviewRecords(d),reflection:db.days[d]?.reflectionNotes||{},reflected:!!db.days[d]?.reflected}));
 const hasDayContent=x=>x.moments.length||reflectionHasText(x.reflection);
 const {momentCount,recordedDays}=reviewWeekSummary(entries);
 // The week summary stays quiet; feelings belong to their recorded day.
 const ko=KonaI18n.language==='ko',word=(en,kr)=>ko?kr:en;
 const meta=el('div',undefined,'weekly-compact-meta');
-meta.append(el('span',recordedDays+' '+(recordedDays===1?KonaI18n.t("day"):KonaI18n.t("days"))+KonaI18n.t(" recorded · ")+momentCount+KonaI18n.t(" records"),'weekly-compact-count'));
-panel.append(meta);
-const reflection=el('details',undefined,'weekly-reflection-disclosure'),reflectionToggle=el('summary',word('Write weekly reflection','주간 회고 작성'),'weekly-reflection-toggle');
-reflectionToggle.textContent=reflectionHasText(record)?word('Edit weekly reflection','주간 회고 수정'):reflectionToggle.textContent;
-const editor=el('div',undefined,'weekly-reflection-editor');reflection.append(reflectionToggle,editor);panel.append(reflection);
+const fullCount=word(recordedDays+' '+(recordedDays===1?'day':'days')+' · '+momentCount+' '+(momentCount===1?'note':'notes'),recordedDays+'일 · '+momentCount+'개');
+meta.setAttribute('aria-label',fullCount);meta.title=fullCount;
+meta.append(el('span',fullCount,'weekly-count-full'),el('span',word(recordedDays+'d · '+momentCount,fullCount),'weekly-count-short'));
+overview.append(meta);
+const reflection=el('details',undefined,'weekly-reflection-disclosure'),reflectionToggle=el('summary',word('Reflect','회고 쓰기'),'weekly-reflection-toggle');
+reflectionToggle.textContent=reflectionHasText(record)?word('Edit','회고 수정'):reflectionToggle.textContent;
+const editor=el('div',undefined,'weekly-reflection-editor');editor.hidden=true;editor.id='weekly-reflection-editor-'+start;
+reflectionToggle.setAttribute('aria-controls',editor.id);reflectionToggle.setAttribute('aria-expanded','false');
+reflectionToggle.setAttribute('aria-label',reflectionHasText(record)?word('Edit weekly reflection','주간 회고 수정'):word('Write weekly reflection','주간 회고 작성'));
+reflection.ontoggle=()=>{editor.hidden=!reflection.open;reflectionToggle.setAttribute('aria-expanded',String(reflection.open))};
+reflection.append(reflectionToggle);overview.append(reflection);panel.append(editor);
 editor.append(el('h3',KonaI18n.t("Weekly reflection"),'rv-writing-heading'));
 const status=el('span',tutorialPractice?KonaI18n.t("Practice only · not saved"):reflectionHasText(record)?KonaI18n.t("Saved"):KonaI18n.t("Autosave"),'rv-save-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');const retry=el('button',KonaI18n.t("Retry weekly save"),'mini-btn');retry.type='button';retry.hidden=true;const feedback=el('div',undefined,'rv-save-feedback');feedback.append(status,retry);editor.append(feedback);
 const draft={...record},current=()=>db.weeklyReflections[start]||record;
