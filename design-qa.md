@@ -9,11 +9,12 @@ final result: blocked
 - Latest rendered implementation capture: unavailable. The cloud browser rejected the preview refresh with a URL-policy security block. No alternate browser route or automation was attempted.
 
 ## Changes prepared
+- Remove decorative left rails from timeline notes and book cards. Reduce title/body gap to 2px and ordinary note vertical padding/margins to 4px/2px, while retaining body font size and authored line breaks.
 - Keep emoji-to-title spacing close to 1.5 text spaces (0.375em) across check-ins, class headings and note tags.
 - Combine date, anchor and complete reflection into one restrained summary surface.
 - Use compact tint-only section bars, without a left border; Korean labels are 아침 / 낮 / 저녁.
 - Increase morning gold, midday sage and evening lavender tints, including dark-theme counterparts.
-- Flatten check-in and class surfaces while retaining the book icon and a subtle class spine.
+- Flatten check-in and class surfaces while retaining the book icon and a book-labelled flat class surface.
 - Keep actual selected emotion emoji and mood name; omit check-in occurrence time.
 - Show one linked schedule name and event-time chip at the top of each schedule group. Do not repeat it below individual notes or infer links from capture time.
 - Preserve plain-weight first-line headings for untitled notes and show reflection text in full.

@@ -5169,7 +5169,7 @@ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin::before
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-header{grid-template-columns:23px minmax(0,1fr) auto!important;min-height:26px!important;gap:4px!important;margin-bottom:3px!important}
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-daily-phase-icon{width:23px!important;height:26px!important;font-size:20px!important;border-radius:0!important;background:transparent!important}
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{
- background:var(--daily-tint)!important;border:0!important;border-left:2px solid var(--daily-line)!important;
+ background:var(--daily-tint)!important;border:0!important;
  border-radius:9px!important;box-shadow:none!important;padding:9px 10px!important;margin:5px 0 7px!important;
 }
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card::after{display:none!important}
@@ -5179,7 +5179,7 @@ body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-li
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .rv-daily-class-icon{font-size:17px!important}
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-event-with-notes>h5{display:none!important}
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-event-with-notes>.review-linked-rail{border:0!important;padding:0!important;margin:0!important}
-body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record:not(.rv-daily-checkin){border:0!important;border-left:2px solid var(--daily-line)!important;padding:6px 8px!important;margin:5px 0!important;box-shadow:none!important}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record:not(.rv-daily-checkin){border:0!important;padding:6px 8px!important;margin:5px 0!important;box-shadow:none!important}
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .rv-daily-record{border:0!important;padding:0!important;margin:0!important}
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record.review-is-important{background:var(--daily-tint)!important;border:0!important;border-radius:9px!important;padding:8px 9px!important}
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-schedule-tag{
@@ -5197,7 +5197,7 @@ html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timelin
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=night]{--daily-tint:#2D3748;--daily-heading:#A8C1DF;--daily-line:#607A9B}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-schedule-tag{background:#364D40!important;color:#DCE8DE!important}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-daily-summary .review-daily-anchor.rv-reference-anchor{background:transparent!important;border:0!important;box-shadow:none!important}
-html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{background:var(--daily-tint)!important;border:0!important;border-left:2px solid var(--daily-line)!important;box-shadow:none!important}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{background:var(--daily-tint)!important;border:0!important;box-shadow:none!important}
 
 /* Linked schedules are labelled once above the grouped notes. */
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group>.rv-daily-group-schedule-tag{
@@ -5211,3 +5211,30 @@ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-dai
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card>h5.rv-daily-book-heading{column-gap:.375em!important}
 body .app #page-records #new-reflect-page .rv-timeline .review-has-emoji .review-emoji-target{padding-left:1.375em!important}
 body .app #page-records #new-reflect-page .rv-timeline .review-note-leading-emoji{width:1em!important}
+
+/* Daily density: content rhythm without decorative left rails. */
+body .app #page-records #new-reflect-page .rv-timeline .review-linked-rail,
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-rail{
+ border-left:0!important;padding-left:0!important;margin-left:0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record:not(.rv-daily-checkin){
+ border-left:0!important;padding:4px 0!important;margin:2px 0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record-head{
+ row-gap:0!important;margin-bottom:2px!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record .rv-entry-body :is(.rv-user-note-title,.rv-note-preview){
+ min-height:0!important;padding-top:0!important;padding-bottom:0!important;margin-top:0!important;margin-bottom:0!important;line-height:1.4!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-linked-group{margin-top:3px!important;margin-bottom:5px!important}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{
+ padding:8px 9px!important;margin:4px 0 5px!important;border-left:0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .rv-daily-record{padding:0!important;margin:0!important}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card>h5.rv-daily-book-heading{
+ margin-bottom:2px!important;padding-bottom:0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .review-class-part{margin:2px 0 4px!important}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .review-class-part>small{margin-bottom:1px!important}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .review-class-part:last-child{margin-bottom:0!important}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group>.rv-daily-group-schedule-tag{margin-top:2px!important;margin-bottom:3px!important}
