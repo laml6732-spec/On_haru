@@ -5238,3 +5238,11 @@ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .revi
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .review-class-part>small{margin-bottom:1px!important}
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .review-class-part:last-child{margin-bottom:0!important}
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group>.rv-daily-group-schedule-tag{margin-top:2px!important;margin-bottom:3px!important}
+/* Ordinary Daily notes use a light horizontal divider instead of a left rail. */
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-record:not(.rv-daily-checkin):not(.review-is-important){
+ padding:6px 0!important;margin:0!important;border-left:0!important;border-bottom:1px solid #E7EBE7!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-record:not(.rv-daily-checkin):not(.review-is-important){border-bottom-color:#42564A!important}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-book-card .rv-daily-record:not(.rv-daily-checkin){
+ padding:0!important;margin:0!important;border:0!important;
+}

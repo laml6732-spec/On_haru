@@ -9,6 +9,7 @@ final result: blocked
 - Latest rendered implementation capture: unavailable. The cloud browser rejected the preview refresh with a URL-policy security block. No alternate browser route or automation was attempted.
 
 ## Changes prepared
+- Separate ordinary notes with a faint 1px horizontal divider and 6px vertical padding. Keep title/body spacing at 2px and omit an empty body when an untitled note has only one line. Check-in/class tinted surfaces have no extra divider.
 - Remove decorative left rails from timeline notes and book cards. Reduce title/body gap to 2px and ordinary note vertical padding/margins to 4px/2px, while retaining body font size and authored line breaks.
 - Keep emoji-to-title spacing close to 1.5 text spaces (0.375em) across check-ins, class headings and note tags.
 - Combine date, anchor and complete reflection into one restrained summary surface.
