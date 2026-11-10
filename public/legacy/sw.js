@@ -1,9 +1,9 @@
 /* Minimal offline-first app shell; images are cached only when requested. */
 const PREFIX='kona-legacy-shell-'; // Keep prefix: clean up old 18 MB versioned caches.
-const RELEASE='dailycompact20261109c';
+const RELEASE='dailybook20261109d';
 const CACHE=PREFIX+RELEASE;
 const MEDIA=PREFIX+'media-'+RELEASE;
-const CORE=["./runtime/daypart-theme.v1.js","./runtime/install-metrics.v1.js","./runtime/settings.58b48f87b05a.js?rev=moodtrendv120261106","./assets/onharu-launch-v3.png","./assets/onharu-welcome.png","./icons/onharu-face-wave-512.png","./","./index.html","./app.7cb1b71d4eb6.css?rev=dailycompact20261109c","./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=dailycompact20261109c","./archive-records.v1.css?rev=archiverecordsonly20261109a","./review-hierarchy.v1.css?rev=moodtrendv120261106","./manifest.webmanifest","./icons/onharu-face-wave-192.png"];
+const CORE=["./runtime/daypart-theme.v1.js","./runtime/install-metrics.v1.js","./runtime/settings.58b48f87b05a.js?rev=moodtrendv120261106","./assets/onharu-launch-v3.png","./assets/onharu-welcome.png","./icons/onharu-face-wave-512.png","./","./index.html","./app.7cb1b71d4eb6.css?rev=dailybook20261109d","./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=dailybook20261109d","./archive-records.v1.css?rev=archiverecordsonly20261109a","./review-hierarchy.v1.css?rev=moodtrendv120261106","./manifest.webmanifest","./icons/onharu-face-wave-192.png"];
 const home=new URL('./',self.registration.scope).href;
 const MAX_MEDIA_ENTRIES=16;
 self.addEventListener('install',event=>{
