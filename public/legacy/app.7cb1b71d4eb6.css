@@ -5089,3 +5089,9 @@ html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timelin
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card :is(.review-class-part p,.review-class-part small,.rv-entry-body){
  color:#EAF2E8!important;
 }
+
+/* Keep the check-in and the next book card visually separate, while keeping
+   the time-period grouping compact. */
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{
+ margin:8px 0 8px!important;
+}
