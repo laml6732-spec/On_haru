@@ -4899,3 +4899,24 @@ html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timelin
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-right .review-feeling-value{
  background:#41634E!important;color:#F0FAEE!important;
 }
+
+/* Reference phases: override the common check-in rule's custom properties
+   at equal or greater specificity, without touching Archive or Weekly. */
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-noon{
+ --phase-border:#C5E2D7;--phase-bg:#F2FBF8;--phase-tint:#D7F0E8;--phase-icon:#FFF1D5;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-evening{
+ --phase-border:#D9D8F1;--phase-bg:#F8F6FF;--phase-tint:#E4E1F8;--phase-icon:#EDE9FB;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-night{
+ --phase-border:#D5DFE8;--phase-bg:#F6F9FD;--phase-tint:#E0E9F4;--phase-icon:#EEF1F9;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-noon{
+ --phase-border:#46695C;--phase-bg:#20382F;--phase-tint:#2D4B41;--phase-icon:#385040;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-evening{
+ --phase-border:#605A80;--phase-bg:#2D2B3D;--phase-tint:#403D57;--phase-icon:#45415C;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-night{
+ --phase-border:#535E76;--phase-bg:#292F3B;--phase-tint:#374359;--phase-icon:#424961;
+}
