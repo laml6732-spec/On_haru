@@ -2066,6 +2066,8 @@ function reviewSection(section){
     const heading=el('h5',undefined,'review-event-heading rv-daily-class-chip');
     const icon=el('span','📖','rv-daily-class-icon');icon.setAttribute('aria-hidden','true');
     heading.append(icon,el('span',record.title,'rv-daily-class-name'));
+    // Reuse the existing class editor; the chip replaces the old bold heading.
+    konaBindEditTarget(heading,KonaI18n.t("Open class notes · ")+record.date,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);konaOpenReviewEditor(record.date,record.id)});
     const rail=el('div',undefined,'review-linked-rail rv-daily-class-rail');
     rail.append(reviewRow(record,{grouped:true,preview:false,thoughtView:true}));
     cluster.append(heading,rail);inner.append(cluster);
