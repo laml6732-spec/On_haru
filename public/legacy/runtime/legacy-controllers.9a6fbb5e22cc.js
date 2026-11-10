@@ -357,7 +357,15 @@ const KONA_FEELINGS=[
  [KonaI18n.t("Frustrated"),KonaI18n.t("Worried"),KonaI18n.t("Unsettled"),KonaI18n.t("Upbeat"),KonaI18n.t("Joyful")],
  [KonaI18n.t("Overwhelmed"),KonaI18n.t("Tense"),KonaI18n.t("Restless"),KonaI18n.t("Enthusiastic"),KonaI18n.t("Excited")]
 ];
-function konaFeeling(m){if(!m)return '';const e=Number(m.e??m.energy),h=Number(m.v??m.happiness);return Number.isInteger(e)&&e>=1&&e<=5&&Number.isInteger(h)&&h>=1&&h<=5?KONA_FEELINGS[e-1][h-1]:''}
+// Display-only emojis for the 5x5 feeling result. Do not change stored mood IDs or picker labels.
+const KONA_FEELING_EMOJIS=[
+ ['🫠','😩','😶','😌','🕊️'],
+ ['😞','😮‍💨','🤫','😌','🕊️'],
+ ['😔','😟','😐','🙂','😊'],
+ ['😤','😰','😕','😄','😁'],
+ ['🤯','😬','🫨','🤩','🥳']
+];
+function konaFeeling(m){if(!m)return '';const e=Number(m.e??m.energy),h=Number(m.v??m.happiness);return Number.isInteger(e)&&e>=1&&e<=5&&Number.isInteger(h)&&h>=1&&h<=5?KONA_FEELING_EMOJIS[e-1][h-1]+' '+KONA_FEELINGS[e-1][h-1]:''}
 function konaEnergyLabel(e){return KONA_ENERGY_LABELS[e-1]||''}
 function konaFeelingIcon(dimension,level){
  if(dimension==='energy')return KonaI18n.markup("<svg viewBox=\"0 0 48 12\" aria-hidden=\"true\" focusable=\"false\">")+Array.from({length:5},(_,j)=>'<circle cx="'+(4+j*10)+'" cy="6" r="3" fill="currentColor" opacity="'+(j<level?'1':'.15')+'"/>').join('')+'</svg>';
