@@ -1,10 +1,10 @@
 {
-  "runId": "42879744664",
-  "sourceCommit": "754c353e59ac9c8d97fe5c91aff13dab15a4e5f9",
+  "runId": "42881884348",
+  "sourceCommit": "d5b998fae31af82354c89ba9ee811183a5a1773c",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
-    "release": "weeklyreflection20261110a",
+    "release": "weeklyheader20261110b",
     "verifier": "hash-content-v2",
     "cases": [
       {
@@ -12,9 +12,9 @@
         "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
-        "expectedSha256": "19a18a51771ded50d614daa9ee4206472b14aecc9235de6594e6f87479b9f360",
-        "sourceSha256": "8a3b058ec7490d96bc7514e1bc6d90bc4680fdfaff6241b724eb0b536ffb7be7",
-        "actualSha256": "19a18a51771ded50d614daa9ee4206472b14aecc9235de6594e6f87479b9f360",
+        "expectedSha256": "09f071ec0e37dbc98b3655a9846c0a44a41a03e8f1c51584d303272ec4e771e3",
+        "sourceSha256": "50e22f5f911edc83e8497232a0a6dc0d2ef2cd30c5ba6427e582488b764915c9",
+        "actualSha256": "09f071ec0e37dbc98b3655a9846c0a44a41a03e8f1c51584d303272ec4e771e3",
         "hashMatch": true,
         "sourceHashMatch": false,
         "contentVariant": "worker-startup-20261109",
@@ -28,10 +28,10 @@
         "path": "app.7cb1b71d4eb6.css",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=weeklyreflection20261110a",
-        "expectedSha256": "b0a02df592b20e38e58f409e1f089a78be1f00219893d6ff53e23630b839fc37",
-        "sourceSha256": "b0a02df592b20e38e58f409e1f089a78be1f00219893d6ff53e23630b839fc37",
-        "actualSha256": "b0a02df592b20e38e58f409e1f089a78be1f00219893d6ff53e23630b839fc37",
+        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=weeklyheader20261110b",
+        "expectedSha256": "4591cc31d460646ee4c43b5f87c886809fd56f2ec406dcf5122c869c0412a134",
+        "sourceSha256": "4591cc31d460646ee4c43b5f87c886809fd56f2ec406dcf5122c869c0412a134",
+        "actualSha256": "4591cc31d460646ee4c43b5f87c886809fd56f2ec406dcf5122c869c0412a134",
         "hashMatch": true,
         "sourceHashMatch": true,
         "contentVariant": "source",
@@ -45,7 +45,7 @@
         "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=weeklyreflection20261110a",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=weeklyheader20261110b",
         "expectedSha256": "7e54d53b487b3efa67b202da8b3d852c077613fc9dab514a0567831f59746cbe",
         "sourceSha256": "7e54d53b487b3efa67b202da8b3d852c077613fc9dab514a0567831f59746cbe",
         "actualSha256": "7e54d53b487b3efa67b202da8b3d852c077613fc9dab514a0567831f59746cbe",
@@ -62,7 +62,7 @@
         "path": "runtime/settings.58b48f87b05a.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=weeklyreflection20261110a",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=weeklyheader20261110b",
         "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "sourceSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
@@ -79,10 +79,10 @@
         "path": "sw.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=weeklyreflection20261110a",
-        "expectedSha256": "5203cc5607c60caf6a630cf87efa54f00c87e2d96ae1616a9c926aab5afde980",
-        "sourceSha256": "3216a613c0a388065b1c19f8cbf2aae59a4ae03413e6e84e3bd7ed4d169e29c0",
-        "actualSha256": "5203cc5607c60caf6a630cf87efa54f00c87e2d96ae1616a9c926aab5afde980",
+        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=weeklyheader20261110b",
+        "expectedSha256": "dbfe5880bdea0a07d60b1cbb47a9919fbb215ce5137ba5e0d1f0da10a8878198",
+        "sourceSha256": "f74900e6ff92f4110791284bf39257b4728a3f6ba3861795ec8b0a1f1cd20eb4",
+        "actualSha256": "dbfe5880bdea0a07d60b1cbb47a9919fbb215ce5137ba5e0d1f0da10a8878198",
         "hashMatch": true,
         "sourceHashMatch": false,
         "contentVariant": "worker-startup-20261109",
@@ -713,64 +713,64 @@
         "ok": true
       }
     ],
-    "release": "weeklyreflection20261110a"
+    "release": "weeklyheader20261110b"
   },
   "runs": [
     {
-      "id": 42879744664,
-      "sha": "754c353e59ac9c8d97fe5c91aff13dab15a4e5f9",
-      "name": "OnHaru Workers production verification",
-      "status": "in_progress",
-      "conclusion": null
-    },
-    {
-      "id": 42779288821,
-      "sha": "6ab65e1bb803aa7c6646594e38fc84f391a3e969",
-      "name": "OnHaru metrics privacy and regression checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 42779288815,
-      "sha": "6ab65e1bb803aa7c6646594e38fc84f391a3e969",
+      "id": 42881884599,
+      "sha": "d5b998fae31af82354c89ba9ee811183a5a1773c",
       "name": "On_HARU Capture emoji grid visual regression",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 42779288775,
-      "sha": "6ab65e1bb803aa7c6646594e38fc84f391a3e969",
-      "name": "OnHaru static UI checks",
-      "status": "completed",
-      "conclusion": "success"
+      "id": 42881884537,
+      "sha": "d5b998fae31af82354c89ba9ee811183a5a1773c",
+      "name": "On_HARU Check-in and Archive Mood touch regression",
+      "status": "in_progress",
+      "conclusion": null
     },
     {
-      "id": 42779288733,
-      "sha": "6ab65e1bb803aa7c6646594e38fc84f391a3e969",
-      "name": "OnHaru Workers production verification",
-      "status": "completed",
-      "conclusion": "failure"
-    },
-    {
-      "id": 42779288654,
-      "sha": "6ab65e1bb803aa7c6646594e38fc84f391a3e969",
+      "id": 42881884378,
+      "sha": "d5b998fae31af82354c89ba9ee811183a5a1773c",
       "name": "QA On_HARU time-of-day appearance",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 42779288626,
-      "sha": "6ab65e1bb803aa7c6646594e38fc84f391a3e969",
-      "name": "On_HARU Review Weekly Archive hierarchy QA",
-      "status": "completed",
-      "conclusion": "failure"
+      "id": 42881884348,
+      "sha": "d5b998fae31af82354c89ba9ee811183a5a1773c",
+      "name": "OnHaru Workers production verification",
+      "status": "in_progress",
+      "conclusion": null
     },
     {
-      "id": 42779288584,
-      "sha": "6ab65e1bb803aa7c6646594e38fc84f391a3e969",
-      "name": "On_HARU Archive Mood tooltip QA",
+      "id": 42881884314,
+      "sha": "d5b998fae31af82354c89ba9ee811183a5a1773c",
+      "name": "OnHaru static UI checks",
       "status": "completed",
-      "conclusion": "failure"
+      "conclusion": "success"
+    },
+    {
+      "id": 42881884284,
+      "sha": "d5b998fae31af82354c89ba9ee811183a5a1773c",
+      "name": "On_HARU Archive Mood tooltip QA",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 42881884282,
+      "sha": "d5b998fae31af82354c89ba9ee811183a5a1773c",
+      "name": "On_HARU Review Weekly Archive hierarchy QA",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 42881884200,
+      "sha": "d5b998fae31af82354c89ba9ee811183a5a1773c",
+      "name": "OnHaru metrics privacy and regression checks",
+      "status": "completed",
+      "conclusion": "success"
     }
   ],
   "allPassed": true
