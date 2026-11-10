@@ -2034,11 +2034,11 @@ function reviewRecords(d=date){
 }
 // Read-only grouping uses existing schedule links; it never infers a link from time.
 function reviewDailySections(records,events){
- const sections=[{key:'morning',name:KonaI18n.t("Morning"),events:[],records:[]},{key:'afternoon',name:KonaI18n.t("Afternoon"),events:[],records:[]},{key:'evening',name:KonaI18n.t("Evening"),events:[],records:[]},{key:'untimed',name:KonaI18n.t("Time not recorded"),events:[],records:[]},{key:'night',name:KonaI18n.t("End of day"),events:[],records:[]}];
+ const sections=[{key:'morning',name:KonaI18n.t("Morning"),events:[],records:[]},{key:'afternoon',name:KonaI18n.t("Midday"),events:[],records:[]},{key:'evening',name:KonaI18n.t("Evening"),events:[],records:[]},{key:'untimed',name:KonaI18n.t("Time not recorded"),events:[],records:[]},{key:'night',name:KonaI18n.t("End of day"),events:[],records:[]}];
  const index=t=>!Number.isFinite(t)?3:t<720?0:t<1020?1:2;
  const linkedIds=new Set(records.filter(r=>r.kind!=='anchor'&&r.reviewEvent).map(r=>r.reviewEvent.id));
  for(const event of events)if(reviewFilter==='all'&&konaReviewPreferences().showEmpty||linkedIds.has(event.id)){const time=validReflectHM(event.start);sections[index(time?mins(time):null)].events.push(event)}
- for(const record of records)if(record.kind!=='anchor')sections[record.kind==='check'&&record.phase==='night'?4:record.kind==='check'&&record.phase==='morning'?0:index(record.t)].records.push(record);
+ for(const record of records)if(record.kind!=='anchor')sections[record.kind==='check'&&record.phase==='night'?4:record.kind==='check'&&record.phase==='morning'?0:record.kind==='check'&&record.phase==='noon'?1:record.kind==='check'&&record.phase==='evening'?2:index(record.t)].records.push(record);
  return sections.filter(x=>x.records.length>0||x.events.length>0);
 }
 let reviewFilter='all',reviewFilterScroll=0;
@@ -2133,7 +2133,27 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
   for(const [key,label] of [['lectureQuote',KonaI18n.t("Memorable words")],['lectureReflection',KonaI18n.t("Reflection")],['classResponse',KonaI18n.t("Response")]])if(c[key]?.trim()){const part=el('section',undefined,'review-class-part');part.append(el('small',label),el('p',c[key]));body.append(part)}
  }
  if(record.kind==='check'){
-  const feelings=el('div',undefined,'review-feeling-values'),value=konaFeeling({energy:record.energy,happiness:record.happiness})||record.feeling||KonaI18n.t("Choose");const button=el('button',value,'review-feeling-value');button.type='button';konaReviewMoodTone(button,record.energy,record.happiness);button.setAttribute('aria-label',KonaI18n.t("Change feeling · ",true)+identity);button.onclick=()=>reviewFeelingEditor(record,row);feelings.append(button);const header=el('div',undefined,'review-check-header');meta.remove();header.append(meta,feelings);body.prepend(header)
+  const hasFeeling=!!(konaFeeling({energy:record.energy,happiness:record.happiness})||record.feeling);
+  const value=konaFeeling({energy:record.energy,happiness:record.happiness})||record.feeling||KonaI18n.t("Choose");
+  const button=el('button',value,'review-feeling-value');button.type='button';konaReviewMoodTone(button,record.energy,record.happiness);button.setAttribute('aria-label',KonaI18n.t("Change feeling · ",true)+identity);button.onclick=()=>reviewFeelingEditor(record,row);
+  meta.remove();
+  if(thoughtView){
+   // Daily only: phase artwork + name + feeling + recorded time, all in one card header.
+   const phaseLabel=({morning:'Morning check-in',noon:'Midday check-in',evening:'Evening check-in',night:'Day wrap-up check-in'})[record.phase]||'Check-in';
+   const phaseIcon=({morning:'😌',noon:'☀️',evening:'🌙',night:'✨'})[record.phase]||'☀️';
+   const header=el('div',undefined,'rv-daily-check-header'),icon=el('span',phaseIcon,'rv-daily-phase-icon');
+   icon.setAttribute('aria-hidden','true');
+   const name=el('strong',KonaI18n.t(phaseLabel),'rv-daily-check-name');
+   konaBindEditTarget(name,KonaI18n.t("Change check-in note · ")+identity,()=>reviewInlineNote(record,row));
+   const right=el('div',undefined,'rv-daily-check-right');
+   if(hasFeeling)right.append(button);
+   if(validReflectHM(record.recordedTime))right.append(el('time',record.recordedTime,'rv-daily-record-time'));
+   header.append(icon,name,right);body.prepend(header);
+   row.classList.add('rv-daily-checkin','rv-daily-check-'+record.phase);
+  }else{
+   const feelings=el('div',undefined,'review-feeling-values');feelings.append(button);
+   const header=el('div',undefined,'review-check-header');header.append(meta,feelings);body.prepend(header);
+  }
  }
  if(['capture','event'].includes(record.kind)){
   
@@ -2148,26 +2168,25 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
  }
  const emoji=konaNoteTagEmoji(record.tags?.[0]);if(emoji){const first=body.querySelector('.rv-user-note-title,.rv-note-preview');if(first){row.classList.add('review-has-emoji');first.classList.add('review-emoji-target');const symbol=el('span',emoji,'review-note-leading-emoji');konaApplyNoteTagIcon(symbol,record.tags);symbol.setAttribute('aria-hidden','true');first.prepend(symbol)}}if(record.kind==='session'){const heading=body.querySelector('.rv-user-note-title');if(heading&&meta.parentElement===body)body.insertBefore(heading,meta)}if(thoughtView){
   row.classList.add('rv-daily-record');
-  // Only recorded times. An event start or old free-note hour is NOT a note timestamp.
-  const recorded=record.kind==='class'?validReflectHM(db.days[record.date]?.checkins?.noon?.classReviewTime):['capture','check','session'].includes(record.kind)?validReflectHM(record.recordedTime):null;
-  const recordedNode=recorded?el('time',recorded,'rv-daily-record-time'):null;
-  const checkHeader=record.kind==='check'?body.querySelector('.review-check-header'):null;
-  const classPart=record.kind==='class'?body.querySelector('.review-class-part'):null;
-  if(classPart&&recordedNode){
-   // Put class record time on the right of its first section label; no extra row.
-   const head=el('div',undefined,'rv-daily-part-head'),label=classPart.querySelector('small');
-   if(label)head.append(label);
-   head.append(recordedNode);classPart.prepend(head);
-  }else if(checkHeader&&recordedNode)checkHeader.append(recordedNode);
-  else{
-   const title=body.querySelector(':scope > .rv-user-note-title');
-   const meta=body.querySelector(':scope > .review-record-meta');
-   if(title||meta||recordedNode){
-    const head=el('div',undefined,'rv-daily-record-head');
-    if(title)head.append(title);
-    else if(meta)head.append(meta);
-    if(recordedNode)head.append(recordedNode);
-    body.prepend(head);
+  if(record.kind!=='check'){
+   // Actual recorded time, never a schedule start substituted as an occurrence time.
+   const recorded=record.kind==='class'?validReflectHM(db.days[record.date]?.checkins?.noon?.classReviewTime):['capture','session'].includes(record.kind)?validReflectHM(record.recordedTime):null;
+   const recordedNode=recorded?el('time',recorded,'rv-daily-record-time'):null;
+   const classPart=record.kind==='class'?body.querySelector('.review-class-part'):null;
+   if(classPart&&recordedNode){
+    const head=el('div',undefined,'rv-daily-part-head'),label=classPart.querySelector('small');
+    if(label)head.append(label);
+    head.append(recordedNode);classPart.prepend(head);
+   }else{
+    const title=body.querySelector(':scope > .rv-user-note-title');
+    const meta=body.querySelector(':scope > .review-record-meta');
+    if(title||meta||recordedNode){
+     const head=el('div',undefined,'rv-daily-record-head');
+     if(title)head.append(title);
+     else if(meta)head.append(meta);
+     if(recordedNode)head.append(recordedNode);
+     body.prepend(head);
+    }
    }
   }
  }
@@ -2682,7 +2701,15 @@ for(const [x,shift] of [['‹',-1],[KonaI18n.t("Today"),0],['›',1]]){const b=e
 header.append(titleGroup);panel.append(header);
 const list=reviewRecords(date),v=db.days[date]||{},dailyDraft={...(v.reflectionNotes||{insight:'',action:''})};
 header.append(el('span',list.length+' '+(list.length===1?KonaI18n.t("record"):KonaI18n.t("records")),'rv-moment-count'));const writeReflection=el('button',reflectionHasText(dailyDraft)?KonaI18n.t("Edit reflection"):KonaI18n.t("Write reflection"),'mini-btn review-write-reflection');writeReflection.type='button';writeReflection.setAttribute('aria-controls','dailyReflectionEditor');header.append(writeReflection);
-const anchor=el('section',undefined,'review-daily-anchor'),anchorLabel=el('h3',KonaI18n.t("Daily Anchor")),anchorText=el('p',v.headline||KonaI18n.t("A verse, thought, or intention for this day."));anchor.append(anchorLabel,anchorText);
+const anchor=el('section',undefined,'review-daily-anchor rv-reference-anchor');
+const [anchorYear,anchorMonth,anchorDay]=date.split('-').map(Number);
+const dayIndex=new Date(Date.UTC(anchorYear,anchorMonth-1,anchorDay)).getUTCDay();
+const weekday=KonaI18n.language==='ko'?['일','월','화','수','목','금','토'][dayIndex]:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dayIndex];
+const anchorLabel=el('h3',anchorMonth+'/'+anchorDay+' ('+weekday+')','rv-anchor-date');
+const anchorText=el('p',v.headline||KonaI18n.t("A verse, thought, or intention for this day."),'rv-anchor-text');
+const ribbon=el('span',undefined,'rv-anchor-ribbon');
+ribbon.setAttribute('aria-hidden','true');ribbon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M7.5 3v5M16.5 3v5M3.5 10.5h17"/></svg>';
+const anchorCopy=el('div',undefined,'rv-anchor-copy'),arrow=el('span','›','rv-anchor-arrow');arrow.setAttribute('aria-hidden','true');anchorCopy.append(anchorLabel,anchorText);anchor.append(ribbon,anchorCopy,arrow);
 konaBindEditTarget(anchor,KonaI18n.t("Change Daily Anchor · ")+date,()=>reviewInlineNote({date,kind:'anchor',body:v.headline||'',tags:[],id:'headline',type:KonaI18n.t("Daily Anchor")},anchor));if(v.headline?.trim())panel.append(anchor);
 const reflectionSummary=el('section',undefined,'review-reflection-summary'),summaryLabel=el('h3',KonaI18n.t("Reflection Summary")),summaryText=el('p',dailyDraft.insight||KonaI18n.t("What stayed with you today?"));reflectionSummary.append(summaryLabel,summaryText);konaBindEditTarget(reflectionSummary,KonaI18n.t("Open daily reflection · ")+date,reviewJumpToReflection);
 const savedReflectionText=[dailyDraft.insight,dailyDraft.action,dailyDraft.additionalNotes,dailyDraft.scripture,dailyDraft.discernment,dailyDraft.followup,...(dailyDraft.followups||[]).map(entry=>entry.text)].filter(text=>typeof text==='string'&&text.trim()).join('\n\n');if(reflectionHasText(dailyDraft)){summaryText.textContent=savedReflectionText||KonaI18n.t("Saved reflection");panel.append(reflectionSummary)}
@@ -2735,7 +2762,7 @@ const extraRecords=el('details',undefined,'rv-extra-records');extraRecords.appen
 const controls=el('div',undefined,'rv-controls');done=el('button',v.reflected?KonaI18n.t("Reopen Review"):KonaI18n.t("Save Review"),'rv-done');done.type='button';done.classList.toggle('is-complete',!!v.reflected);done.disabled=!v.reflected&&!canMarkReflected();done.title=done.disabled?KonaI18n.t("Add a note, check-in, or reflection first.",true):'';done.onclick=()=>{if(!day(date).reflected&&!canMarkReflected())return;if(!persistReflection())return;reviewUISet(date+'|reflection-editor',false);toggleReflection()};doneReason=el('small',KonaI18n.t("Add a daily record or reflection to enable this."),'rv-done-reason');doneReason.id='dailyReflectionDisabledReason';done.setAttribute('aria-describedby','dailyReflectionDisabledReason');doneReason.hidden=!done.disabled;if(v.reflected)controls.append(el('span',KonaI18n.t("Completed"),'review-completed-label'));controls.append(done,doneReason);
 const writingHeading=panel.querySelector('.rv-writing-heading'),writingToolbar=el('div',undefined,'rv-writing-toolbar');writingHeading.before(writingToolbar);writingToolbar.append(writingHeading);panel.append(controls);
 const count=Object.entries(db.days).filter(([d,v])=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&v.reflected===true).length,sets=Math.floor(count/5),level=count>0&&count%5===0?5:count%5;
-const flower=el('div',undefined,'rv-flower');flower.append(el('strong',KonaI18n.t("Reflection flowers")));const strip=el('div',undefined,'rv-strip');for(let i=0;i<5;i++){const img=document.createElement('img');img.src='./assets/hibiscus-task-'+(i<level?'done':'off')+'.png';img.alt=i<level?KonaI18n.t("Flower collected"):KonaI18n.t("Next flower");strip.append(img)}flower.append(strip,el('small',KonaI18n.t("A reminder of days you revisited, not a measure of faith.")));const collection=el('details',undefined,'rv-collection-details');collection.append(el('summary',count+' '+(count===1?KonaI18n.t("day"):KonaI18n.t("days"))+KonaI18n.t(" reflected · Flowers")),flower);panel.append(collection);const block=el('section',undefined,'review-top-reflection');for(const child of [...panel.children].slice(reflectionStart))block.append(child);const feeling=block.querySelector('.review-final-feeling');feeling.querySelector('small')?.remove();writingToolbar.append(feeling);const editor=el('section',undefined,'review-reflection-editor');editor.id='dailyReflectionEditor';editor.hidden=!reviewUI[date+'|reflection-editor'];editor.append(block);timeline.before(editor);writeReflection.setAttribute('aria-expanded',String(!editor.hidden));writeReflection.onclick=()=>{if(!reviewCanEdit())return;editor.hidden=!editor.hidden;reviewUISet(date+'|reflection-editor',!editor.hidden);writeReflection.setAttribute('aria-expanded',String(!editor.hidden));if(!editor.hidden)reviewJumpToReflection()};const filterBox=el('details',undefined,'review-filter'),filterSummary=el('summary',reviewFilter==='all'?KonaI18n.t("Filter notes"):KonaI18n.t("Filter · ")+(reviewFilter==='important'?KonaI18n.t("Important"):KONA_NOTE_TAGS.find(x=>x[0]===reviewFilter)?.[1]||reviewFilter));const select=el('select');select.setAttribute('aria-label',KonaI18n.t("Filter Review notes",true));for(const [id,label] of [['all',KonaI18n.t("All")],...KONA_CAPTURE_TAG_IDS.map(id=>[id,KONA_NOTE_TAGS.find(x=>x[0]===id)[1]]),['important',KonaI18n.t("Important")]]){const option=el('option',label);option.value=id;select.append(option)}select.value=reviewFilter;select.onchange=()=>{if(!reviewCanEdit()){select.value=reviewFilter;return}if(reviewFilter==='all')reviewFilterScroll=window.scrollY;reviewFilter=select.value;draw();if(reviewFilter==='all')requestAnimationFrame(()=>window.scrollTo(0,reviewFilterScroll))};filterBox.append(filterSummary,select);timeline.before(filterBox);if(reviewFilter!=='all'&&!timeline.children.length)timeline.append(el('p',KonaI18n.t("No matching records."),'review-filter-empty'))}
+const flower=el('div',undefined,'rv-flower');flower.append(el('strong',KonaI18n.t("Reflection flowers")));const strip=el('div',undefined,'rv-strip');for(let i=0;i<5;i++){const img=document.createElement('img');img.src='./assets/hibiscus-task-'+(i<level?'done':'off')+'.png';img.alt=i<level?KonaI18n.t("Flower collected"):KonaI18n.t("Next flower");strip.append(img)}flower.append(strip,el('small',KonaI18n.t("A reminder of days you revisited, not a measure of faith.")));const collection=el('details',undefined,'rv-collection-details');collection.append(el('summary',count+' '+(count===1?KonaI18n.t("day"):KonaI18n.t("days"))+KonaI18n.t(" reflected · Flowers")),flower);panel.append(collection);const block=el('section',undefined,'review-top-reflection');for(const child of [...panel.children].slice(reflectionStart))block.append(child);const feeling=block.querySelector('.review-final-feeling');feeling.querySelector('small')?.remove();writingToolbar.append(feeling);const editor=el('section',undefined,'review-reflection-editor');editor.id='dailyReflectionEditor';editor.hidden=!reviewUI[date+'|reflection-editor'];editor.append(block);timeline.before(editor);writeReflection.setAttribute('aria-expanded',String(!editor.hidden));writeReflection.onclick=()=>{if(!reviewCanEdit())return;editor.hidden=!editor.hidden;reviewUISet(date+'|reflection-editor',!editor.hidden);writeReflection.setAttribute('aria-expanded',String(!editor.hidden));if(!editor.hidden)reviewJumpToReflection()};const filterBox=el('details',undefined,'review-filter'),filterSummary=el('summary',reviewFilter==='all'?KonaI18n.t("Filter notes"):KonaI18n.t("Filter · ")+(reviewFilter==='important'?KonaI18n.t("Important"):KONA_NOTE_TAGS.find(x=>x[0]===reviewFilter)?.[1]||reviewFilter));const select=el('select');select.setAttribute('aria-label',KonaI18n.t("Filter Review notes",true));for(const [id,label] of [['all',KonaI18n.t("All")],...KONA_CAPTURE_TAG_IDS.map(id=>[id,KONA_NOTE_TAGS.find(x=>x[0]===id)[1]]),['important',KonaI18n.t("Important")]]){const option=el('option',label);option.value=id;select.append(option)}select.value=reviewFilter;select.onchange=()=>{if(!reviewCanEdit()){select.value=reviewFilter;return}if(reviewFilter==='all')reviewFilterScroll=window.scrollY;reviewFilter=select.value;draw();if(reviewFilter==='all')requestAnimationFrame(()=>window.scrollTo(0,reviewFilterScroll))};filterBox.append(filterSummary,select);header.insertBefore(filterBox,writeReflection);if(reviewFilter!=='all'&&!timeline.children.length)timeline.append(el('p',KonaI18n.t("No matching records."),'review-filter-empty'))}
 const archivePicker=root.querySelector('#kx-archive');if(archivePicker){if(!archivePicker.querySelector('option[value=all]'))archivePicker.prepend(new Option(KonaI18n.t("All records"),'all'));archivePicker.dataset.searchScope=archivePicker.dataset.searchScope||'all';archivePicker.value=archivePicker.dataset.searchScope;archivePicker.onchange=()=>{archivePicker.dataset.searchScope=archivePicker.value;reviewTab=archivePicker.value==='all'?'log':archivePicker.value;renderRecords();archivePicker.value=archivePicker.dataset.searchScope}}
 box.querySelector('#rev-reflect').onclick=()=>{if(!reviewCanEdit())return;mode='reflect';reflectPeriod='daily';renderRecords()};box.querySelector('#rev-weekly').onclick=()=>{if(!reviewCanEdit())return;mode='reflect';reflectPeriod='weekly';weeklyOffset=0;renderRecords()};box.querySelector('#rev-archive').onclick=()=>{if(!reviewCanEdit())return;archiveDetailRecord=null;root.classList.remove('archive-detail');mode='archive';renderRecords()};reflectionSettingsShortcut.onclick=()=>openReflectionSettings();
 function openReflectionSettings(){const field=document.getElementById('weeklyReflectionDay');field.value=String(db.settings.weeklyReflectionDay===1?1:0);document.getElementById('weeklyReflectionSettingsStatus').textContent='';openSheet('weeklyReflectionSettingsModal')}
