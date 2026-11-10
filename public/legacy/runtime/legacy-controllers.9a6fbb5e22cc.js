@@ -2704,7 +2704,7 @@ header.append(el('span',list.length+' '+(list.length===1?KonaI18n.t("record"):Ko
 const anchor=el('section',undefined,'review-daily-anchor rv-reference-anchor');
 const [anchorYear,anchorMonth,anchorDay]=date.split('-').map(Number);
 const dayIndex=new Date(Date.UTC(anchorYear,anchorMonth-1,anchorDay)).getUTCDay();
-const weekday=KonaI18n.language==='ko'?['일','월','화','수','목','금','토'][dayIndex]:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dayIndex];
+const weekday=['일','월','화','수','목','금','토'][dayIndex]; // Intentional compact visual date, e.g. 11/9 (월).
 const anchorLabel=el('h3',anchorMonth+'/'+anchorDay+' ('+weekday+')','rv-anchor-date');
 const anchorText=el('p',v.headline||KonaI18n.t("A verse, thought, or intention for this day."),'rv-anchor-text');
 const ribbon=el('span',undefined,'rv-anchor-ribbon');
