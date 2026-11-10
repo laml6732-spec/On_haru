@@ -9,6 +9,7 @@ final result: blocked
 - Latest rendered implementation capture: unavailable. The cloud browser rejected the preview refresh with a URL-policy security block. No alternate browser route or automation was attempted.
 
 ## Changes prepared
+- Keep emoji-to-title spacing close to 1.5 text spaces (0.375em) across check-ins, class headings and note tags.
 - Combine date, anchor and complete reflection into one restrained summary surface.
 - Use compact tint-only section bars, without a left border; Korean labels are 아침 / 낮 / 저녁.
 - Increase morning gold, midday sage and evening lavender tints, including dark-theme counterparts.

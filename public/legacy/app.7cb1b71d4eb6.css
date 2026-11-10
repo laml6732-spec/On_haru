@@ -5203,3 +5203,11 @@ html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timelin
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group>.rv-daily-group-schedule-tag{
  margin:3px 0 5px!important;max-width:100%!important;width:fit-content!important;
 }
+/* About 1.5 text spaces between Daily emoji and the adjoining title. */
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-header{
+ grid-template-columns:20px minmax(0,1fr) auto!important;column-gap:.375em!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-daily-phase-icon{width:20px!important}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card>h5.rv-daily-book-heading{column-gap:.375em!important}
+body .app #page-records #new-reflect-page .rv-timeline .review-has-emoji .review-emoji-target{padding-left:1.375em!important}
+body .app #page-records #new-reflect-page .rv-timeline .review-note-leading-emoji{width:1em!important}
