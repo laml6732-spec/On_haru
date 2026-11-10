@@ -4596,3 +4596,29 @@ body .app #page-records #new-reflect-page .rv-timeline .rv-note-preview{
  max-height:none!important;overflow:visible!important;-webkit-line-clamp:unset!important;
 }
 body .app #page-records #new-reflect-page .rv-timeline .review-preview-more{display:none!important}
+
+/* Final cascade correction: existing review-v3 heading selectors have higher
+   specificity than the generic class-chip rule above. Daily only. */
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group > h5.review-event-heading.rv-daily-class-chip,
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group > h5.review-event-heading.rv-daily-class-chip{
+ display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;
+ gap:5px!important;width:auto!important;max-width:100%!important;
+ padding:5px 8px!important;margin:0 0 8px!important;border:0!important;border-radius:5px!important;
+ background:#3D7658!important;color:#FFFFFF!important;font-size:calc((12px) * var(--kona-ui-scale,1))!important;font-weight:600!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group > h5.review-event-heading.rv-daily-class-chip > span,
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group > h5.review-event-heading.rv-daily-class-chip > span{
+ color:#FFFFFF!important;background:transparent!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-part-head{
+ display:flex!important;align-items:baseline!important;justify-content:space-between!important;
+ gap:8px!important;margin:0 0 4px!important;min-width:0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-group .review-class-part small{
+ background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+ padding:0!important;margin:0!important;color:#59685E!important;font-weight:600!important;
+ font-size:calc((12px) * var(--kona-ui-scale,1))!important;
+}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-group .review-class-part small{
+ color:#BACDC1!important;background:transparent!important;
+}
