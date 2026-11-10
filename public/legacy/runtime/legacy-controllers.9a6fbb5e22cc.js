@@ -2058,15 +2058,18 @@ function reviewSection(section){
  const sync=expanded=>{bar.setAttribute('aria-expanded',String(expanded));content.classList.toggle('is-open',expanded);content.inert=!expanded;content.setAttribute('aria-hidden',String(!expanded));chevron.textContent='⌄';if(expanded)requestAnimationFrame(()=>reviewSyncPreviews(content))};sync(open);
  bar.onclick=()=>{if(!reviewCanEdit())return;const expanded=bar.getAttribute('aria-expanded')!=='true';reviewUISet(key,expanded);sync(expanded)};
  const linked=new Map();for(const record of section.records)if(record.reviewEvent){const id=record.reviewEvent.id;if(!linked.has(id))linked.set(id,[]);linked.get(id).push(record)}
- const objects=section.events.map(event=>({time:mins(event.start),event}));for(const record of section.records)if(!record.reviewEvent)objects.push({time:record.kind==='check'&&record.phase==='morning'?-Infinity:record.t??Infinity,record});objects.sort((a,b)=>a.time-b.time);
+ const objects=section.events.map(event=>({time:mins(event.start),event}));for(const record of section.records)if(!record.reviewEvent)objects.push({time:record.t??Infinity,record});
+// Daily only: actual check-ins first, followed by saved class/Word notes,
+// then all other schedule items and records in their original time order.
+const priority=item=>item.record?.kind==='check'?0:item.record?.kind==='class'?1:2;
+objects.sort((a,b)=>priority(a)-priority(b)||a.time-b.time);
  for(const item of objects){if(item.record){
    if(item.record.kind==='class'){
-    // Daily-only: class notes have their own chip/rail even without an event link.
-    const record=item.record,cluster=el('section',undefined,'rv-linked-group rv-daily-class-group');
-    const heading=el('h5',undefined,'review-event-heading rv-daily-class-chip');
+    // Daily-only visual treatment: one paper-like book card, not a nested chip/card.
+    const record=item.record,cluster=el('section',undefined,'rv-linked-group rv-daily-class-group rv-daily-book-card');
+    const heading=el('h5',undefined,'review-event-heading rv-daily-class-chip rv-daily-book-heading');
     const icon=el('span','📖','rv-daily-class-icon');icon.setAttribute('aria-hidden','true');
     heading.append(icon,el('span',record.title,'rv-daily-class-name'));
-    // Reuse the existing class editor; the chip replaces the old bold heading.
     konaBindEditTarget(heading,KonaI18n.t("Open class notes · ")+record.date,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);konaOpenReviewEditor(record.date,record.id)});
     const rail=el('div',undefined,'review-linked-rail rv-daily-class-rail');
     rail.append(reviewRow(record,{grouped:true,preview:false,thoughtView:true}));
@@ -2121,7 +2124,15 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
  const canInline=['capture','event','check','session','anchor','free'].includes(record.kind);
  if(record.kind==='session')konaBindEditTarget(meta,'Edit note · '+identity,()=>reviewInlineNote(record,row));
  if(title){const heading=el('strong',title,'rv-user-note-title');if(canInline)konaBindEditTarget(heading,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));body.append(heading)}
- if(record.kind!=='class'&&(record.body||(!title&&record.tags?.length))){const text=el('p',record.body,'rv-note-preview'+(preview?' review-preview':''));if(canInline)konaBindEditTarget(text,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));else if(record.kind==='class')konaBindEditTarget(text,KonaI18n.t("Open class review · ")+identity,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);nav('checkin',{phase:'noon'})});if(/\n\s*\n/.test(text.textContent)){const paragraphs=text.textContent.split(/\n\s*\n/);text.replaceChildren(...paragraphs.map(value=>el('span',value,'review-text-paragraph')))}body.append(text);if(preview){const more=el('button',KonaI18n.t("Read more"),'review-preview-more');more.type='button';more.onclick=()=>{text.classList.toggle('review-expanded');more.textContent=text.classList.contains('review-expanded')?KonaI18n.t("Show less"):KonaI18n.t("Read more")};body.append(more);requestAnimationFrame(()=>{if(more.isConnected)reviewSyncPreviews(body)})}}
+ if(record.kind!=='class'&&(record.body||(!title&&record.tags?.length))){const text=el('p',record.body,'rv-note-preview'+(preview?' review-preview':''));if(canInline)konaBindEditTarget(text,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));else if(record.kind==='class')konaBindEditTarget(text,KonaI18n.t("Open class review · ")+identity,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);nav('checkin',{phase:'noon'})});if(thoughtView&&!title&&['capture','event','free'].includes(record.kind)&&String(record.body||'').trim()){
+   // When no title field exists, display the existing first line as an
+   // UNBOLDED lead, without storing or inventing a new title.
+   const original=String(record.body),lineEnd=original.search(/\r?\n/),first=lineEnd<0?original:original.slice(0,lineEnd),rest=lineEnd<0?'':original.slice(lineEnd).replace(/^\r?\n/,'');
+   if(first.trim()){
+    text.replaceChildren(el('span',first,'rv-daily-inferred-title'));
+    if(rest)text.append(el('span',rest,'rv-daily-inferred-rest'));
+   }
+  }else if(/\n\s*\n/.test(text.textContent)){const paragraphs=text.textContent.split(/\n\s*\n/);text.replaceChildren(...paragraphs.map(value=>el('span',value,'review-text-paragraph')))}body.append(text);if(preview){const more=el('button',KonaI18n.t("Read more"),'review-preview-more');more.type='button';more.onclick=()=>{text.classList.toggle('review-expanded');more.textContent=text.classList.contains('review-expanded')?KonaI18n.t("Show less"):KonaI18n.t("Read more")};body.append(more);requestAnimationFrame(()=>{if(more.isConnected)reviewSyncPreviews(body)})}}
  if(record.kind==='class'){
   const c=db.days[record.date]?.checkins?.noon||{};
   if(!thoughtView){
