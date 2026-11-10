@@ -9,7 +9,7 @@ final result: blocked
 - Latest rendered implementation capture: unavailable. The cloud browser rejected the preview refresh with a URL-policy security block. No alternate browser route or automation was attempted.
 
 ## Changes prepared
-- Each personal note has an independent neutral gray 2px left rail, with a 3px top/bottom margin so consecutive rails are visibly separated. Gray is #C5C9CD in Light and #7A8187 in Dark.
+- Each personal note has an independent neutral gray 1.4px left rail (0.7× the previous width), with a 3px top/bottom margin so consecutive rails are visibly separated. Gray is #C5C9CD in Light and #7A8187 in Dark.
 - Schedule-linked notes never show a written/recorded timestamp; their shared schedule tag shows the event time only. Personal-note timestamps are retained.
 - Ordinary notes retain a slender 2px left rail plus a faint horizontal divider; check-in and class surfaces remain without left rails. Personal notes show their type label above both explicit and inferred titles.
 - Separate ordinary notes with a faint 1px horizontal divider and 6px vertical padding. Keep title/body spacing at 2px and omit an empty body when an untitled note has only one line. Check-in/class tinted surfaces have no extra divider.

@@ -5255,6 +5255,6 @@ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record .rv-entr
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record .rv-entry-body>.rv-daily-personal-label{color:#AFC1B3!important}
 /* Each personal note has its own neutral rail, separated from the next note. */
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-record.review-personal-note:not(.rv-daily-checkin){
- border-left:2px solid #C5C9CD!important;margin:3px 0!important;padding:4px 8px!important;
+ border-left:1.4px solid #C5C9CD!important;margin:3px 0!important;padding:4px 8px!important;
 }
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-record.review-personal-note:not(.rv-daily-checkin){border-left-color:#7A8187!important}
