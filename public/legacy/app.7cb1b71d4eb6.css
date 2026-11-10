@@ -4622,3 +4622,301 @@ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-group .re
 html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-group .review-class-part small{
  color:#BACDC1!important;background:transparent!important;
 }
+
+/* ------------------------------------------------------------------
+   Review > Daily: Nov 2026 visual reference.
+   Scope deliberately excludes Weekly, Archive, other app tabs.
+   ------------------------------------------------------------------ */
+body .app #page-records #new-reflect-page .rv-head.rv-daily-head{
+ display:flex!important;align-items:center!important;flex-wrap:wrap!important;
+ column-gap:9px!important;row-gap:7px!important;min-height:44px!important;
+ margin:6px 0 15px!important;padding:0!important;border:0!important;
+}
+body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .rv-moment-count{
+ display:block!important;order:1!important;margin:0!important;padding:0!important;
+ color:#273D33!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;
+ font-weight:650!important;white-space:nowrap!important;
+}
+body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-filter{
+ order:2!important;position:relative!important;display:block!important;
+ min-width:0!important;margin:0!important;padding:0 0 0 10px!important;
+ border:0!important;border-left:1px solid #D5E0D8!important;z-index:5;
+}
+body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-filter > summary{
+ display:inline-flex!important;align-items:center!important;gap:5px!important;
+ min-height:34px!important;margin:0!important;padding:7px 9px!important;
+ background:#EEF3ED!important;border:0!important;border-radius:999px!important;
+ color:#315A49!important;font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ font-weight:650!important;white-space:nowrap!important;cursor:pointer!important;
+ list-style:none!important;
+}
+body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-filter > summary::-webkit-details-marker{display:none!important}
+body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-filter > summary::before{
+ content:"";display:block;flex:none;width:12px;height:12px;
+ background:#527667;clip-path:polygon(0 0,100% 0,62% 48%,62% 95%,38% 77%,38% 48%);
+}
+body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-filter > select{
+ position:absolute!important;left:10px!important;top:39px!important;z-index:20!important;
+ display:block!important;width:min(205px,78vw)!important;min-width:0!important;
+ padding:9px!important;border:1px solid #BED1C3!important;border-radius:10px!important;
+ background:#FFFEFA!important;color:#244235!important;box-shadow:0 8px 20px #173C2722!important;
+}
+body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-filter:not([open]) > select{display:none!important}
+body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-write-reflection{
+ order:3!important;margin:0 0 0 auto!important;min-height:38px!important;
+ padding:7px 12px!important;border:0!important;border-radius:12px!important;
+ background:#27744D!important;color:#FFFFFF!important;
+ font-size:calc(12px * var(--kona-ui-scale,1))!important;font-weight:700!important;
+ white-space:nowrap!important;box-shadow:0 2px 5px #194D2B22!important;
+}
+body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-write-reflection::before{
+ content:"✎";display:inline-block;margin-right:7px;vertical-align:-1px;
+ font-size:17px;line-height:1;
+}
+body .app #page-records #new-reflect-page .rv-head.rv-daily-head :is(summary,button):focus-visible{
+ outline:2px solid #27744D!important;outline-offset:3px!important;
+}
+/* Dated anchor: warm cream card, small calendar bookmark, no illustration. */
+body .app #page-records #new-reflect-page .review-daily-anchor.rv-reference-anchor{
+ display:flex!important;align-items:center!important;gap:12px!important;position:relative!important;
+ min-height:106px!important;margin:10px 0 20px!important;padding:18px 30px 17px 60px!important;
+ overflow:hidden!important;box-sizing:border-box!important;cursor:pointer!important;
+ border:1px solid #F0E3CB!important;border-radius:20px!important;
+ background:
+ radial-gradient(100% 92% at 101% 111%,#F7E1B7 0%,#FBE9C9 38%,transparent 39%),
+ linear-gradient(115deg,#FFF8EC 0%,#FFF1DA 56%,#FFF9F0 100%)!important;
+ box-shadow:0 1px 3px #85602B0C!important;
+}
+body .app #page-records #new-reflect-page .rv-reference-anchor .rv-anchor-ribbon{
+ position:absolute!important;left:14px!important;top:0!important;
+ display:flex!important;align-items:flex-start!important;justify-content:center!important;
+ width:35px!important;height:68px!important;padding-top:15px!important;box-sizing:border-box!important;
+ background:#E8C47E!important;color:#FFFFFF!important;
+ clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%)!important;
+}
+body .app #page-records #new-reflect-page .rv-reference-anchor .rv-anchor-ribbon svg{
+ width:23px!important;height:23px!important;stroke:#FFFFFF!important;
+}
+body .app #page-records #new-reflect-page .rv-reference-anchor .rv-anchor-copy{
+ display:flex!important;flex-direction:column!important;gap:9px!important;min-width:0!important;
+ flex:1 1 auto!important;
+}
+body .app #page-records #new-reflect-page .rv-reference-anchor .rv-anchor-date{
+ display:block!important;margin:0!important;padding:0!important;background:transparent!important;
+ border:0!important;color:#24503B!important;
+ font-size:calc(21px * var(--kona-ui-scale,1))!important;font-weight:800!important;
+ letter-spacing:-.03em!important;line-height:1.2!important;
+}
+body .app #page-records #new-reflect-page .rv-reference-anchor .rv-anchor-text{
+ display:block!important;min-width:0!important;margin:0!important;padding:0!important;
+ color:#314A3C!important;font-size:calc(14px * var(--kona-ui-scale,1))!important;
+ font-weight:450!important;line-height:1.55!important;white-space:pre-wrap!important;
+ word-break:keep-all!important;overflow-wrap:break-word!important;
+}
+body .app #page-records #new-reflect-page .rv-reference-anchor .rv-anchor-arrow{
+ position:absolute!important;right:13px!important;top:18px!important;
+ font-size:29px!important;font-weight:300!important;line-height:1!important;color:#2D5744!important;
+}
+/* Single time-period pill; all records in that period share one container. */
+body .app #page-records #new-reflect-page .rv-timeline>.review-v3-section{
+ margin:16px 0 19px!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar{
+ display:flex!important;align-items:center!important;
+ width:100%!important;min-height:44px!important;padding:9px 12px!important;
+ border:0!important;border-radius:14px!important;
+ background:#F9EEDF!important;color:#6D4B20!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline [data-daypart="morning"]>.review-section-bar{
+ background:linear-gradient(100deg,#FCF1E2,#FBEDE0)!important;color:#72511D!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline [data-daypart="afternoon"]>.review-section-bar{
+ background:linear-gradient(100deg,#E4F2EB,#E8F6F1)!important;color:#24644C!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline [data-daypart="evening"]>.review-section-bar{
+ background:linear-gradient(100deg,#ECE9FA,#EDEBFA)!important;color:#544C80!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar::before{
+ display:none!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar .review-section-name{
+ font-size:calc(16px * var(--kona-ui-scale,1))!important;font-weight:800!important;
+ letter-spacing:.015em!important;color:inherit!important;line-height:1.2!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar .review-section-count{
+ margin-left:auto!important;font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ color:#546A5E!important;font-weight:450!important;white-space:nowrap!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar .review-section-chevron{
+ font-size:18px!important;color:inherit!important;margin-left:8px!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-fold-inner{
+ padding-top:9px!important;
+}
+/* A single compact check-in card per phase. No new card component or data. */
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin{
+ --phase-border:#DDE8CF;--phase-bg:#FFF9EC;--phase-tint:#F3E6CD;--phase-icon:#FFF1D5;
+ display:block!important;position:relative!important;isolation:isolate!important;
+ overflow:hidden!important;margin:0 0 9px!important;padding:13px 13px 16px!important;
+ min-height:92px!important;border:1px solid var(--phase-border)!important;border-left:5px solid var(--phase-border)!important;
+ border-radius:19px!important;background:var(--phase-bg)!important;
+ box-shadow:none!important;box-sizing:border-box!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-check-noon{
+ --phase-border:#D2E8D6;--phase-bg:#FAFDF6;--phase-tint:#DDEEEE;--phase-icon:#FDF3D5;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-check-evening{
+ --phase-border:#DBDCF5;--phase-bg:#FCFAFF;--phase-tint:#E9E4F6;--phase-icon:#F2ECFC;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-check-night{
+ --phase-border:#DADDE7;--phase-bg:#F8FAFC;--phase-tint:#E5EBF1;--phase-icon:#EEF0F8;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin::before{
+ content:"";position:absolute;pointer-events:none;z-index:0;
+ inset:auto 0 0 0;height:38px;background:var(--phase-tint);
+ clip-path:polygon(0 50%,13% 55%,27% 68%,43% 78%,61% 70%,80% 48%,100% 26%,100% 100%,0 100%);
+ opacity:.8;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin>.rv-entry-body{
+ position:relative!important;z-index:1!important;padding:0!important;min-width:0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-header{
+ display:grid!important;grid-template-columns:40px minmax(0,1fr) auto!important;align-items:center!important;
+ gap:7px!important;margin:0 0 6px!important;min-height:40px!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-phase-icon{
+ display:flex!important;align-items:center!important;justify-content:center!important;flex:none!important;
+ width:39px!important;height:39px!important;border-radius:50%!important;background:var(--phase-icon)!important;
+ font-size:26px!important;line-height:1!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-name{
+ color:#24523A!important;font-size:calc(14px * var(--kona-ui-scale,1))!important;
+ font-weight:750!important;line-height:1.35!important;white-space:normal!important;
+ word-break:keep-all!important;overflow-wrap:break-word!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-right{
+ display:flex!important;align-items:center!important;justify-content:flex-end!important;
+ flex-wrap:wrap!important;gap:5px!important;min-width:0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-right .review-feeling-value{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ min-height:25px!important;padding:4px 8px!important;margin:0!important;
+ border:0!important;border-radius:99px!important;background:#DDF0D7!important;
+ color:#225139!important;font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ font-weight:700!important;line-height:1.2!important;white-space:nowrap!important;
+ text-decoration:none!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-right .rv-daily-record-time{
+ margin:0!important;color:#3B6050!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;
+ font-weight:600!important;white-space:nowrap!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-note-preview{
+ margin:0 0 0 47px!important;padding:0!important;
+ color:#2B4039!important;font-size:calc(13.5px * var(--kona-ui-scale,1))!important;
+ line-height:1.5!important;font-weight:400!important;white-space:pre-wrap!important;
+ word-break:keep-all!important;overflow-wrap:break-word!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-user-note-title{
+ display:block!important;margin:0 0 5px 47px!important;color:#24523A!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin :is(.rv-note-preview,.rv-daily-check-name,.rv-user-note-title){
+ max-height:none!important;overflow:visible!important;-webkit-line-clamp:unset!important;
+}
+@media(max-width:360px){
+ body .app #page-records #new-reflect-page .rv-head.rv-daily-head{gap:5px 6px!important}
+ body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-write-reflection{
+  padding-inline:8px!important;font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ }
+ body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-filter{
+  padding-left:7px!important;
+ }
+ body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-filter > summary{
+  padding-inline:7px!important;
+ }
+ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-header{
+  grid-template-columns:35px minmax(0,1fr) auto!important;gap:6px!important;
+ }
+ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-phase-icon{
+  width:34px!important;height:34px!important;font-size:23px!important;
+ }
+ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-name{
+  font-size:calc(13px * var(--kona-ui-scale,1))!important;
+ }
+ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-note-preview{
+  margin-left:41px!important;
+ }
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .rv-moment-count{
+ color:#EDF4EF!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-filter > summary{
+ background:#294136!important;color:#DEEDE4!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-filter > select{
+ background:#22352B!important;color:#EDF4EF!important;border-color:#506B5C!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-head.rv-daily-head > .review-write-reflection{
+ background:#3A805E!important;color:#FFFFFF!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .review-daily-anchor.rv-reference-anchor{
+ background:linear-gradient(110deg,#352F25,#463728 65%,#3B3327)!important;
+ border-color:#6C5840!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-reference-anchor :is(.rv-anchor-date,.rv-anchor-text,.rv-anchor-arrow){
+ color:#F4E8D4!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline [data-daypart="morning"]>.review-section-bar{
+ background:#423628!important;color:#F4D7A7!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline [data-daypart="afternoon"]>.review-section-bar{
+ background:#2B473E!important;color:#C4E4D4!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline [data-daypart="evening"]>.review-section-bar{
+ background:#3B3953!important;color:#E2DAFF!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar :is(.review-section-name,.review-section-chevron){
+ color:inherit!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar .review-section-count{
+ color:#C9D8CE!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin{
+ --phase-border:#5B5743;--phase-bg:#302D26;--phase-tint:#413C2C;--phase-icon:#463D29;
+ background:var(--phase-bg)!important;border-color:var(--phase-border)!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-check-noon{
+ --phase-border:#41695A;--phase-bg:#21382E;--phase-tint:#2B4D3F;--phase-icon:#3A4E3D;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-check-evening{
+ --phase-border:#615B85;--phase-bg:#302D3F;--phase-tint:#403D57;--phase-icon:#3A3854;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin :is(.rv-daily-check-name,.rv-note-preview,.rv-user-note-title){
+ color:#F3F6F0!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-daily-record-time{
+ color:#DBE6DB!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-right .review-feeling-value{
+ background:#41634E!important;color:#F0FAEE!important;
+}
+
+/* Reference phases: override the common check-in rule's custom properties
+   at equal or greater specificity, without touching Archive or Weekly. */
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-noon{
+ --phase-border:#C5E2D7;--phase-bg:#F2FBF8;--phase-tint:#D7F0E8;--phase-icon:#FFF1D5;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-evening{
+ --phase-border:#D9D8F1;--phase-bg:#F8F6FF;--phase-tint:#E4E1F8;--phase-icon:#EDE9FB;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-night{
+ --phase-border:#D5DFE8;--phase-bg:#F6F9FD;--phase-tint:#E0E9F4;--phase-icon:#EEF1F9;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-noon{
+ --phase-border:#46695C;--phase-bg:#20382F;--phase-tint:#2D4B41;--phase-icon:#385040;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-evening{
+ --phase-border:#605A80;--phase-bg:#2D2B3D;--phase-tint:#403D57;--phase-icon:#45415C;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin.rv-daily-check-night{
+ --phase-border:#535E76;--phase-bg:#292F3B;--phase-tint:#374359;--phase-icon:#424961;
+}
