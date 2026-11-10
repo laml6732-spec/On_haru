@@ -4502,3 +4502,123 @@ html[data-appearance=dark] body .app #page-today.kona-plan-schedule-first #kx-su
 /* Keep secondary light-theme text above AA without changing layout or palette. */
 html[data-appearance=light] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row .kona-row-time{color:#586D56!important}
 html[data-appearance=light] body .app #page-records #new-review-switch :is(#rev-reflect,#rev-weekly,#rev-archive):not(.on){color:#5B7063!important}
+
+/* On_HARU Daily timeline only (2026-11-09): Archive and Weekly are out of scope. */
+body .app #page-records #new-reflect-page .rv-timeline .review-section-bar{
+ display:flex!important;align-items:center!important;width:100%!important;min-height:44px!important;
+ cursor:pointer!important;text-align:left!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-section-name{
+ font-size:calc((15px) * var(--kona-ui-scale,1))!important;font-weight:700!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-section-chevron{
+ display:inline-block!important;transform:rotate(0deg);transition:transform 160ms ease;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-section-bar[aria-expanded="true"] .review-section-chevron{
+ transform:rotate(180deg);
+}
+@media(prefers-reduced-motion:reduce){
+ body .app #page-records #new-reflect-page .rv-timeline .review-section-chevron{transition:none!important}
+}
+/* Lecture/class is a stronger green than the existing pale schedule chip.
+   White on #3D7658 = 5.34:1, including dark appearance. */
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-chip,
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-chip{
+ display:inline-flex!important;align-items:center!important;gap:5px!important;
+ width:auto!important;max-width:100%!important;margin:0 0 8px!important;
+ padding:5px 8px!important;border:0!important;border-radius:5px!important;
+ background:#3D7658!important;color:#FFFFFF!important;font-weight:600!important;
+ font-size:calc((12px) * var(--kona-ui-scale,1))!important;line-height:1.35!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-chip > span,
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-chip > span{
+ background:transparent!important;color:#FFFFFF!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-chip .rv-daily-class-name{
+ min-width:0!important;white-space:normal!important;word-break:keep-all!important;overflow-wrap:break-word!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-chip.kona-tap-edit:focus-visible{
+ outline:2px solid #3D7658!important;outline-offset:3px!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-rail{
+ border-left:2px solid #91BCA5!important;padding-left:12px!important;
+}
+/* Unified right-hand timestamp. It is rendered only when a real recorded
+   time is present; schedule start/end stays exclusively in the schedule chip. */
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record-head{
+ display:flex!important;align-items:baseline!important;justify-content:space-between!important;
+ flex-wrap:wrap!important;gap:3px 10px!important;margin:0 0 4px!important;min-width:0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record-head > .rv-user-note-title{
+ min-width:0!important;flex:1 1 auto!important;margin:0!important;
+ font-size:calc((14px) * var(--kona-ui-scale,1))!important;font-weight:700!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record-time{
+ display:block!important;margin-left:auto!important;flex:0 0 auto!important;
+ color:#52665B!important;font-weight:500!important;font-variant-numeric:tabular-nums!important;
+ font-size:calc((12px) * var(--kona-ui-scale,1))!important;line-height:1.4!important;
+ white-space:nowrap!important;text-align:right!important;
+}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record-time{
+ color:#BED0C4!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-check-header{
+ justify-content:space-between!important;gap:4px 8px!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record .review-record-meta{
+ font-size:calc((12px) * var(--kona-ui-scale,1))!important;font-weight:400!important;
+}
+/* Labels are subordinate headings, not chips. No new cards. */
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-group .review-class-part{
+ display:block!important;border:0!important;border-radius:0!important;
+ padding:0!important;margin:6px 0 10px!important;background:transparent!important;
+ box-shadow:none!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-group .review-class-part > small{
+ display:block!important;width:auto!important;background:transparent!important;
+ border:0!important;border-radius:0!important;margin:0 0 3px!important;padding:0!important;
+ color:#59685E!important;font-size:calc((12px) * var(--kona-ui-scale,1))!important;
+ font-weight:600!important;line-height:1.35!important;
+}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-group .review-class-part > small{
+ background:transparent!important;color:#BACDC1!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-group .review-class-part > p{
+ margin:0!important;padding:0!important;text-indent:0!important;
+ font-size:calc((13.5px) * var(--kona-ui-scale,1))!important;font-weight:400!important;
+}
+/* Four-level hierarchy and Korean word wrapping, Daily body only. */
+body .app #page-records #new-reflect-page .rv-timeline :is(.rv-note-preview,.review-class-part p,.review-note-followup p,.rv-user-note-title,.rv-daily-class-name,.review-record-meta){
+ word-break:keep-all!important;overflow-wrap:break-word!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-note-preview{
+ font-size:calc((13.5px) * var(--kona-ui-scale,1))!important;font-weight:400!important;
+ max-height:none!important;overflow:visible!important;-webkit-line-clamp:unset!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-preview-more{display:none!important}
+
+/* Final cascade correction: existing review-v3 heading selectors have higher
+   specificity than the generic class-chip rule above. Daily only. */
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group > h5.review-event-heading.rv-daily-class-chip,
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group > h5.review-event-heading.rv-daily-class-chip{
+ display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;
+ gap:5px!important;width:auto!important;max-width:100%!important;
+ padding:5px 8px!important;margin:0 0 8px!important;border:0!important;border-radius:5px!important;
+ background:#3D7658!important;color:#FFFFFF!important;font-size:calc((12px) * var(--kona-ui-scale,1))!important;font-weight:600!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group > h5.review-event-heading.rv-daily-class-chip > span,
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group > h5.review-event-heading.rv-daily-class-chip > span{
+ color:#FFFFFF!important;background:transparent!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-part-head{
+ display:flex!important;align-items:baseline!important;justify-content:space-between!important;
+ gap:8px!important;margin:0 0 4px!important;min-width:0!important;
+}
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-group .review-class-part small{
+ background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+ padding:0!important;margin:0!important;color:#59685E!important;font-weight:600!important;
+ font-size:calc((12px) * var(--kona-ui-scale,1))!important;
+}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-timeline .rv-daily-class-group .review-class-part small{
+ color:#BACDC1!important;background:transparent!important;
+}

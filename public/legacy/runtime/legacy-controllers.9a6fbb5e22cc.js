@@ -2055,13 +2055,32 @@ function reviewSection(section){
  const count=section.records.length+' '+(section.records.length===1?KonaI18n.t("entry"):KonaI18n.t("entries"));
  const chevron=el('span','⌄','review-section-chevron');chevron.setAttribute('aria-hidden','true');bar.append(label,el('span',count,'review-section-count'),chevron);
  const content=el('div',undefined,'review-fold-body'),inner=el('div',undefined,'review-fold-inner');content.id='review-content-'+section.key;content.append(inner);bar.setAttribute('aria-controls',content.id);
- const sync=expanded=>{bar.setAttribute('aria-expanded',String(expanded));content.classList.toggle('is-open',expanded);content.inert=!expanded;content.setAttribute('aria-hidden',String(!expanded));chevron.textContent=expanded?'⌄':'›';if(expanded)requestAnimationFrame(()=>reviewSyncPreviews(content))};sync(open);
+ const sync=expanded=>{bar.setAttribute('aria-expanded',String(expanded));content.classList.toggle('is-open',expanded);content.inert=!expanded;content.setAttribute('aria-hidden',String(!expanded));chevron.textContent='⌄';if(expanded)requestAnimationFrame(()=>reviewSyncPreviews(content))};sync(open);
  bar.onclick=()=>{if(!reviewCanEdit())return;const expanded=bar.getAttribute('aria-expanded')!=='true';reviewUISet(key,expanded);sync(expanded)};
  const linked=new Map();for(const record of section.records)if(record.reviewEvent){const id=record.reviewEvent.id;if(!linked.has(id))linked.set(id,[]);linked.get(id).push(record)}
  const objects=section.events.map(event=>({time:mins(event.start),event}));for(const record of section.records)if(!record.reviewEvent)objects.push({time:record.kind==='check'&&record.phase==='morning'?-Infinity:record.t??Infinity,record});objects.sort((a,b)=>a.time-b.time);
- for(const item of objects){if(item.record){inner.append(reviewRow(item.record,{preview:false,thoughtView:true}));continue}
-  const event=item.event,cluster=el('section',undefined,'rv-linked-group'),heading=el('h5',undefined,'review-event-heading'),name=el('span',KonaI18n.eventLabel(event));const calendar=el('span','▦','review-calendar-icon');calendar.setAttribute('aria-hidden','true');const time=el('time',event.start+(event.end?'–'+event.end:''),'review-event-time');heading.append(name);if(konaReviewPreferences().showTimes)heading.append(time);cluster.append(heading);
-  const records=linked.get(event.id)||[];if(records.length){const rail=el('div',undefined,records.length>1?'review-linked-rail':'review-single-note');for(const record of records.slice(0,2))rail.append(reviewRow(record,{grouped:true,preview:false,thoughtView:true}));
+ for(const item of objects){if(item.record){
+   if(item.record.kind==='class'){
+    // Daily-only: class notes have their own chip/rail even without an event link.
+    const record=item.record,cluster=el('section',undefined,'rv-linked-group rv-daily-class-group');
+    const heading=el('h5',undefined,'review-event-heading rv-daily-class-chip');
+    const icon=el('span','📖','rv-daily-class-icon');icon.setAttribute('aria-hidden','true');
+    heading.append(icon,el('span',record.title,'rv-daily-class-name'));
+    // Reuse the existing class editor; the chip replaces the old bold heading.
+    konaBindEditTarget(heading,KonaI18n.t("Open class notes · ")+record.date,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);konaOpenReviewEditor(record.date,record.id)});
+    const rail=el('div',undefined,'review-linked-rail rv-daily-class-rail');
+    rail.append(reviewRow(record,{grouped:true,preview:false,thoughtView:true}));
+    cluster.append(heading,rail);inner.append(cluster);
+   }else inner.append(reviewRow(item.record,{preview:false,thoughtView:true}));
+   continue;
+  }
+  const event=item.event,isClassEvent=event.category==='lecture';
+  const cluster=el('section',undefined,'rv-linked-group'),heading=el('h5',undefined,'review-event-heading'+(isClassEvent?' rv-daily-class-chip':''));
+  if(isClassEvent){const icon=el('span','📖','rv-daily-class-icon');icon.setAttribute('aria-hidden','true');heading.append(icon)}
+  heading.append(el('span',KonaI18n.eventLabel(event),'rv-daily-class-name'));
+  if(!isClassEvent&&konaReviewPreferences().showTimes)heading.append(el('time',event.start+(event.end?'–'+event.end:''),'review-event-time'));
+  cluster.append(heading);
+  const records=linked.get(event.id)||[];if(records.length){const rail=el('div',undefined,'review-linked-rail');for(const record of records.slice(0,2))rail.append(reviewRow(record,{grouped:true,preview:false,thoughtView:true}));
    if(records.length>2){const rest=el('div',undefined,'review-linked-more');for(const record of records.slice(2))rest.append(reviewRow(record,{grouped:true,preview:false,thoughtView:true}));const moreKey=date+'|event|'+event.id,toggle=el('button',undefined,'review-group-more');toggle.type='button';rest.id='review-more-'+event.id.replace(/[^a-zA-Z0-9_-]/g,'_');toggle.setAttribute('aria-controls',rest.id);const apply=expanded=>{rest.hidden=!expanded;toggle.textContent=expanded?KonaI18n.t("Show less"):'+ '+(records.length-2)+' more '+(records.length===3?KonaI18n.t("note"):KonaI18n.t("notes"));toggle.setAttribute('aria-expanded',String(expanded));if(expanded)requestAnimationFrame(()=>reviewSyncPreviews(rest))};apply(!!reviewUI[moreKey]);toggle.onclick=()=>{if(!reviewCanEdit())return;const expanded=rest.hidden;reviewUISet(moreKey,expanded);apply(expanded)};rail.append(rest,toggle)}cluster.append(rail)}inner.append(cluster)
  }
  group.append(bar,content);return group;
@@ -2086,7 +2105,7 @@ function reviewFeelingEditor(record,row,dimension='happiness'){
  }));editor.append(status);row.append(editor);editor.querySelector('input[aria-label="'+(dimension==='energy'?KonaI18n.t("Energy"):KonaI18n.t("Mood"))+'"]')?.focus({preventScroll:true});
 }
 function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
- if(['capture','event','free'].includes(record.kind))preview=konaReviewPreferences().previewLines>0&&!archiveDetailRecord;
+ if(['capture','event','free'].includes(record.kind))preview=!thoughtView&&konaReviewPreferences().previewLines>0&&!archiveDetailRecord;
  const isPersonal=record.kind==='free'||(record.kind==='capture'&&!record.scheduleId);
  const row=el('article',undefined,'review-record rv-item');row.classList.toggle('review-check-record',record.kind==='check');row.classList.toggle('review-session-record',record.kind==='session');row.classList.toggle('review-class-record',record.kind==='class');row.classList.toggle('review-personal-note',isPersonal);row.classList.toggle('review-plan-note',!!record.reviewEvent&&['capture','event'].includes(record.kind));row.classList.toggle('review-empty-note',['check','session'].includes(record.kind)&&!String(record.body||'').trim());row.classList.toggle('review-is-important',reviewImportant(record));row.dataset.recordId=record.id;row.dataset.recordDate=record.date;row.dataset.entryId=record.id;
  const body=el('div',undefined,'rv-entry-body'),meta=el('div',undefined,'review-record-meta');const identity=record.date+' · '+(record.scheduleLabel||record.title||record.type)+' · '+record.id;
@@ -2095,7 +2114,7 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
  if(isPersonal)meta.append(el('span',KonaI18n.t("Personal note"),'review-type-label'));
  if(meaningful){const name=el('span',meaningful);if(record.kind==='check')konaBindEditTarget(name,KonaI18n.t("Change check-in note · ")+identity,()=>reviewInlineNote(record,row));meta.append(name)}
  // Capture time is recorded at creation. An old free-note hour is only a slot, not a timestamp.
- const metaTime=record.kind==='capture'&&isPersonal?record.recordedTime:!['capture','event','free','class'].includes(record.kind)?time:'';
+ const metaTime=thoughtView?'':record.kind==='capture'&&isPersonal?record.recordedTime:!['capture','event','free','class'].includes(record.kind)?time:'';
  if(metaTime)meta.append(el('time',metaTime));if(meta.childNodes.length)body.append(meta);
  if(!grouped&&record.scheduleId)body.append(el('small',record.scheduleLabel,'review-schedule-label'));
  const title=record.noteTitle&&record.noteTitle.trim().toLowerCase()!==String(record.scheduleLabel||record.title).trim().toLowerCase()?record.noteTitle:'';
@@ -2104,9 +2123,13 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
  if(title){const heading=el('strong',title,'rv-user-note-title');if(canInline)konaBindEditTarget(heading,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));body.append(heading)}
  if(record.kind!=='class'&&(record.body||(!title&&record.tags?.length))){const text=el('p',record.body,'rv-note-preview'+(preview?' review-preview':''));if(canInline)konaBindEditTarget(text,KonaI18n.t("Change note · ")+identity,()=>reviewInlineNote(record,row));else if(record.kind==='class')konaBindEditTarget(text,KonaI18n.t("Open class review · ")+identity,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);nav('checkin',{phase:'noon'})});if(/\n\s*\n/.test(text.textContent)){const paragraphs=text.textContent.split(/\n\s*\n/);text.replaceChildren(...paragraphs.map(value=>el('span',value,'review-text-paragraph')))}body.append(text);if(preview){const more=el('button',KonaI18n.t("Read more"),'review-preview-more');more.type='button';more.onclick=()=>{text.classList.toggle('review-expanded');more.textContent=text.classList.contains('review-expanded')?KonaI18n.t("Show less"):KonaI18n.t("Read more")};body.append(more);requestAnimationFrame(()=>{if(more.isConnected)reviewSyncPreviews(body)})}}
  if(record.kind==='class'){
-  const c=db.days[record.date]?.checkins?.noon||{},heading=el('h4',konaReviewClassHeading(record.date,c),'review-class-title');konaBindEditTarget(heading,KonaI18n.t("Open class notes · ")+record.date,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);konaOpenReviewEditor(record.date,record.id)});
-  const classHeader=el('div',undefined,'review-class-header'),classTime=validReflectHM(c.classReviewTime)||record.recordedTime;
-  classHeader.append(heading);if(classTime)classHeader.append(el('time',classTime,'review-class-time'));body.append(classHeader);
+  const c=db.days[record.date]?.checkins?.noon||{};
+  if(!thoughtView){
+   // Preserve the existing Archive/Weekly heading and time layout.
+   const heading=el('h4',konaReviewClassHeading(record.date,c),'review-class-title');konaBindEditTarget(heading,KonaI18n.t("Open class notes · ")+record.date,()=>{if(!reviewCanEdit())return;if(date!==record.date)changeDate(record.date);konaOpenReviewEditor(record.date,record.id)});
+   const classHeader=el('div',undefined,'review-class-header'),classTime=validReflectHM(c.classReviewTime)||record.recordedTime;
+   classHeader.append(heading);if(classTime)classHeader.append(el('time',classTime,'review-class-time'));body.append(classHeader);
+  }
   for(const [key,label] of [['lectureQuote',KonaI18n.t("Memorable words")],['lectureReflection',KonaI18n.t("Reflection")],['classResponse',KonaI18n.t("Response")]])if(c[key]?.trim()){const part=el('section',undefined,'review-class-part');part.append(el('small',label),el('p',c[key]));body.append(part)}
  }
  if(record.kind==='check'){
@@ -2123,7 +2146,32 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false}={}){
   const marked=reviewImportant(record),highlight=el('button',marked?KonaI18n.t("Remove highlight"):KonaI18n.t("Highlight · Important"),'note-highlight-toggle');highlight.type='button';highlight.setAttribute('aria-pressed',String(marked));highlight.onclick=()=>{if(!reviewCanEdit())return;const ok=guardedMutation(()=>{const v=day(record.date);v.important??=[];if(marked){v.important=v.important.filter(id=>id!==record.sourceId);if(record.kind==='capture'){const q=v.quickCaptureEntries.find(q=>q.id===record.sourceId);q.important=false;q.tags=(q.tags||[]).filter(t=>t!=='important')}else if(v.eventNoteTags?.[record.sourceId])v.eventNoteTags[record.sourceId]=v.eventNoteTags[record.sourceId].filter(t=>t!=='important')}else v.important.push(record.sourceId)},KonaI18n.t("Highlight was not saved."));if(ok)reviewAfterChange()};controls.append(highlight);
   const remove=el('button',KonaI18n.t("Delete"),'review-delete');remove.type='button';remove.onclick=async()=>{if(!reviewCanEdit()||!await onHaruConfirm(KonaI18n.t("Delete this note?")))return;const ok=guardedMutation(()=>{if(record.kind==='capture')db.days[record.date].quickCaptureEntries=db.days[record.date].quickCaptureEntries.filter(q=>q.id!==record.sourceId);else deleteEventNote(record.date,record.sourceId)},KonaI18n.t("Delete failed. The record was kept."));if(ok)reviewAfterChange()};controls.append(remove);
  }
- const emoji=konaNoteTagEmoji(record.tags?.[0]);if(emoji){const first=body.querySelector('.rv-user-note-title,.rv-note-preview');if(first){row.classList.add('review-has-emoji');first.classList.add('review-emoji-target');const symbol=el('span',emoji,'review-note-leading-emoji');konaApplyNoteTagIcon(symbol,record.tags);symbol.setAttribute('aria-hidden','true');first.prepend(symbol)}}if(record.kind==='session'){const heading=body.querySelector('.rv-user-note-title');if(heading&&meta.parentElement===body)body.insertBefore(heading,meta)}row.append(body);return row;
+ const emoji=konaNoteTagEmoji(record.tags?.[0]);if(emoji){const first=body.querySelector('.rv-user-note-title,.rv-note-preview');if(first){row.classList.add('review-has-emoji');first.classList.add('review-emoji-target');const symbol=el('span',emoji,'review-note-leading-emoji');konaApplyNoteTagIcon(symbol,record.tags);symbol.setAttribute('aria-hidden','true');first.prepend(symbol)}}if(record.kind==='session'){const heading=body.querySelector('.rv-user-note-title');if(heading&&meta.parentElement===body)body.insertBefore(heading,meta)}if(thoughtView){
+  row.classList.add('rv-daily-record');
+  // Only recorded times. An event start or old free-note hour is NOT a note timestamp.
+  const recorded=record.kind==='class'?validReflectHM(db.days[record.date]?.checkins?.noon?.classReviewTime):['capture','check','session'].includes(record.kind)?validReflectHM(record.recordedTime):null;
+  const recordedNode=recorded?el('time',recorded,'rv-daily-record-time'):null;
+  const checkHeader=record.kind==='check'?body.querySelector('.review-check-header'):null;
+  const classPart=record.kind==='class'?body.querySelector('.review-class-part'):null;
+  if(classPart&&recordedNode){
+   // Put class record time on the right of its first section label; no extra row.
+   const head=el('div',undefined,'rv-daily-part-head'),label=classPart.querySelector('small');
+   if(label)head.append(label);
+   head.append(recordedNode);classPart.prepend(head);
+  }else if(checkHeader&&recordedNode)checkHeader.append(recordedNode);
+  else{
+   const title=body.querySelector(':scope > .rv-user-note-title');
+   const meta=body.querySelector(':scope > .review-record-meta');
+   if(title||meta||recordedNode){
+    const head=el('div',undefined,'rv-daily-record-head');
+    if(title)head.append(title);
+    else if(meta)head.append(meta);
+    if(recordedNode)head.append(recordedNode);
+    body.prepend(head);
+   }
+  }
+ }
+ row.append(body);return row;
 }
 function reviewHighlight(node,value,query){const text=String(value||'');if(!query){node.textContent=text;return}const lower=text.toLocaleLowerCase(),needle=query.toLocaleLowerCase();let at=0,index;while((index=lower.indexOf(needle,at))>=0){node.append(document.createTextNode(text.slice(at,index)),el('mark',text.slice(index,index+query.length)));at=index+query.length}node.append(document.createTextNode(text.slice(at)))}
 function konaSavedRecordMatches(record,filter){
