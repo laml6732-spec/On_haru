@@ -5095,3 +5095,11 @@ html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timelin
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{
  margin:8px 0 8px!important;
 }
+
+/* Explicit book-title contrast wins over legacy .rv-daily-class-name colors. */
+body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card > h5.review-event-heading.rv-daily-class-chip.rv-daily-book-heading > .rv-daily-class-name{
+ color:#33533D!important;
+}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card > h5.review-event-heading.rv-daily-class-chip.rv-daily-book-heading > .rv-daily-class-name{
+ color:#EAF2E4!important;
+}
