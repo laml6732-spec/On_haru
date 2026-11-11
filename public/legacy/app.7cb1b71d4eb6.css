@@ -5366,3 +5366,5 @@ body .app #page-capture .capture-tasks .task-title{flex:1 1 100px;min-width:0;wh
 body .app #page-capture .capture-tasks .task-meta{color:var(--sub)}
 body .app #page-capture .capture-tasks .done-tasks>summary{min-height:44px;padding:12px 0;cursor:pointer;color:var(--sub)}
 body .app #page-capture .capture-tasks :is(.task-check,.task-start-btn){flex-shrink:0;min-height:44px;min-width:44px}
+body .app #page-capture .capture-tasks .task-title{border:0!important;padding:6px 0!important;box-shadow:none!important}
+body .app #page-capture .capture-tasks .task-start-btn{border:0!important;background:transparent!important;color:var(--ink)!important}
