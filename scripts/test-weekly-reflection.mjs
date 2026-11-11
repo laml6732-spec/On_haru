@@ -26,7 +26,7 @@ function fixture({moments=[],reflection={},saved={},tasks=[],checks={},fail=fals
  const c={panel,db,date:'2026-11-09',weeklySelectedDate:'2026-11-09',weeklyOffset:0,tutorialPractice:false,
  KonaI18n:{language,dateLocale:language==='ko'?'ko-KR':'en-US',t:s=>s,eventLabel:e=>e.title},
  el:(t,v,c)=>new Node(t,v,c),dayAdd:add,monday:()=> '2026-11-09',nowLocal:()=> '2026-11-09',short:d=>d,fmt:d=>d,
- normalizeWeeklyReflections:()=>{},reviewRecords:d=>d==='2026-11-09'?moments:[],weekday:d=>new Date(d+'T12:00:00Z').getUTCDay(),reviewUI:{},reviewUISet:(k,v)=>{c.reviewUI[k]=v},guardedMutation:fn=>{fn();saves++;return true},
+ normalizeWeeklyReflections:()=>{},reviewRecords:d=>d==='2026-11-09'?moments:[],weekday:d=>new Date(d+'T12:00:00Z').getUTCDay(),taskKey:(t,d)=>t.id+'|'+(t.repeat==='none'?'single':d),reviewUI:{},reviewUISet:(k,v)=>{c.reviewUI[k]=v},guardedMutation:fn=>{fn();saves++;return true},
  reviewDateGroupHeading:(d,n)=>new Node('h4',d,'review-date-header'),
  reviewDailyFeelingEmoji:()=> '🙂',konaFeeling:()=> 'Calm',reviewFollowupLocalDate:d=>d,
  reviewImportant:r=>!!r.important,validReflectHM:t=>t,reviewRow:(r,opt)=>{assert.equal(opt.weeklyView,true);const n=new Node('article',r.body,'weekly-record');n.recordId=r.id;return n;},
