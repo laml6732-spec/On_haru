@@ -3448,8 +3448,32 @@ function renderHome(){
  const addTask=node('button',KonaI18n.t("＋ Add task"),'mini-btn');addTask.type='button';addTask.setAttribute('aria-label',KonaI18n.t("Add task",true));addTask.onclick=()=>{clearTaskForm();openSheet('taskFormModal')};taskHead.append(taskHeading,addTask);tasks.append(taskHead);
  const due=itemsDue(date),pins=new Set(day(date).pins||[]),pending=due.filter(t=>!isTaskDone(t,date)),completed=due.filter(t=>isTaskDone(t,date));
  pending.sort((a,b)=>Number(pins.has(taskKey(b,date)))-Number(pins.has(taskKey(a,date))));
- for(const task of pending)tasks.append(taskRow(task,date,{focusButton:true}));
- if(completed.length){const done=node('details',null,'done-tasks');done.append(node('summary',KonaI18n.format("Done (⟪0⟫)",[completed.length],false),'micro'));for(const task of completed)done.append(taskRow(task,date,{focusButton:true}));tasks.append(done)}
+ // Write-only: reuse task actions but organize them in compact, accessible rows.
+ function captureTaskRow(task){
+  const row=taskRow(task,date,{focusButton:true});
+  row.classList.add('capture-task-row');
+  const title=row.querySelector('.task-title'),meta=row.querySelector('.task-meta'),focus=row.querySelector('.task-start-btn');
+  const main=node('div',null,'capture-task-main');
+  if(title)main.append(title);
+  if(meta)main.append(meta);
+  if(focus)row.insertBefore(main,focus);else row.append(main);
+  // The square completion control replaces the decorative hibiscus image.
+  row.querySelector('.task-check img')?.remove();
+  if(focus){
+   const dockIcon=document.querySelector('#dock button[data-page="focus"] .navico svg');
+   if(dockIcon)focus.replaceChildren(dockIcon.cloneNode(true));
+   else focus.textContent='◎';
+   focus.classList.add('capture-focus-action');
+  }
+  // Vertical dots open linked records; there is no overflow menu.
+  row.querySelectorAll('.mini-btn:not(.task-start-btn)').forEach(link=>{
+   link.textContent='⋮';
+   link.classList.add('capture-linked-action');
+  });
+  return row;
+ }
+ for(const task of pending)tasks.append(captureTaskRow(task));
+ if(completed.length){const done=node('details',null,'done-tasks');done.append(node('summary',KonaI18n.format("Done (⟪0⟫)",[completed.length],false),'micro'));for(const task of completed)done.append(captureTaskRow(task));tasks.append(done)}
  if(!due.length)tasks.append(node('p',(KonaI18n.language==='ko'?'등록된 할 일이 없어요.':'No tasks for this day.'),'capture-empty'));
  home.append(tasks);
 
