@@ -1,65 +1,217 @@
 {
-  "runId": "42946936807",
-  "sourceCommit": "c1cd0183e768476b95801fc2a8ad72b9edf66a4f",
+  "runId": "42946984006",
+  "sourceCommit": "47ce33389d1d5ed206090d81564812bed00e6194",
   "url": "https://on-haru.laml6732.workers.dev/",
-  "static": null,
-  "smoke": null,
+  "static": {
+    "url": "https://on-haru.laml6732.workers.dev/",
+    "release": "writetasksrow20261111c",
+    "verifier": "hash-content-v2",
+    "cases": [
+      {
+        "path": "/",
+        "ok": true,
+        "status": 200,
+        "finalURL": "https://on-haru.laml6732.workers.dev/",
+        "expectedSha256": "d7ef69c98c6a59eaad740bd49a329dfb7929a56e5b2ef37a3760ce9a909597a8",
+        "sourceSha256": "75e8b73c9d0c1e3a9a26cfdad7491a5158e30376831dcedc7d58e0784f123754",
+        "actualSha256": "d7ef69c98c6a59eaad740bd49a329dfb7929a56e5b2ef37a3760ce9a909597a8",
+        "hashMatch": true,
+        "sourceHashMatch": false,
+        "contentVariant": "worker-startup-20261109",
+        "urlMatch": true,
+        "bodyReleaseMatch": true,
+        "workerRelease": null,
+        "releaseHeaderPresent": false,
+        "releaseEvidence": "sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present"
+      },
+      {
+        "path": "app.7cb1b71d4eb6.css",
+        "ok": true,
+        "status": 200,
+        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=writetasksrow20261111c",
+        "expectedSha256": "a41edc7897a3a08b4970294f14765ef4659f813a9e45e2a1ad1c71f6759b7f75",
+        "sourceSha256": "a41edc7897a3a08b4970294f14765ef4659f813a9e45e2a1ad1c71f6759b7f75",
+        "actualSha256": "a41edc7897a3a08b4970294f14765ef4659f813a9e45e2a1ad1c71f6759b7f75",
+        "hashMatch": true,
+        "sourceHashMatch": true,
+        "contentVariant": "source",
+        "urlMatch": true,
+        "bodyReleaseMatch": true,
+        "workerRelease": null,
+        "releaseHeaderPresent": false,
+        "releaseEvidence": "sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present"
+      },
+      {
+        "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
+        "ok": true,
+        "status": 200,
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=writetasksrow20261111c",
+        "expectedSha256": "ed44f1dd5ad11ff81dff97af29f1df0d263168f9825c17e9d05ce424766d87e1",
+        "sourceSha256": "ed44f1dd5ad11ff81dff97af29f1df0d263168f9825c17e9d05ce424766d87e1",
+        "actualSha256": "ed44f1dd5ad11ff81dff97af29f1df0d263168f9825c17e9d05ce424766d87e1",
+        "hashMatch": true,
+        "sourceHashMatch": true,
+        "contentVariant": "source",
+        "urlMatch": true,
+        "bodyReleaseMatch": true,
+        "workerRelease": null,
+        "releaseHeaderPresent": false,
+        "releaseEvidence": "sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present"
+      },
+      {
+        "path": "runtime/settings.58b48f87b05a.js",
+        "ok": true,
+        "status": 200,
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=writetasksrow20261111c",
+        "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
+        "sourceSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
+        "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
+        "hashMatch": true,
+        "sourceHashMatch": true,
+        "contentVariant": "source",
+        "urlMatch": true,
+        "bodyReleaseMatch": true,
+        "workerRelease": null,
+        "releaseHeaderPresent": false,
+        "releaseEvidence": "sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present"
+      },
+      {
+        "path": "sw.js",
+        "ok": true,
+        "status": 200,
+        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=writetasksrow20261111c",
+        "expectedSha256": "a70266a9970b5790aa72a566b71bb576f8dd9c1dffefddb9f03c9bce1999a731",
+        "sourceSha256": "de99eef6d563a1e8d216c924b54c47cf3f7a381d6bb4bced81b491e3af0ddd08",
+        "actualSha256": "a70266a9970b5790aa72a566b71bb576f8dd9c1dffefddb9f03c9bce1999a731",
+        "hashMatch": true,
+        "sourceHashMatch": false,
+        "contentVariant": "worker-startup-20261109",
+        "urlMatch": true,
+        "bodyReleaseMatch": true,
+        "workerRelease": null,
+        "releaseHeaderPresent": false,
+        "releaseEvidence": "sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present"
+      }
+    ]
+  },
+  "smoke": {
+    "url": "https://on-haru.laml6732.workers.dev/",
+    "cases": [
+      {
+        "name": "New event: short name collapsed",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "Short name expands",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "Short-name input remains usable",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "Short name resets collapsed on reopen",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "More keeps its top alignment",
+        "ok": true,
+        "details": "delta 0px"
+      },
+      {
+        "name": "Dark capture note contrast ≥ 4.5:1",
+        "ok": true,
+        "details": "10.67:1"
+      },
+      {
+        "name": "Saved note visible in Review",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "App confirmation cancel is safe",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "App text prompt returns edit",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "320px Capture not horizontally overflowing",
+        "ok": true,
+        "details": ""
+      },
+      {
+        "name": "1024px event dialog visible",
+        "ok": true,
+        "details": ""
+      }
+    ],
+    "pageErrors": [],
+    "artifacts": "test-results/live/smoke"
+  },
   "acceptance": null,
   "pwa": null,
   "runs": [
     {
-      "id": 42946984531,
-      "sha": "47ce33389d1d5ed206090d81564812bed00e6194",
-      "name": "On_HARU Archive Mood tooltip QA",
-      "status": "queued",
-      "conclusion": null
-    },
-    {
-      "id": 42946984148,
-      "sha": "47ce33389d1d5ed206090d81564812bed00e6194",
-      "name": "On_HARU Review schedule tags in Daily Weekly Archive",
-      "status": "queued",
-      "conclusion": null
-    },
-    {
-      "id": 42946984069,
-      "sha": "47ce33389d1d5ed206090d81564812bed00e6194",
-      "name": "QA On_HARU time-of-day appearance",
-      "status": "queued",
-      "conclusion": null
-    },
-    {
-      "id": 42946984052,
-      "sha": "47ce33389d1d5ed206090d81564812bed00e6194",
-      "name": "On_HARU Check-in and Archive Mood touch regression",
-      "status": "queued",
-      "conclusion": null
-    },
-    {
-      "id": 42946984043,
-      "sha": "47ce33389d1d5ed206090d81564812bed00e6194",
-      "name": "OnHaru static UI checks",
-      "status": "queued",
-      "conclusion": null
-    },
-    {
-      "id": 42946984006,
-      "sha": "47ce33389d1d5ed206090d81564812bed00e6194",
+      "id": 42947081327,
+      "sha": "93968a042b19c4a62822096d362cfc5062694e2a",
       "name": "OnHaru Workers production verification",
       "status": "pending",
       "conclusion": null
     },
     {
-      "id": 42946984003,
-      "sha": "47ce33389d1d5ed206090d81564812bed00e6194",
+      "id": 42947081151,
+      "sha": "93968a042b19c4a62822096d362cfc5062694e2a",
+      "name": "On_HARU Check-in and Archive Mood touch regression",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42947081146,
+      "sha": "93968a042b19c4a62822096d362cfc5062694e2a",
       "name": "On_HARU Capture emoji grid visual regression",
       "status": "queued",
       "conclusion": null
     },
     {
-      "id": 42946983980,
-      "sha": "47ce33389d1d5ed206090d81564812bed00e6194",
+      "id": 42947081080,
+      "sha": "93968a042b19c4a62822096d362cfc5062694e2a",
+      "name": "On_HARU Archive Mood tooltip QA",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42947081077,
+      "sha": "93968a042b19c4a62822096d362cfc5062694e2a",
       "name": "OnHaru metrics privacy and regression checks",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42947081073,
+      "sha": "93968a042b19c4a62822096d362cfc5062694e2a",
+      "name": "OnHaru static UI checks",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42947081064,
+      "sha": "93968a042b19c4a62822096d362cfc5062694e2a",
+      "name": "On_HARU Review schedule tags in Daily Weekly Archive",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42947081060,
+      "sha": "93968a042b19c4a62822096d362cfc5062694e2a",
+      "name": "QA On_HARU time-of-day appearance",
       "status": "queued",
       "conclusion": null
     }
