@@ -3460,7 +3460,7 @@ function renderHome(){
    const due=task.due||'';
    if(task.repeat==='daily')meta.textContent=langKo?'매일':'Daily';
    else if(task.repeat==='weekly')meta.textContent=langKo?'매주':'Weekly';
-   else if(/^\\d{4}-\\d{2}-\\d{2}$/.test(due)){
+   else if(due.length===10&&due[4]==='-'&&due[7]==='-'){
     const parts=due.split('-');
     meta.textContent=String(Number(parts[1]))+'/'+String(Number(parts[2]));
    }else meta.remove();
