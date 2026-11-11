@@ -1,10 +1,10 @@
 {
-  "runId": "42945982452",
-  "sourceCommit": "8fc7db42c7de5ee831e3b328b2b9639bd4415166",
+  "runId": "42946110976",
+  "sourceCommit": "3acd3bca6734f1925f12e193f3328ed907a39975",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
-    "release": "writetaskscompact20261111b",
+    "release": "writetasksrow20261111c",
     "verifier": "hash-content-v2",
     "cases": [
       {
@@ -12,9 +12,9 @@
         "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
-        "expectedSha256": "93bbf5413fa4358df27e287cee4156dccd0e5af76126ef78a957c320169bdc65",
-        "sourceSha256": "afe2e4e1b7c6a1faa7ce168f30b77d6a7b4b72944a872d0861f6593497862f77",
-        "actualSha256": "93bbf5413fa4358df27e287cee4156dccd0e5af76126ef78a957c320169bdc65",
+        "expectedSha256": "d16178d51fc033e0644945513ac0cf6aa2ff14db6c471353963e01674404dda1",
+        "sourceSha256": "574b7f0553626a657a96ba87385c9a20a798abe87eac0be4f154683fb5028866",
+        "actualSha256": "d16178d51fc033e0644945513ac0cf6aa2ff14db6c471353963e01674404dda1",
         "hashMatch": true,
         "sourceHashMatch": false,
         "contentVariant": "worker-startup-20261109",
@@ -28,10 +28,10 @@
         "path": "app.7cb1b71d4eb6.css",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=writetaskscompact20261111b",
-        "expectedSha256": "65bb381097f2aadf0ea36b36a6cd5e70c9f173ca9b51df42b06e98423ee87eb0",
-        "sourceSha256": "65bb381097f2aadf0ea36b36a6cd5e70c9f173ca9b51df42b06e98423ee87eb0",
-        "actualSha256": "65bb381097f2aadf0ea36b36a6cd5e70c9f173ca9b51df42b06e98423ee87eb0",
+        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=writetasksrow20261111c",
+        "expectedSha256": "749c1fab2ab053e5a8aeaa7f0b45fd02478a009d5eb3f712371add3ab5f02719",
+        "sourceSha256": "749c1fab2ab053e5a8aeaa7f0b45fd02478a009d5eb3f712371add3ab5f02719",
+        "actualSha256": "749c1fab2ab053e5a8aeaa7f0b45fd02478a009d5eb3f712371add3ab5f02719",
         "hashMatch": true,
         "sourceHashMatch": true,
         "contentVariant": "source",
@@ -45,7 +45,7 @@
         "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=writetaskscompact20261111b",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=writetasksrow20261111c",
         "expectedSha256": "453a8c634cbd60224f8e603b83dc0a8bad74b2d1f9bfc4db90ff974b0efc8a7f",
         "sourceSha256": "453a8c634cbd60224f8e603b83dc0a8bad74b2d1f9bfc4db90ff974b0efc8a7f",
         "actualSha256": "453a8c634cbd60224f8e603b83dc0a8bad74b2d1f9bfc4db90ff974b0efc8a7f",
@@ -62,7 +62,7 @@
         "path": "runtime/settings.58b48f87b05a.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=writetaskscompact20261111b",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=writetasksrow20261111c",
         "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "sourceSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
@@ -79,10 +79,10 @@
         "path": "sw.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=writetaskscompact20261111b",
-        "expectedSha256": "e890246056e2d8ed0133a52eaa2b1e891c30313843d7dd1abcd507d304e54697",
-        "sourceSha256": "303db1a865f6591eabdf30f98c6d23908ef92ea060cae504230f21ff058be2a0",
-        "actualSha256": "e890246056e2d8ed0133a52eaa2b1e891c30313843d7dd1abcd507d304e54697",
+        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=writetasksrow20261111c",
+        "expectedSha256": "a70266a9970b5790aa72a566b71bb576f8dd9c1dffefddb9f03c9bce1999a731",
+        "sourceSha256": "de99eef6d563a1e8d216c924b54c47cf3f7a381d6bb4bced81b491e3af0ddd08",
+        "actualSha256": "a70266a9970b5790aa72a566b71bb576f8dd9c1dffefddb9f03c9bce1999a731",
         "hashMatch": true,
         "sourceHashMatch": false,
         "contentVariant": "worker-startup-20261109",
@@ -464,66 +464,314 @@
           "ratio": 10.647536917601089
         }
       ]
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": true
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": true
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(48, 69, 77)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.076346058382203
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 255, 255)",
+          "ratio": 10.051871741322568
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(54, 91, 73)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 6.8077265644385
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(88, 109, 86)",
+          "bg": "rgb(237, 244, 233)",
+          "ratio": 5.009084243359029
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(38, 93, 73)",
+          "bg": "rgb(250, 247, 242)",
+          "ratio": 7.160595303349614
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 247, 242)",
+          "ratio": 4.984255706519644
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 247, 242)",
+          "ratio": 4.984255706519644
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(41, 70, 81)",
+          "bg": "rgb(255, 254, 252)",
+          "ratio": 9.972595690627822
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "cases": [
+        {
+          "name": "Capture title and writing contrast",
+          "ok": true
+        },
+        {
+          "name": "Plan name and time contrast",
+          "ok": true
+        },
+        {
+          "name": "Review tab contrast",
+          "ok": true
+        },
+        {
+          "name": "Event title contrast and English keyboard",
+          "ok": true
+        },
+        {
+          "name": "Korean Tab and Escape without changing saved records",
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "contrast": [
+        {
+          "label": "Capture title",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Capture input",
+          "fg": "rgb(241, 247, 241)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 12.67172705442878
+        },
+        {
+          "label": "Plan name",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        },
+        {
+          "label": "Plan time",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(34, 48, 42)",
+          "ratio": 9.63745137722458
+        },
+        {
+          "label": "rev-reflect",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 14.832233281769465
+        },
+        {
+          "label": "rev-weekly",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
+          "label": "Event title",
+          "fg": "rgb(240, 247, 240)",
+          "bg": "rgb(41, 61, 51)",
+          "ratio": 10.647536917601089
+        }
+      ]
     }
   ],
-  "pwa": null,
+  "pwa": {
+    "checks": [
+      {
+        "name": "PWA manifest and icons",
+        "ok": true
+      },
+      {
+        "name": "PWA icons have transparent or nonblack opaque corners",
+        "ok": true
+      },
+      {
+        "name": "Current release cache",
+        "ok": true
+      },
+      {
+        "name": "Offline shell and saved memo",
+        "ok": true
+      },
+      {
+        "name": "No local asset 404",
+        "ok": true
+      }
+    ],
+    "errors": [],
+    "missing": [],
+    "iconCorners": [
+      {
+        "src": "./icons/onharu-face-wave-192.png",
+        "width": 192,
+        "height": 192,
+        "corners": [
+          [
+            168,
+            222,
+            255,
+            255
+          ],
+          [
+            203,
+            237,
+            252,
+            255
+          ],
+          [
+            170,
+            224,
+            255,
+            255
+          ],
+          [
+            167,
+            215,
+            252,
+            255
+          ]
+        ],
+        "cornerMode": "opaque-nonblack",
+        "ok": true
+      },
+      {
+        "src": "./icons/onharu-face-wave-512.png",
+        "width": 512,
+        "height": 512,
+        "corners": [
+          [
+            167,
+            221,
+            255,
+            255
+          ],
+          [
+            216,
+            244,
+            255,
+            255
+          ],
+          [
+            181,
+            232,
+            255,
+            255
+          ],
+          [
+            168,
+            216,
+            252,
+            255
+          ]
+        ],
+        "cornerMode": "opaque-nonblack",
+        "ok": true
+      }
+    ],
+    "release": "writetasksrow20261111c"
+  },
   "runs": [
     {
       "id": 42946111654,
       "sha": "3acd3bca6734f1925f12e193f3328ed907a39975",
       "name": "On_HARU Review schedule tags in Daily Weekly Archive",
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null
     },
     {
       "id": 42946110976,
       "sha": "3acd3bca6734f1925f12e193f3328ed907a39975",
       "name": "OnHaru Workers production verification",
-      "status": "pending",
+      "status": "in_progress",
       "conclusion": null
     },
     {
       "id": 42946110950,
       "sha": "3acd3bca6734f1925f12e193f3328ed907a39975",
       "name": "On_HARU Review Weekly Archive hierarchy QA",
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null
     },
     {
       "id": 42946110927,
       "sha": "3acd3bca6734f1925f12e193f3328ed907a39975",
       "name": "On_HARU Archive Mood tooltip QA",
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null
     },
     {
       "id": 42946110923,
       "sha": "3acd3bca6734f1925f12e193f3328ed907a39975",
       "name": "QA On_HARU time-of-day appearance",
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 42946110920,
       "sha": "3acd3bca6734f1925f12e193f3328ed907a39975",
       "name": "On_HARU Check-in and Archive Mood touch regression",
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null
     },
     {
       "id": 42946110914,
       "sha": "3acd3bca6734f1925f12e193f3328ed907a39975",
       "name": "OnHaru metrics privacy and regression checks",
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 42946110910,
       "sha": "3acd3bca6734f1925f12e193f3328ed907a39975",
       "name": "On_HARU Capture emoji grid visual regression",
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     }
   ],
-  "allPassed": false
+  "allPassed": true
 }
