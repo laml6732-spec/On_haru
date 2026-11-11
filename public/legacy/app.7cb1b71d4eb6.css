@@ -5368,3 +5368,94 @@ body .app #page-capture .capture-tasks .done-tasks>summary{min-height:44px;paddi
 body .app #page-capture .capture-tasks :is(.task-check,.task-start-btn){flex-shrink:0;min-height:44px;min-width:44px}
 body .app #page-capture .capture-tasks .task-title{border:0!important;padding:6px 0!important;box-shadow:none!important}
 body .app #page-capture .capture-tasks .task-start-btn{border:0!important;background:transparent!important;color:var(--ink)!important}
+
+
+/* Write / Tasks: compact journal rows; no decorative completion flowers. */
+body .app #page-capture .capture-tasks{padding-top:10px}
+body .app #page-capture .capture-tasks .capture-recent-head{margin:0 0 9px}
+body .app #page-capture .capture-tasks .capture-task-row{
+ display:flex!important;flex-wrap:nowrap!important;align-items:center!important;
+ min-width:0;min-height:58px!important;padding:4px 5px!important;margin:0 0 6px;
+ gap:3px!important;border:1px solid var(--line)!important;border-radius:10px!important;
+ background:var(--surface)!important;box-shadow:none!important;
+}
+body .app #page-capture .capture-tasks .capture-task-row:has(.task-title.important){
+ border-left:3px solid #b6c9b6!important;padding-left:3px!important;
+}
+body .app #page-capture .capture-tasks .capture-task-row .task-check{
+ position:relative;flex:0 0 40px!important;width:40px!important;min-width:40px!important;
+ height:44px!important;min-height:44px!important;border:0!important;
+ background:transparent!important;border-radius:7px!important;padding:0!important;
+ display:grid!important;place-items:center!important;
+}
+body .app #page-capture .capture-tasks .capture-task-row .task-check img{display:none!important}
+body .app #page-capture .capture-tasks .capture-task-row .task-check::before{
+ content:'';display:block;box-sizing:border-box;width:19px;height:19px;
+ border:1.5px solid #889b8f;border-radius:5px;background:transparent;
+}
+body .app #page-capture .capture-tasks .capture-task-row .task-check.completed::before{
+ background:#346451;border-color:#346451;
+}
+body .app #page-capture .capture-tasks .capture-task-row .task-check.completed::after{
+ content:'✓';position:absolute;inset:0;display:grid;place-items:center;
+ color:#fff!important;font:700 14px/1 sans-serif;
+}
+body .app #page-capture .capture-tasks .capture-task-main{
+ display:flex;flex:1 1 auto;min-width:0;flex-direction:column;align-items:stretch;
+ justify-content:center;gap:2px;
+}
+body .app #page-capture .capture-tasks .capture-task-main .task-title{
+ display:block!important;width:100%;min-width:0;min-height:21px;height:auto!important;
+ margin:0!important;padding:0!important;border:0!important;background:transparent!important;
+ color:var(--ink)!important;font-size:calc(13.5px * var(--kona-ui-scale,1))!important;
+ font-weight:650!important;line-height:1.35!important;text-align:left;
+ white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+body .app #page-capture .capture-tasks .capture-task-main .task-name{
+ display:block!important;width:100%;min-width:0;max-width:100%;white-space:nowrap!important;
+ overflow:hidden!important;text-overflow:ellipsis!important;
+}
+body .app #page-capture .capture-tasks .capture-task-main .task-title.done{
+ text-decoration:line-through;color:var(--faint)!important;
+}
+body .app #page-capture .capture-tasks .capture-task-main .important-mark{display:none!important}
+body .app #page-capture .capture-tasks .capture-task-main .task-meta{
+ order:2;display:block;align-self:flex-start;min-width:0;max-width:100%;
+ padding:0!important;font-size:calc(10.5px * var(--kona-ui-scale,1))!important;
+ color:var(--sub)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+body .app #page-capture .capture-tasks .capture-task-row :is(.capture-focus-action,.capture-linked-action){
+ display:grid!important;place-items:center;flex:0 0 38px!important;
+ width:38px!important;min-width:38px!important;height:44px!important;min-height:44px!important;
+ padding:0!important;margin:0!important;color:var(--sub)!important;
+ border:0!important;background:transparent!important;border-radius:8px!important;
+ font:600 22px/1 var(--font-ui)!important;
+}
+body .app #page-capture .capture-tasks .capture-task-row .capture-focus-action{
+ color:var(--solid)!important;
+}
+body .app #page-capture .capture-tasks .capture-task-row .capture-focus-action svg{
+ display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.65;
+ stroke-linecap:round;stroke-linejoin:round;pointer-events:none;
+}
+body .app #page-capture .capture-tasks .capture-task-row .capture-linked-action{
+ font-size:25px!important;letter-spacing:0!important;
+}
+body .app #page-capture .capture-tasks .capture-task-row :is(.capture-focus-action,.capture-linked-action):focus-visible{
+ outline:2px solid var(--solid);outline-offset:-3px;
+}
+body .app #page-capture .capture-tasks .done-tasks>summary{
+ min-height:35px;padding:7px 1px;color:var(--sub);font-size:12px;
+}
+html[data-appearance=dark] body .app #page-capture .capture-tasks .capture-task-row{
+ background:#22302a!important;border-color:#44594c!important;
+}
+html[data-appearance=dark] body .app #page-capture .capture-tasks .capture-task-main .task-title{
+ color:#f1f7f1!important;
+}
+html[data-appearance=dark] body .app #page-capture .capture-tasks .capture-task-main .task-meta{
+ color:#bbd3c1!important;
+}
+html[data-appearance=dark] body .app #page-capture .capture-tasks .capture-task-row .task-check::before{
+ border-color:#bbd3c1;
+}
