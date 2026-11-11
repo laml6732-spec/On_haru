@@ -19,14 +19,14 @@ class Node {
  querySelector(selector){return this.all().find(n=>selector.startsWith('.')?n.className.split(' ').includes(selector.slice(1)):n.tag===selector)||null;}
  all(){return this.children.flatMap(x=>[x,...x.all()]);}
 }
-function fixture({moments=[],reflection={},saved={},fail=false,language='en'}={}){
- const panel=new Node('main'),db={settings:{},days:{'2026-11-09':{reflectionNotes:reflection}},weeklyReflections:{'2026-11-09':{insight:'',action:'',...saved}}};
+function fixture({moments=[],reflection={},saved={},tasks=[],checks={},fail=false,language='en'}={}){
+ const panel=new Node('main'),db={settings:{},tasks,checks,days:{'2026-11-09':{reflectionNotes:reflection}},weeklyReflections:{'2026-11-09':{insight:'',action:'',...saved}}};
  let saves=0,renders=0;
  const add=(d,n)=>{const x=new Date(d+'T12:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10);};
  const c={panel,db,date:'2026-11-09',weeklySelectedDate:'2026-11-09',weeklyOffset:0,tutorialPractice:false,
  KonaI18n:{language,dateLocale:language==='ko'?'ko-KR':'en-US',t:s=>s,eventLabel:e=>e.title},
  el:(t,v,c)=>new Node(t,v,c),dayAdd:add,monday:()=> '2026-11-09',nowLocal:()=> '2026-11-09',short:d=>d,fmt:d=>d,
- normalizeWeeklyReflections:()=>{},reviewRecords:d=>d==='2026-11-09'?moments:[],
+ normalizeWeeklyReflections:()=>{},reviewRecords:d=>d==='2026-11-09'?moments:[],weekday:d=>new Date(d+'T12:00:00Z').getUTCDay(),reviewUI:{},reviewUISet:(k,v)=>{c.reviewUI[k]=v},guardedMutation:fn=>{fn();saves++;return true},
  reviewDateGroupHeading:(d,n)=>new Node('h4',d,'review-date-header'),
  reviewDailyFeelingEmoji:()=> '🙂',konaFeeling:()=> 'Calm',reviewFollowupLocalDate:d=>d,
  reviewImportant:r=>!!r.important,validReflectHM:t=>t,reviewRow:(r,opt)=>{assert.equal(opt.weeklyView,true);const n=new Node('article',r.body,'weekly-record');n.recordId=r.id;return n;},
@@ -65,4 +65,30 @@ test('weekly input autosaves; completion saves; failed writes restore the prior 
 });
 test('empty week completion disabled; week navigation and Korean control remain available',()=>{
  const f=fixture({language:'ko'});assert.equal(f.all('rv-done')[0].disabled,true);assert.equal(f.all('weekly-reflection-toggle')[0].textContent,'회고 쓰기');f.all('weekly-nav-arrow')[0].onclick();assert.equal(f.c.weeklyOffset,-1);assert.equal(f.renders,1);
+});
+
+test('weekly Plan tasks are grouped by occurrence, togglable, and displayed before day records',()=>{
+ const f=fixture({tasks:[
+  {id:'one',title:'Submit outreach notes',repeat:'none',due:'2026-11-11',since:'2026-11-09'},
+  {id:'daily',title:'Read scripture',repeat:'daily',since:'2026-11-09',until:'2026-11-15'}
+ ],checks:{'daily|2026-11-09':{date:'2026-11-09'}}});
+ const tasks=f.all('weekly-tasks')[0],records=f.all('weekly-records')[0];
+ assert.ok(tasks&&records);assert.ok(f.panel.children.indexOf(tasks)<f.panel.children.indexOf(records));
+ assert.equal(f.all('weekly-task-recurring').length,1);
+ assert.equal(f.all('weekly-task-line').length,8);
+ assert.equal(f.all('weekly-tasks-heading')[0].textContent.includes('1 / 8'),true);
+ const b=f.all('weekly-task-line')[0].querySelector('button');b.onclick();
+ assert.equal(f.db.checks['one|single'].date,'2026-11-11');
+});
+test('weekly saved reflection is readable without opening the editor',()=>{
+ const f=fixture({saved:{insight:'A lesson from the week',action:'One concrete step'}});
+ assert.equal(f.all('weekly-reflection-disclosure')[0].open,false);
+ assert.ok(f.all('weekly-saved-summary')[0].textContent.includes('A lesson from the week'));
+ assert.ok(f.all('weekly-saved-summary')[0].textContent.includes('One concrete step'));
+});
+test('date disclosures remember user state and current recorded day opens initially',()=>{
+ const f=fixture({moments:[{id:'a',kind:'capture',body:'remember'}]});
+ const day=f.all('weekly-day')[0];assert.equal(day.open,true);
+ day.open=false;day.ontoggle();
+ assert.equal(f.c.reviewUI['weekly-day-2026-11-09-2026-11-09'],false);
 });

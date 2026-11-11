@@ -2886,10 +2886,85 @@ field('action',KonaI18n.t("Next step · optional"),KonaI18n.t("One practical res
 appendReflectionContext(editor,draft,persistWeekly);
 complete=el('button',current().reflected?KonaI18n.t("Reopen review"):KonaI18n.t("Finish review"),'rv-done');complete.type='button';complete.setAttribute('aria-label',current().reflected?KonaI18n.t("Undo week reflected",true):KonaI18n.t("Mark week reflected",true));complete.disabled=!current().reflected&&!canComplete();complete.onclick=()=>{if((!current().reflected&&!canComplete())||!persistWeekly())return;const ok=commitWeeklyReflection(db,start,{reflected:!current().reflected},()=>save()||!!tutorialPractice);if(ok)renderRecords();else{status.textContent=KonaI18n.t("Not saved · retry or back up");retry.hidden=false}};completeReason=el('small',KonaI18n.t("Add a daily record or write a weekly note to enable this."),'rv-done-reason');completeReason.id='weeklyReflectionDisabledReason';complete.setAttribute('aria-describedby','weeklyReflectionDisabledReason');completeReason.hidden=!complete.disabled;const controls=el('div',undefined,'rv-controls');controls.append(complete,completeReason);const writingHeading=editor.querySelector('.rv-writing-heading'),toolbar=el('div',undefined,'rv-writing-toolbar');writingHeading.before(toolbar);toolbar.append(writingHeading);editor.append(controls);
 const count=Object.values(db.weeklyReflections||{}).filter(x=>x?.reflected===true).length;editor.append(el('p',count+' '+(count===1?KonaI18n.t("week"):KonaI18n.t("weeks"))+KonaI18n.t(" revisited · A record of reflection, not a measure of faith."),'weekly-count'));
+
+ // Keep saved weekly meaning visible even when the writing form is closed.
+ if(reflectionHasText(record)){
+  const recap=el('section',undefined,'weekly-saved-summary');
+  recap.append(el('h3',word('Weekly Reflection','주간 회고')));
+  for(const [key,label] of [['insight',word('Reflection','회고')],['responseReview',word('Looking back','돌아본 내용')],['action',word('Next step','다음 한 걸음')]]){
+   if(typeof record[key]==='string'&&record[key].trim()){
+    if(key!=='insight')recap.append(el('small',label));
+    recap.append(el('p',record[key],'weekly-saved-text'));
+   }
+  }
+  panel.append(recap);
+ }
+ // Show Plan tasks in the selected week, not a second copy of daily capture notes.
+ const weeklyTasks=(db.tasks||[]).map(task=>{
+  let days=[];
+  if(!task.repeat||task.repeat==='none'){
+   const occurrence=task.due||db.checks?.[task.id+'|single']?.date||task.since;
+   if(occurrence&&occurrence>=start&&occurrence<=end)days=[occurrence];
+  }else{
+   days=dates.filter(d=>(!task.since||d>=task.since)&&(!task.until||d<=task.until)&&
+    (task.repeat==='daily'||task.repeat==='weekly'&&(task.days||[]).includes(weekday(d))));
+  }
+  return {task,days};
+ }).filter(item=>item.days.length);
+ if(weeklyTasks.length){
+  const area=el('section',undefined,'weekly-tasks');
+  const completed=weeklyTasks.reduce((n,item)=>n+item.days.filter(d=>!!db.checks?.[taskKey(item.task,d)]).length,0);
+  const total=weeklyTasks.reduce((n,item)=>n+item.days.length,0);
+  const head=el('div',undefined,'weekly-tasks-heading');
+  head.append(el('h3',word("This Week's Tasks",'이번 주 할 일')),el('small',completed+' / '+total));
+  area.append(head);
+  const taskLine=(task,d,showDate)=>{
+   const key=taskKey(task,d),done=!!db.checks?.[key],line=el('div',undefined,'weekly-task-line');
+   const toggle=el('button',done?'✓':'','weekly-task-check'+(done?' is-done':''));
+   toggle.type='button';toggle.setAttribute('role','checkbox');toggle.setAttribute('aria-checked',String(done));
+   toggle.setAttribute('aria-label',(done?word('Mark incomplete: ','완료 취소: '):word('Mark complete: ','완료 표시: '))+task.title+(showDate?' · '+short(d):''));
+   toggle.onclick=()=>{
+    if(guardedMutation(()=>{
+     if(!db.checks)db.checks={};
+     if(done)delete db.checks[key];else db.checks[key]={date:d,time:new Date().toISOString()};
+    },KonaI18n.t("Task status was not saved.")))renderRecords();
+   };
+   line.append(toggle,el('span',task.title,'weekly-task-name'+(done?' is-done':'')));
+   if(showDate)line.append(el('small',short(d),'weekly-task-date'));
+   return line;
+  };
+  const taskItem=item=>{
+   if(item.days.length===1)return taskLine(item.task,item.days[0],true);
+   const group=el('details',undefined,'weekly-task-recurring');
+   const key='weekly-task-'+start+'-'+item.task.id;
+   group.open=!!reviewUI[key];group.ontoggle=()=>reviewUISet(key,group.open);
+   const summary=el('summary',undefined,'weekly-task-recurring-summary');
+   const done=item.days.filter(d=>!!db.checks?.[taskKey(item.task,d)]).length;
+   summary.append(el('span',item.task.title),el('small',done+' / '+item.days.length));
+   group.append(summary);
+   for(const d of item.days)group.append(taskLine(item.task,d,true));
+   return group;
+  };
+  for(const item of weeklyTasks.slice(0,4))area.append(taskItem(item));
+  if(weeklyTasks.length>4){
+   const more=el('details',undefined,'weekly-tasks-more');
+   const key='weekly-tasks-more-'+start;
+   more.open=!!reviewUI[key];more.ontoggle=()=>reviewUISet(key,more.open);
+   more.append(el('summary',word('Show '+(weeklyTasks.length-4)+' more tasks','할 일 '+(weeklyTasks.length-4)+'개 더 보기')));
+   for(const item of weeklyTasks.slice(4))more.append(taskItem(item));
+   area.append(more);
+  }
+  panel.append(area);
+ }
 const records=el('section',undefined,'weekly-records review-weekly-records');
 if(!recordedDays)records.append(el('p',KonaI18n.t("No daily records this week. You can still write a reflection."),'reflection-help'));
-for(const entry of entries.filter(hasDayContent).reverse()){
- const day=el('section',undefined,'weekly-day'),heading=reviewDateGroupHeading(entry.date,entry.moments.length,'h4');day.append(heading);
+const visibleWeeklyDays=entries.filter(hasDayContent),latestWeeklyDay=visibleWeeklyDays[visibleWeeklyDays.length-1]?.date;
+for(const entry of visibleWeeklyDays){
+ const day=el('details',undefined,'weekly-day'),heading=reviewDateGroupHeading(entry.date,entry.moments.length,'summary');
+ const dayKey='weekly-day-'+start+'-'+entry.date;
+ day.open=Object.prototype.hasOwnProperty.call(reviewUI,dayKey)?!!reviewUI[dayKey]:entry.date===latestWeeklyDay;
+ day.ontoggle=()=>reviewUISet(dayKey,day.open);
+ day.append(heading);
  // Only end-of-day mood belongs in the weekly day header; never substitute another check-in.
  const endOfDay=entry.moments.find(r=>r.kind==='check'&&r.phase==='night');
  if(endOfDay&&(endOfDay.feeling||endOfDay.energy))heading.append(el('span',reviewDailyFeelingEmoji(endOfDay)+' '+(konaFeeling({energy:endOfDay.energy,happiness:endOfDay.happiness})||endOfDay.feeling||''),'weekly-day-mood'));

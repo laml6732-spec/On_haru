@@ -774,3 +774,67 @@ body .app #page-records #archive-search .archive-mood-trend-empty{
  body .app #page-records #archive-search .archive-mood-trend-key{gap:11px!important}
  body .app #page-records #archive-search .archive-mood-trend-date{padding-inline:0!important}
 }
+
+/* Weekly review: restrained hierarchy, compact Plan tasks, per-day disclosures. */
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-saved-summary{
+ padding:2px 0 3px 13px;margin:0 0 16px;border-left:3px solid var(--solid);min-width:0;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-saved-summary>h3,
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-tasks-heading>h3{
+ margin:0 0 6px;font-size:calc(15px * var(--kona-ui-scale,1));font-weight:700;color:var(--ink);
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-saved-summary>p{
+ margin:2px 0 10px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:calc(14px * var(--kona-ui-scale,1));line-height:1.55;color:var(--ink);
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-saved-summary>small{
+ display:block;margin:10px 0 3px;font-size:calc(12px * var(--kona-ui-scale,1));color:var(--sub);
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-tasks{
+ padding:10px 0 12px;margin:0 0 15px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-tasks-heading{
+ display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:5px;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-tasks-heading>small,
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-task-date,
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-task-recurring-summary>small{
+ color:var(--sub);font-size:calc(12px * var(--kona-ui-scale,1));white-space:nowrap;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-task-line{
+ display:flex;align-items:center;gap:8px;min-width:0;min-height:40px;border-bottom:1px solid var(--line);
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-task-line:last-child{border-bottom:0}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-task-check{
+ flex:0 0 44px!important;width:44px!important;min-height:44px!important;padding:0!important;
+ border:0!important;background:transparent!important;color:var(--solid)!important;cursor:pointer;
+ font-size:calc(18px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-task-check:not(.is-done)::before{
+ content:"";display:inline-block;width:15px;height:15px;border:1.5px solid var(--sub);border-radius:4px;vertical-align:middle;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-task-name{
+ flex:1;min-width:0;font-size:calc(14px * var(--kona-ui-scale,1));line-height:1.45;color:var(--ink);
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-task-name.is-done{
+ text-decoration:line-through;color:var(--sub);
+}
+body .app #page-records #new-reflect-page[data-period=weekly] :is(.weekly-task-recurring,.weekly-tasks-more){
+ margin:0;border:0;min-width:0;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] :is(.weekly-task-recurring-summary,.weekly-tasks-more>summary){
+ min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+ padding:8px 4px;cursor:pointer;color:var(--ink);font-size:calc(13px * var(--kona-ui-scale,1));
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-task-recurring-summary>span{
+ min-width:0;overflow-wrap:anywhere;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .weekly-task-recurring>.weekly-task-line{padding-left:8px}
+body .app #page-records #new-reflect-page[data-period=weekly] .review-weekly-records .weekly-day>summary.review-date-header{
+ cursor:pointer;list-style:none;align-items:center!important;min-height:44px!important;
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .review-weekly-records .weekly-day>summary.review-date-header::-webkit-details-marker{display:none}
+body .app #page-records #new-reflect-page[data-period=weekly] .review-weekly-records .weekly-day>summary.review-date-header::after{
+ content:"⌄";display:inline-block;margin-left:auto;transform:rotate(-90deg);font-size:15px;color:var(--sub);
+}
+body .app #page-records #new-reflect-page[data-period=weekly] .review-weekly-records .weekly-day[open]>summary.review-date-header::after{transform:rotate(0deg)}
