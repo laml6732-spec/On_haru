@@ -3453,19 +3453,24 @@ function renderHome(){
   const row=taskRow(task,date,{focusButton:true});
   row.classList.add('capture-task-row');
   const title=row.querySelector('.task-title'),meta=row.querySelector('.task-meta'),focus=row.querySelector('.task-start-btn');
-  const main=node('div',null,'capture-task-main');
-  if(title)main.append(title);
-  if(meta)main.append(meta);
-  if(focus)row.insertBefore(main,focus);else row.append(main);
-  // The square completion control replaces the decorative hibiscus image.
+  // All controls and metadata share one visual line. The full title is kept for accessible editing.
+  if(title)title.title=task.title;
+  if(meta){
+   const langKo=KonaI18n.language==='ko';
+   const due=task.due||'';
+   if(task.repeat==='daily')meta.textContent=langKo?'매일':'Daily';
+   else if(task.repeat==='weekly')meta.textContent=langKo?'매주':'Weekly';
+   else if(/^\\d{4}-\\d{2}-\\d{2}$/.test(due)){
+    const parts=due.split('-');
+    meta.textContent=String(Number(parts[1]))+'/'+String(Number(parts[2]));
+   }else meta.remove();
+  }
   row.querySelector('.task-check img')?.remove();
   if(focus){
-   const dockIcon=document.querySelector('#dock button[data-page="focus"] .navico svg');
-   if(dockIcon)focus.replaceChildren(dockIcon.cloneNode(true));
-   else focus.textContent='◎';
+   focus.textContent='▶';
    focus.classList.add('capture-focus-action');
   }
-  // Vertical dots open linked records; there is no overflow menu.
+  // Vertical dots mean linked record, not a general-purpose action menu.
   row.querySelectorAll('.mini-btn:not(.task-start-btn)').forEach(link=>{
    link.textContent='⋮';
    link.classList.add('capture-linked-action');
