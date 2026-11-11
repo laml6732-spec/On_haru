@@ -3442,6 +3442,17 @@ function renderHome(){
  }
  // Capture stays focused on notes; schedule and check-in remain in their own tabs.
 
+ // Write and Plan use the same due-task query and row actions, not copied task data.
+ const tasks=node('section',null,'capture-tasks');tasks.id='captureTasks';
+ const taskHead=node('div',null,'capture-recent-head'),taskHeading=node('h2',date===nowLocal()?KonaI18n.t("Today's tasks"):KonaI18n.t("Selected day's tasks"));taskHeading.id='captureTasksHeading';tasks.setAttribute('aria-labelledby',taskHeading.id);
+ const addTask=node('button',KonaI18n.t("＋ Add task"),'mini-btn');addTask.type='button';addTask.setAttribute('aria-label',KonaI18n.t("Add task",true));addTask.onclick=()=>{clearTaskForm();openSheet('taskFormModal')};taskHead.append(taskHeading,addTask);tasks.append(taskHead);
+ const due=itemsDue(date),pins=new Set(day(date).pins||[]),pending=due.filter(t=>!isTaskDone(t,date)),completed=due.filter(t=>isTaskDone(t,date));
+ pending.sort((a,b)=>Number(pins.has(taskKey(b,date)))-Number(pins.has(taskKey(a,date))));
+ for(const task of pending)tasks.append(taskRow(task,date,{focusButton:true}));
+ if(completed.length){const done=node('details',null,'done-tasks');done.append(node('summary',KonaI18n.format("Done (⟪0⟫)",[completed.length],false),'micro'));for(const task of completed)done.append(taskRow(task,date,{focusButton:true}));tasks.append(done)}
+ if(!due.length)tasks.append(node('p',(KonaI18n.language==='ko'?'등록된 할 일이 없어요.':'No tasks for this day.'),'capture-empty'));
+ home.append(tasks);
+
  const allEntries=(db.days[date]?.quickCaptureEntries||[]),entries=allEntries.slice(-3).reverse();
  const recent=node('section',null,'capture-recent'),recentHead=node('div',null,'capture-recent-head');
  recentHead.append(node('h2',KonaI18n.t("Recent notes")));if(allEntries.length)recentHead.append(node('span',String(allEntries.length)+KonaI18n.t(" saved"),'capture-recent-count'));recent.append(recentHead);
