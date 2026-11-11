@@ -838,3 +838,78 @@ body .app #page-records #new-reflect-page[data-period=weekly] .review-weekly-rec
  content:"⌄";display:inline-block;margin-left:auto;transform:rotate(-90deg);font-size:15px;color:var(--sub);
 }
 body .app #page-records #new-reflect-page[data-period=weekly] .review-weekly-records .weekly-day[open]>summary.review-date-header::after{transform:rotate(0deg)}
+
+/* Weekly charcoal underline design (PR #54). No changes to Daily or Archive. */
+body .app #page-records #new-reflect-page[data-period="weekly"]{
+  --weekly-label:#404946;--weekly-separator:#D5D9D5;--weekly-underline:#8C9690;
+}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page[data-period="weekly"]{
+  --weekly-label:#D4DAD5;--weekly-separator:#4B5650;--weekly-underline:#929E96;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .weekly-saved-summary{
+  border-left:0!important;padding:0!important;margin:3px 0 17px!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .weekly-saved-summary>h3{
+  color:var(--weekly-label)!important;border-bottom:1px solid var(--weekly-separator)!important;
+  padding:0 0 7px!important;margin:0 0 8px!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .review-weekly-records .weekly-day>summary.review-date-header{
+  background:transparent!important;border:0!important;border-bottom:1px solid var(--weekly-separator)!important;
+  border-radius:0!important;box-shadow:none!important;margin:0 0 9px!important;padding:8px 0!important;
+  justify-content:flex-start!important;align-items:center!important;color:var(--weekly-label)!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .review-weekly-records .weekly-day>summary.review-date-header .review-date-label{
+  color:var(--weekly-label)!important;font-size:calc(14.5px * var(--kona-ui-scale,1))!important;font-weight:700!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .review-weekly-records .weekly-day>summary.review-date-header :is(.review-date-count,.weekly-day-mood){
+  color:var(--sub)!important;font-weight:400!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .review-weekly-records .weekly-day>summary.review-date-header::after{
+  margin-left:auto!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .review-weekly-records .weekly-day{
+  border:0!important;margin-bottom:18px!important;
+}
+/* One neutral underlined treatment for labels and linked schedule text. */
+body .app #page-records #new-reflect-page[data-period="weekly"] :is(
+  .weekly-schedule-chip,.weekly-anchor>small,.weekly-daily-reflection>h5,
+  .weekly-important-records>h5,.weekly-other-records>summary
+){
+  color:var(--weekly-label)!important;background:transparent!important;border:0!important;
+  border-radius:0!important;box-shadow:none!important;text-decoration-line:underline!important;
+  text-decoration-color:var(--weekly-underline)!important;text-decoration-thickness:1px!important;
+  text-underline-offset:4px!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .weekly-schedule-chip{
+  display:inline-block!important;padding:0!important;margin:3px 0 4px!important;max-width:100%!important;
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;font-weight:600!important;line-height:1.5!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .weekly-anchor>small{
+  display:inline-block!important;font-weight:600!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .weekly-daily-reflection{
+  background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+  padding:0!important;margin:1px 0 13px!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] :is(.weekly-daily-reflection,.weekly-important-records)>h5{
+  display:inline-block!important;font-size:calc(13px * var(--kona-ui-scale,1))!important;
+  font-weight:650!important;margin:0 0 6px!important;padding:0!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .weekly-other-records{
+  border:0!important;margin:8px 0 0!important;padding:0!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .weekly-other-records>summary{
+  min-height:44px!important;display:flex!important;align-items:center!important;
+  width:fit-content!important;max-width:100%!important;padding:5px 0!important;
+  font-weight:600!important;cursor:pointer!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .weekly-record{
+  border-bottom:0!important;margin:3px 0 6px!important;padding:4px 0!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .weekly-note-group+.weekly-note-group{
+  margin-top:11px!important;
+}
+body .app #page-records #new-reflect-page[data-period="weekly"] .weekly-tasks{
+  border-top:0!important;border-bottom:1px solid var(--weekly-separator)!important;
+  padding-top:3px!important;margin-bottom:17px!important;
+}
