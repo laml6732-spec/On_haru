@@ -5507,27 +5507,27 @@ html[data-appearance=dark] body .app #page-capture .capture-tasks .capture-task-
 
 /* Write Tasks v3: one whisper-sage section, hairline row separators (no individual cards). */
 body .app #page-capture .capture-tasks{
- min-width:0!important;margin:0!important;padding:9px 11px 5px!important;
+ min-width:0!important;margin:0!important;padding:5px 10px 3px!important;
  background:#F1F4EF!important;border:1px solid #E2E8DF!important;
  border-radius:12px!important;box-shadow:none!important;
 }
 body .app #page-capture .capture-tasks .capture-recent-head{
- min-height:32px!important;margin:0!important;padding:0 1px 5px!important;
+ min-height:28px!important;margin:0!important;padding:0 1px 2px!important;
  align-items:center!important;
 }
 body .app #page-capture .capture-tasks .capture-recent-head h2{
  color:#344B3F!important;font-weight:700!important;
 }
 body .app #page-capture .capture-tasks .capture-recent-head .mini-btn{
- min-height:34px!important;border-radius:7px!important;
+ min-height:28px!important;height:28px!important;border-radius:7px!important;
  color:#456D58!important;font-weight:650!important;
 }
 body .app #page-capture .capture-tasks .capture-task-row{
  display:flex!important;align-items:center!important;flex-wrap:nowrap!important;
  background:transparent!important;border:0!important;
  border-bottom:1px solid #DBE4DA!important;border-radius:0!important;
- box-shadow:none!important;margin:0!important;padding:1px 0!important;
- gap:2px!important;min-height:46px!important;overflow:hidden!important;
+ box-shadow:none!important;margin:0!important;padding:0!important;
+ gap:2px!important;min-height:38px!important;overflow:hidden!important;
 }
 body .app #page-capture .capture-tasks .capture-task-row:has(.task-title.important){
  border-left:0!important;padding-left:0!important;
@@ -5563,4 +5563,17 @@ html[data-appearance=dark] body .app #page-capture .capture-tasks .capture-recen
 }
 html[data-appearance=dark] body .app #page-capture .capture-tasks .capture-recent-head .mini-btn{
  color:#C5DCC7!important;
+}
+
+/* Smaller tap areas only inside Write task rows; preserve all task actions. */
+body .app #page-capture .capture-tasks .capture-task-row .task-check{
+ width:38px!important;min-width:38px!important;flex-basis:38px!important;
+ height:38px!important;min-height:38px!important;
+}
+body .app #page-capture .capture-tasks .capture-task-row :is(.capture-focus-action,.capture-linked-action){
+ width:36px!important;min-width:36px!important;flex-basis:36px!important;
+ height:38px!important;min-height:38px!important;
+}
+body .app #page-capture .capture-tasks .done-tasks > summary{
+ min-height:30px!important;padding:4px 2px!important;
 }
