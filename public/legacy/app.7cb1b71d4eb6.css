@@ -5357,3 +5357,14 @@ body .app #page-records #new-reflect-page[data-period=weekly]>.weekly-reflection
 /* Enlarged accessibility text may wrap groups rather than overflow the viewport. */
 :root[data-ui-enlarged=true] body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row{display:flex!important;flex-wrap:wrap}
 :root[data-ui-enlarged=true] body .app #page-records #new-reflect-page[data-period=weekly] .weekly-overview-row .weekly-compact-header{width:auto!important;flex:1 1 150px}
+
+/* Tasks are shared with Plan and visible in Write above recent notes. */
+body .app #page-capture .capture-tasks{min-width:0;padding:12px 0 0;border-top:1px solid var(--line);color:var(--ink)}
+body .app #page-capture .capture-tasks .capture-recent-head{margin:0 0 4px;align-items:center}
+body .app #page-capture .capture-tasks .quicktask{min-width:0;flex-wrap:wrap;min-height:44px;gap:6px;background:transparent;color:var(--ink)}
+body .app #page-capture .capture-tasks .task-title{flex:1 1 100px;min-width:0;white-space:normal;overflow-wrap:anywhere;text-align:left;background:transparent;color:var(--ink);line-height:1.45}
+body .app #page-capture .capture-tasks .task-meta{color:var(--sub)}
+body .app #page-capture .capture-tasks .done-tasks>summary{min-height:44px;padding:12px 0;cursor:pointer;color:var(--sub)}
+body .app #page-capture .capture-tasks :is(.task-check,.task-start-btn){flex-shrink:0;min-height:44px;min-width:44px}
+body .app #page-capture .capture-tasks .task-title{border:0!important;padding:6px 0!important;box-shadow:none!important}
+body .app #page-capture .capture-tasks .task-start-btn{border:0!important;background:transparent!important;color:var(--ink)!important}
