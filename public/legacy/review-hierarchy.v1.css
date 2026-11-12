@@ -978,7 +978,7 @@ html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-seven
  color:#83F5B4!important;font-weight:800!important;
 }
 html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-seven-toolbar .review-write-reflection{color:#8EE6B1!important}
-@media(min-width:470px){
+@media(min-width:390px){
  body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-moment-count-long,
  body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-long{display:inline!important}
  body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-moment-count-short,
