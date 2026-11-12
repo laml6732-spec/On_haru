@@ -774,3 +774,124 @@ body .app #page-records #archive-search .archive-mood-trend-empty{
  body .app #page-records #archive-search .archive-mood-trend-key{gap:11px!important}
  body .app #page-records #archive-search .archive-mood-trend-date{padding-inline:0!important}
 }
+
+
+/* Daily navigation v4: seven evenly distributed, always visible dates.
+   At a 320 CSS-px viewport the strip is 308px wide (7 x 44px hit areas).
+   Only the selected day has a fill; the small dot always means TODAY. */
+body .app #page-records #new-reflect-page .rv-seven-wrap{
+  margin:2px 0 8px;min-width:0;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  min-height:34px;margin:0 0 2px;color:var(--ink);
+}
+body .app #page-records #new-reflect-page .rv-seven-range{
+  font-size:calc(12px * var(--kona-ui-scale,1));font-weight:600;
+  letter-spacing:.01em;min-width:76px;text-align:center;
+}
+body .app #page-records #new-reflect-page .rv-seven-arrow{
+  width:36px;height:34px;min-width:36px;min-height:34px;
+  padding:0;border:0;background:transparent;color:var(--ink);
+  font-size:24px;font-weight:400;box-shadow:none;
+}
+body .app #page-records #new-reflect-page .rv-seven-arrow:disabled{
+  opacity:.28!important;pointer-events:none;
+}
+body .app #page-records #new-reflect-page .rv-seven-strip{
+  display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0;
+  width:min(430px,calc(100vw - 12px));max-width:none;
+  position:relative;left:50%;transform:translateX(-50%);
+  touch-action:pan-y;user-select:none;-webkit-user-select:none;
+}
+body .app #page-records #new-reflect-page .rv-seven-day{
+  box-sizing:border-box;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;
+  padding:6px 0 10px;min-width:0;width:100%;height:56px;
+  position:relative;border:0;border-radius:10px;
+  background:transparent;color:var(--ink);
+  font-family:inherit;box-shadow:none;cursor:pointer;
+}
+body .app #page-records #new-reflect-page .rv-seven-day.is-selected{
+  background:rgba(100,110,105,.10);
+  background:color-mix(in srgb,var(--ink) 9%,transparent);
+}
+body .app #page-records #new-reflect-page .rv-seven-day:focus-visible{
+  outline:2px solid var(--ink);outline-offset:-2px;
+}
+body .app #page-records #new-reflect-page .rv-seven-weekday{
+  font-size:calc(11px * var(--kona-ui-scale,1));line-height:14px;
+  font-weight:400;color:var(--ink);opacity:.65;
+}
+body .app #page-records #new-reflect-page .rv-seven-number{
+  font-size:calc(14px * var(--kona-ui-scale,1));line-height:17px;font-weight:500;
+}
+body .app #page-records #new-reflect-page .rv-seven-day.is-selected .rv-seven-number{font-weight:700}
+body .app #page-records #new-reflect-page .rv-seven-today-dot{
+  display:none;position:absolute;bottom:5px;left:calc(50% - 2px);
+  width:4px;height:4px;border-radius:50%;background:#658878;
+}
+body .app #page-records #new-reflect-page .rv-seven-day.is-today .rv-seven-today-dot{display:block}
+
+/* Weekly reflection is optional and lives below the existing Daily record,
+   with all historical weeklyReflections fields retained. */
+body .app #page-records #new-reflect-page .rv-weekly-inline{
+  margin:24px 0 4px;padding:0;border-top:1px solid var(--line);
+}
+body .app #page-records #new-reflect-page .rv-weekly-inline-summary{
+  display:flex;align-items:center;gap:9px;min-height:48px;
+  padding:11px 0;cursor:pointer;list-style:none;color:var(--ink);
+}
+body .app #page-records #new-reflect-page .rv-weekly-inline-summary::-webkit-details-marker{display:none}
+body .app #page-records #new-reflect-page .rv-weekly-inline-summary strong{
+  font-size:calc(14px * var(--kona-ui-scale,1));font-weight:650;
+}
+body .app #page-records #new-reflect-page .rv-weekly-inline-range{
+  font-size:calc(11px * var(--kona-ui-scale,1));font-weight:400;
+  opacity:.65;
+}
+body .app #page-records #new-reflect-page .rv-weekly-inline-summary::after{
+  content:'⌄';margin-left:auto;font-size:19px;line-height:1;
+  transition:transform .15s ease;color:var(--ink);opacity:.65;
+}
+body .app #page-records #new-reflect-page .rv-weekly-inline-details[open] .rv-weekly-inline-summary::after{transform:rotate(180deg)}
+body .app #page-records #new-reflect-page .rv-weekly-inline-content{display:grid;gap:14px;padding:8px 0 14px}
+body .app #page-records #new-reflect-page .rv-weekly-inline-field{display:grid;gap:6px}
+body .app #page-records #new-reflect-page .rv-weekly-inline-field>span{
+  font-size:calc(13px * var(--kona-ui-scale,1));font-weight:600;color:var(--ink);
+}
+body .app #page-records #new-reflect-page .rv-weekly-inline-field textarea{
+  display:block;box-sizing:border-box;width:100%;min-height:76px;
+  padding:12px;border-radius:10px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);
+  font-family:inherit;font-size:max(16px,calc(14px * var(--kona-ui-scale,1)));
+  line-height:1.5;resize:vertical;
+}
+body .app #page-records #new-reflect-page .rv-weekly-inline-extra{
+  border:0;padding:0;margin:0;
+}
+body .app #page-records #new-reflect-page .rv-weekly-inline-extra>summary{
+  min-height:40px;display:flex;align-items:center;
+  color:var(--ink);opacity:.72;font-size:calc(12px * var(--kona-ui-scale,1));
+}
+body .app #page-records #new-reflect-page .rv-weekly-inline-extra .rv-weekly-inline-field{margin:12px 0}
+body .app #page-records #new-reflect-page .rv-weekly-inline-footer{
+  display:flex;align-items:center;flex-wrap:wrap;gap:10px;
+  justify-content:space-between;border-top:1px solid var(--line);padding-top:10px;
+}
+body .app #page-records #new-reflect-page .rv-weekly-inline-status{
+  color:var(--ink);opacity:.7;font-size:calc(11px * var(--kona-ui-scale,1));
+}
+body .app #page-records #new-reflect-page :is(.rv-weekly-inline-complete,.rv-weekly-inline-retry){
+  min-height:40px;border:1px solid var(--line);border-radius:9px;
+  padding:7px 12px;background:transparent;color:var(--ink);
+  font-size:calc(12px * var(--kona-ui-scale,1));box-shadow:none;
+}
+body .app #page-records #new-reflect-page .rv-weekly-inline-complete:disabled{opacity:.45!important}
+body .app #page-records #new-reflect-page .rv-weekly-inline-followup{
+  margin:6px 0;font-size:calc(13px * var(--kona-ui-scale,1));line-height:1.5;
+}
+@media(max-width:350px){
+ body .app #page-records #new-reflect-page .rv-seven-wrap{margin-top:0}
+ body .app #page-records #new-reflect-page .rv-seven-day{border-radius:8px}
+}
