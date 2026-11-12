@@ -156,6 +156,19 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   if(await visible(page.locator('#page-today #konaScheduleMore>summary'))){
    await attempt(row,'plan More open',async()=>page.locator('#page-today #konaScheduleMore>summary').click());
    await state('plan-more-open','#page-today');
+   // The dropdown is allowed to cover schedule content, but never its trigger.
+   const menuGeometry=await page.evaluate(()=>{
+     const trigger=document.querySelector('#konaScheduleMore>summary');
+     const panel=document.querySelector('#konaScheduleMore>.kona-more-panel');
+     if(!trigger||!panel)return null;
+     const t=trigger.getBoundingClientRect(),p=panel.getBoundingClientRect();
+     return {triggerBottom:t.bottom,panelTop:p.top,gap:p.top-t.bottom,panelLeft:p.left,panelRight:p.right,
+       peerCount:[...panel.querySelectorAll('button')].filter(e=>e.getBoundingClientRect().height>0).length};
+   });
+   pass(row,'Plan More panel starts below toggle and fits viewport',
+     !!menuGeometry&&menuGeometry.gap>=2&&menuGeometry.panelLeft>=-1&&menuGeometry.panelRight<=width+1,menuGeometry);
+   pass(row,'Plan expanded schedule action is available',
+     await visible(page.locator('#page-today #konaScheduleMore[open] #kx-timeline-toggle')), 'full timeline within More');
    if(await visible(page.locator('#page-today #kx-timeline-toggle'))){
      await attempt(row,'plan full timeline toggle',async()=>page.locator('#page-today #kx-timeline-toggle').click());
      await state('plan-timeline-open','#page-today');
@@ -187,11 +200,28 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   await openTab('records');
   await page.locator('#rev-reflect').click();
   await state('review-daily','#page-records');
+  const reviewToolbar=async stateName=>{
+   const m=await page.evaluate(()=>{
+     const holder=document.querySelector('#page-records #new-reflect-page .rv-seven-toolbar');
+     if(!holder)return null;
+     const box=e=>{const r=e.getBoundingClientRect();return{left:r.left,right:r.right,cx:(r.left+r.right)/2,top:r.top,bottom:r.bottom}};
+     const left=holder.querySelector('.rv-seven-toolbar-left'),mid=holder.querySelector('.rv-seven-toolbar-center'),right=holder.querySelector('.rv-seven-toolbar-right');
+     if(!left||!mid||!right)return null;
+     const h=box(holder),l=box(left),m=box(mid),r=box(right);
+     return{holder:h,left:l,mid:m,right:r,leftGap:m.left-l.right,rightGap:r.left-m.right,
+       centerDelta:Math.abs(h.cx-m.cx)};
+   });
+   pass(row,stateName+' week/record/reflection buttons stay separate and centered',
+     !!m&&m.leftGap>=-1&&m.rightGap>=-1&&m.centerDelta<=3,m);
+  };
+  await reviewToolbar('Review open');
   if(await visible(page.locator('#page-records .review-section-bar').first())){
     await attempt(row,'Review daypart closed',async()=>page.locator('#page-records .review-section-bar').first().click());
     await state('review-daypart-closed','#page-records');
+    await reviewToolbar('Review daypart folded');
     await attempt(row,'Review daypart opened',async()=>page.locator('#page-records .review-section-bar').first().click());
     await state('review-daypart-open-again','#page-records');
+    await reviewToolbar('Review daypart expanded');
   }
   // Current Review renders Weekly inline below Daily instead of a separate tab.
   // Exercise both the weekly disclosure and its nested More section.
