@@ -5231,7 +5231,7 @@ body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record .rv-entr
 }
 body .app #page-records #new-reflect-page .rv-timeline .rv-linked-group{margin-top:3px!important;margin-bottom:5px!important}
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{
- padding:8px 9px!important;margin:4px 0 5px!important;border-left:0!important;
+ padding:8px 9px!important;margin:4px 0 5px!important;border-left:2px solid var(--daily-line)!important;
 }
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .rv-daily-record{padding:0!important;margin:0!important}
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card>h5.rv-daily-book-heading{
