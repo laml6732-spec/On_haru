@@ -212,3 +212,31 @@ body .app #page-capture #konaPriorityTask .pinned-title .task-name {
   max-width: 100% !important;
   vertical-align: middle !important;
 }
+
+/* 7. Plan task toolbar — the two peer controls had 34px/42px heights
+   and therefore 4px-different vertical centers. Equalize hit boxes WITHOUT
+   adding another row, card or changing task visibility or storage. */
+body .app #page-today #pageheadExtra #pinRow .tasks-overview {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+body .app #page-today #pageheadExtra #pinRow .tasks-overview > :is(.task-fold,.task-add) {
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  line-height: calc(20px * var(--kona-ui-scale, 1)) !important;
+}
+body .app #page-today #pageheadExtra #pinRow .tasks-overview > .task-fold {
+  justify-content: flex-start !important;
+}
+body .app #page-today #pageheadExtra #pinRow .tasks-overview > .task-add {
+  justify-content: flex-end !important;
+}
