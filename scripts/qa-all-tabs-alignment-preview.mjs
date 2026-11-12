@@ -47,7 +47,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   await page.evaluate(()=>document.activeElement instanceof HTMLElement&&document.activeElement.blur());
   await page.waitForTimeout(90);
   const stats=await page.evaluate(({scopeSelector,groupSelectors})=>{
-   const on=e=>{if(!e)return false;const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>=1&&r.height>=1&&e.getClientRects().length>0;};
+   const on=e=>{if(!e||e.closest('[inert],[aria-hidden="true"],[hidden]'))return false;const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>=1&&r.height>=1&&e.getClientRects().length>0;};
    const box=e=>{const r=e.getBoundingClientRect();return{x:r.x,y:r.y,left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height,cx:r.x+r.width/2,cy:r.y+r.height/2}};
    const root=document.querySelector(scopeSelector)||document.querySelector('.app');
    const elements=[...root.querySelectorAll('button,summary,[role="button"]')].filter(on);
@@ -61,6 +61,9 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
    const overlaps=[];
    for(let i=0;i<rects.length;i++)for(let j=i+1;j<rects.length;j++){
     const a=rects[i],b=rects[j];if(a.el.contains(b.el)||b.el.contains(a.el))continue;
+    // An opaque, top-layer More menu is expected to cover the plan beneath it.
+    // Only flag overlapping peer controls, not a deliberate popover over page content.
+    if(!!a.el.closest('#konaScheduleMore .kona-more-panel')!==!!b.el.closest('#konaScheduleMore .kona-more-panel'))continue;
     const x=Math.max(0,Math.min(a.rect.right,b.rect.right)-Math.max(a.rect.left,b.rect.left));
     const y=Math.max(0,Math.min(a.rect.bottom,b.rect.bottom)-Math.max(a.rect.top,b.rect.top));
     if(x>5&&y>5&&x*y>100)overlaps.push({a:a.id||a.name,b:b.id||b.name,intersection:Math.round(x*y)});
@@ -87,7 +90,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   // A visible control must fit the viewport. Exclude offscreen descendants of temporarily inactive modal panels.
   pass(row,name+' controls within viewport',stats.clipped.length===0,stats.clipped);
   pass(row,name+' no overlapping distinct controls',stats.overlaps.length===0,stats.overlaps.slice(0,8));
-  const stable=stats.groups.filter(g=>['dock','checkin-phases','focus-kind','schedule-subtabs','review-tabs'].includes(g.key));
+  const stable=stats.groups.filter(g=>['dock','checkin-phases','focus-kind','schedule-subtabs','review-tabs','plan-task-actions'].includes(g.key));
   pass(row,name+' segmented button center/height alignment',
        stable.every(g=>g.centerDelta<=3&&g.heightDelta<=3),
        stable.map(g=>({key:g.key,centerDelta:g.centerDelta,heightDelta:g.heightDelta})));
@@ -136,10 +139,19 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
    });
   }
   if(await visible(page.locator('#page-today #pinRow .task-fold'))){
-   await attempt(row,'plan tasks open',async()=>page.locator('#page-today #pinRow .task-fold').click());
+   // The add-task dialog can leave the list expanded already. Test named states,
+   // not an assumed initial toggle direction.
+   if(await page.locator('#page-today #pinRow .task-fold').getAttribute('aria-expanded')!=='true')
+     await attempt(row,'plan tasks open',async()=>page.locator('#page-today #pinRow .task-fold').click());
    await state('plan-tasks-open','#page-today');
+   pass(row,'Plan open state has visible task row',
+     await page.locator('#page-today #pinRow .task-fold').getAttribute('aria-expanded')==='true' &&
+     await visible(page.locator('#page-today #todayTaskCard .task-name').first()),'open task UI');
    await attempt(row,'plan tasks closed',async()=>page.locator('#page-today #pinRow .task-fold').click());
    await state('plan-tasks-closed-again','#page-today');
+   pass(row,'Plan closed state hides list',
+     await page.locator('#page-today #pinRow .task-fold').getAttribute('aria-expanded')==='false' &&
+     !await visible(page.locator('#page-today #todayTaskCard .task-name').first()),'collapsed task UI');
   }
   if(await visible(page.locator('#page-today #konaScheduleMore>summary'))){
    await attempt(row,'plan More open',async()=>page.locator('#page-today #konaScheduleMore>summary').click());
@@ -181,16 +193,22 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
     await attempt(row,'Review daypart opened',async()=>page.locator('#page-records .review-section-bar').first().click());
     await state('review-daypart-open-again','#page-records');
   }
-  if(await visible(page.locator('#rev-weekly'))){
-    await attempt(row,'Review weekly selected',async()=>page.locator('#rev-weekly').click());
-    await state('review-weekly-closed','#page-records');
-    const disclosure=page.locator('#page-records .weekly-reflection-disclosure>summary').first();
-    if(await visible(disclosure)){
-      await attempt(row,'Weekly reflection open',async()=>disclosure.click());
-      await state('review-weekly-reflection-open','#page-records');
-      await attempt(row,'Weekly reflection close',async()=>disclosure.click());
-      await state('review-weekly-reflection-closed','#page-records');
+  // Current Review renders Weekly inline below Daily instead of a separate tab.
+  // Exercise both the weekly disclosure and its nested More section.
+  const weeklyInline=page.locator('#page-records .rv-weekly-inline-details>summary').first();
+  if(await visible(weeklyInline)){
+    await state('review-weekly-inline-closed','#page-records');
+    await attempt(row,'Weekly inline open',async()=>weeklyInline.click());
+    await state('review-weekly-inline-open','#page-records');
+    const more=page.locator('#page-records .rv-weekly-inline-extra>summary').first();
+    if(await visible(more)){
+      await attempt(row,'Weekly extra details open',async()=>more.click());
+      await state('review-weekly-details-open','#page-records');
+      await attempt(row,'Weekly extra details close',async()=>more.click());
+      await state('review-weekly-details-closed','#page-records');
     }
+    await attempt(row,'Weekly inline close',async()=>weeklyInline.click());
+    await state('review-weekly-inline-closed-again','#page-records');
   }
   await page.locator('#rev-archive').click();
   await state('review-archive-closed','#page-records');
