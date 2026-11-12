@@ -111,3 +111,104 @@ body .app #page-today .quicktask .task-title.important .task-name {
   overflow: hidden !important;
   overflow-wrap: anywhere !important;
 }
+
+/* 6. Precision alignment pass — shared Capture edges and vertical centers.
+   Outer surfaces align; their inner content uses a 14px content inset.
+   The flower's transparent image canvas gets a smaller 8px lead to align its
+   visible petals visually with the Anchor/Note text rather than adding a badge. */
+body .app #page-capture #konaCarryToday.day-signature,
+body .app #page-capture #qc-v2 {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+body .app #page-capture #konaCarryToday.day-signature {
+  grid-template-columns: minmax(0, 1fr) 32px !important;
+  align-items: center !important;
+  column-gap: 10px !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+}
+body .app #page-capture #konaCarryToday .headline-wrap {
+  box-sizing: border-box !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  align-self: center !important;
+}
+body .app #page-capture #konaCarryToday .carry-label {
+  margin: 0 0 4px !important;
+}
+body .app #page-capture #konaCarryToday textarea#dayHeadline {
+  box-sizing: border-box !important;
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
+body .app #page-capture #konaCarryToday .carry-edit {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: end !important;
+  align-self: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+}
+body .app #page-capture #konaPriorityTask {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-height: 40px !important;
+  max-height: none !important;
+  margin-top: 0 !important;
+  margin-bottom: 14px !important;
+  padding: 0 14px 0 8px !important;
+  align-items: center !important;
+}
+body .app #page-capture #konaPriorityTask .pinned-item {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-height: 40px !important;
+  display: grid !important;
+  grid-template-columns: 28px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+body .app #page-capture #konaPriorityTask .task-check {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  align-self: center !important;
+  justify-self: center !important;
+}
+body .app #page-capture #konaPriorityTask .task-check img {
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  object-fit: contain !important;
+}
+body .app #page-capture #konaPriorityTask .pinned-title {
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  height: auto !important;
+  min-height: 40px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+body .app #page-capture #konaPriorityTask .pinned-title .task-name {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  vertical-align: middle !important;
+}
