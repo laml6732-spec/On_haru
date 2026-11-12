@@ -894,3 +894,94 @@ body .app #page-records #new-reflect-page .rv-weekly-inline-followup{
  body .app #page-records #new-reflect-page .rv-seven-wrap{margin-top:0}
  body .app #page-records #new-reflect-page .rv-seven-day{border-radius:8px}
 }
+
+
+/* Review Daily: one-line toolbar (count + filter | centered week | write reflection).
+   At 320 CSS px, use compact left labels without wrapping. */
+body .app #page-records #new-reflect-page .rv-seven-toolbar{
+ display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+ align-items:center!important;gap:3px!important;
+ width:min(430px,calc(100vw - 12px))!important;max-width:none!important;
+ min-width:0!important;min-height:44px!important;
+ margin:0 0 3px!important;
+ position:relative;left:50%;transform:translateX(-50%);
+}
+body .app #page-records #new-reflect-page :is(.rv-seven-toolbar-left,.rv-seven-toolbar-center,.rv-seven-toolbar-right){
+ display:flex!important;align-items:center!important;min-width:0!important;
+ white-space:nowrap!important;flex-wrap:nowrap!important;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar-left{justify-self:start;gap:2px!important}
+body .app #page-records #new-reflect-page .rv-seven-toolbar-center{justify-self:center;gap:0!important}
+body .app #page-records #new-reflect-page .rv-seven-toolbar-right{justify-self:end}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-moment-count{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ min-height:38px!important;margin:0!important;padding:0 2px!important;
+ border:0!important;white-space:nowrap!important;
+ font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ line-height:1.2!important;font-weight:600!important;color:var(--ink)!important;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-moment-count-long,
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-long{display:none!important}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-moment-count-short,
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-short{display:inline!important}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .review-filter{
+ position:relative!important;display:block!important;
+ border:0!important;margin:0!important;padding:0!important;
+ min-width:0!important;flex:none!important;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .review-filter>summary{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ gap:0!important;min-width:36px!important;min-height:44px!important;
+ padding:0 3px!important;margin:0!important;box-sizing:border-box!important;
+ border:0!important;border-radius:7px!important;
+ background:transparent!important;color:var(--ink)!important;
+ font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ font-weight:500!important;line-height:1.2!important;
+ white-space:nowrap!important;list-style:none!important;
+ box-shadow:none!important;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .review-filter>summary::-webkit-details-marker{display:none!important}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .review-filter[open]>summary{background:color-mix(in srgb,var(--ink) 8%,transparent)!important}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .review-filter>select{
+ position:absolute!important;left:0!important;top:calc(100% + 2px)!important;
+ z-index:35!important;display:block!important;min-width:154px!important;
+ max-width:min(240px,calc(100vw - 24px))!important;min-height:44px!important;
+ border-radius:8px!important;padding:10px!important;
+ background:var(--surface)!important;color:var(--ink)!important;
+ box-shadow:0 6px 20px #00000020!important;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .review-filter:not([open])>select{display:none!important}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-seven-arrow{
+ width:23px!important;min-width:23px!important;height:44px!important;min-height:44px!important;
+ padding:0!important;margin:0!important;border:0!important;background:transparent!important;
+ font-size:22px!important;line-height:1!important;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-seven-range{
+ min-width:69px!important;margin:0!important;padding:0!important;
+ font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ line-height:1.2!important;font-weight:700!important;
+ text-align:center!important;white-space:nowrap!important;color:var(--ink)!important;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .review-write-reflection{
+ display:inline-flex!important;justify-content:center!important;align-items:center!important;
+ min-height:44px!important;min-width:0!important;max-width:none!important;
+ margin:0!important;padding:0 3px!important;
+ border:0!important;background:transparent!important;box-shadow:none!important;
+ color:#075D37!important;font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ line-height:1.2!important;font-weight:750!important;white-space:nowrap!important;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .review-write-reflection::before{content:none!important}
+body .app #page-records #new-reflect-page .rv-seven-day.is-today .rv-seven-number{
+ color:#00512E!important;font-weight:800!important;
+}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-seven-day.is-today .rv-seven-number{
+ color:#83F5B4!important;font-weight:800!important;
+}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-seven-toolbar .review-write-reflection{color:#8EE6B1!important}
+@media(min-width:470px){
+ body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-moment-count-long,
+ body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-long{display:inline!important}
+ body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-moment-count-short,
+ body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-short{display:none!important}
+ body .app #page-records #new-reflect-page .rv-seven-toolbar .review-filter>summary{padding-inline:6px!important}
+}
