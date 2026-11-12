@@ -5143,7 +5143,8 @@ body .app #page-records #new-reflect-page .rv-daily-summary .rv-anchor-text{
 }
 body .app #page-records #new-reflect-page .rv-daily-summary .rv-anchor-copy{gap:3px!important}
 body .app #page-records #new-reflect-page .rv-daily-summary .review-reflection-summary{
- margin:0!important;padding:0 10px 10px!important;min-height:0!important;background:transparent!important;border:0!important;box-shadow:none!important;
+ margin:4px 10px 0!important;padding:9px 0 10px!important;min-height:0!important;
+ background:transparent!important;border:0!important;border-top:1px solid #D4DAD5!important;box-shadow:none!important;
 }
 body .app #page-records #new-reflect-page .rv-daily-summary .review-reflection-summary>h3{
  font-size:calc(10.5px * var(--kona-ui-scale,1))!important;font-weight:400!important;line-height:1.4!important;color:#79857E!important;margin:2px 0 2px!important;
@@ -5163,13 +5164,13 @@ body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.revie
 }
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar :is(.review-section-name,.review-section-count,.review-section-chevron){color:var(--daily-heading)!important}
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin{
- border:0!important;border-radius:9px!important;background:var(--daily-tint)!important;box-shadow:none!important;padding:8px 9px!important;margin:3px 0 5px!important;
+ border:2px solid #B5C0BA!important;border-radius:9px!important;background:transparent!important;box-shadow:none!important;padding:8px 9px!important;margin:3px 0 5px!important;
 }
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin::before{display:none!important}
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-header{grid-template-columns:23px minmax(0,1fr) auto!important;min-height:26px!important;gap:4px!important;margin-bottom:3px!important}
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-daily-phase-icon{width:23px!important;height:26px!important;font-size:20px!important;border-radius:0!important;background:transparent!important}
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{
- background:var(--daily-tint)!important;border:0!important;
+ background:transparent!important;border:2px solid #B5C0BA!important;
  border-radius:9px!important;box-shadow:none!important;padding:9px 10px!important;margin:5px 0 7px!important;
 }
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card::after{display:none!important}
@@ -5191,13 +5192,15 @@ body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-da
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-daily-summary{background:#202E28!important;border-color:#45564C!important;border-left-color:#736147!important}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-daily-summary :is(.rv-anchor-date,.rv-anchor-text,.review-reflection-summary>p){color:#E1E9E2!important}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-daily-summary .review-reflection-summary>h3{color:#AFBCB1!important}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-daily-summary .review-reflection-summary{border-top-color:#53645B!important}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section{--daily-tint:#3A3425;--daily-heading:#E0BD70;--daily-line:#897443;--daily-ink:#E9EADF}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=afternoon]{--daily-tint:#253D35;--daily-heading:#9BCDB8;--daily-line:#527F6C}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=evening]{--daily-tint:#373047;--daily-heading:#C8ACE8;--daily-line:#7D669B}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=night]{--daily-tint:#2D3748;--daily-heading:#A8C1DF;--daily-line:#607A9B}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-schedule-tag{background:#364D40!important;color:#DCE8DE!important}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-daily-summary .review-daily-anchor.rv-reference-anchor{background:transparent!important;border:0!important;box-shadow:none!important}
-html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{background:var(--daily-tint)!important;border:0!important;box-shadow:none!important}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{background:transparent!important;border:2px solid #75857B!important;box-shadow:none!important}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin{background:transparent!important;border:2px solid #75857B!important}
 
 /* Linked schedules are labelled once above the grouped notes. */
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group>.rv-daily-group-schedule-tag{
@@ -5577,3 +5580,6 @@ body .app #page-capture .capture-tasks .capture-task-row :is(.capture-focus-acti
 body .app #page-capture .capture-tasks .done-tasks > summary{
  min-height:30px!important;padding:4px 2px!important;
 }
+
+/* Daily check-in and class: outlined surfaces only, including Important class notes. */
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .rv-daily-record.review-is-important{background:transparent!important}
