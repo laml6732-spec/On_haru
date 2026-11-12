@@ -2748,7 +2748,7 @@ function drawSevenDayStrip(){
   const b=el('button',undefined,'rv-seven-day');b.type='button';b.classList.toggle('is-selected',d===date);b.classList.toggle('is-today',d===today);
   b.setAttribute('aria-pressed',String(d===date));if(d===today)b.setAttribute('aria-current','date');
   b.setAttribute('aria-label',d+(d===today?' · '+word('Today','오늘'):''));
-  b.append(el('span',weekdays[weekday],'rv-seven-weekday'),el('span',String(parts[2]),'rv-seven-number'),el('span','','rv-seven-today-dot'));
+  b.append(el('span',weekdays[weekday],'rv-seven-weekday'),el('span',String(parts[2]),'rv-seven-number'));
   b.onclick=()=>{if(!reviewCanEdit())return;changeDate(d)};
   b.onkeydown=e=>{if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;e.preventDefault();if(!reviewCanEdit())return;const target=dayAdd(d,e.key==='ArrowLeft'?-1:1);changeDate(target);requestAnimationFrame(()=>{const buttons=panel.querySelectorAll('.rv-seven-day');[...buttons].find(button=>button.getAttribute('aria-label')?.startsWith(target))?.focus()})};
   strip.append(b);
