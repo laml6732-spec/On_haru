@@ -1,0 +1,29 @@
+name: OnHaru typography preview visual QA
+on:
+  push:
+    branches: ['preview/typography-hierarchy-20261112']
+    paths:
+      - 'public/legacy/**'
+      - 'scripts/qa-typography-preview.mjs'
+      - '.github/workflows/qa-typography-preview.yml'
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node scripts/verify-ui-static.mjs
+      - run: node --check public/legacy/sw.js
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-typography-http.log 2>&1 &
+      - run: node scripts/qa-typography-preview.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-typography-preview-screenshots
+          path: test-results/typography-preview
+          retention-days: 14
