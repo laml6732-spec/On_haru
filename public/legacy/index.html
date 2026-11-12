@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="tasksdense20261111e"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
+<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="iosinputmin20261111a"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
 <style id="onharu-launch-edge-fix">
 /* True-alpha watercolor launch image; do not blend or mask its transparent edges. */
 #launchScreen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;isolation:isolate;background:var(--onharu-launch-bg,#FDFDFB)!important;overflow:hidden}
@@ -696,6 +696,25 @@ body .app #page-records #archive-search-results .archive-record-schedule-title +
 </style>
 <link rel="stylesheet" href="./review-hierarchy.v1.css?rev=moodtrendv120261106">
 <link rel="stylesheet" href="./archive-records.v1.css?rev=archiverecordsonly20261109a">
+
+<style id="onharu-ios-text-entry-minimum">
+/* iOS WebKit zooms focused text fields below 16px. Keep record/list typography unchanged.
+   Cascade-layer !important overrides older unlayered !important input rules only. */
+@supports (-webkit-touch-callout: none) {
+  @media (hover: none) and (pointer: coarse) {
+    @layer onharu-ios-input {
+      :is(
+        input:not([type]),
+        input:is([type="text"],[type="search"],[type="email"],[type="tel"],
+                 [type="url"],[type="password"],[type="number"]),
+        textarea
+      ) {
+        font-size: max(16px, calc(var(--reading-size, 13.5px) * var(--kona-ui-scale, 1))) !important;
+      }
+    }
+  }
+}
+</style>
 </head>
 <body>
 <div id="launchScreen" role="status" aria-label="On_Haru"><img id="launchArt" alt="On_Haru" fetchpriority="high"></div>
