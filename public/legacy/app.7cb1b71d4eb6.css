@@ -5592,3 +5592,16 @@ body .app #page-capture #konaPriorityTask{
  background:transparent!important;box-shadow:none!important;overflow:hidden!important;
 }
 body .app #page-capture #konaPriorityTask[hidden]{display:none!important}
+
+/* The selected check-in feeling reuses the same mood palette as Review. */
+body .app #page-checkin #checkFeelingSummary.onharu-mood-tone{
+ display:inline-flex!important;align-items:center!important;gap:4px!important;
+ background:var(--onharu-mood-light)!important;color:#263B30!important;
+ padding:3px 7px!important;border-radius:7px!important;
+}
+html[data-appearance=dark] body .app #page-checkin #checkFeelingSummary.onharu-mood-tone{
+ background:var(--onharu-mood-dark)!important;color:#FFFFFF!important;
+}
+body .app #page-checkin #checkFeelingSummary .check-feeling-emoji{font-size:1em!important;line-height:1!important}
+body .app #page-checkin #checkFeelingSummary:empty,
+body .app #page-checkin #checkFeelingSummary[hidden]{display:none!important}
