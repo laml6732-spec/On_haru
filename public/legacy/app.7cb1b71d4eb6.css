@@ -5164,13 +5164,13 @@ body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.revie
 }
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section>.review-section-bar :is(.review-section-name,.review-section-count,.review-section-chevron){color:var(--daily-heading)!important}
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin{
- border:2px solid #B5C0BA!important;border-radius:9px!important;background:transparent!important;box-shadow:none!important;padding:8px 9px!important;margin:3px 0 5px!important;
+ border:2px solid var(--daily-line)!important;border-radius:9px!important;background:transparent!important;box-shadow:none!important;padding:8px 9px!important;margin:3px 0 5px!important;
 }
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin::before{display:none!important}
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-check-header{grid-template-columns:23px minmax(0,1fr) auto!important;min-height:26px!important;gap:4px!important;margin-bottom:3px!important}
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-checkin .rv-daily-phase-icon{width:23px!important;height:26px!important;font-size:20px!important;border-radius:0!important;background:transparent!important}
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{
- background:transparent!important;border:2px solid #B5C0BA!important;
+ background:transparent!important;border:2px solid var(--daily-line)!important;
  border-radius:9px!important;box-shadow:none!important;padding:9px 10px!important;margin:5px 0 7px!important;
 }
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card::after{display:none!important}
@@ -5199,8 +5199,8 @@ html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timelin
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section[data-daypart=night]{--daily-tint:#2D3748;--daily-heading:#A8C1DF;--daily-line:#607A9B}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-daily-schedule-tag{background:#364D40!important;color:#DCE8DE!important}
 html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-daily-summary .review-daily-anchor.rv-reference-anchor{background:transparent!important;border:0!important;box-shadow:none!important}
-html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{background:transparent!important;border:2px solid #75857B!important;box-shadow:none!important}
-html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin{background:transparent!important;border:2px solid #75857B!important}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group.rv-daily-book-card{background:transparent!important;border:2px solid var(--daily-line)!important;box-shadow:none!important}
+html[data-appearance=dark] body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .review-check-record.rv-daily-checkin{background:transparent!important;border:2px solid var(--daily-line)!important}
 
 /* Linked schedules are labelled once above the grouped notes. */
 body .app #page-records #new-reflect-page .rv-timeline .review-v3-section .rv-linked-group>.rv-daily-group-schedule-tag{
