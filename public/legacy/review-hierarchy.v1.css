@@ -1091,3 +1091,58 @@ html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-revie
 html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-trigger{
  color:#C5E7D2!important;
 }
+
+
+/* Capture Important marker: visual-only floating addition. It must never occupy
+   flow space or alter the original Capture composer/input dimensions or padding. */
+body .app #page-capture #qc-v2{position:relative!important}
+body .app #page-capture #qc-v2 > .qc-important-highlighter{
+ box-sizing:border-box!important;
+ position:absolute!important;top:-13px!important;right:3px!important;
+ width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;
+ margin:0!important;padding:0!important;flex:none!important;
+ display:grid!important;place-items:center!important;
+ background:#FFFEFB!important;border:1px solid #D9E2DB!important;border-radius:11px!important;
+ color:#4C5D51!important;box-shadow:0 1px 3px #1A392320!important;
+ z-index:3!important;cursor:pointer!important;
+}
+body .app #page-capture #qc-v2 > .qc-important-highlighter svg{
+ display:block!important;width:21px!important;height:21px!important;
+ fill:none;stroke:#4C5D51;stroke-width:1.4;stroke-linejoin:round;
+}
+body .app #page-capture #qc-v2 > .qc-important-highlighter .qc-marker-body{
+ fill:#FFFFFF!important;stroke:#4C5D51!important;
+}
+body .app #page-capture #qc-v2 > .qc-important-highlighter .qc-marker-tip{
+ fill:#FFFDFC!important;stroke:#4C5D51!important;
+}
+body .app #page-capture #qc-v2 > .qc-important-highlighter .qc-marker-nib{
+ fill:#4C5D51!important;stroke:#4C5D51!important;
+}
+body .app #page-capture #qc-v2 > .qc-important-highlighter.is-important .qc-marker-body{
+ fill:#F0A9C5!important;stroke:#7C4961!important;
+}
+body .app #page-capture #qc-v2 > .qc-important-highlighter.is-important .qc-marker-tip{
+ fill:#F7C5D7!important;stroke:#7C4961!important;
+}
+body .app #page-capture #qc-v2 > .qc-important-highlighter.is-important .qc-marker-nib{
+ fill:#BE608B!important;stroke:#7C4961!important;
+}
+body .app #page-capture #qc-v2 > .qc-important-highlighter:focus-visible{
+ outline:2px solid #386651!important;outline-offset:3px!important;
+}
+html[data-appearance="dark"] body .app #page-capture #qc-v2 > .qc-important-highlighter{
+ background:#25362C!important;border-color:#536956!important;color:#F0F6F0!important;
+}
+html[data-appearance="dark"] body .app #page-capture #qc-v2 > .qc-important-highlighter .qc-marker-body{
+ fill:#FFFFFF!important;stroke:#B1C4B6!important;
+}
+html[data-appearance="dark"] body .app #page-capture #qc-v2 > .qc-important-highlighter.is-important .qc-marker-body{
+ fill:#F4A6C7!important;stroke:#EDC5D6!important;
+}
+
+/* Important status remains on the record; do not tint the entire note box.
+   Preserve all existing margins, padding, borders, typography and text marker. */
+body .app #page-records #new-reflect-page .rv-timeline .rv-daily-record.review-is-important{
+ background:transparent!important;
+}
