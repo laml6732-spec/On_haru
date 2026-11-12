@@ -754,7 +754,16 @@ function renderCompactMood(c){
  }
  grid.append(konaSlimScale('energy',draft.energy,draft.energy,v=>pick('energy',v)));
  grid.append(konaSlimScale('happiness',draft.happiness,draft.energy,v=>pick('happiness',v)));
- let summary=document.getElementById('checkFeelingSummary');if(!summary){summary=document.createElement('span');summary.id='checkFeelingSummary';summary.setAttribute('role','status')}summary.textContent=konaFeeling({e:draft.energy,v:draft.happiness});summary.hidden=phase==='noon';(document.getElementById('checkFlowHeading')||grid).append(summary)
+ let summary=document.getElementById('checkFeelingSummary');if(!summary){summary=document.createElement('span');summary.id='checkFeelingSummary';summary.setAttribute('role','status')}const feeling=konaFeeling({e:draft.energy,v:draft.happiness});
+ summary.replaceChildren();summary.classList.remove('onharu-mood-tone');
+ for(const key of ['--onharu-mood-light','--onharu-mood-dark'])summary.style.removeProperty(key);
+ delete summary.dataset.moodEnergy;delete summary.dataset.moodRating;
+ if(feeling){
+  const emoji=Number.isInteger(draft.energy)&&Number.isInteger(draft.happiness)?MOODS[5-draft.energy]?.[draft.happiness-1]?.f:'';
+  if(emoji){const icon=document.createElement('span');icon.className='check-feeling-emoji';icon.setAttribute('aria-hidden','true');icon.textContent=emoji;summary.append(icon)}
+  summary.append(document.createTextNode(feeling));konaReviewMoodTone(summary,draft.energy,draft.happiness);
+ }
+ summary.hidden=phase==='noon';(document.getElementById('checkFlowHeading')||grid).append(summary)
 }
 
 function renderCheck(){
