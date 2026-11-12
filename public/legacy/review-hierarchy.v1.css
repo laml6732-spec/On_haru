@@ -985,3 +985,109 @@ html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-seven
  body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-short{display:none!important}
  body .app #page-records #new-reflect-page .rv-seven-toolbar .review-filter>summary{padding-inline:6px!important}
 }
+
+
+/* Review v4.1: exactly two equal navigation tabs, Daily and Archive. */
+body .app #page-records #new-review-switch{
+ display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ width:100%!important;max-width:100%!important;
+ gap:0!important;padding:0!important;margin:0 0 10px!important;
+ background:transparent!important;
+ box-sizing:border-box!important;
+}
+body .app #page-records #new-review-switch>button{
+ box-sizing:border-box!important;
+ width:100%!important;min-width:0!important;
+ flex:1 1 50%!important;
+ text-align:center!important;
+}
+
+/* Record count is metadata, not a second button. */
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-moment-count{
+ color:#66796C!important;
+ font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ font-weight:500!important;
+ padding:0 4px 0 1px!important;
+ border:0!important;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar-left{
+ gap:2px!important;
+}
+
+/* Filter trigger is a discreet control on the same line as the week range. */
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-trigger{
+ display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;
+ gap:3px!important;box-sizing:border-box!important;
+ height:44px!important;min-height:44px!important;
+ min-width:0!important;width:auto!important;
+ margin:0!important;padding:0 2px!important;
+ border:0!important;border-radius:7px!important;box-shadow:none!important;
+ color:#315A49!important;background:transparent!important;
+ font-size:calc(11px * var(--kona-ui-scale,1))!important;
+ font-weight:650!important;line-height:1.2!important;
+ white-space:nowrap!important;cursor:pointer!important;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-trigger::before{
+ content:'';display:block;flex:none;width:11px;height:11px;
+ background:currentColor;
+ clip-path:polygon(0 0,100% 0,62% 48%,62% 95%,38% 77%,38% 48%);
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-trigger.is-active{
+ color:#00512E!important;
+}
+body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-trigger:focus-visible,
+body .app #page-records #new-reflect-page .rv-review-filter-panel button:focus-visible{
+ outline:2px solid #00512E!important;outline-offset:2px!important;
+}
+body .app #page-records #new-reflect-page .rv-review-filter-long{display:none!important}
+body .app #page-records #new-reflect-page .rv-review-filter-short{display:inline!important}
+@media(min-width:390px){
+ body .app #page-records #new-reflect-page .rv-review-filter-long{display:inline!important}
+ body .app #page-records #new-reflect-page .rv-review-filter-short{display:none!important}
+}
+
+/* Unlike the native select, the options occupy their own opaque row below
+   the seven dates. They never float transparently over date buttons. */
+body .app #page-records #new-reflect-page .rv-review-filter-panel{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:6px!important;box-sizing:border-box!important;
+ width:100%!important;min-width:0!important;
+ position:static!important;z-index:auto!important;
+ max-height:232px!important;overflow-y:auto!important;overscroll-behavior:contain!important;
+ margin:8px 0 12px!important;padding:10px!important;
+ border:1px solid #D7E2D9!important;border-radius:12px!important;
+ background:#FFFEFA!important;
+ color:#244235!important;
+ box-shadow:0 2px 8px #173C2710!important;
+}
+body .app #page-records #new-reflect-page .rv-review-filter-panel[hidden]{display:none!important}
+body .app #page-records #new-reflect-page .rv-review-filter-panel .rv-review-filter-option{
+ display:flex!important;justify-content:center!important;align-items:center!important;
+ box-sizing:border-box!important;
+ width:100%!important;min-width:0!important;min-height:38px!important;
+ padding:7px 5px!important;margin:0!important;
+ border:1px solid #E1E7E1!important;border-radius:8px!important;
+ background:#F7F9F6!important;color:#345446!important;
+ font-family:inherit!important;font-size:calc(12px * var(--kona-ui-scale,1))!important;font-weight:600!important;line-height:1.35!important;
+ text-align:center!important;white-space:normal!important;overflow-wrap:anywhere!important;
+ box-shadow:none!important;
+}
+body .app #page-records #new-reflect-page .rv-review-filter-panel .rv-review-filter-option.is-selected{
+ border-color:#B7D0BF!important;
+ background:#E7F0E9!important;
+ color:#075A35!important;
+}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-review-filter-panel{
+ background:#22322A!important;border-color:#54715F!important;color:#F1F8F2!important;
+ box-shadow:0 3px 16px #00000040!important;
+}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-review-filter-panel .rv-review-filter-option{
+ background:#304339!important;color:#ECF6EE!important;border-color:#476453!important;
+}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-review-filter-panel .rv-review-filter-option.is-selected{
+ background:#456E54!important;color:#FFFFFF!important;border-color:#8AC9A0!important;
+}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-seven-toolbar .rv-review-filter-trigger{
+ color:#C5E7D2!important;
+}
