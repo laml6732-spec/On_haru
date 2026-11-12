@@ -830,9 +830,7 @@ body .app #page-records #new-reflect-page .rv-seven-day.is-selected .rv-seven-nu
 body .app #page-records #new-reflect-page .rv-seven-day.is-today .rv-seven-number{
   color:#386651;font-weight:700;
 }
-@media(prefers-color-scheme:dark){
- body .app #page-records #new-reflect-page .rv-seven-day.is-today .rv-seven-number{color:#A8D0B7}
-}
+html[data-appearance="dark"] body .app #page-records #new-reflect-page .rv-seven-day.is-today .rv-seven-number{color:#A8D0B7}
 
 /* Weekly reflection is optional and lives below the existing Daily record,
    with all historical weeklyReflections fields retained. */
