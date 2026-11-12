@@ -13,6 +13,7 @@ class Node {
  set textContent(v){this.text=v;this.children=[];}
  append(...nodes){for(const n of nodes){n.remove();n.parent=this;this.children.push(n);}}
  prepend(...nodes){for(const n of [...nodes].reverse()){n.remove();n.parent=this;this.children.unshift(n);}}
+ replaceChildren(...nodes){for(const n of this.children)n.parent=null;this.children=[];this.text='';this.append(...nodes);}
  remove(){if(this.parent)this.parent.children=this.parent.children.filter(x=>x!==this);this.parent=null;}
  before(n){const p=this.parent,i=p.children.indexOf(this);n.remove();n.parent=p;p.children.splice(i,0,n);}
  setAttribute(k,v){this.attrs[k]=v;}
@@ -26,69 +27,88 @@ function fixture({moments=[],reflection={},saved={},tasks=[],checks={},fail=fals
  const c={panel,db,date:'2026-11-09',weeklySelectedDate:'2026-11-09',weeklyOffset:0,tutorialPractice:false,
  KonaI18n:{language,dateLocale:language==='ko'?'ko-KR':'en-US',t:s=>s,eventLabel:e=>e.title},
  el:(t,v,c)=>new Node(t,v,c),dayAdd:add,monday:()=> '2026-11-09',nowLocal:()=> '2026-11-09',short:d=>d,fmt:d=>d,
- normalizeWeeklyReflections:()=>{},reviewRecords:d=>d==='2026-11-09'?moments:[],weekday:d=>new Date(d+'T12:00:00Z').getUTCDay(),taskKey:(t,d)=>t.id+'|'+(t.repeat==='none'?'single':d),reviewUI:{},reviewUISet:(k,v)=>{c.reviewUI[k]=v},guardedMutation:fn=>{fn();saves++;return true},
+ normalizeWeeklyReflections:()=>{},reviewRecords:d=>d==='2026-11-09'?moments.map(m=>({...m,date:d})):[],weekday:d=>new Date(d+'T12:00:00Z').getUTCDay(),taskKey:(t,d)=>t.id+'|'+(t.repeat==='none'?'single':d),reviewUI:{},reviewUISet:(k,v)=>{c.reviewUI[k]=v},guardedMutation:fn=>{fn();saves++;return true},
  reviewDateGroupHeading:(d,n)=>new Node('h4',d,'review-date-header'),
  reviewDailyFeelingEmoji:()=> '🙂',konaFeeling:()=> 'Calm',reviewFollowupLocalDate:d=>d,
  reviewImportant:r=>!!r.important,validReflectHM:t=>t,reviewRow:(r,opt)=>{assert.equal(opt.weeklyView,true);const n=new Node('article',r.body,'weekly-record');n.recordId=r.id;return n;},
- reflectionResponses:()=>[],appendReflectionContext:()=>{},reviewCanEdit:()=>true,changeDate:()=>{},
+ reflectionResponses:()=>[],appendReflectionContext:()=>{},reviewCanEdit:()=>true,changeDate:d=>{c.changedDate=d;},requestAnimationFrame:fn=>fn(),konaOpenReviewEditor:(d,id)=>{c.opened={date:d,id};},nav:(p,opt)=>{c.navigation={page:p,options:opt};},
  renderRecords:()=>renders++,save:()=>{saves++;return !fail;},
  };
  vm.createContext(c);vm.runInContext(['weeklyReflectionPeriod','weeklyReflectionRecord','commitWeeklyReflection','reflectionHasText','reviewWeekSummary'].map(helper).join('\n')+'\n'+weekly,c);c.drawWeekly();return {c,panel,db,get saves(){return saves;},get renders(){return renders;},all:cls=>panel.all().filter(n=>n.className.split(' ').includes(cls))};
 }
-test('weekly editor and raw records start closed; no default fixed-three selection',()=>{
- const f=fixture({moments:[{id:'a',kind:'capture',body:'unmarked'}]});
- const disclosure=f.all('weekly-reflection-disclosure')[0],editor=f.all('weekly-reflection-editor')[0];
- assert.equal(disclosure.open,false);assert.equal(editor.hidden,true);
- disclosure.open=true;disclosure.ontoggle();assert.equal(editor.hidden,false);
- disclosure.open=false;disclosure.ontoggle();assert.equal(editor.hidden,true);
- assert.equal(editor.parent,f.panel);
- assert.equal(f.all('weekly-other-records')[0].open,false);
- assert.equal(f.all('weekly-important-records').length,0);
- assert.equal(f.all('weekly-reflection-toggle')[0].textContent,'Reflect');
+test('reflection-first Weekly hides the old timeline and keeps just the primary sections',()=>{
+ const f=fixture();
+ assert.equal(f.all('weekly-focus-reflection').length,1);
+ assert.equal(f.all('weekly-focus-write').length,1);
+ assert.equal(f.all('weekly-day').length,0);
+ assert.equal(f.all('weekly-compact-meta').length,0);
+ assert.equal(f.all('weekly-task-check').length,0);
+ assert.ok(f.all('weekly-focus-task-count')[0].textContent.includes('No tasks'));
+ assert.equal(f.all('weekly-curated').length,0);
 });
-test('saved daily reflection stays complete before highlights; no duplicated records',()=>{
- const text='회고 전체 내용\n'.repeat(160),moments=[{id:'a',kind:'capture',body:'priority',important:true},{id:'b',kind:'check',body:'raw',phase:'morning'},{id:'c',kind:'anchor',body:'intention'}];
- const f=fixture({moments,reflection:{insight:text,action:'response',followups:[{text:'later',createdAt:'2026-11-10'}]}});
- assert.equal(f.all('reflection-saved-text')[0].textContent,text);
- const day=f.all('weekly-day')[0];assert.ok(day.children.indexOf(f.all('weekly-daily-reflection')[0])<day.children.indexOf(f.all('weekly-important-records')[0]));
- assert.deepEqual(f.all('weekly-important-records')[0].all().filter(n=>n.recordId).map(n=>n.recordId),['a']);
- assert.deepEqual(f.all('weekly-other-records')[0].all().filter(n=>n.recordId).map(n=>n.recordId),['b']);
- assert.equal(f.all('weekly-anchor').length,1);assert.equal(f.all('weekly-day-mood').length,0);
+test('editor starts closed and offers insight and next step as the two primary inputs',()=>{
+ const f=fixture(),toggle=f.all('weekly-reflection-disclosure')[0];
+ assert.equal(toggle.open,false);assert.equal(f.all('weekly-reflection-editor')[0].hidden,true);
+ assert.equal(f.all('weekly-form-label').length,2);
+ assert.equal(f.all('weekly-input-subtitle')[0].textContent,'Next step');
+ toggle.open=true;toggle.ontoggle();assert.equal(f.all('weekly-reflection-editor')[0].hidden,false);
 });
-test('end-of-day mood only; linked schedule chip once across highlighted and raw notes',()=>{
- const link={scheduleId:'w',reviewEvent:{title:'Worship',start:'09:30',end:'10:30'}},f=fixture({moments:[{id:'a',kind:'capture',body:'one',important:true,...link},{id:'b',kind:'capture',body:'two',...link},{id:'n',kind:'check',phase:'night',feeling:'Calm',energy:3}]});
- assert.equal(f.all('weekly-day-mood').length,1);assert.equal(f.all('weekly-schedule-chip').length,1);assert.equal(f.all('weekly-schedule-chip')[0].textContent,'Worship · 09:30–10:30');
+test('reading view shows insight and action but retains hidden legacy fields in storage',()=>{
+ const f=fixture({saved:{insight:'Lesson',action:'Act',scripture:'Private optional field'}});
+ assert.equal(f.all('weekly-focus-text')[0].textContent,'Lesson');
+ assert.ok(f.all('weekly-focus-next')[0].textContent.includes('Act'));
+ assert.equal(f.all('weekly-focus-reflection')[0].textContent.includes('Private optional field'),false);
+ assert.equal(f.db.weeklyReflections['2026-11-09'].scripture,'Private optional field');
 });
-test('weekly input autosaves; completion saves; failed writes restore the prior data',()=>{
- const f=fixture(),input=f.all('rv-journal-main')[0].querySelector('textarea');input.value='weekly insight';input.oninput();assert.equal(f.db.weeklyReflections['2026-11-09'].insight,'weekly insight');assert.equal(f.all('rv-done')[0].disabled,false);f.all('rv-done')[0].onclick();assert.equal(f.db.weeklyReflections['2026-11-09'].reflected,true);assert.equal(f.renders,1);
- const broken=fixture({saved:{insight:'kept'},fail:true}),field=broken.all('rv-journal-main')[0].querySelector('textarea');field.value='unsaved';field.oninput();assert.equal(broken.db.weeklyReflections['2026-11-09'].insight,'kept');assert.equal(broken.all('rv-save-status')[0].textContent,'Not saved · retry or back up');
+test('autosalving updates preview; failed saves restore the old reading view',()=>{
+ const f=fixture({saved:{insight:'Old'}}),input=f.all('rv-journal-main')[0].querySelector('textarea');
+ input.value='New';input.oninput();
+ assert.equal(f.db.weeklyReflections['2026-11-09'].insight,'New');
+ assert.equal(f.all('weekly-focus-text')[0].textContent,'New');
+ const bad=fixture({saved:{insight:'Keep'},fail:true}),field=bad.all('rv-journal-main')[0].querySelector('textarea');
+ field.value='Lost';field.oninput();
+ assert.equal(bad.db.weeklyReflections['2026-11-09'].insight,'Keep');
+ assert.equal(bad.all('weekly-focus-text')[0].textContent,'Keep');
+ assert.equal(bad.all('rv-save-status')[0].textContent,'Not saved · retry or back up');
 });
-test('empty week completion disabled; week navigation and Korean control remain available',()=>{
- const f=fixture({language:'ko'});assert.equal(f.all('rv-done')[0].disabled,true);assert.equal(f.all('weekly-reflection-toggle')[0].textContent,'회고 쓰기');f.all('weekly-nav-arrow')[0].onclick();assert.equal(f.c.weeklyOffset,-1);assert.equal(f.renders,1);
+test('five important records show three first with two in an optional disclosure',()=>{
+ const moments=Array.from({length:5},(_,i)=>({id:'n'+i,kind:'capture',noteTitle:'Important '+i,body:'Text '+i,important:true,t:i+1}));
+ moments.push({id:'normal',kind:'capture',body:'Not selected',t:30});
+ const f=fixture({moments,reflection:{insight:'A Daily reflection'}});
+ const section=f.all('weekly-curated')[0];
+ const first=section.children.filter(c=>c.className==='weekly-curated-item');
+ assert.equal(first.length,3);
+ assert.equal(f.all('weekly-curated-more')[0].children.filter(c=>c.className==='weekly-curated-item').length,2);
+ assert.equal(section.textContent.includes('Not selected'),false);
+ first[0].onclick();assert.ok(f.c.opened.id.startsWith('n'));
 });
-
-test('weekly Plan tasks are grouped by occurrence, togglable, and displayed before day records',()=>{
+test('Daily Reflection fills empty highlight slots and opens its original date',()=>{
+ const f=fixture({moments:[{id:'important',kind:'capture',body:'A note',important:true}],reflection:{insight:'A daily insight'}});
+ const items=f.all('weekly-curated-item');
+ assert.equal(items.length,2);
+ assert.ok(items[1].textContent.includes('Daily reflection'));
+ items[1].onclick();assert.equal(f.c.changedDate,'2026-11-09');
+});
+test('ordinary notes stay in Daily and are reachable through the date finder',()=>{
+ const f=fixture({moments:[{id:'ordinary',kind:'capture',body:'Not highlighted'}]});
+ assert.equal(f.all('weekly-curated-item').length,0);
+ assert.equal(f.all('weekly-date-link').length,1);
+ f.all('weekly-date-link')[0].onclick();assert.equal(f.c.changedDate,'2026-11-09');
+});
+test('task occurrences become progress; Plan manages them without duplicate checkboxes',()=>{
  const f=fixture({tasks:[
-  {id:'one',title:'Submit outreach notes',repeat:'none',due:'2026-11-11',since:'2026-11-09'},
-  {id:'daily',title:'Read scripture',repeat:'daily',since:'2026-11-09',until:'2026-11-15'}
- ],checks:{'daily|2026-11-09':{date:'2026-11-09'}}});
- const tasks=f.all('weekly-tasks')[0],records=f.all('weekly-records')[0];
- assert.ok(tasks&&records);assert.ok(f.panel.children.indexOf(tasks)<f.panel.children.indexOf(records));
- assert.equal(f.all('weekly-task-recurring').length,1);
- assert.equal(f.all('weekly-task-line').length,8);
- assert.equal(f.all('weekly-tasks-heading')[0].textContent.includes('1 / 8'),true);
- const b=f.all('weekly-task-line')[0].querySelector('button');b.onclick();
- assert.equal(f.db.checks['one|single'].date,'2026-11-11');
+  {id:'one',title:'Submit',repeat:'none',due:'2026-11-11',since:'2026-11-09'},
+  {id:'daily',title:'Read',repeat:'daily',since:'2026-11-09',until:'2026-11-15'}
+ ],checks:{'daily|2026-11-09':{date:'2026-11-09'},'one|single':{date:'2026-11-11'}}});
+ assert.ok(f.all('weekly-focus-task-count')[0].textContent.includes('2/8 completed · 6 remaining'));
+ assert.equal(f.all('weekly-task-check').length,0);
+ f.all('weekly-open-plan')[0].onclick();
+ assert.deepEqual(f.c.navigation,{page:'schedule',options:{sub:'tasks'}});
 });
-test('weekly saved reflection is readable without opening the editor',()=>{
- const f=fixture({saved:{insight:'A lesson from the week',action:'One concrete step'}});
- assert.equal(f.all('weekly-reflection-disclosure')[0].open,false);
- assert.ok(f.all('weekly-saved-summary')[0].textContent.includes('A lesson from the week'));
- assert.ok(f.all('weekly-saved-summary')[0].textContent.includes('One concrete step'));
-});
-test('date disclosures remember user state and current recorded day opens initially',()=>{
- const f=fixture({moments:[{id:'a',kind:'capture',body:'remember'}]});
- const day=f.all('weekly-day')[0];assert.equal(day.open,true);
- day.open=false;day.ontoggle();
- assert.equal(f.c.reviewUI['weekly-day-2026-11-09-2026-11-09'],false);
+test('empty week cannot be marked completed and week navigation remains intact',()=>{
+ const f=fixture({language:'ko'});
+ assert.equal(f.all('rv-done')[0].disabled,true);
+ assert.equal(f.all('weekly-focus-title')[0].textContent,'이번 주의 돌아봄');
+ f.all('weekly-nav-arrow')[0].onclick();
+ assert.equal(f.c.weeklyOffset,-1);assert.equal(f.renders,1);
 });
