@@ -2851,14 +2851,8 @@ if(start!==monday(nowLocal())){const current=el('button',KonaI18n.t("This week")
 overview.append(heading);
 const dates=Array.from({length:7},(_,i)=>dayAdd(start,i)),entries=dates.map(d=>({date:d,moments:reviewRecords(d),reflection:db.days[d]?.reflectionNotes||{},reflected:!!db.days[d]?.reflected}));
 const hasDayContent=x=>x.moments.length||reflectionHasText(x.reflection);
-const {momentCount,recordedDays}=reviewWeekSummary(entries);
-// The week summary stays quiet; feelings belong to their recorded day.
+const {recordedDays}=reviewWeekSummary(entries);
 const ko=KonaI18n.language==='ko',word=(en,kr)=>ko?kr:en;
-const meta=el('div',undefined,'weekly-compact-meta');
-const fullCount=word(recordedDays+' '+(recordedDays===1?'day':'days')+' · '+momentCount+' '+(momentCount===1?'note':'notes'),recordedDays+'일 · '+momentCount+'개');
-meta.setAttribute('aria-label',fullCount);meta.title=fullCount;
-meta.append(el('span',fullCount,'weekly-count-full'),el('span',word(recordedDays+'d · '+momentCount,fullCount),'weekly-count-short'));
-overview.append(meta);
 const reflection=el('details',undefined,'weekly-reflection-disclosure'),reflectionToggle=el('summary',word('Reflect','회고 쓰기'),'weekly-reflection-toggle');
 reflectionToggle.textContent=reflectionHasText(record)?word('Edit','회고 수정'):reflectionToggle.textContent;
 const editor=el('div',undefined,'weekly-reflection-editor');editor.hidden=true;editor.id='weekly-reflection-editor-'+start;
@@ -2872,9 +2866,9 @@ const draft={...record},current=()=>db.weeklyReflections[start]||record;
 const canComplete=()=>recordedDays>0||reflectionHasText(draft);
 let complete,completeReason;
 function syncComplete(){if(!complete)return;complete.disabled=!current().reflected&&!canComplete();complete.title=complete.disabled?KonaI18n.t("Add a daily record or write a weekly note first.",true):'';completeReason.hidden=!complete.disabled}
-function persistWeekly(){status.textContent=KonaI18n.t("Saving…");const ok=commitWeeklyReflection(db,start,draft,()=>save()||!!tutorialPractice);status.textContent=ok?(tutorialPractice?KonaI18n.t("Practice only · not saved"):KonaI18n.t("Saved")):KonaI18n.t("Not saved · retry or back up");retry.hidden=ok;syncComplete();return ok}
+function persistWeekly(){status.textContent=KonaI18n.t("Saving…");const ok=commitWeeklyReflection(db,start,draft,()=>save()||!!tutorialPractice);status.textContent=ok?(tutorialPractice?KonaI18n.t("Practice only · not saved"):KonaI18n.t("Saved")):KonaI18n.t("Not saved · retry or back up");retry.hidden=ok;if(ok)updateWeeklyFocus(draft);syncComplete();return ok}
 retry.onclick=persistWeekly;
-function field(key,label,placeholder){const lab=el('label',undefined,'weekly-form-label '+(key==='insight'?'rv-journal-main':'')),input=el('textarea');input.value=draft[key]||'';input.placeholder=placeholder;input.setAttribute('aria-label',label);input.oninput=()=>{draft[key]=input.value;persistWeekly()};lab.append(input);if(key==='insight')editor.append(lab);else{const optional=el('details',undefined,'rv-next-step');optional.open=!!String(draft[key]||'').trim();optional.append(el('summary',label),lab);editor.append(optional)}}
+function field(key,label,placeholder){const lab=el('label',undefined,'weekly-form-label '+(key==='insight'?'rv-journal-main':'')),input=el('textarea');input.value=draft[key]||'';input.placeholder=placeholder;input.setAttribute('aria-label',label);input.oninput=()=>{draft[key]=input.value;persistWeekly()};lab.append(input);if(key==='insight'||key==='action'){if(key==='action')lab.prepend(el('span',word('Next step','다음 한 걸음'),'weekly-input-subtitle'));editor.append(lab)}else{const optional=el('details',undefined,'rv-next-step');optional.open=!!String(draft[key]||'').trim();optional.append(el('summary',label),lab);editor.append(optional)}}
 field('insight',KonaI18n.t("What kept coming up this week?"),KonaI18n.t("A passage, lesson, question, or repeated theme…"));
 const responses=reflectionResponses(db,start);
 if(responses.length||String(draft.responseReview||'').trim()){
@@ -2887,19 +2881,108 @@ appendReflectionContext(editor,draft,persistWeekly);
 complete=el('button',current().reflected?KonaI18n.t("Reopen review"):KonaI18n.t("Finish review"),'rv-done');complete.type='button';complete.setAttribute('aria-label',current().reflected?KonaI18n.t("Undo week reflected",true):KonaI18n.t("Mark week reflected",true));complete.disabled=!current().reflected&&!canComplete();complete.onclick=()=>{if((!current().reflected&&!canComplete())||!persistWeekly())return;const ok=commitWeeklyReflection(db,start,{reflected:!current().reflected},()=>save()||!!tutorialPractice);if(ok)renderRecords();else{status.textContent=KonaI18n.t("Not saved · retry or back up");retry.hidden=false}};completeReason=el('small',KonaI18n.t("Add a daily record or write a weekly note to enable this."),'rv-done-reason');completeReason.id='weeklyReflectionDisabledReason';complete.setAttribute('aria-describedby','weeklyReflectionDisabledReason');completeReason.hidden=!complete.disabled;const controls=el('div',undefined,'rv-controls');controls.append(complete,completeReason);const writingHeading=editor.querySelector('.rv-writing-heading'),toolbar=el('div',undefined,'rv-writing-toolbar');writingHeading.before(toolbar);toolbar.append(writingHeading);editor.append(controls);
 const count=Object.values(db.weeklyReflections||{}).filter(x=>x?.reflected===true).length;editor.append(el('p',count+' '+(count===1?KonaI18n.t("week"):KonaI18n.t("weeks"))+KonaI18n.t(" revisited · A record of reflection, not a measure of faith."),'weekly-count'));
 
- // Keep saved weekly meaning visible even when the writing form is closed.
- if(reflectionHasText(record)){
-  const recap=el('section',undefined,'weekly-saved-summary');
-  recap.append(el('h3',word('Weekly Reflection','주간 회고')));
-  for(const [key,label] of [['insight',word('Reflection','회고')],['responseReview',word('Looking back','돌아본 내용')],['action',word('Next step','다음 한 걸음')]]){
-   if(typeof record[key]==='string'&&record[key].trim()){
-    if(key!=='insight')recap.append(el('small',label));
-    recap.append(el('p',record[key],'weekly-saved-text'));
+
+ // This Preview deliberately summarizes the week rather than reproducing Daily.
+ const focus=el('section',undefined,'weekly-focus-reflection');
+ const focusTitle=el('h3',word('This week','이번 주의 돌아봄'),'weekly-focus-title');
+ const focusBody=el('div',undefined,'weekly-focus-body');
+ focus.append(focusTitle,focusBody);
+ panel.append(focus);
+ function updateWeeklyFocus(item){
+  focusBody.replaceChildren();
+  const insight=String(item?.insight||'').trim(),action=String(item?.action||'').trim();
+  if(insight)focusBody.append(el('p',insight,'weekly-focus-text'));
+  if(action){
+   const next=el('div',undefined,'weekly-focus-next');
+   next.append(el('small',word('Next step','다음 한 걸음')),el('p',action));
+   focusBody.append(next);
+  }
+  if(!insight&&!action){
+   if(reflectionHasText(item)){
+    focusBody.append(el('p',word('Additional reflection is saved. Open Edit to read it.','추가 회고가 저장되어 있어요. 회고 수정에서 확인할 수 있어요.'),'weekly-focus-muted'));
+   }else{
+    const write=el('button',word('Write a reflection for this week','이번 주를 돌아보며 기록하기'),'weekly-focus-write');
+    write.type='button';
+    write.onclick=()=>{reflectionToggle.click();requestAnimationFrame(()=>editor.querySelector('textarea')?.focus())};
+    focusBody.append(write);
    }
   }
-  panel.append(recap);
  }
- // Show Plan tasks in the selected week, not a second copy of daily capture notes.
+ updateWeeklyFocus(record);
+
+ const openDaily=target=>{
+  if(!reviewCanEdit())return;
+  reflectPeriod='daily';
+  changeDate(target);
+ };
+ const priority=entries.flatMap(entry=>entry.moments.filter(note=>note.kind!=='anchor'&&(reviewImportant(note)||note.pinned)));
+ priority.sort((a,b)=>b.date.localeCompare(a.date)||(Number.isFinite(b.t)?b.t:-1)-(Number.isFinite(a.t)?a.t:-1));
+ const dailyRefs=entries.filter(entry=>reflectionHasText(entry.reflection)).reverse();
+ const picks=priority.slice(0,3).map(note=>({kind:'important',note,date:note.date}));
+ for(const entry of dailyRefs){
+  if(picks.length>=3)break;
+  picks.push({kind:'daily',date:entry.date,reflection:entry.reflection});
+ }
+ const availableDates=entries.filter(hasDayContent).reverse();
+ if(availableDates.length){
+  const selected=el('section',undefined,'weekly-curated');
+  const label=el('div',undefined,'weekly-curated-heading');
+  label.append(el('h3',word('Moments to revisit','돌아볼 기록')));
+  if(picks.length)label.append(el('small',word(picks.length+' selected',picks.length+'개')));
+  selected.append(label);
+  const describe=pick=>{
+   if(pick.kind==='daily'){
+    const r=pick.reflection;
+    const summary=[r.insight,r.responseReview,r.action,r.additionalNotes,r.scripture,r.discernment,r.followup].find(v=>typeof v==='string'&&v.trim())||r.followups?.find(v=>v.text?.trim())?.text||'';
+    return {title:word('Daily reflection','데일리 회고'),snippet:String(summary).trim(),action:()=>openDaily(pick.date)};
+   }
+   const note=pick.note,body=String(note.body||'').trim(),lines=body.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+   const named=String(note.noteTitle||'').trim();
+   const explicit=named||(note.kind==='class'||note.kind==='check'||note.kind==='session'?String(note.title||note.type||'').trim():'');
+   const title=explicit||lines[0]||String(note.title||note.type||'').trim()||word('Record','기록');
+   const snippet=explicit?body:lines.slice(1).join(' ');
+   return {title,snippet,action:()=>{if(!reviewCanEdit())return;konaOpenReviewEditor(note.date,note.id)}};
+  };
+  const line=pick=>{
+   const desc=describe(pick),item=el('button',undefined,'weekly-curated-item');
+   item.type='button';
+   const dateText=Number(pick.date.slice(5,7))+'/'+Number(pick.date.slice(8,10));
+   const dateLabel=el('span',dateText,'weekly-curated-date');
+   const content=el('span',undefined,'weekly-curated-copy');
+   content.append(el('strong',desc.title,'weekly-curated-name'));
+   if(desc.snippet&&desc.snippet!==desc.title)content.append(el('span',desc.snippet,'weekly-curated-excerpt'));
+   item.append(dateLabel,content);
+   item.setAttribute('aria-label',fmt(pick.date)+' · '+desc.title);
+   item.onclick=desc.action;
+   return item;
+  };
+  if(picks.length){for(const pick of picks)selected.append(line(pick))}
+  else selected.append(el('p',word('No highlighted notes or daily reflections yet.','중요 표시한 기록이나 데일리 회고가 아직 없어요.'),'weekly-curated-empty'));
+  if(priority.length>3){
+   const more=el('details',undefined,'weekly-curated-more');
+   const key='weekly-curated-more-'+start;
+   more.open=!!reviewUI[key];
+   more.ontoggle=()=>reviewUISet(key,more.open);
+   more.append(el('summary',word('See '+(priority.length-3)+' more highlights','중요 기록 '+(priority.length-3)+'개 더 보기')));
+   for(const note of priority.slice(3))more.append(line({kind:'important',note,date:note.date}));
+   selected.append(more);
+  }
+  const finder=el('details',undefined,'weekly-date-finder');
+  const finderKey='weekly-date-finder-'+start;
+  finder.open=!!reviewUI[finderKey];
+  finder.ontoggle=()=>reviewUISet(finderKey,finder.open);
+  finder.append(el('summary',word('Browse recorded dates','기록한 날짜 찾아보기')));
+  const days=el('div',undefined,'weekly-date-list');
+  for(const entry of availableDates){
+   const button=el('button',fmt(entry.date),'weekly-date-link');
+   button.type='button';button.onclick=()=>openDaily(entry.date);
+   days.append(button);
+  }
+  finder.append(days);selected.append(finder);
+  panel.append(selected);
+ }
+
+ // Plan remains the only place to manage task occurrences. Weekly is read-only.
  const weeklyTasks=(db.tasks||[]).map(task=>{
   let days=[];
   if(!task.repeat||task.repeat==='none'){
@@ -2911,93 +2994,19 @@ const count=Object.values(db.weeklyReflections||{}).filter(x=>x?.reflected===tru
   }
   return {task,days};
  }).filter(item=>item.days.length);
- if(weeklyTasks.length){
-  const area=el('section',undefined,'weekly-tasks');
-  const completed=weeklyTasks.reduce((n,item)=>n+item.days.filter(d=>!!db.checks?.[taskKey(item.task,d)]).length,0);
-  const total=weeklyTasks.reduce((n,item)=>n+item.days.length,0);
-  const head=el('div',undefined,'weekly-tasks-heading');
-  head.append(el('h3',word("This Week's Tasks",'이번 주 할 일')),el('small',completed+' / '+total));
-  area.append(head);
-  const taskLine=(task,d,showDate)=>{
-   const key=taskKey(task,d),done=!!db.checks?.[key],line=el('div',undefined,'weekly-task-line');
-   const toggle=el('button',done?'✓':'','weekly-task-check'+(done?' is-done':''));
-   toggle.type='button';toggle.setAttribute('role','checkbox');toggle.setAttribute('aria-checked',String(done));
-   toggle.setAttribute('aria-label',(done?word('Mark incomplete: ','완료 취소: '):word('Mark complete: ','완료 표시: '))+task.title+(showDate?' · '+short(d):''));
-   toggle.onclick=()=>{
-    if(guardedMutation(()=>{
-     if(!db.checks)db.checks={};
-     if(done)delete db.checks[key];else db.checks[key]={date:d,time:new Date().toISOString()};
-    },KonaI18n.t("Task status was not saved.")))renderRecords();
-   };
-   line.append(toggle,el('span',task.title,'weekly-task-name'+(done?' is-done':'')));
-   if(showDate)line.append(el('small',short(d),'weekly-task-date'));
-   return line;
-  };
-  const taskItem=item=>{
-   if(item.days.length===1)return taskLine(item.task,item.days[0],true);
-   const group=el('details',undefined,'weekly-task-recurring');
-   const key='weekly-task-'+start+'-'+item.task.id;
-   group.open=!!reviewUI[key];group.ontoggle=()=>reviewUISet(key,group.open);
-   const summary=el('summary',undefined,'weekly-task-recurring-summary');
-   const done=item.days.filter(d=>!!db.checks?.[taskKey(item.task,d)]).length;
-   summary.append(el('span',item.task.title),el('small',done+' / '+item.days.length));
-   group.append(summary);
-   for(const d of item.days)group.append(taskLine(item.task,d,true));
-   return group;
-  };
-  for(const item of weeklyTasks.slice(0,4))area.append(taskItem(item));
-  if(weeklyTasks.length>4){
-   const more=el('details',undefined,'weekly-tasks-more');
-   const key='weekly-tasks-more-'+start;
-   more.open=!!reviewUI[key];more.ontoggle=()=>reviewUISet(key,more.open);
-   more.append(el('summary',word('Show '+(weeklyTasks.length-4)+' more tasks','할 일 '+(weeklyTasks.length-4)+'개 더 보기')));
-   for(const item of weeklyTasks.slice(4))more.append(taskItem(item));
-   area.append(more);
-  }
-  panel.append(area);
- }
-const records=el('section',undefined,'weekly-records review-weekly-records');
-if(!recordedDays)records.append(el('p',KonaI18n.t("No daily records this week. You can still write a reflection."),'reflection-help'));
-const visibleWeeklyDays=entries.filter(hasDayContent),latestWeeklyDay=visibleWeeklyDays[visibleWeeklyDays.length-1]?.date;
-for(const entry of visibleWeeklyDays){
- const day=el('details',undefined,'weekly-day'),heading=reviewDateGroupHeading(entry.date,entry.moments.length,'summary');
- const dayKey='weekly-day-'+start+'-'+entry.date;
- day.open=Object.prototype.hasOwnProperty.call(reviewUI,dayKey)?!!reviewUI[dayKey]:entry.date===latestWeeklyDay;
- day.ontoggle=()=>reviewUISet(dayKey,day.open);
- day.append(heading);
- // Only end-of-day mood belongs in the weekly day header; never substitute another check-in.
- const endOfDay=entry.moments.find(r=>r.kind==='check'&&r.phase==='night');
- if(endOfDay&&(endOfDay.feeling||endOfDay.energy))heading.append(el('span',reviewDailyFeelingEmoji(endOfDay)+' '+(konaFeeling({energy:endOfDay.energy,happiness:endOfDay.happiness})||endOfDay.feeling||''),'weekly-day-mood'));
- if(reflectionHasText(entry.reflection)){
-  const saved=el('section',undefined,'weekly-daily-reflection');saved.append(el('h5',word('Daily reflection','데일리 회고')));
-  const labels={insight:word('Reflection','회고'),responseReview:word('Looking back','돌아본 내용'),action:word('Next step','다음 행동'),additionalNotes:word('Additional notes','추가 기록'),scripture:word('Scripture or context','말씀과 맥락'),discernment:word('Further prayer or conversation','더 기도하거나 나눌 내용'),followup:word('Later reflection','이후 회고')};
-  for(const [key,label] of Object.entries(labels))if(typeof entry.reflection[key]==='string'&&entry.reflection[key].trim()){
-   if(key!=='insight')saved.append(el('small',label));saved.append(el('p',entry.reflection[key],'reflection-saved-text'));
-  }
-  for(const followup of entry.reflection.followups||[])if(followup.text?.trim())saved.append(el('small',reviewFollowupLocalDate(followup.createdAt)),el('p',followup.text,'reflection-saved-text'));
-  const open=el('button',word('Open daily reflection','데일리 회고 열기'),'mini-btn');open.type='button';open.onclick=()=>{if(!reviewCanEdit())return;reflectPeriod='daily';changeDate(entry.date)};saved.append(open);day.append(saved);
- }
- const anchors=entry.moments.filter(r=>r.kind==='anchor'),notes=entry.moments.filter(r=>r.kind!=='anchor');
- const important=notes.filter(r=>reviewImportant(r)||r.pinned),other=notes.filter(r=>!reviewImportant(r)&&!r.pinned);
- const scheduleTags=new Set();
- const appendNotes=(parent,list)=>{
-  const groups=new Map();for(const note of list){const key=note.scheduleId?'schedule:'+note.scheduleId:'note:'+note.id;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(note)}
-  for(const [key,group] of groups){
-   const wrap=el('div',undefined,'weekly-note-group'),first=group[0];
-   if(first.scheduleId&&!scheduleTags.has(key)){
-    const event=first.reviewEvent,source=db.days[entry.date]?.quickCaptureEntries?.find(q=>q.id===first.sourceId);
-    const name=event?KonaI18n.eventLabel(event):first.scheduleLabel,time=event?.start?event.start+(event.end?'–'+event.end:''):source?.scheduleTime||'';
-    const chip=el('small',[name,time].filter(Boolean).join(' · '),'weekly-schedule-chip');if(chip.textContent){wrap.append(chip);scheduleTags.add(key)}
-   }
-   for(const note of group)wrap.append(reviewRow(note,{grouped:true,weeklyView:true}));parent.append(wrap);
-  }
- };
- if(important.length){const highlights=el('section',undefined,'weekly-important-records');highlights.append(el('h5',word('Important records','중요 기록')));appendNotes(highlights,important);day.append(highlights)}
- for(const anchor of anchors){const area=el('div',undefined,'weekly-anchor');area.append(el('small',word('Daily intention','하루의 방향')),el('p',anchor.body||anchor.content||''));day.append(area)}
- if(other.length){const extra=el('details',undefined,'weekly-other-records');extra.append(el('summary',word('Other records','그 외 기록')+' · '+other.length));appendNotes(extra,other);day.append(extra)}
- records.append(day);
-}
-panel.append(records);
+ const total=weeklyTasks.reduce((n,item)=>n+item.days.length,0);
+ const completed=weeklyTasks.reduce((n,item)=>n+item.days.filter(d=>!!db.checks?.[taskKey(item.task,d)]).length,0);
+ const remaining=Math.max(0,total-completed);
+ const taskArea=el('section',undefined,'weekly-focus-tasks');
+ const taskInfo=el('div',undefined,'weekly-focus-task-copy');
+ taskInfo.append(el('h3',word("This week's tasks",'이번 주 할 일')));
+ taskInfo.append(el('p',total?word(completed+'/'+total+' completed · '+remaining+' remaining',completed+'/'+total+'회 완료 · '+remaining+'회 남음'):word('No tasks planned for this week','이번 주 등록된 할 일 없음'),'weekly-focus-task-count'));
+ const manage=el('button',word('Open Plan','Plan에서 관리')+' ›','weekly-open-plan');
+ manage.type='button';
+ manage.onclick=()=>nav('schedule',{sub:'tasks'});
+ taskArea.append(taskInfo,manage);
+ panel.append(taskArea);
+
 
 }
 
