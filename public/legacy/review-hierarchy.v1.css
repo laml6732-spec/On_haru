@@ -778,7 +778,7 @@ body .app #page-records #archive-search .archive-mood-trend-empty{
 
 /* Daily navigation v4: seven evenly distributed, always visible dates.
    At a 320 CSS-px viewport the strip is 308px wide (7 x 44px hit areas).
-   Only the selected day has a fill; the small dot always means TODAY. */
+   Selected day has a light fill; today's number uses green and strong type. */
 body .app #page-records #new-reflect-page .rv-seven-wrap{
   margin:2px 0 8px;min-width:0;
 }
@@ -827,11 +827,12 @@ body .app #page-records #new-reflect-page .rv-seven-number{
   font-size:calc(14px * var(--kona-ui-scale,1));line-height:17px;font-weight:500;
 }
 body .app #page-records #new-reflect-page .rv-seven-day.is-selected .rv-seven-number{font-weight:700}
-body .app #page-records #new-reflect-page .rv-seven-today-dot{
-  display:none;position:absolute;bottom:5px;left:calc(50% - 2px);
-  width:4px;height:4px;border-radius:50%;background:#658878;
+body .app #page-records #new-reflect-page .rv-seven-day.is-today .rv-seven-number{
+  color:#386651;font-weight:700;
 }
-body .app #page-records #new-reflect-page .rv-seven-day.is-today .rv-seven-today-dot{display:block}
+@media(prefers-color-scheme:dark){
+ body .app #page-records #new-reflect-page .rv-seven-day.is-today .rv-seven-number{color:#A8D0B7}
+}
 
 /* Weekly reflection is optional and lives below the existing Daily record,
    with all historical weeklyReflections fields retained. */
