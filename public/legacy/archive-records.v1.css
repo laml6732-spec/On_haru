@@ -272,3 +272,26 @@ html[data-appearance="dark"] body .app #page-records #archive-search-results .ar
 html[data-appearance="dark"] body .app #page-records #archive-search-results .archive-save-toggle[aria-pressed="true"]{
   color:#ABD5B6!important;
 }
+
+/* Date-scoped check-ins and class notes, without another filled card. */
+body .app #page-records #archive-search-results .archive-checkin-class-group{
+  display:block!important;min-width:0!important;margin:0 0 12px!important;padding:0!important;
+}
+body .app #page-records #archive-search-results .archive-checkin-class-heading{
+  margin:8px 0 2px!important;font-size:12px!important;font-weight:700!important;color:var(--sub)!important;
+}
+body .app #page-records #archive-search-results .archive-checkin-emoji{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  flex:none!important;
+  font-size:12px!important;line-height:1!important;background:transparent!important;
+}
+body .app #page-records #archive-search-results .archive-checkin-label{
+  font-weight:700!important;color:var(--ink)!important;white-space:normal!important;word-break:keep-all!important;
+}
+body .app #page-records #archive-search-results .archive-checkin-feeling{
+  font-size:12px!important;color:var(--sub)!important;white-space:normal!important;word-break:keep-all!important;
+}
+
+body .app #page-records #archive-search-results .archive-checkin-class-group .archive-result-head{
+  display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:4px 6px!important;min-width:0!important;
+}

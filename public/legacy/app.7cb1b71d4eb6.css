@@ -5583,3 +5583,12 @@ body .app #page-capture .capture-tasks .done-tasks > summary{
 
 /* Daily check-in and class: outlined surfaces only, including Important class notes. */
 body .app #page-records #new-reflect-page .rv-timeline .rv-daily-book-card .rv-daily-record.review-is-important{background:transparent!important}
+
+/* Reuse the existing priority task row above the Capture composer. */
+body .app #page-capture #konaPriorityTask{
+ display:flex!important;align-items:center!important;gap:7px!important;
+ min-height:40px!important;max-height:44px!important;padding:5px 9px!important;
+ margin:0 0 13px!important;border:0!important;border-radius:9px!important;
+ background:transparent!important;box-shadow:none!important;overflow:hidden!important;
+}
+body .app #page-capture #konaPriorityTask[hidden]{display:none!important}

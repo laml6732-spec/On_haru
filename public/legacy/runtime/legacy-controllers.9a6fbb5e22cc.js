@@ -519,8 +519,10 @@ function renderHomeCheckins(){
  const now=date===nowLocal()?mins(timeLocal()):-1;
  for(const p of PHASES){
   const c=readCheck(date,p),m=moodOf(c),actual=c?.moodTime?hm(mins(c.moodTime)):'',done=hasCheck(c),current=now>=0&&p===(now<720?'morning':now<1020?'noon':now<1260?'evening':'night');
+  const energy=c?.[p+'Energy']??c?.mood?.energy??m?.e,happiness=c?.[p+'Happiness']??c?.mood?.happiness??m?.v;
+  const emoji=Number.isInteger(energy)&&energy>=1&&energy<=5&&Number.isInteger(happiness)&&happiness>=1&&happiness<=5?MOODS[5-energy][happiness-1].f:m?.f||'';
   const status=[actual,m?m.n:'',done&&!m?'✓':''].filter(Boolean).join(' · ');
-  const b=el('button','home-checkin'+(done?' is-done':'')+(current?' is-current':''),KonaI18n.format("<span class=\"journey-dot\" aria-hidden=\"true\">⟪0⟫</span><b>⟪1⟫</b><small>⟪2⟫</small>",[done?'✓':'',labels[p],escapeHTML(status||KonaI18n.t("Not yet"))],false));
+  const b=el('button','home-checkin'+(done?' is-done':'')+(current?' is-current':''),KonaI18n.format("<span class=\"journey-dot\" aria-hidden=\"true\">⟪0⟫</span><b>⟪1⟫</b><small>⟪2⟫</small>",[done?'✓':'',escapeHTML([emoji,labels[p]].filter(Boolean).join(' ')),escapeHTML(status||KonaI18n.t("Not yet"))],false));
   b.type='button';if(current)b.setAttribute('aria-current','step');b.setAttribute('aria-label',KonaI18n.format("⟪0⟫ check-in⟪1⟫",[labels[p],actual?KonaI18n.t(", recorded at ",true)+actual:done?KonaI18n.t(", recorded, no time entered",true):KonaI18n.t(", no entry yet",true)],true));b.onclick=()=>nav('checkin',{phase:p});root.append(b);
  }
 }
@@ -2708,15 +2710,22 @@ function drawArchiveSearch(){
   results.append(el('p',archiveMoodText('No records match your criteria.','조건에 맞는 기록이 없어요'),'archive-empty'));
   if(activeCriteria){const resetButton=el('button',archiveMoodText('Clear filters','필터 해제'),'archive-empty-clear');resetButton.type='button';resetButton.onclick=()=>{input.value='';archiveMeaning='all';archiveType='all';archiveContext='all';archivePeriod='all';archiveExactDate='';archiveFiltersOpen=false;archiveSearchOpen=false;drawArchiveSearch()};results.append(resetButton)}
  }
- function addArchiveRecord(record){
+ function addArchiveRecord(record,parent=results){
   const key=record.date+'|'+record.id,expanded=archiveExpandedRecords.has(key);
   const wrap=el('div',undefined,'archive-search-result-wrap'+(expanded?' archive-record-expanded':''));
   const button=el('button',undefined,'archive-search-result');button.type='button';button.dataset.recordDate=record.date;button.dataset.recordId=record.id;button.setAttribute('aria-expanded',String(expanded));
   const text=[record.noteTitle&&record.noteTitle!==record.scheduleLabel?record.noteTitle:'',record.body||record.feeling||record.title].filter(Boolean).join('\n');
   const preview=el('span',undefined,'archive-search-preview');reviewHighlight(preview,konaNoteDisplay(text,record.tags),query);konaApplyNoteTagIcon(preview,record.tags);
-  const line=el('span',undefined,'archive-result-head'),type=el('span',record.kind==='check'?'◉':'✎','archive-record-type');
-  type.setAttribute('aria-label',record.kind==='check'?archiveMoodText('Check-in','체크인'):archiveMoodText('Note','기록'));line.append(type);
-  if(record.kind==='check'&&record.happiness!==null&&record.happiness!==undefined){const dot=el('span',undefined,'archive-record-mood-dot');dot.setAttribute('aria-hidden','true');if(konaReviewMoodTone(dot,record.energy,record.happiness))line.append(dot)}
+  const line=el('span',undefined,'archive-result-head'),isCheck=record.kind==='check',isClass=record.kind==='class';
+  if(isCheck){
+   const emoji=el('span',reviewDailyFeelingEmoji(record)||'◉','archive-checkin-emoji');emoji.setAttribute('aria-hidden','true');line.append(emoji);
+   const phaseLabel=({morning:'Morning check-in',noon:'Midday check-in',evening:'Evening check-in',night:'Day wrap-up check-in'})[record.phase]||'Check-in';
+   line.append(el('span',KonaI18n.t(phaseLabel),'archive-checkin-label'));
+   if(record.feeling)line.append(el('span',record.feeling,'archive-checkin-feeling'));
+  }else{
+   const type=el('span',isClass?'📖':'✎','archive-record-type');type.setAttribute('aria-label',isClass?archiveMoodText('Class notes','수업'):archiveMoodText('Note','기록'));line.append(type);
+   if(isClass)line.append(el('span',record.title,'archive-checkin-label'));
+  }
   const meta=[record.recordedTime,archivePracticeName(record)].filter(Boolean).join(' · ');if(meta)line.append(el('span',meta,'archive-search-meta'));
   const schedule=archiveSemanticGroup(record)==='schedule'?record.scheduleLabel:'';if(schedule)line.append(el('small',schedule,'review-schedule-label'));
   const chevron=el('span',expanded?'⌃':'⌄','archive-record-chevron');chevron.hidden=!expanded;button.append(line,preview,chevron);
@@ -2726,12 +2735,19 @@ function drawArchiveSearch(){
   const saved=archiveManuallySaved(record),mark=el('button',saved?'★':'☆','archive-save-toggle');mark.type='button';mark.dataset.recordDate=record.date;mark.dataset.recordId=record.id;mark.setAttribute('aria-pressed',String(saved));mark.setAttribute('aria-label',(saved?archiveMoodText('Remove star','별표 해제'):archiveMoodText('Star record','별표 표시'))+' · '+(record.noteTitle||record.title));mark.title=saved?archiveMoodText('Unstar','별표 해제'):archiveMoodText('Star','별표 표시');mark.onclick=e=>{e.stopPropagation();archiveToggleSaved(record)};
   wrap.append(button,mark);
   const extra=el('div',undefined,'archive-record-extra');extra.hidden=!expanded;const info=[record.kind==='check'?record.feeling:''].filter(Boolean);if(info.length)extra.append(el('span',info.join(' · ')));
-  const edit=el('button',archiveMoodText('Edit','수정'));edit.type='button';edit.onclick=e=>{e.stopPropagation();showReviewArchiveRecord(record,true)};extra.append(edit);wrap.append(extra);results.append(wrap);
+  const edit=el('button',archiveMoodText('Edit','수정'));edit.type='button';edit.onclick=e=>{e.stopPropagation();showReviewArchiveRecord(record,true)};extra.append(edit);wrap.append(extra);parent.append(wrap);
  }
  for(const d of sortedDates){
   const dayRecords=byDate.get(d)||[],heading=reviewDateGroupHeading(d,dayRecords.length);if(!dayRecords.length)heading.querySelector('.review-date-count')?.remove();results.append(heading);
   if(anchors.has(d)){const anchor=el('section',undefined,'archive-record-anchor');anchor.setAttribute('aria-label',archiveMoodText('Daily highlight','오늘의 핵심 기록'));anchor.append(el('p',anchors.get(d),'archive-record-anchor-body'));results.append(anchor)}
-  for(const record of dayRecords)addArchiveRecord(record);
+  const collected=dayRecords.filter(record=>record.kind==='check'||record.kind==='class');
+  if(collected.length){
+   const group=el('section',undefined,'archive-checkin-class-group'),title=el('h4',archiveMoodText('Check-ins · Class notes','체크인 · 수업'),'archive-checkin-class-heading');
+   title.id='archive-checkin-class-'+d;group.setAttribute('aria-labelledby',title.id);group.append(title);
+   for(const record of collected)addArchiveRecord(record,group);
+   results.append(group);
+  }
+  for(const record of dayRecords)if(record.kind!=='check'&&record.kind!=='class')addArchiveRecord(record);
  }
 }
 
@@ -3636,11 +3652,14 @@ const prevRender=render;render=function(){const value=prevRender.apply(this,argu
  document.addEventListener('error',event=>{const img=event.target;if(img instanceof HTMLImageElement&&img.src.includes('hibiscus-task-')){const fallback=document.createElement('span');fallback.className='flower-fallback';fallback.textContent=img.src.includes('-off.')?'❀':'🌺';fallback.setAttribute('role','img');fallback.setAttribute('aria-label',img.alt||KonaI18n.t("Flower",true));img.replaceWith(fallback)}},true);
 })();
 
-;/* Schedule first, a single compact important task above it. */
+;/* Schedule first in Plan; existing priority task immediately above Capture. */
 (function(){
  function arrangePlan(){
  const root=document.getElementById('page-today'),schedule=root?.querySelector('.tl-card'),tasks=document.getElementById('pageheadExtra'),list=document.getElementById('todayTaskCard'),priority=document.getElementById('konaPriorityTask'),lecture=document.getElementById('weekLecture');if(!root||!schedule||!tasks)return;
- root.classList.add('kona-plan-schedule-first');if(priority)root.insertBefore(priority,schedule);schedule.after(tasks);if(list)tasks.after(list);if(lecture)(list||tasks).after(lecture);
+ root.classList.add('kona-plan-schedule-first');
+ const capture=document.getElementById('page-capture'),composer=document.getElementById('qc-v2');
+ if(priority){if(capture&&composer?.parentElement===capture)capture.insertBefore(priority,composer);else root.insertBefore(priority,schedule)}
+ schedule.after(tasks);if(list)tasks.after(list);if(lecture)(list||tasks).after(lecture);
  let actions=root.querySelector('#konaScheduleMore .kona-more-panel');const full=document.getElementById('kx-timeline-toggle');if(actions&&full&&!actions.contains(full))actions.append(full);
  const views=document.getElementById('konaPlanViews'),add=document.getElementById('quickAddEvent');if(views&&add)add.before(views);
  const fold=tasks.querySelector('.task-fold');if(fold)fold.setAttribute('aria-expanded',String(taskExpanded));
