@@ -2038,7 +2038,7 @@ function reviewDailySections(records,events){
  const index=t=>!Number.isFinite(t)?3:t<720?0:t<1020?1:2;
  const linkedIds=new Set(records.filter(r=>r.kind!=='anchor'&&r.reviewEvent).map(r=>r.reviewEvent.id));
  for(const event of events)if(reviewFilter==='all'&&konaReviewPreferences().showEmpty||linkedIds.has(event.id)){const time=validReflectHM(event.start);sections[index(time?mins(time):null)].events.push(event)}
- for(const record of records)if(record.kind!=='anchor')sections[record.kind==='check'&&record.phase==='night'?4:record.kind==='check'&&record.phase==='morning'?0:record.kind==='check'&&record.phase==='noon'?1:record.kind==='check'&&record.phase==='evening'?2:index(record.t)].records.push(record);
+ for(const record of records)if(record.kind!=='anchor')sections[record.kind==='class'?1:record.kind==='check'&&record.phase==='night'?4:record.kind==='check'&&record.phase==='morning'?0:record.kind==='check'&&record.phase==='noon'?1:record.kind==='check'&&record.phase==='evening'?2:index(record.t)].records.push(record);
  return sections.filter(x=>x.records.length>0||x.events.length>0);
 }
 let reviewFilter='all',reviewFilterScroll=0;
@@ -2059,9 +2059,9 @@ function reviewSection(section){
  bar.onclick=()=>{if(!reviewCanEdit())return;const expanded=bar.getAttribute('aria-expanded')!=='true';reviewUISet(key,expanded);sync(expanded)};
  const linked=new Map();for(const record of section.records)if(record.reviewEvent){const id=record.reviewEvent.id;if(!linked.has(id))linked.set(id,[]);linked.get(id).push(record)}
  const objects=section.events.map(event=>({time:mins(event.start),event}));for(const record of section.records)if(!record.reviewEvent)objects.push({time:record.t??Infinity,record});
-// Daily only: actual check-ins first, followed by saved class/Word notes,
-// then all other schedule items and records in their original time order.
-const priority=item=>item.record?.kind==='check'?0:item.record?.kind==='class'||(item.event?.category==='lecture'&&linked.has(item.event.id))?1:2;
+// Daily: Morning Class notes stay first in Afternoon regardless of writing time.
+// Other check-ins, schedules and records retain their existing relative order.
+const priority=item=>item.record?.kind==='class'?-1:item.record?.kind==='check'?0:(item.event?.category==='lecture'&&linked.has(item.event.id))?1:2;
 objects.sort((a,b)=>priority(a)-priority(b)||a.time-b.time);
  for(const item of objects){if(item.record){
    if(item.record.kind==='class'){
@@ -2743,12 +2743,12 @@ const [anchorYear,anchorMonth,anchorDay]=date.split('-').map(Number);
 const dayIndex=new Date(Date.UTC(anchorYear,anchorMonth-1,anchorDay)).getUTCDay();
 const weekday=['일','월','화','수','목','금','토'][dayIndex]; // Intentional compact visual date, e.g. 11/9 (월).
 const anchorLabel=el('h3',anchorMonth+'/'+anchorDay+' ('+weekday+')','rv-anchor-date');
-const anchorText=el('p',v.headline||KonaI18n.t("A verse, thought, or intention for this day."),'rv-anchor-text');
-const ribbon=el('span',undefined,'rv-anchor-ribbon');
-ribbon.setAttribute('aria-hidden','true');ribbon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M7.5 3v5M16.5 3v5M3.5 10.5h17"/></svg>';
-const anchorCopy=el('div',undefined,'rv-anchor-copy'),arrow=el('span','›','rv-anchor-arrow');arrow.setAttribute('aria-hidden','true');anchorCopy.append(anchorLabel,anchorText);anchor.append(ribbon,anchorCopy,arrow);
+const anchorCopy=el('div',undefined,'rv-anchor-copy');
+anchorCopy.append(anchorLabel);
+if(v.headline?.trim())anchorCopy.append(el('p',v.headline,'rv-anchor-text'));
+anchor.append(anchorCopy);
 konaBindEditTarget(anchor,KonaI18n.t("Change Daily Anchor · ")+date,()=>reviewInlineNote({date,kind:'anchor',body:v.headline||'',tags:[],id:'headline',type:KonaI18n.t("Daily Anchor")},anchor));const dailySummary=el('section',undefined,'rv-daily-summary');if(v.headline?.trim()||reflectionHasText(dailyDraft)){dailySummary.append(anchor);panel.append(dailySummary)}
-const reflectionSummary=el('section',undefined,'review-reflection-summary'),summaryLabel=el('h3',KonaI18n.t("Reflection Summary")),summaryText=el('p',dailyDraft.insight||KonaI18n.t("What stayed with you today?"));reflectionSummary.append(summaryLabel,summaryText);konaBindEditTarget(reflectionSummary,KonaI18n.t("Open daily reflection · ")+date,reviewJumpToReflection);
+const reflectionSummary=el('section',undefined,'review-reflection-summary'),summaryText=el('p',dailyDraft.insight||KonaI18n.t("What stayed with you today?"));reflectionSummary.append(summaryText);konaBindEditTarget(reflectionSummary,KonaI18n.t("Open daily reflection · ")+date,reviewJumpToReflection);
 const reflectionText=()=>[dailyDraft.insight,dailyDraft.action,dailyDraft.additionalNotes,dailyDraft.scripture,dailyDraft.discernment,dailyDraft.followup,...(dailyDraft.followups||[]).map(entry=>entry.text)].filter(text=>typeof text==='string'&&text.trim()).join('\n\n');const savedReflectionText=reflectionText();if(reflectionHasText(dailyDraft)){summaryText.textContent=savedReflectionText||KonaI18n.t("Saved reflection");dailySummary.append(reflectionSummary)}
 const timeline=el('div',undefined,'rv-timeline');for(const section of reviewDailySections(list.filter(reviewMatchesFilter).filter(r=>!(r.kind==='check'&&r.phase==='night'&&!r.body.trim())),dayEvents(date)))timeline.append(reviewSection(section));if(!list.length&&!timeline.children.length){
  const empty=el('div',undefined,'onharu-review-empty');
