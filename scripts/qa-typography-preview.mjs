@@ -71,6 +71,39 @@ for (const width of [320, 390, 1024]) {
       test(row, 'Anchor label 12px, body 16px / 24px', metrics.anchorLabel?.font === 12 && metrics.anchorText?.font === 16 && metrics.anchorText?.lineHeight === 24, metrics);
       test(row, 'Important title 14px / 21px and flower 18px', metrics.priorityTitle?.font === 14 && metrics.priorityTitle?.lineHeight === 21 && metrics.flower?.width === 18, metrics);
       test(row, 'No Capture horizontal overflow', metrics.overflow <= 2, metrics);
+      const geometry = await page.evaluate(() => {
+        const rect = (sel) => {
+          const node = document.querySelector(sel);
+          if (!node) return null;
+          const r = node.getBoundingClientRect();
+          return { left:r.left, right:r.right, top:r.top, bottom:r.bottom,
+            xCenter:(r.left+r.right)/2, yCenter:(r.top+r.bottom)/2, width:r.width, height:r.height };
+        };
+        const anchor=rect('#konaCarryToday'), label=rect('#konaCarryToday .carry-label'),
+          text=rect('#dayHeadline'), edit=rect('#konaCarryToday .carry-edit'),
+          important=rect('#konaPriorityTask'),
+          flower=rect('#konaPriorityTask .task-check img'),
+          task=rect('#konaPriorityTask .pinned-title .task-name'), note=rect('#qc-v2');
+        return {anchor,label,text,edit,important,flower,task,note,
+          topGap: important?.top - anchor?.bottom,
+          bottomGap: note?.top - important?.bottom,
+          horizontalOverflow: document.documentElement.scrollWidth - innerWidth};
+      });
+      row.geometry = geometry;
+      const near=(a,b,delta=2)=>Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(a-b)<=delta;
+      test(row, 'Anchor, priority row and memo align to shared outer edges',
+        near(geometry.anchor?.left,geometry.important?.left,1)&&near(geometry.important?.left,geometry.note?.left,1)&&
+        near(geometry.anchor?.right,geometry.important?.right,1)&&near(geometry.important?.right,geometry.note?.right,1),geometry);
+      test(row, 'Anchor label and copy share a left origin',
+        near(geometry.label?.left,geometry.text?.left,2),geometry);
+      test(row, 'Flower visually starts near anchor copy and shares title center',
+        near(geometry.flower?.left,geometry.label?.left,8)&&near(geometry.flower?.yCenter,geometry.task?.yCenter,4),geometry);
+      test(row, 'Important highlight leaves right content padding',
+        geometry.task?.right <= geometry.note?.right - 10,geometry);
+      test(row, 'Anchor edit is vertically centered and ends at right inset',
+        near(geometry.edit?.yCenter,geometry.anchor?.yCenter,6)&&geometry.edit?.right <= geometry.anchor?.right-8,geometry);
+      test(row, 'Anchor-to-priority and priority-to-memo vertical gaps are balanced',
+        geometry.topGap>=8 && geometry.bottomGap>=8 && near(geometry.topGap,geometry.bottomGap,4),geometry);
       await page.screenshot({ path: artifactDir + '/capture-' + row.key + '.png', animations: 'disabled', fullPage: true });
 
       // Plan tasks: synthetic row only, with no mutation of the application's saved notes.
