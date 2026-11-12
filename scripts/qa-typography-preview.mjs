@@ -67,7 +67,7 @@ for (const width of [320, 390, 1024]) {
           overflow: document.documentElement.scrollWidth - innerWidth
         };
       });
-      test(row, 'Preview stylesheet and release loaded', metrics.stylesheet && metrics.release === 'typographyreview20261112a', metrics);
+      test(row, 'Preview stylesheet and release loaded', metrics.stylesheet && metrics.release === 'typographyreview20261112b', metrics);
       test(row, 'Anchor label 12px, body 16px / 24px', metrics.anchorLabel?.font === 12 && metrics.anchorText?.font === 16 && metrics.anchorText?.lineHeight === 24, metrics);
       test(row, 'Important title 14px / 21px and flower 18px', metrics.priorityTitle?.font === 14 && metrics.priorityTitle?.lineHeight === 21 && metrics.flower?.width === 18, metrics);
       test(row, 'No Capture horizontal overflow', metrics.overflow <= 2, metrics);
