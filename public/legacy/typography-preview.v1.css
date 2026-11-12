@@ -1,0 +1,113 @@
+/* On_HARU typography hierarchy preview — 2026-11-12.
+   REVIEW ONLY: linked from a separate Git branch/Cloudflare Pages preview.
+   Preserve Pretendard, existing component spacing, user data and tap-to-edit behavior.
+   All sizes follow the app's existing --kona-ui-scale setting. */
+
+/* 1. Daily anchor — the visual focal point of Capture, not a separate heading card. */
+body .app #page-capture #konaCarryToday .carry-label {
+  font-size: calc(12px * var(--kona-ui-scale, 1)) !important;
+  font-weight: 500 !important;
+  line-height: calc(18px * var(--kona-ui-scale, 1)) !important;
+  letter-spacing: 0 !important;
+}
+body .app #page-capture #konaCarryToday textarea#dayHeadline {
+  font-size: calc(16px * var(--kona-ui-scale, 1)) !important;
+  font-weight: 600 !important;
+  line-height: calc(24px * var(--kona-ui-scale, 1)) !important;
+  letter-spacing: -0.2px !important;
+  word-break: keep-all !important;
+  overflow-wrap: break-word !important;
+}
+body .app #page-capture #konaCarryToday textarea#dayHeadline::placeholder {
+  font-size: calc(16px * var(--kona-ui-scale, 1)) !important;
+  font-weight: 400 !important;
+  line-height: calc(24px * var(--kona-ui-scale, 1)) !important;
+}
+
+/* 2. Important task lives directly above the Capture memo.
+   Keep a single compact row, existing flower checkbox and tap-to-edit;
+   remove spare side padding, not vertical rhythm or touch target. */
+body .app #page-capture #konaPriorityTask {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  gap: 7px !important;
+}
+body .app #page-capture #konaPriorityTask .pinned-item {
+  display: flex !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  gap: 8px !important;
+}
+body .app #page-capture #konaPriorityTask .task-check {
+  flex: 0 0 28px !important;
+  padding: 3px !important;
+}
+body .app #page-capture #konaPriorityTask .task-check img {
+  width: 18px !important;
+  height: 18px !important;
+}
+body .app #page-capture #konaPriorityTask .pinned-title {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  font-size: calc(14px * var(--kona-ui-scale, 1)) !important;
+  font-weight: 600 !important;
+  line-height: calc(21px * var(--kona-ui-scale, 1)) !important;
+  letter-spacing: -0.1px !important;
+}
+body .app #page-capture #konaPriorityTask .pinned-title .task-name {
+  display: block !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-size: calc(14px * var(--kona-ui-scale, 1)) !important;
+  font-weight: 600 !important;
+  line-height: calc(21px * var(--kona-ui-scale, 1)) !important;
+  letter-spacing: -0.1px !important;
+}
+/* Match the existing pink text-only emphasis in Plan without tinting the row. */
+body .app #page-capture #konaPriorityTask .pinned-title.important .task-name {
+  background: linear-gradient(transparent 50%, #F5BDD2 50%, #F5BDD2 90%, transparent 90%) !important;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  width: fit-content !important;
+  color: #344C42 !important;
+}
+html[data-appearance="dark"] body .app #page-capture #konaPriorityTask .pinned-title.important .task-name {
+  color: #EBF3EB !important;
+  background: linear-gradient(transparent 50%, #76475A 50%, #76475A 90%, transparent 90%) !important;
+}
+
+/* 3. Standard tasks in Plan should not be smaller than adjacent note content.
+   Preserve the existing smaller metadata, section labels, and task density. */
+body .app #page-today #todayTaskCard .task-title .task-name,
+body .app #page-today .quicktask .task-title .task-name {
+  font-size: calc(14px * var(--kona-ui-scale, 1)) !important;
+  font-weight: 500 !important;
+  line-height: calc(21px * var(--kona-ui-scale, 1)) !important;
+  letter-spacing: -0.1px !important;
+}
+body .app #page-today #todayTaskCard .task-title.important .task-name,
+body .app #page-today .quicktask .task-title.important .task-name {
+  font-weight: 600 !important;
+}
+
+/* 4. Existing review body 13.5px/21px and Weekly 15px typography are deliberate:
+   no blanket font-size override here. Entry fields keep iOS-safe 16px focus sizing. */
+
+/* 5. Accessibility: allow long important titles to wrap at enlarged app text sizes.
+   Normal-scale remains one line because tapping the title already opens the editor. */
+:root[data-ui-enlarged="true"] body .app #page-capture #konaPriorityTask {
+  max-height: none !important;
+  overflow: visible !important;
+}
+:root[data-ui-enlarged="true"] body .app #page-capture #konaPriorityTask .pinned-title .task-name {
+  display: -webkit-box !important;
+  white-space: normal !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  overflow-wrap: anywhere !important;
+}
