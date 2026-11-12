@@ -1054,6 +1054,7 @@ body .app #page-records #new-reflect-page .rv-review-filter-panel{
  gap:6px!important;box-sizing:border-box!important;
  width:100%!important;min-width:0!important;
  position:static!important;z-index:auto!important;
+ max-height:232px!important;overflow-y:auto!important;overscroll-behavior:contain!important;
  margin:8px 0 12px!important;padding:10px!important;
  border:1px solid #D7E2D9!important;border-radius:12px!important;
  background:#FFFEFA!important;
