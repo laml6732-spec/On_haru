@@ -91,6 +91,13 @@ for (const width of [320, 390, 1024]) {
 
       // 19px app reading setting: only the priority row may grow; it cannot clip.
       await page.locator('.tabs [data-page="capture"]').click();
+      // Every tab navigation re-renders tasks; reinsert synthetic data for the enlarged-text check.
+      await page.evaluate(() => {
+        const p = document.getElementById('konaPriorityTask');
+        if (!p) return;
+        p.hidden = false;
+        p.innerHTML = '<div class="pinned-item"><button type="button" class="task-check" aria-label="Complete task"><img src="./assets/hibiscus-task-off.png" alt=""></button><button type="button" class="pinned-title important"><span class="task-name">An important task and meaningful next step for today</span></button></div>';
+      });
       const large = await page.evaluate(() => {
         document.documentElement.dataset.uiEnlarged = 'true';
         document.documentElement.style.setProperty('--kona-ui-scale', String(19 / 13.5));
