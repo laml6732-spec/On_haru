@@ -6,12 +6,12 @@ import {execFileSync} from 'node:child_process';
 import {chromium} from 'playwright-core';
 
 const root=process.cwd(),base=process.env.ONHARU_URL||'http://127.0.0.1:8080/legacy/';
-const output=path.resolve(root,'public/legacy/data/scripture-memory-100.ko-krv.json');
+const output=path.resolve(root,'public/legacy/data/scripture-memory-100.ko-nkrv.json');
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'onharu-krv-'));
 const input=path.join(dir,'synthetic-input.json');
 const catalog=JSON.parse(fs.readFileSync('data/scripture/nlt-popular-100.json','utf8'));
 const fixture={
- translation:'KRV',
+ translation:'NKRV',
  entries:catalog.entries.map(e=>({id:e.id,reference:e.reference,
   verses:Array.from({length:e.verse_end-e.verse_start+1},(_,i)=>({number:e.verse_start+i,text:'테스트 전용 임시 문장 '+e.id+' '+(e.verse_start+i)}))}))
 };
@@ -21,7 +21,7 @@ let browser;
 try{
   attempt([input,output,'--confirmed-license']);
   const content=JSON.parse(fs.readFileSync(output,'utf8'));
-  if(content.translation!=='KRV'||content.entries.length!==100)throw Error('KRV output validation');
+  if(content.translation!=='NKRV'||content.entries.length!==100)throw Error('NKRV output validation');
   const corrupted=structuredClone(fixture);corrupted.entries[0].verses[0].number=99;
   const bad=path.join(dir,'invalid.json');fs.writeFileSync(bad,JSON.stringify(corrupted));
   let rejected=false;try{attempt([bad,path.join(dir,'never.json'),'--confirmed-license']);}catch{rejected=true;}
