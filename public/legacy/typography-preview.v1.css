@@ -423,3 +423,33 @@ body .app #page-capture #konaPriorityTask .task-check:focus-visible {
   outline:2px solid #315f50 !important;
   outline-offset:3px !important;
 }
+
+
+/* 10. Tasks: show up to two title lines with compact leading.
+   Keep existing font sizes, checkbox targets, gutters and row gaps.
+   A one-line task retains the same alignment; longer text can use two lines. */
+body .app #page-today #todayTaskCard .quicktask .task-title,
+body .app #page-today #pinRow .pinned-title {
+  height:auto !important;
+  min-height:38px !important;
+  white-space:normal !important;
+}
+body .app #page-capture .capture-tasks .capture-task-row .task-title {
+  height:auto !important;
+  white-space:normal !important;
+  line-height:calc(18px * var(--kona-ui-scale, 1)) !important;
+}
+body .app #page-today #todayTaskCard .quicktask .task-title .task-name,
+body .app #page-today #pinRow .pinned-title .task-name,
+body .app #page-capture #konaPriorityTask .pinned-title .task-name,
+body .app #page-capture .capture-tasks .capture-task-row .task-title .task-name {
+  display:-webkit-box !important;
+  -webkit-box-orient:vertical !important;
+  -webkit-line-clamp:2 !important;
+  white-space:normal !important;
+  word-break:keep-all !important;
+  overflow-wrap:anywhere !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  line-height:calc(18px * var(--kona-ui-scale, 1)) !important;
+}
