@@ -207,11 +207,6 @@
         versions.append(b);
       }content.append(versions);
     }
-    const tabs=el('div','sm-segments');tabs.setAttribute('role','group');tabs.setAttribute('aria-label',tr('암송 방식','Practice mode'));
-    for(const [key,label] of [['read',tr('읽기','Read')],['recall',tr('가리고 암송','Recall')]]){
-      const b=button(label,'sm-segment'+(key===mode?' is-selected':''));b.setAttribute('aria-pressed',String(mode===key));
-      b.addEventListener('click',()=>{mode=key;checkOpen=false;render();});tabs.append(b);
-    }content.append(tabs);
     if(mode==='read'){
       const paper=el('div','sm-paper');
       if(translation==='NKRV'&&koreanVerses.has(active.id)){
@@ -229,6 +224,20 @@
         if(providerError){const retry=button(tr('다시 시도','Retry'),'sm-link-btn');retry.onclick=()=>loadText(active);paper.append(retry);}
       }
       content.append(paper);
+      const reflection=el('section','sm-reflection');
+      reflection.append(el('h3','',tr('잠시 말씀에 머물러 보세요','Pause with the passage')));
+      reflection.append(el('p','',tr('어떤 표현이 마음에 남나요? 오늘의 삶과 이어지는 부분이 있나요?','What stands out to you? How might it speak into today?')));
+      content.append(reflection);
+      const reflectBtn=button(tr('생각 남기기','Write a reflection'),'sm-primary');
+      reflectBtn.onclick=writeReflection;content.append(reflectBtn);
+      const actions=el('div','sm-soft-actions');
+      const read=recordFor(active.id).last_read_on===today();
+      const readBtn=button(read?tr('오늘 읽었어요 ✓','Read today ✓'):tr('읽음 표시','Mark as read'),'sm-link-btn');
+      readBtn.setAttribute('aria-pressed',String(read));readBtn.onclick=markRead;
+      const saved=recordFor(active.id).saved_for_later;
+      const saveBtn=button(saved?tr('다시 읽기 저장됨 ✓','Saved for later ✓'):tr('다시 읽기 저장','Save for later'),'sm-link-btn');
+      saveBtn.setAttribute('aria-pressed',String(saved));saveBtn.onclick=toggleSaved;
+      actions.append(readBtn,saveBtn);content.append(actions);
     }else{
       const recall=el('div','sm-recall');
       recall.append(el('div','sm-recall-mark','◌'));
