@@ -1,6 +1,6 @@
 # On_HARU · Scripture Memory v1 — UI / product / implementation specification
 
-> Status: isolated proposal & prototype only · 2026-11-13  
+> Status: isolated branch implementation + browser-tested preview · 2026-11-13  
 > Scope: Write daily entry → Focus/Devotion practice → Review-linked Scripture Library  
 > Base: `content/nlt-popular-100-20261113` (PR #66, unmerged). **Do not merge, deploy, alter production, or modify existing browser data.**  
 > Design authority: user-provided `DESIGN.md` dated 2026-11-06 + current GitHub `main` runtime. The HTML initially declares four tabs, but runtime controller `14-capture-tabs-controller.js` inserts Write (`data-page=capture`), renames legacy `today` to Plan, and reorders the navigation. **Rendered bottom navigation is Write / Check-in / Plan / Focus / Review (five tabs)**. Follow runtime, not bare HTML.
@@ -192,12 +192,35 @@ Reuse existing `--bg`, `--surface`, `--ink`, `--sub`, `--line`, `--solid`, `--de
 
 ## 12. Delivery boundaries
 
-**Phase A (this work):** detailed product+UI plan and a sandboxed interactive stand-alone prototype using mock references; no production behavior/code change.  
-**Phase B (after plan approval):** implement on isolated branch with data + licensed text integration; run QA in preview.  
+**Phase A:** detailed product+UI plan and canonical 100-reference catalog completed.  
+**Phase B:** implemented on isolated branch using the public NLT TEST API via a same-origin Pages Function; real text was visually observed in the preview. The user's authorized production API key is not configured in the repository. Automated mocked-API browser QA passes.  
 **Phase C (only with separate authorization):** merge and deploy, with rollback commit and prior deployment recorded.
 
-The prototype must use **in-memory only** demo state, no browser persistence, no API calls, no copyrighted NLT verse text. It is *not* the real app and not proof of production integration.
+The preview is the actual On_HARU app on an isolated Cloudflare Pages preview origin. It keeps scripture progress in a *separate device-local key* and provides a separately exported/restorable JSON progress file. Existing personal journal storage and production origin remain unchanged. No NLT body is committed to GitHub.
 
 ## 13. Navigation correction log (2026-11-13)
 
 Previous proposal accidentally assumed that the four static `index.html` tab buttons were the live navigation. Confirmed runtime controller creates `#page-capture`, inserts a fifth Write tab (`data-page=capture`), and relabels `data-page=today` as **Plan**. The correct current structure is **Write / Check-in / Plan / Focus / Review**. Scripture cue belongs to Write, NOT Plan; other screens unchanged. Any UI mock must display five tabs. The authoritative pre-change app remains `main`; this isolated branch is never production.
+
+
+## 14. Implemented preview handoff (2026-11-13)
+
+### Branch and deployment isolation
+- Draft PR: https://github.com/laml6732-spec/On_haru/pull/67
+- Isolated branch: `preview/scripture-memory-v1-20261113`.
+- The `main` production branch and real users' data are unchanged. The preview has a distinct browser origin, with separate localStorage.
+
+### Files implemented
+- `public/legacy/runtime/scripture-memory.v1.js` — standalone Write cue, Focus/Devotion entry, scoped full-screen practice, Review/Archive library, local progress and separate export/import.
+- `public/legacy/scripture-memory.v1.css` — scoped UI; mobile-first, dark theme tokens, 44px targets, readable passage text and language scaling.
+- `public/legacy/data/scripture-memory-100.json` — 100 validated reference-only catalog entries (no protected text).
+- `functions/legacy/nlt.js` — same-origin Cloudflare Pages Function to fetch NLT at runtime. Restricted to the 100 listed references and 50 verses/request. Uses `env.NLT_API_KEY` secret when present, otherwise the provider's published `TEST` rate-limited key.
+- `public/_routes.json` — invoke the function only at `/legacy/nlt`.
+- `public/legacy/index.html`, `public/legacy/sw.js` — scoped asset loading and matching release version.
+- `scripts/qa-scripture-memory.mjs` and `.github/workflows/qa-scripture-memory.yml` — isolated regression/visual tests.
+
+### Current gaps before any main merge
+- NLT preview uses `TEST` as a fallback, intended for exploration only; the user's licensed API key must be stored as a secret in Cloudflare for dependable use. Do not commit a key.
+- TEST-mode provider quotas or outages may prevent loading; fallback is reference + retry + open original link. No protected text is stored offline.
+- Scripture progress has its own explicitly labeled export/restore in Library. Existing journal backup does not include scripture progress. This is deliberate to prevent changing the journal's storage schema without independent regression testing.
+- Full visual QA on production site is not authorized; preview-only QA and old-note regression tests are the release gate.
