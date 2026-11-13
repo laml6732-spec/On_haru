@@ -96,7 +96,7 @@
       cue.hidden=!dateIsToday||!item;
       if(item){
         const st=recordFor(item.id);
-        const label=st.last_read_on===today()?tr('오늘 읽은 말씀','Today's scripture · read'):st.read_at?tr('말씀 이어 읽기','Continue reading'):tr('오늘의 말씀','Today's scripture');
+        const label=st.last_read_on===today()?tr('오늘 읽은 말씀','Scripture read today'):st.read_at?tr('말씀 이어 읽기','Continue reading'):tr('오늘의 말씀','Scripture for today');
         q('.sm-cue-label',cue).textContent=label;
         q('.sm-cue-detail',cue).textContent=item.reference+' · '+tr('읽기와 묵상','Read & reflect');
         cue.setAttribute('aria-label',label+' · '+item.reference);
