@@ -1,0 +1,1008 @@
+{
+  "schema_version": 1,
+  "source_catalog_id": "nlt-popular-100-2026-11-13",
+  "translation": "NLT",
+  "text_included": false,
+  "entries": [
+    {
+      "id": "1-corinthians-13-4-5",
+      "order": 1,
+      "reference": "1 Corinthians 13:4-5",
+      "book": "1 Corinthians",
+      "chapter": 13,
+      "verse_start": 4,
+      "verse_end": 5,
+      "source_page": 1
+    },
+    {
+      "id": "1-thessalonians-5-16-18",
+      "order": 2,
+      "reference": "1 Thessalonians 5:16-18",
+      "book": "1 Thessalonians",
+      "chapter": 5,
+      "verse_start": 16,
+      "verse_end": 18,
+      "source_page": 1
+    },
+    {
+      "id": "philippians-4-6-7",
+      "order": 3,
+      "reference": "Philippians 4:6-7",
+      "book": "Philippians",
+      "chapter": 4,
+      "verse_start": 6,
+      "verse_end": 7,
+      "source_page": 1
+    },
+    {
+      "id": "numbers-6-24-26",
+      "order": 4,
+      "reference": "Numbers 6:24-26",
+      "book": "Numbers",
+      "chapter": 6,
+      "verse_start": 24,
+      "verse_end": 26,
+      "source_page": 1
+    },
+    {
+      "id": "isaiah-40-31",
+      "order": 5,
+      "reference": "Isaiah 40:31",
+      "book": "Isaiah",
+      "chapter": 40,
+      "verse_start": 31,
+      "verse_end": 31,
+      "source_page": 1
+    },
+    {
+      "id": "isaiah-41-10",
+      "order": 6,
+      "reference": "Isaiah 41:10",
+      "book": "Isaiah",
+      "chapter": 41,
+      "verse_start": 10,
+      "verse_end": 10,
+      "source_page": 1
+    },
+    {
+      "id": "jeremiah-29-11",
+      "order": 7,
+      "reference": "Jeremiah 29:11",
+      "book": "Jeremiah",
+      "chapter": 29,
+      "verse_start": 11,
+      "verse_end": 11,
+      "source_page": 1
+    },
+    {
+      "id": "1-corinthians-16-14",
+      "order": 8,
+      "reference": "1 Corinthians 16:14",
+      "book": "1 Corinthians",
+      "chapter": 16,
+      "verse_start": 14,
+      "verse_end": 14,
+      "source_page": 1
+    },
+    {
+      "id": "deuteronomy-6-6-7",
+      "order": 9,
+      "reference": "Deuteronomy 6:6-7",
+      "book": "Deuteronomy",
+      "chapter": 6,
+      "verse_start": 6,
+      "verse_end": 7,
+      "source_page": 1
+    },
+    {
+      "id": "proverbs-16-3",
+      "order": 10,
+      "reference": "Proverbs 16:3",
+      "book": "Proverbs",
+      "chapter": 16,
+      "verse_start": 3,
+      "verse_end": 3,
+      "source_page": 1
+    },
+    {
+      "id": "jeremiah-17-7-8",
+      "order": 11,
+      "reference": "Jeremiah 17:7-8",
+      "book": "Jeremiah",
+      "chapter": 17,
+      "verse_start": 7,
+      "verse_end": 8,
+      "source_page": 1
+    },
+    {
+      "id": "mark-11-24",
+      "order": 12,
+      "reference": "Mark 11:24",
+      "book": "Mark",
+      "chapter": 11,
+      "verse_start": 24,
+      "verse_end": 24,
+      "source_page": 1
+    },
+    {
+      "id": "psalm-143-8",
+      "order": 13,
+      "reference": "Psalm 143:8",
+      "book": "Psalm",
+      "chapter": 143,
+      "verse_start": 8,
+      "verse_end": 8,
+      "source_page": 1
+    },
+    {
+      "id": "ephesians-3-16-17",
+      "order": 14,
+      "reference": "Ephesians 3:16-17",
+      "book": "Ephesians",
+      "chapter": 3,
+      "verse_start": 16,
+      "verse_end": 17,
+      "source_page": 1
+    },
+    {
+      "id": "romans-15-13",
+      "order": 15,
+      "reference": "Romans 15:13",
+      "book": "Romans",
+      "chapter": 15,
+      "verse_start": 13,
+      "verse_end": 13,
+      "source_page": 1
+    },
+    {
+      "id": "deuteronomy-31-8",
+      "order": 16,
+      "reference": "Deuteronomy 31:8",
+      "book": "Deuteronomy",
+      "chapter": 31,
+      "verse_start": 8,
+      "verse_end": 8,
+      "source_page": 1
+    },
+    {
+      "id": "colossians-3-23-24",
+      "order": 17,
+      "reference": "Colossians 3:23-24",
+      "book": "Colossians",
+      "chapter": 3,
+      "verse_start": 23,
+      "verse_end": 24,
+      "source_page": 1
+    },
+    {
+      "id": "psalm-121-7-8",
+      "order": 18,
+      "reference": "Psalm 121:7-8",
+      "book": "Psalm",
+      "chapter": 121,
+      "verse_start": 7,
+      "verse_end": 8,
+      "source_page": 1
+    },
+    {
+      "id": "john-11-25-26",
+      "order": 19,
+      "reference": "John 11:25-26",
+      "book": "John",
+      "chapter": 11,
+      "verse_start": 25,
+      "verse_end": 26,
+      "source_page": 1
+    },
+    {
+      "id": "2-corinthians-5-7",
+      "order": 20,
+      "reference": "2 Corinthians 5:7",
+      "book": "2 Corinthians",
+      "chapter": 5,
+      "verse_start": 7,
+      "verse_end": 7,
+      "source_page": 1
+    },
+    {
+      "id": "acts-16-31",
+      "order": 21,
+      "reference": "Acts 16:31",
+      "book": "Acts",
+      "chapter": 16,
+      "verse_start": 31,
+      "verse_end": 31,
+      "source_page": 1
+    },
+    {
+      "id": "proverbs-3-5-6",
+      "order": 22,
+      "reference": "Proverbs 3:5-6",
+      "book": "Proverbs",
+      "chapter": 3,
+      "verse_start": 5,
+      "verse_end": 6,
+      "source_page": 1
+    },
+    {
+      "id": "proverbs-3-3-4",
+      "order": 23,
+      "reference": "Proverbs 3:3-4",
+      "book": "Proverbs",
+      "chapter": 3,
+      "verse_start": 3,
+      "verse_end": 4,
+      "source_page": 1
+    },
+    {
+      "id": "hebrews-11-1",
+      "order": 24,
+      "reference": "Hebrews 11:1",
+      "book": "Hebrews",
+      "chapter": 11,
+      "verse_start": 1,
+      "verse_end": 1,
+      "source_page": 1
+    },
+    {
+      "id": "ephesians-4-2",
+      "order": 25,
+      "reference": "Ephesians 4:2",
+      "book": "Ephesians",
+      "chapter": 4,
+      "verse_start": 2,
+      "verse_end": 2,
+      "source_page": 1
+    },
+    {
+      "id": "exodus-23-25",
+      "order": 26,
+      "reference": "Exodus 23:25",
+      "book": "Exodus",
+      "chapter": 23,
+      "verse_start": 25,
+      "verse_end": 25,
+      "source_page": 2
+    },
+    {
+      "id": "1-corinthians-15-58",
+      "order": 27,
+      "reference": "1 Corinthians 15:58",
+      "book": "1 Corinthians",
+      "chapter": 15,
+      "verse_start": 58,
+      "verse_end": 58,
+      "source_page": 2
+    },
+    {
+      "id": "1-corinthians-13-13",
+      "order": 28,
+      "reference": "1 Corinthians 13:13",
+      "book": "1 Corinthians",
+      "chapter": 13,
+      "verse_start": 13,
+      "verse_end": 13,
+      "source_page": 2
+    },
+    {
+      "id": "1-john-5-14",
+      "order": 29,
+      "reference": "1 John 5:14",
+      "book": "1 John",
+      "chapter": 5,
+      "verse_start": 14,
+      "verse_end": 14,
+      "source_page": 2
+    },
+    {
+      "id": "2-kings-20-5",
+      "order": 30,
+      "reference": "2 Kings 20:5",
+      "book": "2 Kings",
+      "chapter": 20,
+      "verse_start": 5,
+      "verse_end": 5,
+      "source_page": 2
+    },
+    {
+      "id": "joshua-1-9",
+      "order": 31,
+      "reference": "Joshua 1:9",
+      "book": "Joshua",
+      "chapter": 1,
+      "verse_start": 9,
+      "verse_end": 9,
+      "source_page": 2
+    },
+    {
+      "id": "isaiah-25-1",
+      "order": 32,
+      "reference": "Isaiah 25:1",
+      "book": "Isaiah",
+      "chapter": 25,
+      "verse_start": 1,
+      "verse_end": 1,
+      "source_page": 2
+    },
+    {
+      "id": "colossians-3-14",
+      "order": 33,
+      "reference": "Colossians 3:14",
+      "book": "Colossians",
+      "chapter": 3,
+      "verse_start": 14,
+      "verse_end": 14,
+      "source_page": 2
+    },
+    {
+      "id": "romans-12-12",
+      "order": 34,
+      "reference": "Romans 12:12",
+      "book": "Romans",
+      "chapter": 12,
+      "verse_start": 12,
+      "verse_end": 12,
+      "source_page": 2
+    },
+    {
+      "id": "2-corinthians-3-17",
+      "order": 35,
+      "reference": "2 Corinthians 3:17",
+      "book": "2 Corinthians",
+      "chapter": 3,
+      "verse_start": 17,
+      "verse_end": 17,
+      "source_page": 2
+    },
+    {
+      "id": "psalm-20-4",
+      "order": 36,
+      "reference": "Psalm 20:4",
+      "book": "Psalm",
+      "chapter": 20,
+      "verse_start": 4,
+      "verse_end": 4,
+      "source_page": 2
+    },
+    {
+      "id": "isaiah-43-2",
+      "order": 37,
+      "reference": "Isaiah 43:2",
+      "book": "Isaiah",
+      "chapter": 43,
+      "verse_start": 2,
+      "verse_end": 2,
+      "source_page": 2
+    },
+    {
+      "id": "ephesians-5-15-16",
+      "order": 38,
+      "reference": "Ephesians 5:15-16",
+      "book": "Ephesians",
+      "chapter": 5,
+      "verse_start": 15,
+      "verse_end": 16,
+      "source_page": 2
+    },
+    {
+      "id": "mark-9-23",
+      "order": 39,
+      "reference": "Mark 9:23",
+      "book": "Mark",
+      "chapter": 9,
+      "verse_start": 23,
+      "verse_end": 23,
+      "source_page": 2
+    },
+    {
+      "id": "acts-16-25",
+      "order": 40,
+      "reference": "Acts 16:25",
+      "book": "Acts",
+      "chapter": 16,
+      "verse_start": 25,
+      "verse_end": 25,
+      "source_page": 2
+    },
+    {
+      "id": "2-corinthians-9-7",
+      "order": 41,
+      "reference": "2 Corinthians 9:7",
+      "book": "2 Corinthians",
+      "chapter": 9,
+      "verse_start": 7,
+      "verse_end": 7,
+      "source_page": 2
+    },
+    {
+      "id": "colossians-4-2",
+      "order": 42,
+      "reference": "Colossians 4:2",
+      "book": "Colossians",
+      "chapter": 4,
+      "verse_start": 2,
+      "verse_end": 2,
+      "source_page": 2
+    },
+    {
+      "id": "1-john-4-16",
+      "order": 43,
+      "reference": "1 John 4:16",
+      "book": "1 John",
+      "chapter": 4,
+      "verse_start": 16,
+      "verse_end": 16,
+      "source_page": 2
+    },
+    {
+      "id": "jeremiah-29-12",
+      "order": 44,
+      "reference": "Jeremiah 29:12",
+      "book": "Jeremiah",
+      "chapter": 29,
+      "verse_start": 12,
+      "verse_end": 12,
+      "source_page": 2
+    },
+    {
+      "id": "psalm-56-3",
+      "order": 45,
+      "reference": "Psalm 56:3",
+      "book": "Psalm",
+      "chapter": 56,
+      "verse_start": 3,
+      "verse_end": 3,
+      "source_page": 2
+    },
+    {
+      "id": "ephesians-4-32",
+      "order": 46,
+      "reference": "Ephesians 4:32",
+      "book": "Ephesians",
+      "chapter": 4,
+      "verse_start": 32,
+      "verse_end": 32,
+      "source_page": 2
+    },
+    {
+      "id": "john-16-33",
+      "order": 47,
+      "reference": "John 16:33",
+      "book": "John",
+      "chapter": 16,
+      "verse_start": 33,
+      "verse_end": 33,
+      "source_page": 2
+    },
+    {
+      "id": "isaiah-41-13",
+      "order": 48,
+      "reference": "Isaiah 41:13",
+      "book": "Isaiah",
+      "chapter": 41,
+      "verse_start": 13,
+      "verse_end": 13,
+      "source_page": 2
+    },
+    {
+      "id": "matthew-11-28",
+      "order": 49,
+      "reference": "Matthew 11:28",
+      "book": "Matthew",
+      "chapter": 11,
+      "verse_start": 28,
+      "verse_end": 28,
+      "source_page": 2
+    },
+    {
+      "id": "jeremiah-33-3",
+      "order": 50,
+      "reference": "Jeremiah 33:3",
+      "book": "Jeremiah",
+      "chapter": 33,
+      "verse_start": 3,
+      "verse_end": 3,
+      "source_page": 2
+    },
+    {
+      "id": "1-corinthians-16-13",
+      "order": 51,
+      "reference": "1 Corinthians 16:13",
+      "book": "1 Corinthians",
+      "chapter": 16,
+      "verse_start": 13,
+      "verse_end": 13,
+      "source_page": 3
+    },
+    {
+      "id": "psalm-133-1",
+      "order": 52,
+      "reference": "Psalm 133:1",
+      "book": "Psalm",
+      "chapter": 133,
+      "verse_start": 1,
+      "verse_end": 1,
+      "source_page": 3
+    },
+    {
+      "id": "psalm-73-26",
+      "order": 53,
+      "reference": "Psalm 73:26",
+      "book": "Psalm",
+      "chapter": 73,
+      "verse_start": 26,
+      "verse_end": 26,
+      "source_page": 3
+    },
+    {
+      "id": "galatians-5-22-23",
+      "order": 54,
+      "reference": "Galatians 5:22-23",
+      "book": "Galatians",
+      "chapter": 5,
+      "verse_start": 22,
+      "verse_end": 23,
+      "source_page": 3
+    },
+    {
+      "id": "1-corinthians-1-10",
+      "order": 55,
+      "reference": "1 Corinthians 1:10",
+      "book": "1 Corinthians",
+      "chapter": 1,
+      "verse_start": 10,
+      "verse_end": 10,
+      "source_page": 3
+    },
+    {
+      "id": "1-corinthians-6-9-10",
+      "order": 56,
+      "reference": "1 Corinthians 6:9-10",
+      "book": "1 Corinthians",
+      "chapter": 6,
+      "verse_start": 9,
+      "verse_end": 10,
+      "source_page": 3
+    },
+    {
+      "id": "1-thessalonians-5-11",
+      "order": 57,
+      "reference": "1 Thessalonians 5:11",
+      "book": "1 Thessalonians",
+      "chapter": 5,
+      "verse_start": 11,
+      "verse_end": 11,
+      "source_page": 3
+    },
+    {
+      "id": "1-chronicles-16-34",
+      "order": 58,
+      "reference": "1 Chronicles 16:34",
+      "book": "1 Chronicles",
+      "chapter": 16,
+      "verse_start": 34,
+      "verse_end": 34,
+      "source_page": 3
+    },
+    {
+      "id": "2-chronicles-7-14",
+      "order": 59,
+      "reference": "2 Chronicles 7:14",
+      "book": "2 Chronicles",
+      "chapter": 7,
+      "verse_start": 14,
+      "verse_end": 14,
+      "source_page": 3
+    },
+    {
+      "id": "1-john-4-19",
+      "order": 60,
+      "reference": "1 John 4:19",
+      "book": "1 John",
+      "chapter": 4,
+      "verse_start": 19,
+      "verse_end": 19,
+      "source_page": 3
+    },
+    {
+      "id": "psalm-42-11",
+      "order": 61,
+      "reference": "Psalm 42:11",
+      "book": "Psalm",
+      "chapter": 42,
+      "verse_start": 11,
+      "verse_end": 11,
+      "source_page": 3
+    },
+    {
+      "id": "proverbs-17-9",
+      "order": 62,
+      "reference": "Proverbs 17:9",
+      "book": "Proverbs",
+      "chapter": 17,
+      "verse_start": 9,
+      "verse_end": 9,
+      "source_page": 3
+    },
+    {
+      "id": "proverbs-4-23",
+      "order": 63,
+      "reference": "Proverbs 4:23",
+      "book": "Proverbs",
+      "chapter": 4,
+      "verse_start": 23,
+      "verse_end": 23,
+      "source_page": 3
+    },
+    {
+      "id": "galatians-3-26-27",
+      "order": 64,
+      "reference": "Galatians 3:26-27",
+      "book": "Galatians",
+      "chapter": 3,
+      "verse_start": 26,
+      "verse_end": 27,
+      "source_page": 3
+    },
+    {
+      "id": "isaiah-40-29",
+      "order": 65,
+      "reference": "Isaiah 40:29",
+      "book": "Isaiah",
+      "chapter": 40,
+      "verse_start": 29,
+      "verse_end": 29,
+      "source_page": 3
+    },
+    {
+      "id": "proverbs-27-19",
+      "order": 66,
+      "reference": "Proverbs 27:19",
+      "book": "Proverbs",
+      "chapter": 27,
+      "verse_start": 19,
+      "verse_end": 19,
+      "source_page": 3
+    },
+    {
+      "id": "james-1-22",
+      "order": 67,
+      "reference": "James 1:22",
+      "book": "James",
+      "chapter": 1,
+      "verse_start": 22,
+      "verse_end": 22,
+      "source_page": 3
+    },
+    {
+      "id": "ephesians-6-11",
+      "order": 68,
+      "reference": "Ephesians 6:11",
+      "book": "Ephesians",
+      "chapter": 6,
+      "verse_start": 11,
+      "verse_end": 11,
+      "source_page": 3
+    },
+    {
+      "id": "james-1-6",
+      "order": 69,
+      "reference": "James 1:6",
+      "book": "James",
+      "chapter": 1,
+      "verse_start": 6,
+      "verse_end": 6,
+      "source_page": 3
+    },
+    {
+      "id": "romans-12-2",
+      "order": 70,
+      "reference": "Romans 12:2",
+      "book": "Romans",
+      "chapter": 12,
+      "verse_start": 2,
+      "verse_end": 2,
+      "source_page": 3
+    },
+    {
+      "id": "2-corinthians-1-3-4",
+      "order": 71,
+      "reference": "2 Corinthians 1:3-4",
+      "book": "2 Corinthians",
+      "chapter": 1,
+      "verse_start": 3,
+      "verse_end": 4,
+      "source_page": 3
+    },
+    {
+      "id": "hebrews-4-16",
+      "order": 72,
+      "reference": "Hebrews 4:16",
+      "book": "Hebrews",
+      "chapter": 4,
+      "verse_start": 16,
+      "verse_end": 16,
+      "source_page": 3
+    },
+    {
+      "id": "jeremiah-29-13",
+      "order": 73,
+      "reference": "Jeremiah 29:13",
+      "book": "Jeremiah",
+      "chapter": 29,
+      "verse_start": 13,
+      "verse_end": 13,
+      "source_page": 3
+    },
+    {
+      "id": "john-15-13",
+      "order": 74,
+      "reference": "John 15:13",
+      "book": "John",
+      "chapter": 15,
+      "verse_start": 13,
+      "verse_end": 13,
+      "source_page": 3
+    },
+    {
+      "id": "mark-10-27",
+      "order": 75,
+      "reference": "Mark 10:27",
+      "book": "Mark",
+      "chapter": 10,
+      "verse_start": 27,
+      "verse_end": 27,
+      "source_page": 3
+    },
+    {
+      "id": "psalm-150-6",
+      "order": 76,
+      "reference": "Psalm 150:6",
+      "book": "Psalm",
+      "chapter": 150,
+      "verse_start": 6,
+      "verse_end": 6,
+      "source_page": 4
+    },
+    {
+      "id": "psalm-147-3",
+      "order": 77,
+      "reference": "Psalm 147:3",
+      "book": "Psalm",
+      "chapter": 147,
+      "verse_start": 3,
+      "verse_end": 3,
+      "source_page": 4
+    },
+    {
+      "id": "proverbs-17-17",
+      "order": 78,
+      "reference": "Proverbs 17:17",
+      "book": "Proverbs",
+      "chapter": 17,
+      "verse_start": 17,
+      "verse_end": 17,
+      "source_page": 4
+    },
+    {
+      "id": "psalm-119-105",
+      "order": 79,
+      "reference": "Psalm 119:105",
+      "book": "Psalm",
+      "chapter": 119,
+      "verse_start": 105,
+      "verse_end": 105,
+      "source_page": 4
+    },
+    {
+      "id": "1-corinthians-6-19-20",
+      "order": 80,
+      "reference": "1 Corinthians 6:19-20",
+      "book": "1 Corinthians",
+      "chapter": 6,
+      "verse_start": 19,
+      "verse_end": 20,
+      "source_page": 4
+    },
+    {
+      "id": "philippians-4-13",
+      "order": 81,
+      "reference": "Philippians 4:13",
+      "book": "Philippians",
+      "chapter": 4,
+      "verse_start": 13,
+      "verse_end": 13,
+      "source_page": 4
+    },
+    {
+      "id": "matthew-6-14",
+      "order": 82,
+      "reference": "Matthew 6:14",
+      "book": "Matthew",
+      "chapter": 6,
+      "verse_start": 14,
+      "verse_end": 14,
+      "source_page": 4
+    },
+    {
+      "id": "2-timothy-1-7",
+      "order": 83,
+      "reference": "2 Timothy 1:7",
+      "book": "2 Timothy",
+      "chapter": 1,
+      "verse_start": 7,
+      "verse_end": 7,
+      "source_page": 4
+    },
+    {
+      "id": "1-corinthians-15-57",
+      "order": 84,
+      "reference": "1 Corinthians 15:57",
+      "book": "1 Corinthians",
+      "chapter": 15,
+      "verse_start": 57,
+      "verse_end": 57,
+      "source_page": 4
+    },
+    {
+      "id": "1-john-1-9",
+      "order": 85,
+      "reference": "1 John 1:9",
+      "book": "1 John",
+      "chapter": 1,
+      "verse_start": 9,
+      "verse_end": 9,
+      "source_page": 4
+    },
+    {
+      "id": "matthew-19-14",
+      "order": 86,
+      "reference": "Matthew 19:14",
+      "book": "Matthew",
+      "chapter": 19,
+      "verse_start": 14,
+      "verse_end": 14,
+      "source_page": 4
+    },
+    {
+      "id": "john-14-27",
+      "order": 87,
+      "reference": "John 14:27",
+      "book": "John",
+      "chapter": 14,
+      "verse_start": 27,
+      "verse_end": 27,
+      "source_page": 4
+    },
+    {
+      "id": "deuteronomy-31-6",
+      "order": 88,
+      "reference": "Deuteronomy 31:6",
+      "book": "Deuteronomy",
+      "chapter": 31,
+      "verse_start": 6,
+      "verse_end": 6,
+      "source_page": 4
+    },
+    {
+      "id": "proverbs-21-21",
+      "order": 89,
+      "reference": "Proverbs 21:21",
+      "book": "Proverbs",
+      "chapter": 21,
+      "verse_start": 21,
+      "verse_end": 21,
+      "source_page": 4
+    },
+    {
+      "id": "proverbs-22-6",
+      "order": 90,
+      "reference": "Proverbs 22:6",
+      "book": "Proverbs",
+      "chapter": 22,
+      "verse_start": 6,
+      "verse_end": 6,
+      "source_page": 4
+    },
+    {
+      "id": "matthew-18-20",
+      "order": 91,
+      "reference": "Matthew 18:20",
+      "book": "Matthew",
+      "chapter": 18,
+      "verse_start": 20,
+      "verse_end": 20,
+      "source_page": 4
+    },
+    {
+      "id": "romans-11-36",
+      "order": 92,
+      "reference": "Romans 11:36",
+      "book": "Romans",
+      "chapter": 11,
+      "verse_start": 36,
+      "verse_end": 36,
+      "source_page": 4
+    },
+    {
+      "id": "john-15-16",
+      "order": 93,
+      "reference": "John 15:16",
+      "book": "John",
+      "chapter": 15,
+      "verse_start": 16,
+      "verse_end": 16,
+      "source_page": 4
+    },
+    {
+      "id": "proverbs-28-13",
+      "order": 94,
+      "reference": "Proverbs 28:13",
+      "book": "Proverbs",
+      "chapter": 28,
+      "verse_start": 13,
+      "verse_end": 13,
+      "source_page": 4
+    },
+    {
+      "id": "philippians-4-19",
+      "order": 95,
+      "reference": "Philippians 4:19",
+      "book": "Philippians",
+      "chapter": 4,
+      "verse_start": 19,
+      "verse_end": 19,
+      "source_page": 4
+    },
+    {
+      "id": "2-timothy-3-16-17",
+      "order": 96,
+      "reference": "2 Timothy 3:16-17",
+      "book": "2 Timothy",
+      "chapter": 3,
+      "verse_start": 16,
+      "verse_end": 17,
+      "source_page": 4
+    },
+    {
+      "id": "1-chronicles-29-14",
+      "order": 97,
+      "reference": "1 Chronicles 29:14",
+      "book": "1 Chronicles",
+      "chapter": 29,
+      "verse_start": 14,
+      "verse_end": 14,
+      "source_page": 4
+    },
+    {
+      "id": "proverbs-11-25",
+      "order": 98,
+      "reference": "Proverbs 11:25",
+      "book": "Proverbs",
+      "chapter": 11,
+      "verse_start": 25,
+      "verse_end": 25,
+      "source_page": 4
+    },
+    {
+      "id": "proverbs-2-6",
+      "order": 99,
+      "reference": "Proverbs 2:6",
+      "book": "Proverbs",
+      "chapter": 2,
+      "verse_start": 6,
+      "verse_end": 6,
+      "source_page": 4
+    },
+    {
+      "id": "galatians-6-9",
+      "order": 100,
+      "reference": "Galatians 6:9",
+      "book": "Galatians",
+      "chapter": 6,
+      "verse_start": 9,
+      "verse_end": 9,
+      "source_page": 4
+    }
+  ]
+}
