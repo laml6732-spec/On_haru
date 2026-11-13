@@ -48,8 +48,9 @@ for(const {width,theme,lang} of [
    d.quickCaptureEntries=[{id:'qa-personal',text:'QA other personal note',time:'18:40',createdAt:'2026-11-14T04:40:00Z',tags:[],scheduleId:''}];
    const old=day('2026-11-12');old.reflectionNotes={insight:'QA earlier reflection'};
    old.checkins.morning={note:'QA earlier check-in',moodTime:'09:00'};
-   save();render();
-   return {lang:KonaI18n.language,firstDay:date,sessionCount:d.sessions.length,stored:JSON.parse(localStorage.getItem('kona.legacy.v1.dayframe'))?.days?.[date]?.sessions?.length};
+   const saved=save();render();
+   const raw=window.localStorage.getItem('kona.legacy.v1.dayframe');
+   return {lang:KonaI18n.language,firstDay:date,sessionCount:d.sessions.length,saved,rawKeyFound:!!raw,stored:JSON.parse(raw||'{}')?.days?.[date]?.sessions?.length,keys:Object.keys(window.localStorage).filter(x=>x.includes('dayframe'))};
   },{theme});
   verify(r,'Chosen UI language preserved',init.lang===lang,init);
   verify(r,'Session fixture persisted',init.stored===3,init);
@@ -99,10 +100,9 @@ for(const {width,theme,lang} of [
   await page.screenshot({path:out+'/'+id+'-archive.png',fullPage:true,animations:'disabled'});
 
   // Detail view must also show Prayer · topic, with its original note in the body.
-  await page.evaluate(()=>{
-   const record=reviewArchiveRecords().find(x=>x.id==='s-qa-prayer-with-note'&&x.date==='2026-11-13');
-   showReviewArchiveRecord(record);
-  });
+  await prayer.click();
+  const action=results.locator('.archive-search-result-wrap').filter({has:results.locator('button.archive-search-result[data-record-id="s-qa-prayer-with-note"]')}).locator('.archive-record-extra button');
+  await action.click();
   const detail=await results.locator('.review-session-record').first().evaluate(el=>({
    meta:el.querySelector('.review-record-meta')?.textContent||'',body:el.querySelector('.rv-note-preview')?.textContent||''
   }));
