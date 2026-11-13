@@ -67,7 +67,7 @@
   let cue=null;
   if(home&&composer){
     cue=button('','sm-cue');cue.id='sm-write-cue';
-    cue.innerHTML='<span class="sm-cue-icon" aria-hidden="true">▤</span><span class="sm-cue-copy"><strong class="sm-cue-label"></strong><small class="sm-cue-detail"></small></span><span class="sm-cue-arrow" aria-hidden="true">›</span>';
+    cue.innerHTML='<span class="sm-cue-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5c-3.2-1.7-6.3-1.9-9-1v14c2.7-.9 5.8-.7 9 1 3.2-1.7 6.3-1.9 9-1v-14c-2.7-.9-5.8-.7-9 1z"/><path d="M12 5.5v14"/></svg></span><span class="sm-cue-copy"><strong class="sm-cue-label"></strong><small class="sm-cue-detail"></small></span><span class="sm-cue-arrow" aria-hidden="true">›</span>';
     composer.insertAdjacentElement('afterend',cue);
     cue.addEventListener('click',()=>{const item=nextEntry().item;if(item)openPractice(item,'write');else openLibrary('write');});
   }
@@ -76,7 +76,7 @@
   if(focusRoot&&focusExtras){
     focusEntry=button('','sm-focus-entry');
     focusEntry.id='sm-focus-entry';
-    focusEntry.innerHTML='<span aria-hidden="true">▤</span><span class="sm-focus-copy"></span><span aria-hidden="true">›</span>';
+    focusEntry.innerHTML='<span aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5c-3.2-1.7-6.3-1.9-9-1v14c2.7-.9 5.8-.7 9 1 3.2-1.7 6.3-1.9 9-1v-14c-2.7-.9-5.8-.7-9 1z"/><path d="M12 5.5v14"/></svg></span><span class="sm-focus-copy"></span><span aria-hidden="true">›</span>';
     focusExtras.prepend(focusEntry);
     focusEntry.addEventListener('click',()=>{const item=nextEntry().item;if(item)openPractice(item,'focus');else openLibrary('focus');});
   }
