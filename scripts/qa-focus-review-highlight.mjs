@@ -39,14 +39,21 @@ for(const {width,theme,lang} of [
    document.documentElement.style.colorScheme=theme;
    date='2026-11-12';
    const v=day(date);
-   const t={id:'frh-long-'+theme,title:'Prepare the most important work for tomorrow and review the remaining notes with the team before the meeting',repeat:'daily',days:[],due:date,since:date,until:'',kind:'task'};
-   db.tasks.push(t);v.pins??=[];v.pins.push(taskKey(t,date));
    v.sessions??=[];v.sessions.push({id:'frh-prayer-session',kind:'prayer',task:'Intercession for the outreach team',note:'A thought recorded during prayer',start:'20:37',seconds:360,personalPrayer:false});
    v.quickCaptureEntries??=[];v.quickCaptureEntries.push({id:'frh-followup',title:'Meeting note',text:'Original note for the day',time:'20:20',tags:[],scheduleId:'',laterReflections:[{text:'A later reflection on this note',createdAt:'2026-11-13T07:12:00Z'}]});
    save();render();
   },theme);
   // Text-only pink ink must have an INLINE element for each wrapped line.
   await open('today');
+  const longTitle='QA Important Daily '+width+" — Prepare today's reflection notes and review the next action for the week";
+  const createFold=page.locator('#page-today #pinRow .task-fold');
+  if(await createFold.getAttribute('aria-expanded')==='true')await createFold.click();
+  await page.locator('#page-today #pinRow .task-add').click();
+  await page.locator('#taskTitle').fill(longTitle);
+  await page.locator('#taskImportant').check();
+  await page.locator('#taskRepeatChips button').filter({hasText:lang==='ko'?'매일':'Daily'}).click();
+  await page.locator('#taskSave').click();
+  await page.locator('#taskFormModal').waitFor({state:'hidden'});
   const fold=page.locator('#page-today #pinRow .task-fold');
   if(await fold.count()&&await fold.getAttribute('aria-expanded')!=='true')await fold.click();
   const plan=page.locator('#page-today .pinned-title.important .task-name').first();
