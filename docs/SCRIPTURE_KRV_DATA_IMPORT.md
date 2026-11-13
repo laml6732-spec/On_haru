@@ -28,3 +28,21 @@ node scripts/build-scripture-krv-data.mjs /path/to/licensed-krv-100.json public/
 ## 번역본 식별자 정정
 
 `NKRV`는 개역개정(1998)이고, `KRV`는 개역한글(1961)을 뜻합니다. 데이터의 `translation` 필드는 반드시 `NKRV`입니다. 이전 PR의 `KRV` 표기는 수정된 것입니다.
+
+## 발견한 외부 데이터 후보 (2026-11-13 확인)
+
+- 대한성서공회 웹 페이지에서 GAE(개역개정) 본문을 수집한 JSON 데이터셋: https://github.com/dev-dooD/bible-crawler
+  - 원본 파일: `bible_data.json` (약 15.2 MB), 구조는 `books[].id / chapters[].chapter / verses[].verse / text.GAE`.
+  - 변환기는 이 파일을 직접 입력받아, 기존 NLT 참조 목록에 해당하는 **100개 본문 / 121절만** 추출합니다. 66권 전체는 앱에 포함하지 않습니다.
+- 다른 출처: https://sieon-dev.tistory.com/127 (개역개정이라고 표기한 4.88 MB JSON; 출처/이용허락 검증 전에는 단정하지 않음).
+- 대한성서공회 저작권 및 웹서비스 허가 조건: https://www.bskorea.or.kr/bbs/content.php?co_id=subpage2_3_4_3
+
+### 허가된 원본 파일에서 추출
+
+```bash
+node scripts/build-scripture-krv-data.mjs /path/to/bible_data.json public/legacy/data/scripture-memory-100.ko-nkrv.json --confirmed-license
+```
+
+**주의:** 공개 저장소의 원문 파일이 곧 재배포 허가를 의미하지 않습니다. 웹앱의 정적 리소스는 누구나 내려받을 수 있으므로, 실제로 계약에 웹 배포·다운로드 및 원문 파일 제공이 허용되는지 확인한 경우에만 생성 파일을 배포하세요. 단순한 개인 열람 허가와 공개 JSON 저장 권한은 구별됩니다.
+
+이 브랜치에는 변환 코드와 합성 테스트만 포함하며, 외부에서 발견한 저작권 본문은 커밋하지 않습니다.
