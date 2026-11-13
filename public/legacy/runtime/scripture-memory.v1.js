@@ -4,6 +4,7 @@
   const VERSION=1, KEY='kona.scripture-memory.v1';
   const DATA_URL='./data/scripture-memory-100.json';
   const API_BASE='https://api.nlt.to/api/passages';
+  const RELAY_PATH='./nlt';
   const DAY_INTERVALS=[1,3,7,14,30];
   const q=(s,root=document)=>root.querySelector(s);
   const button=(label,klass)=>{const b=document.createElement('button');b.type='button';b.className=klass||'';b.textContent=label;return b;};
@@ -34,7 +35,7 @@
   let state;let storageWarning=false;
   try{const raw=localStorage.getItem(KEY);state=raw?safeState(JSON.parse(raw)):empty();}catch{state=empty();storageWarning=true;}
   let catalog=[],active=null,screen='practice',origin='write',mode='read',checkOpen=false,loading=false,passageText='',providerError='';
-  let lastFocused=null,previousBodyOverflow='',requestNumber=0;
+  let lastFocused=null,previousBodyOverflow='',requestNumber=0,ignoreNextPop=false;
   let filter='all',searchText='',pendingImport=null;
   function recordFor(id){return state.passages[id]||{status:'not_started',memorized_at:null,last_practiced_at:null,last_practiced_on:null,next_review_on:null,review_stage:0,attempts:[]};}
   function persist(next){
@@ -129,13 +130,22 @@
   q('.sm-back',overlay).addEventListener('click',back);
   function open(){
     lastFocused=document.activeElement;previousBodyOverflow=document.body.style.overflow;document.body.style.overflow='hidden';
-    overlay.hidden=false;overlay.classList.add('sm-visible');q('.sm-back',overlay).focus();
+    overlay.hidden=false;overlay.classList.add('sm-visible');
+    try{history.pushState({...history.state,smOverlay:true},'',location.href);}catch{}
+    q('.sm-back',overlay).focus();
   }
-  function close(){
+  function close(fromPopstate=false){
     overlay.hidden=true;overlay.classList.remove('sm-visible');document.body.style.overflow=previousBodyOverflow;
     if(lastFocused&&lastFocused.isConnected&&typeof lastFocused.focus==='function')lastFocused.focus();
     updateEntries();
+    if(!fromPopstate&&history.state?.smOverlay){
+      ignoreNextPop=true;history.back();
+    }
   }
+  window.addEventListener('popstate',e=>{
+    if(ignoreNextPop){ignoreNextPop=false;e.stopImmediatePropagation();return;}
+    if(!overlay.hidden){e.stopImmediatePropagation();close(true);}
+  },true);
   function back(){if(screen==='practice'&&origin==='library'){screen='library';mode='read';render();return;}if(screen==='import'){screen='library';pendingImport=null;render();return;}close();}
   overlay.addEventListener('keydown',e=>{
     if(e.key==='Escape'){e.preventDefault();back();return;}
@@ -164,10 +174,10 @@
   async function loadText(item){
     const serial=++requestNumber;loading=true;providerError='';passageText='';render();
     try{
-      // Preview only: public TEST key is not a secret. No text is cached or committed.
+      // Same-origin Cloudflare Pages Function relays NLT text. No text is cached or committed.
       const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),9000);
       let res;
-      try{res=await fetch(bibleUrl(item),{method:'GET',mode:'cors',credentials:'omit',signal:controller.signal,cache:'no-store'});}
+      try{res=await fetch(RELAY_PATH+'?'+new URLSearchParams({ref:item.reference}),{method:'GET',credentials:'same-origin',signal:controller.signal,cache:'no-store'});}
       finally{clearTimeout(timeout);}
       if(!res.ok)throw new Error('HTTP '+res.status);
       const html=await res.text();const doc=new DOMParser().parseFromString(html,'text/html');
