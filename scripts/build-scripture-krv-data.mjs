@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Build a local KRV scripture dataset from user-supplied licensed text.
+// Build a local NKRV scripture dataset from user-supplied licensed text.
 // This script does not retrieve or supply copyrighted scripture.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,9 +11,9 @@ if(!inputArg||!outputArg||permissionFlag!=='--confirmed-license'){
 const load=p=>JSON.parse(fs.readFileSync(path.resolve(p),'utf8'));
 const catalog=load('data/scripture/nlt-popular-100.json');
 const source=load(inputArg);
-const fail=message=>{throw new Error('KRV import: '+message)};
+const fail=message=>{throw new Error('NKRV import: '+message)};
 if(!Array.isArray(catalog.entries)||catalog.entries.length!==100)fail('Missing 100-reference source catalog');
-if(source?.translation!=='KRV'||!Array.isArray(source?.entries)||source.entries.length!==100)fail('Expected 100 entries in KRV input');
+if(source?.translation!=='NKRV'||!Array.isArray(source?.entries)||source.entries.length!==100)fail('Expected 100 entries in NKRV input');
 const keyed=new Map();
 for(const entry of source.entries){
  if(typeof entry?.id!=='string'||keyed.has(entry.id))fail('Duplicate or invalid id');
@@ -32,7 +32,7 @@ for(const ref of catalog.entries){
  output.push({id:ref.id,reference:ref.reference,verses});
 }
 if(keyed.size!==output.length)fail('Unexpected passage IDs');
-const body={schema_version:1,translation:'KRV',language:'ko',source:'개역개정',
+const body={schema_version:1,translation:'NKRV',language:'ko',source:'개역개정',
  copyright_holder:'대한성서공회',entries:output};
 const target=path.resolve(outputArg);
 fs.mkdirSync(path.dirname(target),{recursive:true});
