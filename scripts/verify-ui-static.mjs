@@ -19,6 +19,7 @@ const revision=source.html.match(/name="kona-release" content="([a-z0-9]+)"/)?.[
 check('HTML version has a release marker',Boolean(revision));
 check('Service worker uses the same release marker',Boolean(revision&&source.sw.includes(revision)));
 check('Runtime JS parses',spawnSync(process.execPath,['--check',base+'/'+names.js],{stdio:'pipe'}).status===0);
+check('Study Time is a regular schedule item for new and saved defaults', source.js.includes("ev('Study Time','08:00','08:55','personal',[5])")&&source.js.includes('normalizeStudyTimeSchedule(d);')&&source.js.includes("override.category='personal'")&&source.js.includes("if(e.category==='lecture')e.category='personal'"));
 check('HTML has the app asset references',source.html.includes(names.css)&&source.html.includes(names.js.split('/').at(-1)));
 check('Tutorial uses On_HARU artwork',source.html.includes('assets/onharu-welcome.png')&&!source.html.includes('src="./assets/kona-welcome-sunset.png"'));
 check('Short name is optional and collapsed by default',/<details[^>]+id="eventShortNameDetails"[^>]*>/.test(source.html)&&!/<details[^>]+id="eventShortNameDetails"[^>]*\sopen\b/.test(source.html));

@@ -214,7 +214,7 @@ function tint(hex,a){const h=hex.replace('#','');const c=[0,2,4].map(i=>parseInt
 function defaultEvents(){
   const a=[],ev=(title,start,end,category,days)=>a.push({id:uid(),title,start,end,category,repeat:'weekly',days,since:'2026-01-01',until:'',base:true});
   ev('Breakfast','06:30','07:00','meal',[1,2,3,4,5]);
-  ev('Campus Worship','08:00','08:55','worship',[1]);ev('Community Gathering','08:00','08:55','worship',[2]);ev('Personal Devotion','08:00','08:55','worship',[3]);ev('Community Worship','08:00','08:55','worship',[4]);ev('Study Time','08:00','08:55','lecture',[5]);
+  ev('Campus Worship','08:00','08:55','worship',[1]);ev('Community Gathering','08:00','08:55','worship',[2]);ev('Personal Devotion','08:00','08:55','worship',[3]);ev('Community Worship','08:00','08:55','worship',[4]);ev('Study Time','08:00','08:55','personal',[5]);
   ev('Morning Class','09:00','12:00','lecture',[1,2,3,4,5]);ev('Lunch','12:00','13:00','meal',[1,2,3,4,5]);
   ev('Group Prayer','13:00','14:40','worship',[1]);ev('Mentoring','13:00','14:40','group',[2,3]);ev('Small Group','13:00','14:40','group',[4]);ev('Community Group','13:00','14:40','group',[5]);
   ev('Work Duty','15:00','17:00','duty',[1,2,3,4,5]);ev('Dinner','17:00','18:00','meal',[1,2,3,5]);ev('Dinner','17:00','18:00','meal',[4]);
@@ -248,6 +248,18 @@ function mergeMorningSchedule(d){
  }
  d.settings.morningUnified=true;
 }
+// Study Time is a regular scheduled activity, not a class. Preserve IDs, notes and time edits.
+function normalizeStudyTimeSchedule(d){
+ const studyIds=new Set();
+ for(const e of d.events){
+  if(!e.base||!['Study Time','School Time','학습 시간','수업 시간'].includes(e.title))continue;
+  studyIds.add(e.id);
+  if(e.category==='lecture')e.category='personal';
+ }
+ for(const [key,override] of Object.entries(d.overrides||{})){
+  if(studyIds.has(key.split('|')[0])&&override?.category==='lecture')override.category='personal';
+ }
+}
 function normalizeDinnerSchedule(d){
  const dinners=d.events.filter(e=>e.category==='meal'&&/^(Dinner|저녁 식사)$/i.test(e.title));
  for(const e of dinners)if(e.start==='17:00'&&e.end==='17:30')e.end='18:00';
@@ -280,6 +292,7 @@ function migrate(d){
   const sampleTitles={'오전 강의':'Morning Class','오전 강의 ①':'Morning Class','오전 강의 ②':'Morning Class','휴식 · 간식':'Break · Snack','점심 식사':'Lunch','저녁 식사':'Dinner','아침 식사':'Breakfast','워크듀티':'Work Duty','수요 예배':'Wednesday Worship','주일 예배':'Sunday Worship','캠퍼스 예배':'Campus Worship'};
   const clearDefaults={'Ohana Celebration':'Community Gathering','One-on-One with God':'Personal Devotion','Hamauma':'Community Worship','School Time':'Study Time','Intercessory Prayer':'Group Prayer','One-on-One':'Mentoring','Foundation School Family Time':'Community Group','Word by Heart':'Scripture Study','Original Design':'Design Class','Immanuel Journal':'Evening Devotion'};
   for(const event of d.events)if(event.base){if(sampleTitles[event.title])event.title=sampleTitles[event.title];else if(clearDefaults[event.title])event.title=clearDefaults[event.title]}
+  normalizeStudyTimeSchedule(d);
   normalizeDinnerSchedule(d);
   d.version=VERSION;
   return d;
