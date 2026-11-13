@@ -30,13 +30,13 @@ for(const {width,theme} of configs){
   const fold=page.locator('#page-today #pinRow .task-fold');
   if(await fold.getAttribute('aria-expanded')!=='true')await fold.click();
  };
- const make=async(title,repeat)=>{
+ const make=async(title,repeat,important=true)=>{
   await open('today');
   const fold=page.locator('#page-today #pinRow .task-fold');
   if(await fold.getAttribute('aria-expanded')==='true')await fold.click();
   await page.locator('#page-today #pinRow .task-add').click();
   await page.locator('#taskTitle').fill(title);
-  await page.locator('#taskImportant').check();
+  if(important)await page.locator('#taskImportant').check();
   if(repeat!=='none'){
    await page.locator('#taskRepeatChips button').filter({hasText:repeat==='daily'?'Daily':'Weekly'}).click();
   }
@@ -60,11 +60,16 @@ for(const {width,theme} of configs){
     document.documentElement.style.colorScheme=theme;
   },theme);
 
-  const daily='QA Important Daily '+width;
+  const longSuffix=' — Read the notes from this morning and prepare the next meaningful action before the evening reflection together';
+  const daily='QA Important Daily '+width+longSuffix;
   await make(daily,'daily');
   await open('capture');
   const top=()=>page.locator('#page-capture #konaPriorityTask .pinned-item').filter({hasText:daily});
   check(row,'Daily Important appears above composer before completion',await top().count()===1 && await top().isVisible(),daily);
+  const measure=async locator=>locator.evaluate(el=>{const s=getComputedStyle(el);return {height:el.getBoundingClientRect().height,lineHeight:parseFloat(s.lineHeight),fontSize:parseFloat(s.fontSize),whiteSpace:s.whiteSpace,clamp:s.webkitLineClamp};});
+  const tightTwoLines=m=>m.clamp==='2'&&m.whiteSpace==='normal'&&m.lineHeight>=m.fontSize*1.2&&m.lineHeight<=m.fontSize*1.35&&m.height<=2*m.lineHeight+2&&(width>=600||m.height>m.lineHeight*1.6);
+  const captureTwo=await measure(top().locator('.task-name'));
+  check(row,'Important title shows two compact lines without clipping',tightTwoLines(captureTwo),captureTwo);
   const box=top().locator('.task-check');
   const square=await box.evaluate(el=>({marker:getComputedStyle(el,'::before').width,img:el.querySelector('img')!==null,checked:el.getAttribute('aria-checked')}));
   check(row,'Important uses 20px square, not flower',square.marker==='20px'&&!square.img&&square.checked==='false',square);
@@ -78,6 +83,8 @@ for(const {width,theme} of configs){
   await open('today');await expanded();
   check(row,'Checked Daily Important stays in primary Plan task list',
     await page.locator('#page-today #todayTaskList > .quicktask').filter({hasText:daily}).count()===1,daily);
+  const planTwo=await measure(page.locator('#page-today #todayTaskList > .quicktask').filter({hasText:daily}).locator('.task-name'));
+  check(row,'Plan task title displays two tight lines',tightTwoLines(planTwo),planTwo);
   check(row,'Checked Daily Important is excluded from Done disclosure',
     await page.locator('#page-today #todayTaskList .done-tasks .quicktask').filter({hasText:daily}).count()===0,daily);
 
@@ -86,6 +93,8 @@ for(const {width,theme} of configs){
   await open('capture');
   const onceTop=()=>page.locator('#page-capture #konaPriorityTask .pinned-item').filter({hasText:once});
   check(row,'Pending one-off Important appears at top',await onceTop().count()===1,once);
+  const shortOne=await measure(onceTop().locator('.task-name'));
+  check(row,'Short important task stays on one line',shortOne.height<=shortOne.lineHeight+2,shortOne);
   await onceTop().locator('.task-check').click();await page.waitForTimeout(140);
   check(row,'Completed one-off Important leaves top',await onceTop().count()===0,once);
   check(row,'Completed one-off is present in Done disclosure',
@@ -101,6 +110,13 @@ for(const {width,theme} of configs){
   check(row,'Completed weekly is present in Done disclosure',
     await page.locator('#captureTasks .done-tasks .capture-task-row').filter({hasText:weekly}).count()===1,weekly);
   check(row,'Completed Daily Important still visible after other changes',await top().count()===1 && await top().locator('.task-check').getAttribute('aria-checked')==='true',daily);
+  const plain='QA Standard Two Line '+width+longSuffix;
+  await make(plain,'none',false);
+  await open('capture');
+  const plainRow=page.locator('#page-capture .capture-task-row').filter({hasText:plain});
+  check(row,'Nonimportant long task appears in Write task list',await plainRow.count()===1,plain);
+  const writeTwo=await measure(plainRow.locator('.task-title .task-name'));
+  check(row,'Write task title displays two tight lines',tightTwoLines(writeTwo),writeTwo);
   const noOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
   check(row,'No horizontal overflow',noOverflow<=2,noOverflow);
   await page.screenshot({path:output+'/'+row.key+'-all-types.png',animations:'disabled',fullPage:true});
