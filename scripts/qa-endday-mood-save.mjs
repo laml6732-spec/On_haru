@@ -39,6 +39,8 @@ for(const {width,theme,lang} of configs){
   assert(key,'User-facing language selected',language===lang,language);
   await page.locator('.tabs [data-page="records"]').click();
   await page.locator('#rev-reflect').click();
+  await page.locator('#page-records .review-write-reflection').click();
+  await page.locator('#dailyReflectionEditor').waitFor({state:'visible'});
   const finalButton=page.locator('#page-records .review-final-feeling-button');
   assert(key,'Unrated day offers End-of-day mood entry',await finalButton.isVisible(),await finalButton.count());
   await finalButton.click();
@@ -61,6 +63,8 @@ for(const {width,theme,lang} of configs){
   await page.reload({waitUntil:'domcontentloaded'});
   await page.locator('.tabs [data-page="records"]').click();
   await page.locator('#rev-reflect').click();
+  const edit=page.locator('#page-records .review-write-reflection');
+  if(await page.locator('#dailyReflectionEditor').isHidden())await edit.click();
   const afterReload=await page.evaluate(()=>db.days['2026-11-12']?.checkins?.night);
   assert(key,'End-of-day values retained after reload',afterReload?.nightEnergy===4&&afterReload?.nightHappiness===5,afterReload);
   assert(key,'Saved mood is visible in Review',await page.locator('#page-records .review-final-feeling-button').isVisible(),await page.locator('#page-records .review-final-feeling-button').count());
