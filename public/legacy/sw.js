@@ -1,9 +1,9 @@
 /* Minimal offline-first app shell; images are cached only when requested. */
 const PREFIX='kona-legacy-shell-'; // Keep prefix: clean up old 18 MB versioned caches.
-const RELEASE='studytimeevent20261113a';
+const RELEASE='scripturememory20261113a';
 const CACHE=PREFIX+RELEASE;
 const MEDIA=PREFIX+'media-'+RELEASE;
-const CORE=["./runtime/daypart-theme.v1.js","./runtime/install-metrics.v1.js","./runtime/settings.58b48f87b05a.js?rev=moodtrendv120261106","./assets/onharu-launch-v3.png","./assets/onharu-welcome.png","./icons/onharu-face-wave-512.png","./","./index.html","./app.7cb1b71d4eb6.css?rev=checkinfeeling20261112c","./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=studytimeevent20261113a","./archive-records.v1.css?rev=checkinfeeling20261112c","./typography-preview.v1.css?rev=archivetopprayer20261113a","./review-hierarchy.v1.css?rev=checkinfeeling20261112c","./manifest.webmanifest","./icons/onharu-face-wave-192.png"];
+const CORE=["./runtime/daypart-theme.v1.js","./runtime/install-metrics.v1.js","./runtime/settings.58b48f87b05a.js?rev=moodtrendv120261106","./assets/onharu-launch-v3.png","./assets/onharu-welcome.png","./icons/onharu-face-wave-512.png","./","./index.html","./app.7cb1b71d4eb6.css?rev=checkinfeeling20261112c","./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=studytimeevent20261113a","./archive-records.v1.css?rev=checkinfeeling20261112c","./typography-preview.v1.css?rev=archivetopprayer20261113a","./review-hierarchy.v1.css?rev=checkinfeeling20261112c","./runtime/scripture-memory.v1.js?rev=scripturememory20261113a","./scripture-memory.v1.css?rev=scripturememory20261113a","./data/scripture-memory-100.json","./manifest.webmanifest","./icons/onharu-face-wave-192.png"];
 const home=new URL('./',self.registration.scope).href;
 const MAX_MEDIA_ENTRIES=16;
 self.addEventListener('install',event=>{
