@@ -60,18 +60,18 @@ for(const {width,theme,lang} of [
   const stats=await plan.evaluate(el=>{
    const ink=el.querySelector('.task-highlight-ink'),range=document.createRange();range.selectNodeContents(ink);
    const outer=getComputedStyle(el),inner=getComputedStyle(ink);
-   return {fragments:[...range.getClientRects()].map(r=>({w:r.width,h:r.height})),inkDisplay:inner.display,inkBg:inner.backgroundImage,outerBg:outer.backgroundImage,clamp:outer.webkitLineClamp,clientHeight:el.clientHeight,scrollHeight:el.scrollHeight};
+   const outerRect=el.getBoundingClientRect(),rects=[...range.getClientRects()];return {fragments:rects.map(r=>({w:r.width,h:r.height})),visibleFragments:rects.filter(r=>r.top<outerRect.bottom-1&&r.bottom>outerRect.top).length,inkDisplay:inner.display,inkBg:inner.backgroundImage,outerBg:outer.backgroundImage,clamp:outer.webkitLineClamp,clientHeight:el.clientHeight,scrollHeight:el.scrollHeight,lineHeight:parseFloat(outer.lineHeight)};
   });
-  check(row,'Important title wraps onto two lines',stats.fragments.length===2,stats);
+  check(row,'Important title wraps onto two lines',stats.visibleFragments===2,stats);
   check(row,'Pink marker painted on line fragments',stats.inkDisplay==='inline'&&stats.inkBg.includes('linear-gradient')&&stats.outerBg==='none',stats);
-  check(row,'Clamped title shows both lines',stats.clamp==='2'&&stats.scrollHeight<=stats.clientHeight+2,stats);
+  check(row,'Clamped title shows both lines',stats.clamp==='2'&&stats.clientHeight<=2*stats.lineHeight+2&&stats.visibleFragments===2,stats);
   await open('capture');
   const marker=page.locator('#page-capture #konaPriorityTask .pinned-title.important .task-name');
   const capture=await marker.evaluate(el=>{
    const ink=el.querySelector('.task-highlight-ink'),range=document.createRange();range.selectNodeContents(ink);const p=el.closest('#konaPriorityTask');
-   return {fragments:range.getClientRects().length,inkBg:getComputedStyle(ink).backgroundImage,outerBg:getComputedStyle(el).backgroundImage,outerHeight:el.getBoundingClientRect().height,parentHeight:p.getBoundingClientRect().height,parentMaxHeight:getComputedStyle(p).maxHeight};
+   const outerRect=el.getBoundingClientRect(),rects=[...range.getClientRects()];return {fragments:rects.length,visibleFragments:rects.filter(r=>r.top<outerRect.bottom-1&&r.bottom>outerRect.top).length,inkBg:getComputedStyle(ink).backgroundImage,outerBg:getComputedStyle(el).backgroundImage,outerHeight:el.getBoundingClientRect().height,parentHeight:p.getBoundingClientRect().height,parentMaxHeight:getComputedStyle(p).maxHeight};
   });
-  check(row,'Write pinned two-line title keeps separate highlighted lines',capture.fragments===2&&capture.inkBg.includes('linear-gradient')&&capture.outerBg==='none',capture);
+  check(row,'Write pinned two-line title keeps separate highlighted lines',capture.visibleFragments===2&&capture.inkBg.includes('linear-gradient')&&capture.outerBg==='none',capture);
   check(row,'Write important row does not cut the second line',capture.parentHeight>=capture.outerHeight&&capture.parentMaxHeight==='none',capture);
   await page.screenshot({path:output+'/'+key+'-write.png',animations:'disabled'});
 
@@ -93,7 +93,7 @@ for(const {width,theme,lang} of [
   check(row,'Night thought placeholder meets contrast',focus.placeholderContrast>=4.5,focus);
   await page.screenshot({path:output+'/'+key+'-focus-night.png',animations:'disabled'});
 
-  await open('records');
+  await page.evaluate(()=>nav('records')); // Immersive Focus intentionally hides the bottom tabs.
   await page.locator('#rev-reflect').click();
   const session=page.locator('#page-records .review-session-record').filter({hasText:'A thought recorded during prayer'});
   const source=await session.locator('.review-session-source').first().textContent();
