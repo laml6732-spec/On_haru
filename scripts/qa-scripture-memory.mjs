@@ -13,7 +13,7 @@ async function sample(width,theme){
  const context=await browser.newContext({viewport:{width,height:844},colorScheme:theme,timezoneId:'Pacific/Honolulu',isMobile:width<600,hasTouch:width<600,serviceWorkers:'block'});
  const page=await context.newPage();page.setDefaultTimeout(10000);
  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
- await page.route('**/legacy/nlt?*',async route=>route.fulfill({status:200,contentType:'text/html',body:'<p>Sample test passage. Do not memorize synthetic text.</p>'}));
+ await page.route('**/legacy/nlt?*',async route=>route.fulfill({status:200,contentType:'text/html',body:'<verse_export vn="4"><p><span class="vn">4</span>Sample first verse <verse_export vn="5"><span class="vn">5</span>Sample second verse</verse_export></p></verse_export>'}));
  try{
    await page.goto(base,{waitUntil:'domcontentloaded'});
    await page.locator('#tutorialChooseEn').click();
@@ -31,7 +31,9 @@ async function sample(width,theme){
    await page.locator('#sm-overlay').waitFor({state:'visible'});
    check('Focus selected after Write',await page.locator('.tabs [data-page="focus"]').evaluate(e=>e.classList.contains('active')));
    await page.locator('.sm-verse').waitFor({state:'visible'});
-   check('Remote text rendered', (await page.locator('.sm-verse').allTextContents()).join(' ').includes('Sample test passage'));
+   const verseBodies=await page.locator('.sm-verse').allTextContents();
+   check('Nested provider verses separated',verseBodies.length===2&&verseBodies[0].includes('Sample first verse')&&!verseBodies[0].includes('Sample second verse')&&verseBodies[1].includes('Sample second verse'));
+   check('Verse number hierarchy preserved',JSON.stringify(await page.locator('.sm-verse-number').allTextContents())===JSON.stringify(['4','5']));
    await page.screenshot({path:path.join(out,width+'-'+theme+'-read.png'),animations:'disabled'});
    check('Reflection is default',await page.getByText('Pause with the passage').isVisible());
    check('Memorization is optional',await page.getByRole('button',{name:'Memorize (optional)'}).isVisible());
