@@ -56,7 +56,7 @@ for(const {width,theme,lang} of [
   await page.locator('#taskFormModal').waitFor({state:'hidden'});
   const fold=page.locator('#page-today #pinRow .task-fold');
   if(await fold.count()&&await fold.getAttribute('aria-expanded')!=='true')await fold.click();
-  const plan=page.locator('#page-today .pinned-title.important .task-name').first();
+  const plan=page.locator('#page-today #todayTaskList .task-title.important .task-name').first();
   const stats=await plan.evaluate(el=>{
    const ink=el.querySelector('.task-highlight-ink'),range=document.createRange();range.selectNodeContents(ink);
    const outer=getComputedStyle(el),inner=getComputedStyle(ink);
