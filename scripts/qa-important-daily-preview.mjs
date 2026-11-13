@@ -36,6 +36,7 @@ for(const {width,theme} of configs){
   if(await fold.getAttribute('aria-expanded')==='true')await fold.click();
   await page.locator('#page-today #pinRow .task-add').click();
   await page.locator('#taskTitle').fill(title);
+  if(await page.locator('#taskTitle').inputValue()!==title)throw new Error('Task form truncated a QA title: '+title);
   if(important)await page.locator('#taskImportant').check();
   if(repeat!=='none'){
    await page.locator('#taskRepeatChips button').filter({hasText:repeat==='daily'?'Daily':'Weekly'}).click();
@@ -60,7 +61,7 @@ for(const {width,theme} of configs){
     document.documentElement.style.colorScheme=theme;
   },theme);
 
-  const longSuffix=' — Read the notes from this morning and prepare the next meaningful action before the evening reflection together';
+  const longSuffix=" — Prepare today's reflection notes and review the next action for the week";
   const daily='QA Important Daily '+width+longSuffix;
   await make(daily,'daily');
   await open('capture');
