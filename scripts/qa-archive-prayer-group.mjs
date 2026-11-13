@@ -101,7 +101,7 @@ for(const {width,theme,lang} of [
 
   // Detail view must also show Prayer · topic, with its original note in the body.
   await prayer.click();
-  const action=results.locator('.archive-search-result-wrap').filter({has:results.locator('button.archive-search-result[data-record-id="s-qa-prayer-with-note"]')}).locator('.archive-record-extra button');
+  const action=results.locator('.archive-search-result-wrap:has(button.archive-search-result[data-record-id="s-qa-prayer-with-note"]) .archive-record-extra button');
   await action.click();
   const detail=await results.locator('.review-session-record').first().evaluate(el=>({
    meta:el.querySelector('.review-record-meta')?.textContent||'',body:el.querySelector('.rv-note-preview')?.textContent||''
