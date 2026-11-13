@@ -222,7 +222,20 @@ function defaultEvents(){
   return a;
 }
 const blank=()=>({version:VERSION,settings:{zone:ZONES[0].id,lastBackup:'',dtsStart:''},days:{},events:[],tasks:[],checks:{},skip:{},overrides:{},prayers:[]});
-function normDay(v){v.reflected??=false;v.emoji??='';v.headline??='';v.checkins??={};v.eventNotes??={};v.meals??={};if(!v.checkins.night&&v.eventNotes.__day_wrap)v.checkins.night={note:v.eventNotes.__day_wrap,mood:v.eventMoods?.__day_wrap?{id:v.eventMoods.__day_wrap}:null,moodTime:''};v.eventInfo??={};v.sessions??=[];v.pins??=[];v.important??=[];v.prayerPick??='';return v}
+function normDay(v){
+ v.reflected??=false;v.emoji??='';v.headline??='';v.checkins??={};v.eventNotes??={};v.meals??={};
+ if(!v.checkins.night&&v.eventNotes.__day_wrap)v.checkins.night={note:v.eventNotes.__day_wrap,mood:v.eventMoods?.__day_wrap?{id:v.eventMoods.__day_wrap}:null,moodTime:''};
+ // Older Korean Review mood edits used translated property names. Preserve and
+ // recover their numeric scores without replacing any already-valid canonical value.
+ for(const phase of ['morning','noon','evening','night']){
+  const checkin=v.checkins[phase];if(!checkin||typeof checkin!=='object')continue;
+  for(const [canonical,oldKorean] of [['Energy','에너지'],['Happiness','기분']]){
+   const key=phase+canonical,legacyKey=phase+oldKorean;
+   if(checkin[key]==null&&Number.isInteger(checkin[legacyKey])&&checkin[legacyKey]>=1&&checkin[legacyKey]<=5)checkin[key]=checkin[legacyKey];
+  }
+ }
+ v.eventInfo??={};v.sessions??=[];v.pins??=[];v.important??=[];v.prayerPick??='';return v
+}
 function mergeMorningSchedule(d){
  if(d.settings.morningUnified)return;
  const first=d.events.find(e=>e.base&&e.title==='오전 강의 ①'),second=d.events.find(e=>e.base&&e.title==='오전 강의 ②'),rest=d.events.find(e=>e.base&&e.title==='휴식 · 간식'&&e.start==='10:20');
@@ -2131,7 +2144,7 @@ function reviewInlineNote(record,row){if(!reviewCanEdit())return;konaOpenReviewE
 function reviewFeelingEditor(record,row,dimension='happiness'){
  if(!reviewCanEdit())return;row.querySelector('.review-feeling-editor')?.remove();const editor=el('div',undefined,'review-feeling-editor'),status=el('p','','rv-edit-feedback');status.setAttribute('role','status');const values={energy:record.energy,happiness:record.happiness};
  for(const axis of ['energy','happiness'])editor.append(konaSlimScale(axis,values[axis],values.energy,value=>{
-  const next={...values,[axis]:value};const patch={[record.phase+KonaI18n.t("Energy")]:next.energy,[record.phase+KonaI18n.t("Happiness")]:next.happiness};
+  const next={...values,[axis]:value};const patch={[record.phase+"Energy"]:next.energy,[record.phase+"Happiness"]:next.happiness};
   // Existing legacy words/IDs are not converted into missing numeric fields.
   if(next.energy&&next.happiness)patch.mood=compactMoodValue(next.energy,next.happiness);else if(record.energy||record.happiness)patch.mood=null;
   const ok=guardedMutation(()=>{const v=day(record.date);v.checkins??={};v.checkins[record.phase]={...(v.checkins[record.phase]||{}),...patch};if(record.date===nowLocal()&&!v.checkins[record.phase].moodTime)v.checkins[record.phase].moodTime=timeLocal()},KonaI18n.t("Feeling not saved. Please retry."));
@@ -2862,7 +2875,8 @@ const timeline=el('div',undefined,'rv-timeline');for(const section of reviewDail
  empty.append(heading,hint,action);timeline.append(empty);
 }panel.append(timeline);
 const reflectionStart=panel.children.length;panel.append(el('h3',KonaI18n.t("Reflection"),'rv-writing-heading'));
-const night=v.checkins?.night||{},finalFeeling=el('div',undefined,'review-final-feeling');finalFeeling.append(el('small',KonaI18n.t("End-of-day")));const fr={date,kind:'check',phase:'night',id:'check-night',title:KonaI18n.t("End-of-day mood"),energy:night.nightEnergy??night.mood?.energy??null,happiness:night.nightHappiness??night.mood?.happiness??null,feeling:konaFeeling(night.mood)||'',body:night.note||''};const fb=el('button',konaFeeling({energy:fr.energy,happiness:fr.happiness})||fr.feeling||KonaI18n.t("Choose end-of-day mood"),'review-final-feeling-button');fb.type='button';const feelingKey=date+'|end-of-day-editor',feelingOpen=!!reviewUI[feelingKey];fb.setAttribute('aria-expanded',String(feelingOpen));fb.onclick=()=>{if(!reviewCanEdit())return;const open=!reviewUI[feelingKey];reviewUISet(feelingKey,open);fb.setAttribute('aria-expanded',String(open));if(open)reviewFeelingEditor(fr,finalFeeling);else finalFeeling.querySelector('.review-feeling-editor')?.remove()};finalFeeling.append(fb);finalFeeling.hidden=!konaReviewHasCheckContent(night)&&!feelingOpen;panel.append(finalFeeling);if(feelingOpen)reviewFeelingEditor(fr,finalFeeling);
+const night=v.checkins?.night||{},finalFeeling=el('div',undefined,'review-final-feeling');finalFeeling.append(el('small',KonaI18n.t("End-of-day")));const fr={date,kind:'check',phase:'night',id:'check-night',title:KonaI18n.t("End-of-day mood"),energy:night.nightEnergy??night.mood?.energy??null,happiness:night.nightHappiness??night.mood?.happiness??null,feeling:konaFeeling(night.mood)||'',body:night.note||''};const fb=el('button',konaFeeling({energy:fr.energy,happiness:fr.happiness})||fr.feeling||KonaI18n.t("Choose end-of-day mood"),'review-final-feeling-button');fb.type='button';const feelingKey=date+'|end-of-day-editor',feelingOpen=!!reviewUI[feelingKey];fb.setAttribute('aria-expanded',String(feelingOpen));fb.onclick=()=>{if(!reviewCanEdit())return;const open=!reviewUI[feelingKey];reviewUISet(feelingKey,open);fb.setAttribute('aria-expanded',String(open));if(open)reviewFeelingEditor(fr,finalFeeling);else finalFeeling.querySelector('.review-feeling-editor')?.remove()};finalFeeling.append(fb);// An empty day must still offer a way to record its first End-of-day mood.
+finalFeeling.hidden=false;panel.append(finalFeeling);if(feelingOpen)reviewFeelingEditor(fr,finalFeeling);
 const saveStatus=el('span',reflectionSaveStates.get(date)||(tutorialPractice?KonaI18n.t("Practice only · not saved"):reflectionHasText(v.reflectionNotes)?KonaI18n.t("Saved"):KonaI18n.t("Autosave")),'rv-save-status');saveStatus.id='reflectionSaveStatus';saveStatus.setAttribute('role','status');saveStatus.setAttribute('aria-live','polite');
 const retrySave=el('button',KonaI18n.t("Retry save"),'mini-btn');retrySave.type='button';retrySave.hidden=!saveStatus.textContent.startsWith(KonaI18n.t("Not saved"));
 function persistReflection(){saveStatus.textContent=KonaI18n.t("Saving…");const ok=commitDailyReflection(db,date,dailyDraft,()=>save()||!!tutorialPractice),result=ok?(tutorialPractice?KonaI18n.t("Practice only · not saved"):KonaI18n.t("Saved")):KonaI18n.t("Not saved · retry or back up");reflectionSaveStates.set(date,result);saveStatus.textContent=result;retrySave.hidden=ok;if(ok)summaryText.textContent=reflectionText()||KonaI18n.t("What stayed with you today?");return ok}
