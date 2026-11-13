@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - 'preview/scripture-memory-v1-20261113'
+      - preview/scripture-devotion-first-20261113
     paths:
       - 'public/legacy/**'
       - 'functions/legacy/nlt.js'
