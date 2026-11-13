@@ -2175,7 +2175,7 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false,weeklyV
  // Session-specific source must precede the topic: Review should show whether
  // a thought was captured while praying, reflecting, or doing focused work.
  if(record.kind==='session'&&(prayerSession||String(record.body||'').trim())){
-  const sourceName=({prayer:['Prayer','기도'],devotion:['Devotion note','묵상 메모'],focus:['Focus note','집중 메모']})[record.sessionKind];
+  const sourceName=({prayer:['Prayer note','기도 메모'],devotion:['Devotion note','묵상 메모'],focus:['Focus note','집중 메모']})[record.sessionKind];
   if(sourceName)meta.append(el('span',sourceName[KonaI18n.language==='ko'?1:0],'review-session-source'));
  }
  if(meaningful){const name=el('span',meaningful);if(record.kind==='check')konaBindEditTarget(name,KonaI18n.t("Change check-in note · ")+identity,()=>reviewInlineNote(record,row));meta.append(name)}
