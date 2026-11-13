@@ -508,8 +508,10 @@ function renderToday(){
   $('todayScheduleHeading').textContent=date===nowLocal()?KonaI18n.t("Today's schedule"):KonaI18n.t("Selected day's schedule");
   renderHero();renderActiveSessionBanner();renderPins();renderWeekLecture();$('todayTaskCard').hidden=!taskExpanded;
   const tl=$('todayTaskList');tl.replaceChildren();const tasks=itemsDue(date),pins=new Set(v.pins||[]);
-  tasks.filter(t=>!isTaskDone(t,date)).sort((a,b)=>Number(pins.has(taskKey(b,date)))-Number(pins.has(taskKey(a,date)))).forEach(t=>tl.append(taskRow(t,date,{focusButton:true})));
-  const completed=tasks.filter(t=>isTaskDone(t,date));if(completed.length){const details=el('details','done-tasks');details.open=!!db.settings.showDoneTasks;details.append(el('summary','micro',KonaI18n.format("Done (⟪0⟫)",[completed.length],false)));completed.forEach(t=>details.append(taskRow(t,date,{focusButton:true})));details.ontoggle=()=>{db.settings.showDoneTasks=details.open;save()};tl.append(details)}
+  const pinnedDaily=t=>t.repeat==='daily'&&pins.has(taskKey(t,date));
+  // A checked Important + Daily task stays above Done. Other checked tasks do not.
+  tasks.filter(t=>!isTaskDone(t,date)||pinnedDaily(t)).sort((a,b)=>Number(pins.has(taskKey(b,date)))-Number(pins.has(taskKey(a,date)))).forEach(t=>tl.append(taskRow(t,date,{focusButton:true})));
+  const completed=tasks.filter(t=>isTaskDone(t,date)&&!pinnedDaily(t));if(completed.length){const details=el('details','done-tasks');details.open=!!db.settings.showDoneTasks;details.append(el('summary','micro',KonaI18n.format("Done (⟪0⟫)",[completed.length],false)));completed.forEach(t=>details.append(taskRow(t,date,{focusButton:true})));details.ontoggle=()=>{db.settings.showDoneTasks=details.open;save()};tl.append(details)}
   if(!tasks.length)tl.append(el('div','dash','–'));
   renderHomeCheckins();renderTimeline();renderHomeNight();scheduleAutoScroll();
 }
@@ -573,13 +575,19 @@ function renderHero(){
   $('hero').classList.toggle('is-active',!!cur);$('heroBar').style.width=Math.min(100,Math.max(0,pct))+'%';$('heroProg').classList.toggle('hidden',!cur);
 }
 let taskExpanded=false,lastAddedTaskId='';
+/* Important tasks stay above Write only while pending, except important
+   daily repeats: those remain visible there even after today's completion. */
+function priorityTaskStaysVisible(t,d){
+ const key=taskKey(t,d);
+ return day(d).pins.includes(key)&&(!isTaskDone(t,d)||t.repeat==='daily');
+}
 function renderPins(){
  const v=day(date),due=itemsDue(date),keys=new Set(due.map(t=>taskKey(t,date)));v.pins=v.pins.filter(k=>keys.has(k));
  const pinned=due.filter(t=>v.pins.includes(taskKey(t,date)));let row=$('pinRow');if(!row){row=document.createElement('div');row.id='pinRow';($('pageheadExtra')||$('page-today'))?.prepend(row)}row.replaceChildren();row.className='pinned-summary';let priority=$('konaPriorityTask');if(!priority){priority=document.createElement('section');priority.id='konaPriorityTask';priority.setAttribute('aria-label',KonaI18n.t("Important task",true));$('page-today').prepend(priority)}priority.replaceChildren();priority.hidden=true;
  const heading=el('div','important-head');heading.append(el('strong','pinned-label',KonaI18n.format("Important · ⟪0⟫",[pinned.length],false)));
  heading.append(btn('important-add','＋',KonaI18n.t("Add an important task"),()=>{clearTaskForm();pinNewTask=true;$('taskImportant').checked=true;openSheet('taskFormModal')}));if(pinned.length)row.append(heading);
  const list=el('div','pinned-list');
- pinned.sort((a,b)=>Number(isTaskDone(a,date))-Number(isTaskDone(b,date))).forEach(task=>{const item=el('div','pinned-item'),done=isTaskDone(task,date),key=taskKey(task,date),cb=btn('task-check'+(done?' completed':''),KonaI18n.format("<img src=\"./assets/hibiscus-task-⟪0⟫.png\" alt=\"\">",[done?'done':'off'],false),done?KonaI18n.t("Mark task incomplete"):KonaI18n.t("Mark task complete"),()=>{if(guardedMutation(()=>{if(done)delete db.checks[key];else db.checks[key]={date,time:new Date().toISOString()}},KonaI18n.t("Task status was not saved.")))render()});cb.setAttribute('role','checkbox');cb.setAttribute('aria-checked',String(done));const title=btn('pinned-title important-open important'+(done?' done':''),KonaI18n.format("<span class=\"task-name\">⟪0⟫</span><span class=\"important-mark\">Important</span>",[escapeHTML(task.title)],false),KonaI18n.t("Edit ")+task.title,()=>beginEditTask(task));bindImportantPress(title,task,date,()=>beginEditTask(task));item.append(cb,title);if(!done&&priority.hidden){priority.append(item);priority.hidden=false}else list.append(item)});
+ pinned.sort((a,b)=>Number(isTaskDone(a,date))-Number(isTaskDone(b,date))).forEach(task=>{const item=el('div','pinned-item'),done=isTaskDone(task,date),key=taskKey(task,date),cb=btn('task-check'+(done?' completed':''),KonaI18n.format("<img src=\"./assets/hibiscus-task-⟪0⟫.png\" alt=\"\">",[done?'done':'off'],false),done?KonaI18n.t("Mark task incomplete"):KonaI18n.t("Mark task complete"),()=>{if(guardedMutation(()=>{if(done)delete db.checks[key];else db.checks[key]={date,time:new Date().toISOString()}},KonaI18n.t("Task status was not saved.")))render()});cb.setAttribute('role','checkbox');cb.setAttribute('aria-checked',String(done));const title=btn('pinned-title important-open important'+(done?' done':''),KonaI18n.format("<span class=\"task-name\">⟪0⟫</span><span class=\"important-mark\">Important</span>",[escapeHTML(task.title)],false),KonaI18n.t("Edit ")+task.title,()=>beginEditTask(task));bindImportantPress(title,task,date,()=>beginEditTask(task));item.append(cb,title);if(priorityTaskStaysVisible(task,date)){priority.append(item);priority.hidden=false}else list.append(item)});
  if(list.children.length)row.append(list);
  const completed=due.filter(t=>isTaskDone(t,date)).length;
  const overview=el('div','tasks-overview');overview.append(btn('task-fold',KonaI18n.format("Tasks · ⟪0⟫/⟪1⟫ ⟪2⟫",[completed,due.length,taskExpanded?'⌃':'⌄'],false),taskExpanded?KonaI18n.t("Collapse tasks"):KonaI18n.t("Expand tasks"),()=>{taskExpanded=!taskExpanded;renderToday()}));if(!taskExpanded)overview.append(btn('task-add',KonaI18n.t("＋ Add task"),KonaI18n.t("Add task"),()=>{clearTaskForm();openSheet('taskFormModal')}));row.append(overview);
@@ -3565,7 +3573,10 @@ function renderHome(){
  const tasks=node('section',null,'capture-tasks');tasks.id='captureTasks';
  const taskHead=node('div',null,'capture-recent-head'),taskHeading=node('h2',date===nowLocal()?KonaI18n.t("Today's tasks"):KonaI18n.t("Selected day's tasks"));taskHeading.id='captureTasksHeading';tasks.setAttribute('aria-labelledby',taskHeading.id);
  const addTask=node('button',KonaI18n.t("＋ Add task"),'mini-btn');addTask.type='button';addTask.setAttribute('aria-label',KonaI18n.t("Add task",true));addTask.onclick=()=>{clearTaskForm();openSheet('taskFormModal')};taskHead.append(taskHeading,addTask);tasks.append(taskHead);
- const due=itemsDue(date),pins=new Set(day(date).pins||[]),pending=due.filter(t=>!isTaskDone(t,date)),completed=due.filter(t=>isTaskDone(t,date));
+ const due=itemsDue(date),pins=new Set(day(date).pins||[]);
+ // The highlighted task already appears above the composer: no duplicate in Write tasks.
+ const remaining=due.filter(t=>!priorityTaskStaysVisible(t,date));
+ const pending=remaining.filter(t=>!isTaskDone(t,date)),completed=remaining.filter(t=>isTaskDone(t,date));
  pending.sort((a,b)=>Number(pins.has(taskKey(b,date)))-Number(pins.has(taskKey(a,date))));
  // Write-only: reuse task actions but organize them in compact, accessible rows.
  function captureTaskRow(task){
