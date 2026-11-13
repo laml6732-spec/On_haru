@@ -2759,6 +2759,7 @@ function drawArchiveSearch(){
   const wrap=el('div',undefined,'archive-search-result-wrap'+(expanded?' archive-record-expanded':''));
   const button=el('button',undefined,'archive-search-result');button.type='button';button.dataset.recordDate=record.date;button.dataset.recordId=record.id;button.setAttribute('aria-expanded',String(expanded));
   const isPrayer=record.kind==='session'&&record.sessionKind==='prayer',prayerTopic=isPrayer?reviewPrayerTopic(record):'';
+  button.classList.toggle('archive-prayer-result',isPrayer);
   // In a prayer row the header owns the topic; the preview is ONLY the words
   // entered during the session (never the topic or a generated fallback).
   const text=isPrayer?String(record.body||''):[record.noteTitle&&record.noteTitle!==record.scheduleLabel?record.noteTitle:'',record.body||record.feeling||record.title].filter(Boolean).join('\n');
