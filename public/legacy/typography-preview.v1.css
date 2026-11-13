@@ -531,3 +531,50 @@ html[data-appearance="dark"] body .app #page-capture #konaPriorityTask .pinned-t
 html[data-appearance="dark"] body .app #page-today .task-title.important .task-highlight-ink {
   background:linear-gradient(transparent 49%, #76475A 49%, #76475A 91%, transparent 91%) !important;
 }
+
+
+/* 14. Archive: one quiet editorial group for reflection, check-ins, class.
+   No stacked cards or tinted record boxes; retain the existing row actions. */
+body .app #archive-search-results .archive-checkin-class-group{
+  margin:3px 0 9px!important;
+  padding:2px 0 2px 10px!important;
+  border-left:2px solid var(--kona-line,#CEDBD0)!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+body .app #archive-search-results .archive-checkin-class-group .archive-checkin-class-heading{
+  margin:9px 0 1px!important;
+  padding:0!important;
+  font:700 calc(11.5px * var(--kona-ui-scale,1))/1.4 var(--font-ui)!important;
+  color:var(--kona-muted,#526C5E)!important;
+  letter-spacing:0!important;
+}
+body .app #archive-search-results .archive-checkin-class-group .archive-checkin-class-heading:first-child{
+  margin-top:2px!important;
+}
+/* Prayer title belongs on its header line; only the written thought remains
+   in the body preview. All other activity titles keep their current format. */
+body .app #archive-search-results .archive-prayer-result .archive-result-head{
+  display:flex!important;
+  align-items:baseline!important;
+  flex-wrap:wrap!important;
+  gap:0 2px!important;
+  max-width:100%!important;
+}
+body .app #archive-search-results .archive-prayer-origin{
+  font-weight:700!important;
+  color:var(--kona-ink,var(--ink))!important;
+}
+body .app #archive-search-results .archive-prayer-topic{
+  font-weight:600!important;
+  color:var(--kona-ink,var(--ink))!important;
+  overflow-wrap:anywhere!important;
+  word-break:keep-all!important;
+}
+body .app #archive-search-results .archive-prayer-result .archive-search-meta{
+  margin-left:auto!important;
+}
+html[data-appearance="dark"] body .app #archive-search-results .archive-prayer-origin,
+html[data-appearance="dark"] body .app #archive-search-results .archive-prayer-topic{
+  color:#E8F0E9!important;
+}
