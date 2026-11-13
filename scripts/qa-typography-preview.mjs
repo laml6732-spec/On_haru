@@ -46,7 +46,7 @@ for (const width of [320, 390, 1024]) {
         const p = document.getElementById('konaPriorityTask');
         if (!p) return;
         p.hidden = false;
-        p.innerHTML = '<div class="pinned-item"><button type="button" class="task-check" aria-label="Complete task"><img src="./assets/hibiscus-task-off.png" alt=""></button><button type="button" class="pinned-title important"><span class="task-name">An important task and meaningful next step for today</span></button></div>';
+        p.innerHTML = '<div class="pinned-item"><button type="button" class="task-check" role="checkbox" aria-checked="false" aria-label="Complete task"></button><button type="button" class="pinned-title important"><span class="task-name">An important task and meaningful next step for today</span></button></div>';
       });
       const metrics = await page.evaluate(() => {
         function m(sel) {
@@ -62,14 +62,15 @@ for (const width of [320, 390, 1024]) {
           anchorLabel: m('#konaCarryToday .carry-label'),
           anchorText: m('#dayHeadline'),
           priorityTitle: m('#konaPriorityTask .pinned-title .task-name'),
-          flower: m('#konaPriorityTask .task-check img'),
+          checkbox: m('#konaPriorityTask .task-check'),
+          checkboxMarker: (()=>{const el=document.querySelector('#konaPriorityTask .task-check');if(!el)return null;const cs=getComputedStyle(el,'::before');return {width:parseFloat(cs.width),height:parseFloat(cs.height),content:cs.content}})(),
           priorityRow: m('#konaPriorityTask'),
           overflow: document.documentElement.scrollWidth - innerWidth
         };
       });
       test(row, 'Preview stylesheet and release loaded', metrics.stylesheet && metrics.release === 'typographyreview20261112b', metrics);
       test(row, 'Anchor label 12px, body 16px / 24px', metrics.anchorLabel?.font === 12 && metrics.anchorText?.font === 16 && metrics.anchorText?.lineHeight === 24, metrics);
-      test(row, 'Important title 14px / 21px and flower 18px', metrics.priorityTitle?.font === 14 && metrics.priorityTitle?.lineHeight === 21 && metrics.flower?.width === 18, metrics);
+      test(row, 'Important title 14px / 21px and square completion box 20px', metrics.priorityTitle?.font === 14 && metrics.priorityTitle?.lineHeight === 21 && metrics.checkboxMarker?.width === 20 && metrics.checkboxMarker?.height === 20, metrics);
       test(row, 'No Capture horizontal overflow', metrics.overflow <= 2, metrics);
       const geometry = await page.evaluate(() => {
         const rect = (sel) => {
@@ -82,9 +83,9 @@ for (const width of [320, 390, 1024]) {
         const anchor=rect('#konaCarryToday'), label=rect('#konaCarryToday .carry-label'),
           text=rect('#dayHeadline'), edit=rect('#konaCarryToday .carry-edit'),
           important=rect('#konaPriorityTask'),
-          flower=rect('#konaPriorityTask .task-check img'),
+          checkbox=rect('#konaPriorityTask .task-check'),
           task=rect('#konaPriorityTask .pinned-title .task-name'), note=rect('#qc-v2');
-        return {anchor,label,text,edit,important,flower,task,note,
+        return {anchor,label,text,edit,important,checkbox,checkboxVisualLeft:checkbox?.left+(checkbox?.width-20)/2,task,note,
           topGap: important?.top - anchor?.bottom,
           bottomGap: note?.top - important?.bottom,
           horizontalOverflow: document.documentElement.scrollWidth - innerWidth};
@@ -96,8 +97,8 @@ for (const width of [320, 390, 1024]) {
         near(geometry.anchor?.right,geometry.important?.right,1)&&near(geometry.important?.right,geometry.note?.right,1),geometry);
       test(row, 'Anchor label and copy share a left origin',
         near(geometry.label?.left,geometry.text?.left,2),geometry);
-      test(row, 'Flower visually starts near anchor copy and shares title center',
-        near(geometry.flower?.left,geometry.label?.left,8)&&near(geometry.flower?.yCenter,geometry.task?.yCenter,4),geometry);
+      test(row, 'Checkbox visually starts near anchor copy and shares title center',
+        near(geometry.checkboxVisualLeft,geometry.label?.left,8)&&near(geometry.checkbox?.yCenter,geometry.task?.yCenter,4),geometry);
       test(row, 'Important highlight leaves right content padding',
         geometry.task?.right <= geometry.note?.right - 10,geometry);
       test(row, 'Anchor edit is vertically centered and ends at right inset',
@@ -129,7 +130,7 @@ for (const width of [320, 390, 1024]) {
         const p = document.getElementById('konaPriorityTask');
         if (!p) return;
         p.hidden = false;
-        p.innerHTML = '<div class="pinned-item"><button type="button" class="task-check" aria-label="Complete task"><img src="./assets/hibiscus-task-off.png" alt=""></button><button type="button" class="pinned-title important"><span class="task-name">An important task and meaningful next step for today</span></button></div>';
+        p.innerHTML = '<div class="pinned-item"><button type="button" class="task-check" role="checkbox" aria-checked="false" aria-label="Complete task"></button><button type="button" class="pinned-title important"><span class="task-name">An important task and meaningful next step for today</span></button></div>';
       });
       const large = await page.evaluate(() => {
         document.documentElement.dataset.uiEnlarged = 'true';
