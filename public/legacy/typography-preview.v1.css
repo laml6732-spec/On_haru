@@ -453,3 +453,81 @@ body .app #page-capture .capture-tasks .capture-task-row .task-title .task-name 
   text-overflow:ellipsis !important;
   line-height:calc(18px * var(--kona-ui-scale, 1)) !important;
 }
+
+
+/* 11. Focus after dark: fixed light-on-dark ink for the thought control,
+   writing field and placeholder. The old global dark override and the
+   high-specificity timer control previously inherited muted/green text. */
+body.focus-immersive[data-focus-ocean="night"] #page-focus #focusNoteToggle {
+  color:#F2F8FF !important;
+  background:#041D38 !important;
+  border-color:#A9C9EA !important;
+}
+body.focus-immersive[data-focus-ocean="night"].focus-note-open #page-focus #timerNote {
+  color:#F4F9FF !important;
+  background:#071D36 !important;
+  -webkit-text-fill-color:#F4F9FF !important;
+  caret-color:#F4F9FF !important;
+  border-color:#9EBAD8 !important;
+}
+body.focus-immersive[data-focus-ocean="night"] #page-focus #timerNote::placeholder {
+  color:#BED1E7 !important;
+  -webkit-text-fill-color:#BED1E7 !important;
+  opacity:1 !important;
+}
+
+/* 12. Important marker must follow the text across two lines.
+   Keep the two-line clamp on the OUTER task-name; highlight only the
+   inline text fragments inside it, never the whole rectangular box. */
+body .app #page-today :is(.task-title.important,.pinned-title.important) .task-name,
+body .app #page-capture :is(#konaPriorityTask,.capture-tasks) :is(.pinned-title.important,.task-title.important) .task-name {
+  background:none !important;
+  padding:0 !important;
+}
+body .app #page-today :is(.task-title.important,.pinned-title.important) .task-highlight-ink,
+body .app #page-capture :is(#konaPriorityTask,.capture-tasks) :is(.pinned-title.important,.task-title.important) .task-highlight-ink {
+  display:inline !important;
+  background:linear-gradient(transparent 49%, #F5BDD2 49%, #F5BDD2 91%, transparent 91%) !important;
+  -webkit-box-decoration-break:clone !important;
+  box-decoration-break:clone !important;
+  padding:0 1px !important;
+}
+body .app #page-capture #konaPriorityTask {
+  max-height:none !important;
+  height:auto !important;
+}
+
+/* 13. Review: session origin and linked later reflections, no badges/cards. */
+body .app #page-records .review-session-record .review-session-source {
+  color:#285A49 !important;
+  font-weight:700 !important;
+  letter-spacing:0 !important;
+}
+body .app #page-records .review-note-followup {
+  margin:7px 0 3px 8px !important;
+  padding:1px 0 1px 11px !important;
+  border-left:1.5px solid #B9CBC0 !important;
+  background:transparent !important;
+  border-radius:0 !important;
+}
+body .app #page-records .review-note-followup > small {
+  color:#456D5B !important;
+  font-weight:650 !important;
+}
+html[data-appearance="dark"] body .app #page-records .review-session-record .review-session-source,
+html[data-appearance="dark"] body .app #page-records .review-note-followup > small {
+  color:#B8DAC4 !important;
+}
+html[data-appearance="dark"] body .app #page-records .review-note-followup {
+  border-left-color:#668D78 !important;
+}
+
+/* In dark mode a higher-specificity legacy pink background was still applied
+   to the two-line outer task box. Preserve only fragment-level ink. */
+html[data-appearance="dark"] body .app #page-capture #konaPriorityTask .pinned-title.important .task-name {
+  background:none !important;
+}
+html[data-appearance="dark"] body .app #page-capture #konaPriorityTask .pinned-title.important .task-highlight-ink,
+html[data-appearance="dark"] body .app #page-today .task-title.important .task-highlight-ink {
+  background:linear-gradient(transparent 49%, #76475A 49%, #76475A 91%, transparent 91%) !important;
+}

@@ -1,0 +1,37 @@
+name: On_HARU Focus night, Review provenance and multiline marker QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'public/legacy/**'
+      - 'scripts/qa-focus-review-highlight.mjs'
+      - '.github/workflows/qa-focus-review-highlight.yml'
+  push:
+    branches: ['fix/focus-review-highlight-20261113']
+    paths:
+      - 'public/legacy/**'
+      - 'scripts/qa-focus-review-highlight.mjs'
+      - '.github/workflows/qa-focus-review-highlight.yml'
+  workflow_dispatch:
+jobs:
+  focus-review-highlight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node --check public/legacy/runtime/legacy-controllers.9a6fbb5e22cc.js
+      - run: node --check scripts/qa-focus-review-highlight.mjs
+      - run: node scripts/verify-ui-static.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-focus-review.log 2>&1 &
+      - run: node scripts/qa-focus-review-highlight.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-focus-review-highlight
+          path: test-results/focus-review-highlight/
+          retention-days: 14
