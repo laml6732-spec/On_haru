@@ -17,14 +17,15 @@ export async function onRequestGet({request,env}){
   upstreamUrl.searchParams.set('version','NLT');
   upstreamUrl.searchParams.set('key',key);
   try{
-    const response=await fetch(upstreamUrl.toString(),{method:'GET',redirect:'error',cf:{cacheTtl:0}});
+    const response=await fetch(upstreamUrl.toString(),{method:'GET',redirect:'follow',headers:{Accept:'text/html'}});
     if(!response.ok)return new Response('NLT provider unavailable ('+response.status+')',{status:response.status===429?429:502,headers});
     const type=response.headers.get('content-type')||'';
     if(!/html|text/.test(type))return new Response('Unexpected NLT response',{status:502,headers});
     const html=await response.text();
     if(!html||html.length>180000)return new Response('NLT passage unavailable',{status:502,headers});
     return new Response(html,{status:200,headers});
-  }catch{
+  }catch(error){
+    console.error('OnHaru NLT upstream fetch failed:',error&&error.name,error&&error.message);
     return new Response('NLT connection unavailable',{status:502,headers});
   }
 }
