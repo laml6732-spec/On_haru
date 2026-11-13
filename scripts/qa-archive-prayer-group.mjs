@@ -49,7 +49,7 @@ for(const {width,theme,lang} of [
    const old=day('2026-11-12');old.reflectionNotes={insight:'QA earlier reflection'};
    old.checkins.morning={note:'QA earlier check-in',moodTime:'09:00'};
    save();render();
-   return {lang:KonaI18n.language,firstDay:date,sessionCount:d.sessions.length,stored:JSON.parse(localStorage.getItem('dayframe'))?.days?.[date]?.sessions?.length};
+   return {lang:KonaI18n.language,firstDay:date,sessionCount:d.sessions.length,stored:JSON.parse(localStorage.getItem('kona.legacy.v1.dayframe'))?.days?.[date]?.sessions?.length};
   },{theme});
   verify(r,'Chosen UI language preserved',init.lang===lang,init);
   verify(r,'Session fixture persisted',init.stored===3,init);
