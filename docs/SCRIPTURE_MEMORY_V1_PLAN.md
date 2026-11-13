@@ -1,20 +1,20 @@
 # On_HARU · Scripture Memory v1 — UI / product / implementation specification
 
 > Status: isolated proposal & prototype only · 2026-11-13  
-> Scope: Today reminder → Focus/Devotion practice → Review-linked Scripture Library  
+> Scope: Write daily entry → Focus/Devotion practice → Review-linked Scripture Library  
 > Base: \`content/nlt-popular-100-20261113\` (PR #66, unmerged). **Do not merge, deploy, alter production, or modify existing browser data.**  
-> Design authority: user-provided \`DESIGN.md\` dated 2026-11-06 + current GitHub \`main\` runtime. The older design spec describes five tabs; the current main HTML presents four visible tabs (Today / Check-in / Focus / Review). Verify rendered JS navigation before any integration.
+> Design authority: user-provided \`DESIGN.md\` dated 2026-11-06 + current GitHub \`main\` runtime. The HTML initially declares four tabs, but runtime controller `14-capture-tabs-controller.js` inserts Write (`data-page=capture`), renames legacy `today` to Plan, and reorders the navigation. **Rendered bottom navigation is Write / Check-in / Plan / Focus / Review (five tabs)**. Follow runtime, not bare HTML.
 
 ## 1. Goal and constraints
 
 ### User outcome
-- Open Today and see **one clear next scripture action** without another card or an automatic new verse every calendar day.
+- Open Write and see **one clear next scripture action** without another card or an automatic new verse every calendar day.
 - Enter Focus/Devotion to **read → hide and recall → self-check**, with **no timer required**.
 - Use a separate Scripture Library linked from Review/Archive and Focus to browse the 100 passages and revisit completed ones.
 - Do not turn verse counts into a spiritual score, streak, or compulsory religious task.
 
 ### Non-goals (v1)
-- No new bottom navigation tab; no Check-in modification; no mandatory journaling.
+- No new bottom navigation tab; no Check-in or Plan modification; no mandatory journaling.
 - No pronunciation grading, AI-generated theological commentary, flashcard quiz engine, streak, gamification, push alerts, automatic daily advancement, or backend account/sync.
 - No NLT verse text copied to the repository or stored in public assets.
 
@@ -28,9 +28,11 @@
 ## 2. Information architecture
 
 \`\`\`text
-Today
-  └─ "말씀 이어하기" (one compact row, if viewing actual today)
+Write (Capture, existing tab)
+  └─ "말씀 이어하기" (one compact row, only on actual today)
         └─ Focus / Devotion → Scripture practice overlay
+Check-in (unchanged)
+Plan (legacy page id: today; unchanged)
 Focus
   ├─ Pray (unchanged)
   ├─ Devotion (existing timer/topic unchanged)
@@ -47,7 +49,7 @@ Review
 - The practice overlay is a lightweight, mobile-first focus surface; it is not a replacement for the existing Focus timer.
 - A verse is tracked using a stable passage ID such as \`1-corinthians-13-4-5\`, not an array index.
 
-## 3. Today entry — exact layout
+## 3. Write daily entry — exact layout
 
 **Placement:** inside \`#page-today\`, after \`#pageheadExtra\` / compact task summary, before \`.home-checkins\`. If runtime reorders the task row, anchor against the *rendered* node rather than assuming markup order.
 
@@ -60,13 +62,13 @@ Review
 - Already self-checked today: \`오늘 연습했어요\` / \`Practiced today\` + reference, tappable to repeat; never disabled.
 - All complete/no due: \`말씀 다시 읽기\` / \`Revisit scripture\`, with library path.
 
-**Visibility:** when date picker browses a non-current day, hide this practice row entirely; don't attach a study session to a past schedule. The date/current-day determination must align with the app's active timezone; confirm timezone helper in runtime. No date-based punishment for skipped days.
+**Visibility:** when the header date picker browses a non-current day while on Write, hide this practice row entirely; don't attach a study session to a past schedule. The date/current-day determination must align with the app's active timezone; confirm timezone helper in runtime. No date-based punishment for skipped days.
 
 **Interaction:** click opens Focus-selected scripture overlay on the requested passage. Do not auto-start timer or auto-mark practice. Failure to load scripture never affects notes/tasks.
 
 ## 4. Focus/Devotion — Scripture practice
 
-**Entry:** a light secondary row labeled \`말씀 암송\` / \`Scripture memory\` inside current Devotion controls, separate from the existing free-text scripture/topic and timer. Current Pray / Devotion / Focus segment positions stay intact. Tapping from Today or Library opens the same view.
+**Entry:** a light secondary row labeled \`말씀 암송\` / \`Scripture memory\` inside current Devotion controls, separate from the existing free-text scripture/topic and timer. Current Pray / Devotion / Focus segment positions stay intact. Tapping from Write or Library opens the same view.
 
 **Overlay layout (full-height within app at mobile width, not nested cards):**
 1. Sticky top: back/close (44px target), \`말씀 암송\` title, progress \`07/100\` as quiet metadata.
@@ -101,8 +103,8 @@ Review
 ## 6. Learning and review behavior
 
 - No automatic passage switch at local midnight. One active passage continues until the user chooses a new one.
-- The daily queue chooses (a) oldest due review first, otherwise (b) active learning passage, otherwise (c) next unstarted passage by source order; max **one primary suggestion** on Today.
-- Optional: show count of other due passages after entering the practice surface; avoid a punitive outstanding-task badge on Today.
+- The daily queue chooses (a) oldest due review first, otherwise (b) active learning passage, otherwise (c) next unstarted passage by source order; max **one primary suggestion** on Write.
+- Optional: show count of other due passages after entering the practice surface; avoid a punitive outstanding-task badge on Write.
 - \`recalled\` increases review interval using **1 → 3 → 7 → 14 → 30 days**. \`partial\` and \`forgot\` set due next day; never delete previous progress or silently revoke memorized status.
 - Manual \`암송 완료로 표시\` persists irrespective of review scheduling. Explicitly distinguish \`학습했어요\` from \`암송했어요\`.
 - A user may practice several verses in one day; each practice attempt records its own date/time. No streak/no penalty/no daily quota.
@@ -172,13 +174,13 @@ Reuse existing \`--bg\`, \`--surface\`, \`--ink\`, \`--sub\`, \`--line\`, \`--so
 | Zero search results | \`일치하는 말씀이 없어요\` + Clear filter | Keep search text |
 | Local save failed | \`연습 기록을 저장하지 못했어요\` + Retry | Retain state in memory |
 | All 100 memorized | \`다시 읽거나 복습할 수 있어요\` | Keep completed history |
-| Archived/old date | Today scripture row hidden | No backdated attempts |
+| Archived/old date | Write scripture row hidden | No backdated attempts |
 
 ## 11. QA acceptance gates
 
 1. Baseline current navigation, Review switch, timer, note and stored data verified first.
 2. Validate catalog: exactly 100 unique IDs/references, 25 items per source page, valid verse ranges and ordering.
-3. Today opens the right passage from first, learning, due, practiced-today and archived-date states.
+3. Write shows the single line after the note composer and opens the right passage from first, learning, due, practiced-today and archived-date states; Plan and Check-in remain unchanged.
 4. Focus active timer stays intact on open/close; Pray and Focus unchanged; Devotion topic editing unchanged.
 5. Self-check result saves once, survives reload, partial/forgot behavior correct, no completion without explicit action.
 6. Review existing filters untouched; library search/filter handles all 100, even long book names.
@@ -195,3 +197,7 @@ Reuse existing \`--bg\`, \`--surface\`, \`--ink\`, \`--sub\`, \`--line\`, \`--so
 **Phase C (only with separate authorization):** merge and deploy, with rollback commit and prior deployment recorded.
 
 The prototype must use **in-memory only** demo state, no browser persistence, no API calls, no copyrighted NLT verse text. It is *not* the real app and not proof of production integration.
+
+## 13. Navigation correction log (2026-11-13)
+
+Previous proposal accidentally assumed that the four static `index.html` tab buttons were the live navigation. Confirmed runtime controller creates `#page-capture`, inserts a fifth Write tab (`data-page=capture`), and relabels `data-page=today` as **Plan**. The correct current structure is **Write / Check-in / Plan / Focus / Review**. Scripture cue belongs to Write, NOT Plan; other screens unchanged. Any UI mock must display five tabs. The authoritative pre-change app remains `main`; this isolated branch is never production.
