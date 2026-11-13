@@ -191,3 +191,10 @@ html[data-appearance="dark"] body .sm-segment.is-selected{background:var(--hero-
  .sm-soft-actions{gap:0}
  .sm-soft-actions .sm-link-btn{flex:1 1 100%;text-align:left}
 }
+
+/* Intentional 2-column secondary-action alignment at all mobile widths. */
+.sm-foot-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 12px;align-items:center;}
+.sm-foot-actions .sm-link-btn{min-width:0;white-space:normal;text-align:left;}
+.sm-foot-actions .sm-link-btn:nth-child(2){text-align:right;}
+.sm-foot-actions .sm-link-btn:nth-child(3){grid-column:1 / -1;text-align:right;}
+@media(max-width:350px){.sm-foot-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2px 8px;}}
