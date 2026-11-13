@@ -304,8 +304,14 @@
   function writeReflection(){
     if(!active)return;
     const reference=active.reference;
-    // The existing Write composer owns notes, tags, drafts and their backup.
-    close();
+    // Handoff replaces only the temporary overlay history entry, then uses the existing Write composer.
+    // Do not race asynchronous history.back() against the app's own navigation.
+    if(history.state?.smOverlay){
+      const nextHistory={...history.state};delete nextHistory.smOverlay;
+      nextHistory.yeramingDts=true;nextHistory.page='capture';
+      history.replaceState(nextHistory,'',location.href);
+    }
+    close(true);
     if(typeof nav==='function')nav('capture',{skipHistory:true});
     else document.querySelector('.tabs button[data-page="capture"]')?.click();
     const body=q('#qc-text'),title=q('#qc-note-title');
