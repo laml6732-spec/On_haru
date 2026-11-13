@@ -193,7 +193,13 @@
   }
   function resetContent(){content.replaceChildren();heading.textContent=screen==='library'?tr('말씀 서재','Scripture Library'):screen==='import'?tr('학습 기록 복원','Restore progress'):tr('말씀 묵상','Scripture reflection');eyebrow.textContent=screen==='practice'?'FOCUS · DEVOTION':'ON_HARU · SCRIPTURE';counter.textContent=screen==='practice'&&active?active.order+'/100':catalog.length+' '+tr('구절','passages');}
   function render(){resetContent();if(screen==='library')renderLibrary();else if(screen==='import')renderImport();else renderPractice();}
-  function statusLabel(s){return s==='memorized'?tr('암송 완료','Memorized'):s==='learning'?tr('학습 중','Learning'):tr('미시작','Not started');}
+  function statusLabel(record){
+    const labels=[];
+    if(record.read_at)labels.push(tr('읽음','Read'));
+    if(record.saved_for_later)labels.push(tr('다시 읽기','Saved'));
+    if(record.status==='memorized')labels.push(tr('암송','Memorized'));
+    return labels.join(' · ')||tr('읽어보기','Not yet read');
+  }
   function renderPractice(){
     if(!active)return;
     const r=recordFor(active.id);
@@ -337,18 +343,18 @@
     n.textContent=text;n.hidden=false;clearTimeout(notice.handle);notice.handle=setTimeout(()=>{n.hidden=true;},2800);
   }
   function renderLibrary(){
-    const completed=catalog.filter(x=>recordFor(x.id).status==='memorized').length;
-    const due=catalog.filter(x=>{const r=recordFor(x.id);return r.next_review_on&&r.next_review_on<=today();}).length;
+    const read=catalog.filter(x=>Boolean(recordFor(x.id).read_at)).length;
+    const saved=catalog.filter(x=>recordFor(x.id).saved_for_later).length;
     const summary=el('div','sm-summary');
-    summary.append(el('span','sm-summary-main',tr('암송 완료 ','Memorized ')+completed+' / '+catalog.length));
-    summary.append(el('span','sm-meta',tr('복습할 말씀 ','Due for review ')+due));content.append(summary);
+    summary.append(el('span','sm-summary-main',tr('읽은 말씀 ','Read passages ')+read+' / '+catalog.length));
+    summary.append(el('span','sm-meta',tr('다시 읽기 ','Saved for later ')+saved));content.append(summary);
     const row=el('div','sm-lib-controls');
     const input=el('input','sm-search');input.type='search';input.value=searchText;input.placeholder=tr('성경 이름 또는 장절 검색','Search book or reference');
     input.setAttribute('aria-label',input.placeholder);
     input.addEventListener('input',()=>{searchText=input.value;updateLibraryList();});
     row.append(input);content.append(row);
     const seg=el('div','sm-segments');
-    for(const [key,ko,en] of [['all','전체','All'],['learning','학습 중','Learning'],['memorized','완료','Memorized']]){
+    for(const [key,ko,en] of [['all','전체','All'],['read','읽은 말씀','Read'],['saved','다시 읽기','Saved']]){
       const b=button(tr(ko,en),'sm-segment'+(filter===key?' is-selected':''));b.setAttribute('aria-pressed',String(filter===key));b.onclick=()=>{filter=key;render();};seg.append(b);
     }content.append(seg);
     const list=el('div','sm-list');list.id='sm-list';content.append(list);
@@ -365,12 +371,12 @@
   function updateLibraryList(){
     const target=q('#sm-list',content);if(!target)return;target.replaceChildren();
     const needle=searchText.trim().toLowerCase();
-    const items=catalog.filter(x=>(filter==='all'||recordFor(x.id).status===filter)&&(!needle||x.reference.toLowerCase().includes(needle)||x.book.toLowerCase().includes(needle)||String(x.chapter).includes(needle)));
+    const items=catalog.filter(x=>(filter==='all'||(filter==='read'&&!!recordFor(x.id).read_at)||(filter==='saved'&&recordFor(x.id).saved_for_later))&&(!needle||x.reference.toLowerCase().includes(needle)||x.book.toLowerCase().includes(needle)||String(x.chapter).includes(needle)));
     if(!items.length){target.append(el('p','sm-empty',tr('일치하는 말씀이 없어요. 검색어나 필터를 바꿔보세요.','No matching passages. Change your search or filter.')));return;}
     for(const item of items){
       const row=button('','sm-list-row');
       const order=el('span','sm-list-number',String(item.order).padStart(2,'0'));
-      const desc=el('span','sm-list-desc');desc.append(el('strong','',item.reference));desc.append(el('small','',statusLabel(recordFor(item.id).status)));
+      const desc=el('span','sm-list-desc');desc.append(el('strong','',item.reference));desc.append(el('small','',statusLabel(recordFor(item.id))));
       const arrow=el('span','sm-list-arrow','›');arrow.setAttribute('aria-hidden','true');row.append(order,desc,arrow);
       row.onclick=()=>openPractice(item,'library');target.append(row);
     }
@@ -382,7 +388,7 @@
     notice(tr('학습 기록 파일을 만들었어요','Progress export created'));
   }
   function renderImport(){
-    content.append(el('p','sm-reference',tr('이 기기의 기존 암송 학습 기록을 교체합니다. 메모나 일정에는 영향을 주지 않아요.','This replaces scripture progress on this device. Notes and schedules are not affected.')));
+    content.append(el('p','sm-reference',tr('이 기기의 말씀 읽기·암송 기록을 교체합니다. 메모나 일정에는 영향을 주지 않아요.','This replaces scripture reading and recall history on this device. Notes and schedules are not affected.')));
     const buttons=el('div','sm-confirm-actions');
     const cancel=button(tr('취소','Cancel'),'sm-link-btn');cancel.onclick=()=>{pendingImport=null;screen='library';render();};
     const confirm=button(tr('학습 기록 복원','Restore progress'),'sm-primary');
