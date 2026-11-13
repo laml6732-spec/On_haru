@@ -1,4 +1,4 @@
-/* On_HARU Scripture Memory v1 — isolated feature, no existing journal schema changes. */
+/* On_HARU Scripture Reading & Reflection — optional memorization; journal schema unchanged. */
 (function(){
   'use strict';
   const VERSION=1, KEY='kona.scripture-memory.v1';
@@ -28,7 +28,10 @@
         last_practiced_on:/^\d{4}-\d{2}-\d{2}$/.test(record.last_practiced_on||'')?record.last_practiced_on:null,
         next_review_on:/^\d{4}-\d{2}-\d{2}$/.test(record.next_review_on||'')?record.next_review_on:null,
         review_stage:Number.isInteger(record.review_stage)?Math.min(4,Math.max(0,record.review_stage)):0,
-        attempts
+        attempts,
+        read_at:typeof record.read_at==='string'?record.read_at:null,
+        last_read_on:/^\d{4}-\d{2}-\d{2}$/.test(record.last_read_on||'')?record.last_read_on:null,
+        saved_for_later:record.saved_for_later===true
       };
     }
     return result;
@@ -38,21 +41,16 @@
   let catalog=[],koreanVerses=new Map(),translation='NLT',active=null,screen='practice',origin='write',mode='read',checkOpen=false,loading=false,passageText='',providerError='';
   let lastFocused=null,previousBodyOverflow='',requestNumber=0,ignoreNextPop=false;
   let filter='all',searchText='',pendingImport=null;
-  function recordFor(id){return state.passages[id]||{status:'not_started',memorized_at:null,last_practiced_at:null,last_practiced_on:null,next_review_on:null,review_stage:0,attempts:[]};}
+  function recordFor(id){return state.passages[id]||{status:'not_started',memorized_at:null,last_practiced_at:null,last_practiced_on:null,next_review_on:null,review_stage:0,attempts:[],read_at:null,last_read_on:null,saved_for_later:false};}
   function persist(next){
     try{localStorage.setItem(KEY,JSON.stringify(next));state=next;storageWarning=false;return true;}
     catch{storageWarning=true;return false;}
   }
   function byId(id){return catalog.find(v=>v.id===id);}
   function nextEntry(){
-    const d=today();
-    const due=catalog.filter(v=>{const r=recordFor(v.id);return r.status!=='not_started'&&r.next_review_on&&r.next_review_on<=d;})
-      .sort((a,b)=>recordFor(a.id).next_review_on.localeCompare(recordFor(b.id).next_review_on));
-    if(due.length)return {item:due[0],due:due.length};
-    const current=byId(state.active_passage_id);
-    if(current&&recordFor(current.id).status!=='memorized')return {item:current,due:0};
-    const unstarted=catalog.find(v=>recordFor(v.id).status==='not_started');
-    return {item:unstarted||current||catalog[0]||null,due:0};
+    // Reflection is not a task queue: keep the user's selected passage until changed.
+    const selected=byId(state.active_passage_id);
+    return {item:selected||catalog[0]||null};
   }
   const uid='sm-overlay';
   const overlay=el('div','sm-overlay');overlay.id=uid;overlay.hidden=true;
@@ -97,20 +95,20 @@
       try{if(typeof date==='string'&&typeof nowLocal==='function')dateIsToday=date===nowLocal();}catch{}
       cue.hidden=!dateIsToday||!item;
       if(item){
-        const st=recordFor(item.id),practiced=st.last_practiced_on===today();
-        const label=practiced?tr('오늘 연습했어요','Practiced today'):chosen.due?tr('오늘 복습할 말씀','Scripture to review'):st.status==='not_started'?tr('말씀 시작하기','Start scripture memory'):st.status==='memorized'?tr('말씀 다시 읽기','Revisit scripture'):tr('말씀 이어하기','Continue scripture');
+        const st=recordFor(item.id);
+        const label=st.last_read_on===today()?tr('오늘 읽은 말씀','Today's scripture · read'):st.read_at?tr('말씀 이어 읽기','Continue reading'):tr('오늘의 말씀','Today's scripture');
         q('.sm-cue-label',cue).textContent=label;
-        q('.sm-cue-detail',cue).textContent=item.reference+(chosen.due>1?' · '+tr('외 '+(chosen.due-1)+'개 복습', (chosen.due-1)+' more due'):'');
+        q('.sm-cue-detail',cue).textContent=item.reference+' · '+tr('읽기와 묵상','Read & reflect');
         cue.setAttribute('aria-label',label+' · '+item.reference);
       }
     }
     if(focusEntry){
-      q('.sm-focus-copy',focusEntry).textContent=tr('말씀 암송 · 100개 서재','Scripture memory · 100 passages');
+      q('.sm-focus-copy',focusEntry).textContent=tr('말씀 읽기·묵상','Scripture · Read & reflect');
       focusEntry.hidden=q('#kindSeg [data-kind="devotion"]')?.getAttribute('aria-pressed')!=='true';
     }
     if(libraryEntry){
       q('.sm-library-label',libraryEntry).textContent=tr('말씀 서재','Scripture Library');
-      const n=catalog.filter(v=>recordFor(v.id).status==='memorized').length;
+      const n=catalog.filter(v=>Boolean(recordFor(v.id).read_at)).length;
       q('.sm-library-count',libraryEntry).textContent=n+'/100';
       libraryEntry.hidden=archiveButton.getAttribute('aria-pressed')!=='true';
     }
@@ -193,7 +191,7 @@
       providerError=String(error&&error.message||error);passageText='';
     }finally{if(serial===requestNumber){loading=false;render();}}
   }
-  function resetContent(){content.replaceChildren();heading.textContent=screen==='library'?tr('말씀 서재','Scripture Library'):screen==='import'?tr('학습 기록 복원','Restore progress'):tr('말씀 암송','Scripture memory');eyebrow.textContent=screen==='practice'?'FOCUS · DEVOTION':'ON_HARU · SCRIPTURE';counter.textContent=screen==='practice'&&active?active.order+'/100':catalog.length+' '+tr('구절','passages');}
+  function resetContent(){content.replaceChildren();heading.textContent=screen==='library'?tr('말씀 서재','Scripture Library'):screen==='import'?tr('학습 기록 복원','Restore progress'):tr('말씀 묵상','Scripture reflection');eyebrow.textContent=screen==='practice'?'FOCUS · DEVOTION':'ON_HARU · SCRIPTURE';counter.textContent=screen==='practice'&&active?active.order+'/100':catalog.length+' '+tr('구절','passages');}
   function render(){resetContent();if(screen==='library')renderLibrary();else if(screen==='import')renderImport();else renderPractice();}
   function statusLabel(s){return s==='memorized'?tr('암송 완료','Memorized'):s==='learning'?tr('학습 중','Learning'):tr('미시작','Not started');}
   function renderPractice(){
