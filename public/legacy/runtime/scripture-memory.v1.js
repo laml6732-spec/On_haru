@@ -281,7 +281,7 @@
     const lib=button(tr('100개 말씀 보기','Browse 100 passages'),'sm-link-btn');
     lib.onclick=()=>{origin='library';screen='library';render();};tools.append(changeMode,lib);
     const next=catalog.find(v=>v.order===active.order+1);
-    if(next){const go=button(tr('다음 말씀','Next passage'),'sm-link-btn');go.onclick=()=>openPractice(next,origin);tools.append(go);}
+    if(next){const go=button(tr('다음 말씀 ›','Next passage ›'),'sm-link-btn');go.onclick=()=>openPractice(next,origin);tools.append(go);}
     content.append(tools);
     if(translation==='NKRV'){
       content.append(el('p','sm-attribution','개역개정 © 대한성서공회 · 저장된 한국어 본문'));
