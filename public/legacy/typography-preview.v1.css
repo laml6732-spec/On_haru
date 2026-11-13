@@ -373,3 +373,62 @@ body .app #page-records #new-reflect-page .rv-seven-toolbar .review-write-reflec
     font-size:calc(10.5px * var(--kona-ui-scale,1)) !important;
   }
 }
+
+
+/* 9. Important task completion: same conventional square as normal Tasks.
+   No hibiscus artwork, badges or new colors. The full row stays aligned with
+   Anchor and Capture; at most three important tasks may share the top region. */
+body .app #page-capture #konaPriorityTask {
+  flex-direction:column !important;
+  align-items:stretch !important;
+  justify-content:center !important;
+  gap:3px !important;
+  max-height:none !important;
+}
+body .app #page-capture #konaPriorityTask .pinned-item {
+  flex:0 0 auto !important;
+  width:100% !important;
+  min-height:40px !important;
+}
+body .app #page-capture #konaPriorityTask .task-check {
+  position:relative !important;
+  display:grid !important;
+  place-items:center !important;
+  border:0 !important;
+  border-radius:6px !important;
+  background:transparent !important;
+}
+body .app #page-capture #konaPriorityTask .task-check img,
+body .app #page-capture #konaPriorityTask .task-check .flower-fallback {
+  display:none !important;
+}
+body .app #page-capture #konaPriorityTask .task-check::before {
+  content:'' !important;
+  display:block !important;
+  box-sizing:border-box !important;
+  width:20px !important;
+  height:20px !important;
+  border:1.5px solid #80958a !important;
+  border-radius:5px !important;
+  background:transparent !important;
+}
+body .app #page-capture #konaPriorityTask .task-check.completed::before {
+  background:#315f50 !important;
+  border-color:#315f50 !important;
+}
+body .app #page-capture #konaPriorityTask .task-check.completed::after {
+  content:'✓' !important;
+  position:absolute !important;
+  inset:0 !important;
+  display:grid !important;
+  place-items:center !important;
+  color:#fff !important;
+  font:700 14px/1 sans-serif !important;
+}
+html[data-appearance="dark"] body .app #page-capture #konaPriorityTask .task-check:not(.completed)::before {
+  border-color:#bbd3c1 !important;
+}
+body .app #page-capture #konaPriorityTask .task-check:focus-visible {
+  outline:2px solid #315f50 !important;
+  outline-offset:3px !important;
+}
