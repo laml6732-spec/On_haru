@@ -26,6 +26,31 @@ try{
   const bad=path.join(dir,'invalid.json');fs.writeFileSync(bad,JSON.stringify(corrupted));
   let rejected=false;try{attempt([bad,path.join(dir,'never.json'),'--confirmed-license']);}catch{rejected=true;}
   if(!rejected)throw Error('Verse mismatch must fail');
+  // Check direct extraction of exactly the selected ranges from the discovered
+  // GAE (개역개정) crawler JSON shape, with synthetic data ONLY.
+  const codes={'1 Corinthians':'1co','1 Thessalonians':'1th','Philippians':'php','Numbers':'num','Isaiah':'isa',
+   'Jeremiah':'jer','Deuteronomy':'deu','Proverbs':'pro','Mark':'mrk','Psalm':'psa','Ephesians':'eph','Romans':'rom',
+   'Colossians':'col','John':'jhn','2 Corinthians':'2co','Acts':'act','Hebrews':'heb','Exodus':'exo',
+   '1 John':'1jn','2 Kings':'2ki','Joshua':'jos','Matthew':'mat','Galatians':'gal','1 Chronicles':'1ch',
+   '2 Chronicles':'2ch','James':'jas','2 Timothy':'2ti'};
+  const sources=new Map();
+  for(const item of catalog.entries){
+    const id=codes[item.book];if(!id)throw Error('Missing code '+item.book);
+    if(!sources.has(id))sources.set(id,{id,chapters:[]});
+    const book=sources.get(id);
+    let ch=book.chapters.find(x=>x.chapter===item.chapter);
+    if(!ch){ch={chapter:item.chapter,verses:[]};book.chapters.push(ch);}
+    for(let n=item.verse_start;n<=item.verse_end;n++){
+      if(!ch.verses.some(x=>x.verse===n))ch.verses.push({verse:n,text:{GAE:'테스트 전용 임시 문장 '+item.id+' '+n}});
+    }
+  }
+  const crawler=path.join(dir,'synthetic-bible-data.json');
+  fs.writeFileSync(crawler,JSON.stringify({metadata:{source:'synthetic',versions:['GAE']},books:[...sources.values()]}));
+  const fromCrawler=path.join(dir,'from-crawler.json');
+  attempt([crawler,fromCrawler,'--confirmed-license']);
+  const compiled=JSON.parse(fs.readFileSync(fromCrawler,'utf8'));
+  if(compiled.entries.length!==100||compiled.entries.reduce((n,x)=>n+x.verses.length,0)!==121)throw Error('Crawler conversion did not yield 100 passages/121 verses');
+
   browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
   const reports=[];
   for(const [width,theme] of [[320,'light'],[390,'dark'],[1024,'light']]){
