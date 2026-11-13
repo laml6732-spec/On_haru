@@ -1,0 +1,37 @@
+name: On_HARU End-of-day mood save regression
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'public/legacy/**'
+      - 'scripts/qa-endday-mood-save.mjs'
+      - '.github/workflows/qa-endday-mood-save.yml'
+  push:
+    branches: ['fix/end-of-day-mood-save-20261113']
+    paths:
+      - 'public/legacy/**'
+      - 'scripts/qa-endday-mood-save.mjs'
+      - '.github/workflows/qa-endday-mood-save.yml'
+jobs:
+  endday-save:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node --check public/legacy/runtime/legacy-controllers.9a6fbb5e22cc.js
+      - run: node --check scripts/qa-endday-mood-save.mjs
+      - run: node scripts/verify-ui-static.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-endday-http.log 2>&1 &
+      - run: node scripts/qa-endday-mood-save.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-endday-save-regression
+          path: test-results/endday-mood-save/
+          retention-days: 14
