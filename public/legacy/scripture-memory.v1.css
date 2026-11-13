@@ -164,3 +164,5 @@ html[data-appearance="dark"] body .sm-segment.is-selected{background:var(--hero-
   .sm-foot-actions .sm-link-btn{text-align:left}
 }
 @media (prefers-reduced-motion:reduce){.sm-overlay *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+.sm-verse-number{font-size:.72em;font-weight:700;color:var(--sub);vertical-align:super;line-height:0}
