@@ -1,0 +1,35 @@
+name: OnHaru all-tabs alignment preview QA
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'public/legacy/**'
+      - 'scripts/qa-all-tabs-alignment-preview.mjs'
+      - '.github/workflows/qa-all-tabs-alignment-preview.yml'
+  push:
+    branches: ['preview/typography-hierarchy-20261112']
+    paths:
+      - 'public/legacy/**'
+      - 'scripts/qa-all-tabs-alignment-preview.mjs'
+      - '.github/workflows/qa-all-tabs-alignment-preview.yml'
+jobs:
+  alignment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node scripts/verify-ui-static.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-tabs-http.log 2>&1 &
+      - run: node scripts/qa-all-tabs-alignment-preview.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-all-tabs-closed-open-qa
+          path: test-results/all-tabs-alignment-preview/
+          retention-days: 14
