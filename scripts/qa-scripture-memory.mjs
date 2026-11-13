@@ -30,7 +30,7 @@ async function sample(width,theme){
    await page.locator('#sm-write-cue').click();
    await page.locator('#sm-overlay').waitFor({state:'visible'});
    check('Focus selected after Write',await page.locator('.tabs [data-page="focus"]').evaluate(e=>e.classList.contains('active')));
-   await page.locator('.sm-verse').waitFor({state:'visible'});
+   await page.locator('.sm-verse').first().waitFor({state:'visible'});
    const verseBodies=await page.locator('.sm-verse').allTextContents();
    check('Nested provider verses separated',verseBodies.length===2&&verseBodies[0].includes('Sample first verse')&&!verseBodies[0].includes('Sample second verse')&&verseBodies[1].includes('Sample second verse'));
    check('Verse number hierarchy preserved',JSON.stringify(await page.locator('.sm-verse-number').allTextContents())===JSON.stringify(['4','5']));
