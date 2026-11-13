@@ -521,3 +521,13 @@ html[data-appearance="dark"] body .app #page-records .review-note-followup > sma
 html[data-appearance="dark"] body .app #page-records .review-note-followup {
   border-left-color:#668D78 !important;
 }
+
+/* In dark mode a higher-specificity legacy pink background was still applied
+   to the two-line outer task box. Preserve only fragment-level ink. */
+html[data-appearance="dark"] body .app #page-capture #konaPriorityTask .pinned-title.important .task-name {
+  background:none !important;
+}
+html[data-appearance="dark"] body .app #page-capture #konaPriorityTask .pinned-title.important .task-highlight-ink,
+html[data-appearance="dark"] body .app #page-today .task-title.important .task-highlight-ink {
+  background:linear-gradient(transparent 49%, #76475A 49%, #76475A 91%, transparent 91%) !important;
+}
