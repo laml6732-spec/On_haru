@@ -2156,18 +2156,26 @@ function reviewDailyFeelingEmoji(record){
  const e=record.energy??saved?.energy??legacy?.e,h=record.happiness??saved?.happiness??legacy?.v;
  return Number.isInteger(e)&&e>=1&&e<=5&&Number.isInteger(h)&&h>=1&&h<=5?MOODS[5-e][h-1].f:legacy?.f||'';
 }
+// Display-only: a blank prayer topic is different from the actual note.
+// Old saved sessions may use either the Korean or English default title.
+function reviewPrayerTopic(record){
+ if(record.kind!=='session'||record.sessionKind!=='prayer')return '';
+ const topic=String(record.title||'').trim();
+ return ['기도','Prayer','개인 기도','Personal prayer',KonaI18n.t("Prayer"),KonaI18n.t("Personal prayer")].includes(topic)?'':topic;
+}
 function reviewRow(record,{grouped=false,preview=false,thoughtView=false,weeklyView=false}={}){
  if(['capture','event','free'].includes(record.kind))preview=!thoughtView&&!weeklyView&&konaReviewPreferences().previewLines>0&&!archiveDetailRecord;
  const isPersonal=record.kind==='free'||(record.kind==='capture'&&!record.scheduleId);
  const row=el('article',undefined,'review-record rv-item');row.classList.toggle('review-check-record',record.kind==='check');row.classList.toggle('review-session-record',record.kind==='session');row.classList.toggle('review-class-record',record.kind==='class');row.classList.toggle('review-personal-note',isPersonal);row.classList.toggle('review-plan-note',!!record.reviewEvent&&['capture','event'].includes(record.kind));row.classList.toggle('review-empty-note',['check','session'].includes(record.kind)&&!String(record.body||'').trim());row.classList.toggle('review-is-important',reviewImportant(record));row.dataset.recordId=record.id;row.dataset.recordDate=record.date;row.dataset.entryId=record.id;
  const body=el('div',undefined,'rv-entry-body'),meta=el('div',undefined,'review-record-meta');const identity=record.date+' · '+(record.scheduleLabel||record.title||record.type)+' · '+record.id;
  const time=record.reviewEvent?(record.recordedTime&&(mins(record.recordedTime)<mins(record.reviewEvent.start)||mins(record.recordedTime)>=mins(record.reviewEvent.end))?KonaI18n.t("Written ")+record.recordedTime:''):record.recordedTime||'';
- const meaningful=record.kind==='check'?record.title.replace(/ check-in$/i,'')+' check-in':record.kind==='class'?'':record.kind==='session'?record.title+(record.sessionDuration?' · '+record.sessionDuration:''):record.kind==='anchor'?KonaI18n.t("Daily Anchor"):'';
+ const prayerSession=record.kind==='session'&&record.sessionKind==='prayer',prayerTopic=prayerSession?reviewPrayerTopic(record):'';
+ const meaningful=record.kind==='check'?record.title.replace(/ check-in$/i,'')+' check-in':record.kind==='class'?'':prayerSession?[prayerTopic,record.sessionDuration].filter(Boolean).map(s=>'· '+s).join(' '):record.kind==='session'?record.title+(record.sessionDuration?' · '+record.sessionDuration:''):record.kind==='anchor'?KonaI18n.t("Daily Anchor"):'';
  if(isPersonal&&!weeklyView)meta.append(el('span',KonaI18n.t("Personal note"),'review-type-label'));
  // Session-specific source must precede the topic: Review should show whether
  // a thought was captured while praying, reflecting, or doing focused work.
- if(record.kind==='session'&&String(record.body||'').trim()){
-  const sourceName=({prayer:['Prayer note','기도 메모'],devotion:['Devotion note','묵상 메모'],focus:['Focus note','집중 메모']})[record.sessionKind];
+ if(record.kind==='session'&&(prayerSession||String(record.body||'').trim())){
+  const sourceName=({prayer:['Prayer','기도'],devotion:['Devotion note','묵상 메모'],focus:['Focus note','집중 메모']})[record.sessionKind];
   if(sourceName)meta.append(el('span',sourceName[KonaI18n.language==='ko'?1:0],'review-session-source'));
  }
  if(meaningful){const name=el('span',meaningful);if(record.kind==='check')konaBindEditTarget(name,KonaI18n.t("Change check-in note · ")+identity,()=>reviewInlineNote(record,row));meta.append(name)}
@@ -2750,7 +2758,10 @@ function drawArchiveSearch(){
   const key=record.date+'|'+record.id,expanded=archiveExpandedRecords.has(key);
   const wrap=el('div',undefined,'archive-search-result-wrap'+(expanded?' archive-record-expanded':''));
   const button=el('button',undefined,'archive-search-result');button.type='button';button.dataset.recordDate=record.date;button.dataset.recordId=record.id;button.setAttribute('aria-expanded',String(expanded));
-  const text=[record.noteTitle&&record.noteTitle!==record.scheduleLabel?record.noteTitle:'',record.body||record.feeling||record.title].filter(Boolean).join('\n');
+  const isPrayer=record.kind==='session'&&record.sessionKind==='prayer',prayerTopic=isPrayer?reviewPrayerTopic(record):'';
+  // In a prayer row the header owns the topic; the preview is ONLY the words
+  // entered during the session (never the topic or a generated fallback).
+  const text=isPrayer?String(record.body||''):[record.noteTitle&&record.noteTitle!==record.scheduleLabel?record.noteTitle:'',record.body||record.feeling||record.title].filter(Boolean).join('\n');
   const preview=el('span',undefined,'archive-search-preview');reviewHighlight(preview,konaNoteDisplay(text,record.tags),query);konaApplyNoteTagIcon(preview,record.tags);
   const line=el('span',undefined,'archive-result-head'),isCheck=record.kind==='check',isClass=record.kind==='class';
   if(isCheck){
@@ -2758,14 +2769,19 @@ function drawArchiveSearch(){
    const phaseLabel=({morning:'Morning check-in',noon:'Midday check-in',evening:'Evening check-in',night:'Day wrap-up check-in'})[record.phase]||'Check-in';
    line.append(el('span',KonaI18n.t(phaseLabel),'archive-checkin-label'));
    if(record.feeling)line.append(el('span',record.feeling,'archive-checkin-feeling'));
+  }else if(isPrayer){
+   line.append(el('span',archiveMoodText('Prayer','기도'),'archive-prayer-origin'));
+   if(prayerTopic)line.append(el('span',' · '+prayerTopic,'archive-prayer-topic'));
   }else{
    const type=el('span',isClass?'📖':'✎','archive-record-type');type.setAttribute('aria-label',isClass?archiveMoodText('Class notes','수업'):archiveMoodText('Note','기록'));line.append(type);
    if(isClass)line.append(el('span',record.title,'archive-checkin-label'));
   }
-  const meta=[record.recordedTime,archivePracticeName(record)].filter(Boolean).join(' · ');if(meta)line.append(el('span',meta,'archive-search-meta'));
+  const meta=[record.recordedTime,isPrayer?'':archivePracticeName(record)].filter(Boolean).join(' · ');if(meta)line.append(el('span',meta,'archive-search-meta'));
   const schedule=archiveSemanticGroup(record)==='schedule'?record.scheduleLabel:'';if(schedule)line.append(el('small',schedule,'review-schedule-label'));
-  const chevron=el('span',expanded?'⌃':'⌄','archive-record-chevron');chevron.hidden=!expanded;button.append(line,preview,chevron);
-  button.setAttribute('aria-label',(expanded?archiveMoodText('Collapse','접기'):archiveMoodText('Expand','펼치기'))+' · '+record.date+' · '+text.slice(0,100));
+  const chevron=el('span',expanded?'⌃':'⌄','archive-record-chevron');chevron.hidden=!expanded;button.append(line);
+  if(text.trim())button.append(preview);
+  button.append(chevron);
+  button.setAttribute('aria-label',(expanded?archiveMoodText('Collapse','접기'):archiveMoodText('Expand','펼치기'))+' · '+record.date+' · '+(isPrayer?[archiveMoodText('Prayer','기도'),prayerTopic,text].filter(Boolean).join(' · '):text).slice(0,100));
   button.onclick=()=>{if(expanded)archiveExpandedRecords.delete(key);else archiveExpandedRecords.add(key);drawArchiveSearch();requestAnimationFrame(()=>{const target=[...results.querySelectorAll('.archive-search-result')].find(x=>x.dataset.recordDate===record.date&&x.dataset.recordId===record.id);target?.focus({preventScroll:true});if(!expanded)target?.scrollIntoView({block:'nearest'})})};
   if(!expanded)requestAnimationFrame(()=>{if(preview.isConnected)chevron.hidden=preview.scrollHeight<=preview.clientHeight+2});
   const saved=archiveManuallySaved(record),mark=el('button',saved?'★':'☆','archive-save-toggle');mark.type='button';mark.dataset.recordDate=record.date;mark.dataset.recordId=record.id;mark.setAttribute('aria-pressed',String(saved));mark.setAttribute('aria-label',(saved?archiveMoodText('Remove star','별표 해제'):archiveMoodText('Star record','별표 표시'))+' · '+(record.noteTitle||record.title));mark.title=saved?archiveMoodText('Unstar','별표 해제'):archiveMoodText('Star','별표 표시');mark.onclick=e=>{e.stopPropagation();archiveToggleSaved(record)};
@@ -2775,15 +2791,26 @@ function drawArchiveSearch(){
  }
  for(const d of sortedDates){
   const dayRecords=byDate.get(d)||[],heading=reviewDateGroupHeading(d,dayRecords.length);if(!dayRecords.length)heading.querySelector('.review-date-count')?.remove();results.append(heading);
-  if(anchors.has(d)){const anchor=el('section',undefined,'archive-record-anchor');anchor.setAttribute('aria-label',archiveMoodText('Daily highlight','오늘의 핵심 기록'));anchor.append(el('p',anchors.get(d),'archive-record-anchor-body'));results.append(anchor)}
+  // One compact priority group per day: reflection first, then check-ins
+  // and class notes, then all other records. Filters still select records
+  // before this display-only grouping. Do not duplicate a reflection below.
+  const reflection=dayRecords.filter(record=>record.kind==='reflection');
   const collected=dayRecords.filter(record=>record.kind==='check'||record.kind==='class');
-  if(collected.length){
-   const group=el('section',undefined,'archive-checkin-class-group'),title=el('h4',archiveMoodText('Check-ins · Class notes','체크인 · 수업'),'archive-checkin-class-heading');
-   title.id='archive-checkin-class-'+d;group.setAttribute('aria-labelledby',title.id);group.append(title);
-   for(const record of collected)addArchiveRecord(record,group);
+  if(reflection.length||collected.length){
+   const group=el('section',undefined,'archive-checkin-class-group');
+   if(reflection.length){
+    const title=el('h4',archiveMoodText('Daily reflection','당일 회고'),'archive-checkin-class-heading');
+    group.append(title);for(const record of reflection)addArchiveRecord(record,group);
+   }
+   if(collected.length){
+    const title=el('h4',archiveMoodText('Check-ins · Class notes','체크인 · 수업'),'archive-checkin-class-heading');
+    group.append(title);for(const record of collected)addArchiveRecord(record,group);
+   }
+   group.setAttribute('aria-label',archiveMoodText('Daily reflection, check-ins and class notes','당일 회고, 체크인, 수업'));
    results.append(group);
   }
-  for(const record of dayRecords)if(record.kind!=='check'&&record.kind!=='class')addArchiveRecord(record);
+  if(anchors.has(d)){const anchor=el('section',undefined,'archive-record-anchor');anchor.setAttribute('aria-label',archiveMoodText('Daily highlight','오늘의 핵심 기록'));anchor.append(el('p',anchors.get(d),'archive-record-anchor-body'));results.append(anchor)}
+  for(const record of dayRecords)if(record.kind!=='reflection'&&record.kind!=='check'&&record.kind!=='class')addArchiveRecord(record);
  }
 }
 
