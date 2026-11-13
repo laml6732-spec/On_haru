@@ -3,7 +3,7 @@
   'use strict';
   const VERSION=1, KEY='kona.scripture-memory.v1';
   const DATA_URL='./data/scripture-memory-100.json';
-  const KRV_DATA_URL='./data/scripture-memory-100.ko-krv.json';
+  const NKRV_DATA_URL='./data/scripture-memory-100.ko-nkrv.json';
   const API_BASE='https://api.nlt.to/api/passages';
   const RELAY_PATH='./nlt';
   const DAY_INTERVALS=[1,3,7,14,30];
@@ -157,7 +157,7 @@
   function openPractice(item,from){
     if(!item)return;
     origin=from;active=item;screen='practice';mode='read';checkOpen=false;passageText='';providerError='';loading=false;
-    translation=language()==='ko'&&koreanVerses.has(item.id)?'KRV':'NLT';
+    translation=language()==='ko'&&koreanVerses.has(item.id)?'NKRV':'NLT';
     if(from==='write'&&typeof nav==='function')try{nav('focus',{kind:'devotion'});}catch{}
     if(recordFor(item.id).status==='not_started'){
       const next=safeState(state);next.active_passage_id=item.id;
@@ -199,10 +199,10 @@
   function renderPractice(){
     if(!active)return;
     const r=recordFor(active.id);
-    const ref=el('div','sm-reference',active.reference+' · '+(translation==='KRV'?'개역개정':'NLT'));content.append(ref);
+    const ref=el('div','sm-reference',active.reference+' · '+(translation==='NKRV'?'개역개정':'NLT'));content.append(ref);
     if(koreanVerses.has(active.id)){
       const versions=el('div','sm-segments sm-versions');versions.setAttribute('role','group');versions.setAttribute('aria-label',tr('성경 번역본','Bible translation'));
-      for(const [v,label] of [['NLT','English · NLT'],['KRV','한국어 · 개역개정']]){
+      for(const [v,label] of [['NLT','English · NLT'],['NKRV','한국어 · 개역개정']]){
         const b=button(label,'sm-segment'+(translation===v?' is-selected':''));b.setAttribute('aria-pressed',String(translation===v));
         b.onclick=()=>{if(translation===v)return;translation=v;checkOpen=false;requestNumber++;loading=false;providerError='';
           if(v==='NLT'&&!passageText){loadText(active);}else render();};
@@ -216,7 +216,7 @@
     }content.append(tabs);
     if(mode==='read'){
       const paper=el('div','sm-paper');
-      if(translation==='KRV'&&koreanVerses.has(active.id)){
+      if(translation==='NKRV'&&koreanVerses.has(active.id)){
         for(const v of koreanVerses.get(active.id)){
           const p=el('p','sm-verse');p.lang='ko';
           p.append(el('sup','sm-verse-number',String(v.number)),document.createTextNode(' '+v.text));paper.append(p);
@@ -252,7 +252,7 @@
     complete.onclick=()=>{if(r.status==='memorized'){mode='recall';checkOpen=false;render();return;}markMemorized();};
     const lib=button(tr('100개 말씀 보기','Browse 100 passages'),'sm-link-btn');lib.onclick=()=>{origin='library';screen='library';render();};
     tools.append(complete,lib);content.append(tools);
-    if(translation==='KRV'){
+    if(translation==='NKRV'){
       content.append(el('p','sm-attribution','개역개정 © 대한성서공회 · 저장된 한국어 본문'));
     }else{
       const links=el('div','sm-source-links');
@@ -356,24 +356,24 @@
     // Korean text is an optional, separately licensed static asset. Never invent it.
     // Reject all partial, duplicate, out-of-range, or mismatched collections.
     try{
-      const response=await fetch(KRV_DATA_URL,{cache:'default'});
+      const response=await fetch(NKRV_DATA_URL,{cache:'default'});
       if(response.ok){
         const data=await response.json();
-        if(data?.schema_version!==1||data.translation!=='KRV'||!Array.isArray(data.entries)||data.entries.length!==catalog.length)throw new Error('KRV catalog mismatch');
+        if(data?.schema_version!==1||data.translation!=='NKRV'||!Array.isArray(data.entries)||data.entries.length!==catalog.length)throw new Error('NKRV catalog mismatch');
         const expected=new Map(catalog.map(item=>[item.id,item]));
         const loaded=new Map();
         for(const entry of data.entries){
           const ref=expected.get(entry.id);
-          if(!ref||loaded.has(entry.id)||entry.reference!==ref.reference||!Array.isArray(entry.verses)||entry.verses.length!==ref.verse_end-ref.verse_start+1)throw new Error('KRV reference mismatch');
+          if(!ref||loaded.has(entry.id)||entry.reference!==ref.reference||!Array.isArray(entry.verses)||entry.verses.length!==ref.verse_end-ref.verse_start+1)throw new Error('NKRV reference mismatch');
           for(let i=0;i<entry.verses.length;i++){
             const v=entry.verses[i];
-            if(v?.number!==ref.verse_start+i||typeof v.text!=='string'||!v.text.trim())throw new Error('KRV verse mismatch');
+            if(v?.number!==ref.verse_start+i||typeof v.text!=='string'||!v.text.trim())throw new Error('NKRV verse mismatch');
           }
           loaded.set(entry.id,entry.verses);
         }
         koreanVerses=loaded;
       }
-    }catch(error){console.warn('KRV data unavailable; using NLT',error);}
+    }catch(error){console.warn('NKRV data unavailable; using NLT',error);}
     updateEntries();
   }
   init();
