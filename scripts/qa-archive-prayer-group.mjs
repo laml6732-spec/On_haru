@@ -112,10 +112,12 @@ for(const {width,theme,lang} of [
   const persisted=await page.evaluate(()=>({
    note:db.days['2026-11-13']?.sessions?.find(x=>x.id==='qa-prayer-with-note')?.note,
    topic:db.days['2026-11-13']?.sessions?.find(x=>x.id==='qa-prayer-with-note')?.task,
-   reflection:db.days['2026-11-13']?.reflectionNotes?.insight,
-   archived:reviewArchiveRecords().filter(x=>x.date==='2026-11-13'&&x.kind==='reflection').length
+   reflection:db.days['2026-11-13']?.reflectionNotes?.insight
   }));
-  verify(r,'Original stored prayer and daily reflection survive reload',persisted.note==='QA Prayer Content written during the session'&&persisted.topic==='Family and outreach team'&&persisted.reflection==='QA reflection insight to see first'&&persisted.archived===1,persisted);
+  await page.locator('.tabs [data-page="records"]').click();
+  await page.locator('#rev-archive').click();
+  const archived=await page.locator('#archive-search-results .archive-checkin-class-group button.archive-search-result[data-record-id="daily-reflection"]').count();
+  verify(r,'Original stored prayer and daily reflection survive reload',persisted.note==='QA Prayer Content written during the session'&&persisted.topic==='Family and outreach team'&&persisted.reflection==='QA reflection insight to see first'&&archived===1,{...persisted,archived});
  }catch(e){r.errors.push(String(e));console.error('ARCHIVE_PRAYER_ABORT',id,String(e))}
  await context.close();
  console.log('ARCHIVE_PRAYER_CONFIG',id,JSON.stringify({passed:r.checks.filter(x=>x.pass).length,failed:r.checks.filter(x=>!x.pass).length,errors:r.errors.length}));
