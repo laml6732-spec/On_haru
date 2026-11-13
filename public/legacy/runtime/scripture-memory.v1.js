@@ -245,20 +245,29 @@
       recall.append(el('p','sm-meta',tr('기억나는 만큼 소리 내어 말한 뒤 확인하세요.','Say what you remember, then check the passage.')));
       const reveal=button(tr('본문 다시 확인','Show passage'),'sm-link-btn');reveal.onclick=()=>{mode='read';checkOpen=false;render();};recall.append(reveal);content.append(recall);
     }
-    const primary=button(tr('암송 점검하기','Check recall'),'sm-primary');primary.addEventListener('click',()=>{checkOpen=!checkOpen;render();});content.append(primary);
-    if(checkOpen){
-      const panel=el('section','sm-check');
-      panel.append(el('h3','',tr('얼마나 기억했나요?','How much did you recall?')));
-      for(const [value,ko,en] of [['recalled','기억했어요','I remembered'],['partial','일부만 기억했어요','Partly remembered'],['forgot','기억나지 않아요','Not yet']]){
-        const b=button(tr(ko,en),'sm-check-choice');b.onclick=()=>saveAttempt(value);panel.append(b);
+    if(mode==='recall'){
+      const primary=button(tr('암송 점검하기','Check recall'),'sm-primary');
+      primary.addEventListener('click',()=>{checkOpen=!checkOpen;render();});content.append(primary);
+      if(checkOpen){
+        const panel=el('section','sm-check');panel.append(el('h3','',tr('얼마나 기억했나요?','How much did you recall?')));
+        for(const [value,ko,en] of [['recalled','기억했어요','I remembered'],['partial','일부만 기억했어요','Partly remembered'],['forgot','기억나지 않아요','Not yet']]){
+          const b=button(tr(ko,en),'sm-check-choice');b.onclick=()=>saveAttempt(value);panel.append(b);
+        }
+        content.append(panel);
       }
-      content.append(panel);
+      const complete=button(r.status==='memorized'?tr('암송 완료로 표시됨 ✓','Marked as memorized ✓'):tr('암송 완료로 표시','Mark as memorized'),'sm-link-btn');
+      if(r.status==='memorized')complete.disabled=true;
+      else complete.onclick=markMemorized;
+      content.append(complete);
     }
     const tools=el('div','sm-foot-actions');
-    const complete=button(r.status==='memorized'?tr('암송 완료됨 · 다시 학습','Memorized · Practice again'):tr('암송 완료로 표시','Mark as memorized'),'sm-link-btn');
-    complete.onclick=()=>{if(r.status==='memorized'){mode='recall';checkOpen=false;render();return;}markMemorized();};
-    const lib=button(tr('100개 말씀 보기','Browse 100 passages'),'sm-link-btn');lib.onclick=()=>{origin='library';screen='library';render();};
-    tools.append(complete,lib);content.append(tools);
+    const changeMode=button(mode==='read'?tr('암송 연습 (선택)','Memorize (optional)'):tr('말씀 다시 읽기','Back to reading'),'sm-link-btn');
+    changeMode.onclick=()=>{mode=mode==='read'?'recall':'read';checkOpen=false;render();};
+    const lib=button(tr('100개 말씀 보기','Browse 100 passages'),'sm-link-btn');
+    lib.onclick=()=>{origin='library';screen='library';render();};tools.append(changeMode,lib);
+    const next=catalog.find(v=>v.order===active.order+1);
+    if(next){const go=button(tr('다음 말씀','Next passage'),'sm-link-btn');go.onclick=()=>openPractice(next,origin);tools.append(go);}
+    content.append(tools);
     if(translation==='NKRV'){
       content.append(el('p','sm-attribution','개역개정 © 대한성서공회 · 저장된 한국어 본문'));
     }else{
@@ -269,6 +278,41 @@
       content.append(el('p','sm-attribution','Scripture quotations: New Living Translation (NLT), Tyndale House Publishers. Source: api.nlt.to.'));
     }
     if(storageWarning)content.append(el('p','sm-error',tr('학습 기록이 이 기기에 저장되지 않았어요. 저장 공간을 확인해 주세요.','Progress could not be saved on this device. Check storage permissions.')));
+  }
+  function markRead(){
+    if(!active)return;
+    const next=safeState(state),previous=recordFor(active.id);
+    next.passages[active.id]={...previous,status:previous.status==='not_started'?'learning':previous.status,
+      read_at:previous.read_at||new Date().toISOString(),last_read_on:today()};
+    next.active_passage_id=active.id;
+    const ok=persist(next);render();updateEntries();
+    if(ok)notice(tr('읽은 말씀으로 기록했어요','Marked as read'));
+  }
+  function toggleSaved(){
+    if(!active)return;
+    const next=safeState(state),previous=recordFor(active.id),saved=!previous.saved_for_later;
+    next.passages[active.id]={...previous,saved_for_later:saved};next.active_passage_id=active.id;
+    const ok=persist(next);render();updateEntries();
+    if(ok)notice(saved?tr('다시 읽을 말씀으로 저장했어요','Saved for later'):tr('저장을 해제했어요','Removed from saved'));
+  }
+  function writeReflection(){
+    if(!active)return;
+    const reference=active.reference;
+    // The existing Write composer owns notes, tags, drafts and their backup.
+    close();
+    if(typeof nav==='function')nav('capture',{skipHistory:true});
+    else document.querySelector('.tabs button[data-page="capture"]')?.click();
+    const body=q('#qc-text'),title=q('#qc-note-title');
+    if(!body||!title)return;
+    // Never overwrite a note already being edited.
+    if(!body.value.trim()&&!title.value.trim()){
+      const schedule=q('#qc-select');
+      if(schedule){schedule.value='';schedule.dispatchEvent(new Event('change',{bubbles:true}));}
+      title.value=reference;title.dispatchEvent(new Event('input',{bubbles:true}));
+      const scriptureTag=q('.kona-capture-tags [data-tag="meaning_scripture"]');
+      if(scriptureTag?.getAttribute('aria-pressed')==='false')scriptureTag.click();
+    }
+    body.focus();
   }
   function saveAttempt(result){
     if(!active)return;
