@@ -182,7 +182,7 @@
       if(!res.ok)throw new Error('HTTP '+res.status);
       const html=await res.text();const doc=new DOMParser().parseFromString(html,'text/html');
       doc.querySelectorAll('script,style,iframe,form').forEach(n=>n.remove());
-      const paragraphs=[...doc.querySelectorAll('p')].map(n=>n.textContent?.replace(/\s+/g,' ').trim()).filter(Boolean);
+      const paragraphs=[...doc.querySelectorAll('p')].map(n=>n.textContent?.replace(/\s+/g,' ').trim().replace(/^(\d{1,3})(?=[A-Za-z])/, '$1 ')).filter(Boolean);
       const text=(paragraphs.length?paragraphs.join('\n\n'):doc.body.textContent||'').trim();
       if(text.length<10)throw new Error('No passage content');
       if(serial!==requestNumber)return;passageText=text;
@@ -207,7 +207,7 @@
       const paper=el('div','sm-paper');
       if(loading)paper.append(el('p','sm-status',tr('NLT 본문을 불러오는 중…','Loading NLT passage…')));
       else if(passageText){
-        for(const paragraph of passageText.split(/\n\n+/))paper.append(el('p','sm-verse',paragraph));
+        for(const paragraph of passageText.split(/\n\n+/)){const p=el('p','sm-verse');const num=/^(\d{1,3})\s+(.+)$/.exec(paragraph);if(num)p.append(el('sup','sm-verse-number',num[1]),document.createTextNode(' '+num[2]));else p.textContent=paragraph;paper.append(p);}
       }else{
         paper.append(el('p','sm-status',tr('NLT 본문을 이 기기에서 불러오지 못했어요.','Could not load NLT text on this device.')));
         paper.append(el('p','sm-meta',tr('인터넷 연결·API 접근 권한을 확인하거나 공식 본문을 열어 읽을 수 있어요.','Check your connection or API access, or open the official passage.')));
