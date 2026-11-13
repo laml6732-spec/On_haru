@@ -167,8 +167,11 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
    });
    pass(row,'Plan More panel starts below toggle and fits viewport',
      !!menuGeometry&&menuGeometry.gap>=2&&menuGeometry.panelLeft>=-1&&menuGeometry.panelRight<=width+1,menuGeometry);
-   pass(row,'Plan expanded schedule action is available',
-     await visible(page.locator('#page-today #konaScheduleMore[open] #kx-timeline-toggle')), 'full timeline within More');
+   const menuActions=await page.locator('#page-today #konaScheduleMore[open] .kona-more-panel button').evaluateAll(els=>els
+     .filter(el=>getComputedStyle(el).display!=='none'&&el.getBoundingClientRect().width>0)
+     .map(el=>({name:(el.textContent||'').trim(),height:el.getBoundingClientRect().height})));
+   pass(row,'Plan expanded menu buttons visible and 44px tall',
+     menuActions.length>=2&&menuActions.every(b=>b.height>=43.9),menuActions);
    if(await visible(page.locator('#page-today #kx-timeline-toggle'))){
      await attempt(row,'plan full timeline toggle',async()=>page.locator('#page-today #kx-timeline-toggle').click());
      await state('plan-timeline-open','#page-today');
