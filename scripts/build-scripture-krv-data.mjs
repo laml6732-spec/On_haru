@@ -5,12 +5,37 @@ import fs from 'node:fs';
 import path from 'node:path';
 const [, , inputArg, outputArg, permissionFlag]=process.argv;
 if(!inputArg||!outputArg||permissionFlag!=='--confirmed-license'){
- console.error('Usage: node scripts/build-scripture-krv-data.mjs <licensed-input.json> <output.json> --confirmed-license');
+ console.error('Usage: node scripts/build-scripture-krv-data.mjs <licensed-source.json> <output.json> --confirmed-license');
  process.exit(2);
 }
 const load=p=>JSON.parse(fs.readFileSync(path.resolve(p),'utf8'));
 const catalog=load('data/scripture/nlt-popular-100.json');
-const source=load(inputArg);
+let source=load(inputArg);
+const bookCodes={
+ '1 Corinthians':'1co','1 Thessalonians':'1th','Philippians':'php','Numbers':'num','Isaiah':'isa','Jeremiah':'jer',
+ 'Deuteronomy':'deu','Proverbs':'pro','Mark':'mrk','Psalm':'psa','Ephesians':'eph','Romans':'rom','Colossians':'col',
+ 'John':'jhn','2 Corinthians':'2co','Acts':'act','Hebrews':'heb','Exodus':'exo','1 John':'1jn','2 Kings':'2ki',
+ 'Joshua':'jos','Matthew':'mat','Galatians':'gal','1 Chronicles':'1ch','2 Chronicles':'2ch','James':'jas','2 Timothy':'2ti'
+};
+// Supported third-party SOURCE format: dev-dooD/bible-crawler bible_data.json,
+// with books[].id, chapters[].chapter and verses[].text.GAE.
+// Convert only the source ranges already selected for On_HARU; do not redistribute all 66 books.
+if(Array.isArray(source?.books)&&source.books.length){
+ const books=new Map(source.books.map(book=>[book.id,book]));
+ source={translation:'NKRV',entries:catalog.entries.map(ref=>{
+   const code=bookCodes[ref.book],book=books.get(code);
+   if(!code||!book)throw Error('NKRV source missing book '+ref.book);
+   const chapter=book.chapters?.find(ch=>Number(ch.chapter)===ref.chapter);
+   if(!chapter)throw Error('NKRV source missing '+ref.reference);
+   const verses=[];
+   for(let verse=ref.verse_start;verse<=ref.verse_end;verse++){
+      const record=chapter.verses?.find(v=>Number(v.verse)===verse);
+      if(!record)throw Error('NKRV source missing '+ref.reference+' verse '+verse);
+      verses.push({number:verse,text:record.text?.GAE});
+   }
+   return {id:ref.id,reference:ref.reference,verses};
+ })};
+}
 const fail=message=>{throw new Error('NKRV import: '+message)};
 if(!Array.isArray(catalog.entries)||catalog.entries.length!==100)fail('Missing 100-reference source catalog');
 if(source?.translation!=='NKRV'||!Array.isArray(source?.entries)||source.entries.length!==100)fail('Expected 100 entries in NKRV input');
