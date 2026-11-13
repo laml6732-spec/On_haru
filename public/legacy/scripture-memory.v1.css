@@ -166,3 +166,28 @@ html[data-appearance="dark"] body .sm-segment.is-selected{background:var(--hero-
 @media (prefers-reduced-motion:reduce){.sm-overlay *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 .sm-verse-number{font-size:.72em;font-weight:700;color:var(--sub);vertical-align:super;line-height:0}
+
+/* Devotion-first addition: reading remains a quiet book-like surface. */
+.sm-reflection{
+  padding:15px 0 18px;margin:0 0 4px;
+  border-bottom:1px solid var(--line);
+}
+.sm-reflection h3{
+  margin:0 0 6px;font-size:calc(13.5px * var(--kona-ui-scale,1));
+  font-weight:650;line-height:1.4;color:var(--ink);
+}
+.sm-reflection p{
+  margin:0;font-size:calc(13px * var(--kona-ui-scale,1));
+  line-height:1.65;color:var(--sub);word-break:keep-all;overflow-wrap:anywhere;
+}
+.sm-soft-actions{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;
+  margin:9px 0 8px;padding-bottom:8px;border-bottom:1px solid var(--line);
+}
+.sm-soft-actions .sm-link-btn{flex:1 1 140px;min-height:44px;font-weight:550;}
+.sm-soft-actions .sm-link-btn[aria-pressed="true"]{font-weight:700;color:var(--hero-ink);}
+.sm-link-btn:disabled{opacity:.55;cursor:default}
+@media(max-width:350px){
+ .sm-soft-actions{gap:0}
+ .sm-soft-actions .sm-link-btn{flex:1 1 100%;text-align:left}
+}
