@@ -182,7 +182,16 @@
       if(!res.ok)throw new Error('HTTP '+res.status);
       const html=await res.text();const doc=new DOMParser().parseFromString(html,'text/html');
       doc.querySelectorAll('script,style,iframe,form').forEach(n=>n.remove());
-      const paragraphs=[...doc.querySelectorAll('p')].map(n=>n.textContent?.replace(/\s+/g,' ').trim().replace(/^(\d{1,3})(?=[A-Za-z])/, '$1 ')).filter(Boolean);
+      // NLT sometimes nests verse_export elements INSIDE a single paragraph.
+      // Extract each verse separately, removing nested descendants to avoid duplicated text.
+      const verseNodes=[...doc.querySelectorAll('verse_export[vn]')];
+      const paragraphs=verseNodes.length?verseNodes.map(node=>{
+        const clone=node.cloneNode(true);
+        clone.querySelectorAll('verse_export, .vn, .chapter-number, .subhead, h2, h3').forEach(el=>el.remove());
+        const raw=clone.textContent?.replace(/\s+/g,' ').trim();
+        const number=node.getAttribute('vn');
+        return raw&&/^\d{1,3}$/.test(number||'')?number+' '+raw:null;
+      }).filter(Boolean):[...doc.querySelectorAll('p')].map(n=>n.textContent?.replace(/\s+/g,' ').trim().replace(/^(\d{1,3})(?=[A-Za-z])/, '$1 ')).filter(Boolean);
       const text=(paragraphs.length?paragraphs.join('\n\n'):doc.body.textContent||'').trim();
       if(text.length<10)throw new Error('No passage content');
       if(serial!==requestNumber)return;passageText=text;
