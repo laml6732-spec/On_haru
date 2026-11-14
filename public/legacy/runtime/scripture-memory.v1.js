@@ -4,6 +4,7 @@
   const VERSION=1, KEY='kona.scripture-memory.v1';
   const DATA_URL='./data/scripture-memory-100.json';
   const NKRV_DATA_URL='./data/scripture-memory-100.ko-nkrv.json';
+  const DIRECT_DATA_URL='./data/scripture-direct-reading.ko.json';
   const API_BASE='https://api.nlt.to/api/passages';
   const RELAY_PATH='./nlt';
   const DAY_INTERVALS=[1,3,7,14,30];
@@ -38,7 +39,7 @@
   }
   let state;let storageWarning=false;
   try{const raw=localStorage.getItem(KEY);state=raw?safeState(JSON.parse(raw)):empty();}catch{state=empty();storageWarning=true;}
-  let catalog=[],koreanVerses=new Map(),translation='NLT',active=null,screen='practice',origin='write',mode='read',checkOpen=false,loading=false,passageText='',providerError='';
+  let catalog=[],koreanVerses=new Map(),directVerses=new Map(),directExpanded=false,translation='NLT',active=null,screen='practice',origin='write',mode='read',checkOpen=false,loading=false,passageText='',providerError='';
   let lastFocused=null,previousBodyOverflow='',requestNumber=0,ignoreNextPop=false;
   let filter='all',searchText='',pendingImport=null;
   function recordFor(id){return state.passages[id]||{status:'not_started',memorized_at:null,last_practiced_at:null,last_practiced_on:null,next_review_on:null,review_stage:0,attempts:[],read_at:null,last_read_on:null,saved_for_later:false};}
@@ -154,7 +155,7 @@
   document.addEventListener('click',e=>{if(e.target===overlay)back();});
   function openPractice(item,from){
     if(!item)return;
-    origin=from;active=item;screen='practice';mode='read';checkOpen=false;passageText='';providerError='';loading=false;
+    origin=from;active=item;screen='practice';mode='read';checkOpen=false;directExpanded=false;passageText='';providerError='';loading=false;
     translation=language()==='ko'&&koreanVerses.has(item.id)?'NKRV':'NLT';
     if(from==='write'&&typeof nav==='function')try{nav('focus',{kind:'devotion'});}catch{}
     if(recordFor(item.id).status==='not_started'){
@@ -239,6 +240,26 @@
         if(providerError){const retry=button(tr('다시 시도','Retry'),'sm-link-btn');retry.onclick=()=>loadText(active);paper.append(retry);}
       }
       content.append(paper);
+      // A quiet, native disclosure. Neither reading nor memorization requires opening it.
+      if(translation==='NLT'&&directVerses.has(active.id)){
+        const details=el('details','sm-direct-reading');
+        details.open=directExpanded;
+        const summary=el('summary','sm-direct-summary');
+        summary.append(el('span','sm-direct-label',tr('직독직해 버전','Korean reading aid')));
+        const line=el('span','sm-direct-line');line.setAttribute('aria-hidden','true');
+        const arrow=el('span','sm-direct-arrow','›');arrow.setAttribute('aria-hidden','true');
+        summary.append(line,arrow);
+        const body=el('div','sm-direct-body');
+        body.lang='ko';
+        for(const verse of directVerses.get(active.id)){
+          const row=el('p','sm-direct-verse');
+          row.append(el('sup','sm-verse-number',String(verse.number)),document.createTextNode(' '+verse.text));
+          body.append(row);
+        }
+        details.append(summary,body);
+        details.addEventListener('toggle',()=>{directExpanded=details.open;});
+        content.append(details);
+      }
       const reflection=el('section','sm-reflection');
       reflection.append(el('h3','',tr('잠시 말씀에 머물러 보세요','Pause with the passage')));
       reflection.append(el('p','',tr('어떤 표현이 마음에 남나요? 오늘의 삶과 이어지는 부분이 있나요?','What stands out to you? How might it speak into today?')));
@@ -446,6 +467,28 @@
         koreanVerses=loaded;
       }
     }catch(error){console.warn('NKRV data unavailable; using NLT',error);}
+    // The optional Korean reading aid is NOT the NKRV translation.
+    // Show only passages with source text; never manufacture translations.
+    try{
+      const response=await fetch(DIRECT_DATA_URL,{cache:'default'});
+      if(response.ok){
+        const data=await response.json();
+        if(data?.schema_version!==1||data.kind!=='direct-reading-aid'||!Array.isArray(data.entries))throw new Error('Direct-reading data invalid');
+        const refs=new Map(catalog.map(item=>[item.id,item]));
+        const loaded=new Map();
+        for(const item of data.entries){
+          const reference=refs.get(item.id);
+          if(!reference||item.reference!==reference.reference||loaded.has(item.id)||!Array.isArray(item.verses)
+             ||item.verses.length!==reference.verse_end-reference.verse_start+1)throw new Error('Direct-reading reference mismatch');
+          for(let i=0;i<item.verses.length;i++){
+            const verse=item.verses[i];
+            if(verse?.number!==reference.verse_start+i||typeof verse.text!=='string'||!verse.text.trim())throw new Error('Direct-reading verse mismatch');
+          }
+          loaded.set(item.id,item.verses);
+        }
+        directVerses=loaded;
+      }
+    }catch(error){console.warn('Optional direct-reading text unavailable',error);}
     updateEntries();
   }
   init();
