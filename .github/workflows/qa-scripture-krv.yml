@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - feat/scripture-krv-local-text-20261113
+      - preview/scripture-devotion-first-20261113
   workflow_dispatch:
 jobs:
   test:
