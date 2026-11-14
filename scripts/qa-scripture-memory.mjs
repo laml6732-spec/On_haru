@@ -33,7 +33,7 @@ async function sample(width,theme){
    await page.locator('.sm-verse').first().waitFor({state:'visible'});
    const verseBodies=await page.locator('.sm-verse').allTextContents();
    check('Nested provider verses separated',verseBodies.length===2&&verseBodies[0].includes('Sample first verse')&&!verseBodies[0].includes('Sample second verse')&&verseBodies[1].includes('Sample second verse'));
-   check('Verse number hierarchy preserved',JSON.stringify(await page.locator('.sm-verse-number').allTextContents())===JSON.stringify(['4','5']));
+   check('Verse number hierarchy preserved',JSON.stringify(await page.locator('.sm-paper .sm-verse-number').allTextContents())===JSON.stringify(['4','5']));
    const disclosure=page.locator('.sm-direct-reading');
    check('Direct-reading disclosure available for supplied sample',await disclosure.count()===1);
    check('Direct-reading collapsed initially',!(await disclosure.evaluate(x=>x.open)));
