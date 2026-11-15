@@ -259,14 +259,38 @@
       'prayer-add-response',()=>konaOpenSourceNote(p.sourceNote)));
     const ltasks=linkedTasks(p);
     if(ltasks.length){
-      root.append(heading(local('연결된 할 일','Linked tasks')));
-      for(const task of ltasks){
-        const taskRow=node('div','prayer-linked-task');
-        taskRow.append(node('span','',task.title),
-          node('span','meta-r',task.repeat==='daily'?local('매일','Daily'):
-            task.repeat==='weekly'?local('매주','Weekly'):local('한 번','One time')));
-        root.append(taskRow);
-      }
+      // Prayer and task generally share a title. Show navigation, not a duplicate list.
+      const goToTask=task=>{
+        const today=nowLocal(),completed=db.checks[task.id+'|single']?.date;
+        let target=completed||(
+          task.since>today?task.since:
+          task.until&&task.until<today?task.until:today
+        );
+        if(!completed){
+          const backwards=Boolean(task.until&&task.until<today);
+          for(let i=0;i<8;i++){
+            const candidate=dayAdd(target,backwards?-i:i);
+            if(itemsDue(candidate).some(item=>item.id===task.id)){
+              target=candidate;break;
+            }
+          }
+        }
+        closeSheet('focusLibraryModal');
+        taskExpanded=true;
+        changeDate(target);
+        nav('today');
+        requestAnimationFrame(()=>{
+          const row=[...document.querySelectorAll('#todayTaskList [data-task-id]')]
+            .find(el=>el.dataset.taskId===task.id);
+          row?.scrollIntoView({block:'center',behavior:'smooth'});
+          if(!row)nav('schedule',{sub:'tasks'});
+        });
+      };
+      ltasks.forEach((task,index)=>{
+        const label=ltasks.length===1?local('할 일로 이동 →','Go to task →'):
+          local('할 일 '+(index+1)+'로 이동 →','Go to task '+(index+1)+' →');
+        root.append(action(label,'prayer-go-task',()=>goToTask(task)));
+      });
     }
     const history=Object.entries(db.days).flatMap(([d,v])=>
       (v.sessions||[]).filter(s=>s.kind==='prayer'&&s.prayerId===p.id).map(s=>({
