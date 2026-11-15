@@ -1384,7 +1384,7 @@ function exportWeek(){
     if(classNote?.classContext)out.push(KonaI18n.t("  [Class / speaker] ")+classNote.classContext);if(classNote?.classResponse)out.push(KonaI18n.t("  [Class response] ")+classNote.classResponse);
     const meals=Object.entries(v.meals||{});if(meals.length){out.push(KonaI18n.t("◆ Meals"));for(const [id,text] of meals){const e=dayEvents(d).find(x=>x.id===id)||db.events.find(x=>x.id===id);out.push(`  ${e?.title||KonaI18n.t("Meal")}: ${String(text).replace(/\n/g,'\n    ')}`)}}
     out.push(KonaI18n.t("◆ Tasks"));const tasks=itemsDue(d);if(!tasks.length)out.push('  –');
-    for(const t of tasks){const det=t.repeat==='none'?(t.due?KonaI18n.t("Due ")+t.due:KonaI18n.t("No due date")):repeatText(t);out.push(`  [${isTaskDone(t,d)?'x':' '}] ${(v.pins||[]).includes(taskKey(t,d))?'★ ':''}${t.title} · ${det}`)}
+    for(const t of tasks){const det=t.repeat==='none'?(t.due?KonaI18n.t("Due ")+t.due:KonaI18n.t("No due date")):repeatText(t);out.push(`  [${isTaskDone(t,d)?'x':' '}] ${isTaskImportant(t)?'★ ':''}${t.title} · ${det}`)}
     out.push(KonaI18n.t("◆ Pray, devotion, and focus"));if(!v.sessions?.length)out.push('  –');
     else v.sessions.forEach(s=>{const p=s.prayerId?db.prayers.find(x=>x.id===s.prayerId):null;out.push(KonaI18n.format("  ⟪0⟫–⟪1⟫ ⟪2⟫ ⟪3⟫ · ⟪4⟫ · ⟪5⟫ min⟪6⟫",[s.start||'',s.at||'',KIND[s.kind].icon,KIND[s.kind].name,s.kind==='prayer'?(p?.title||s.task||KonaI18n.t("Prayer")):s.task,(s.seconds/60).toFixed(1),s.note?KonaI18n.t(" | Note ")+s.note:''],false))});
   }
@@ -3644,11 +3644,11 @@ function renderHome(){
  const tasks=node('section',null,'capture-tasks');tasks.id='captureTasks';
  const taskHead=node('div',null,'capture-recent-head'),taskHeading=node('h2',date===nowLocal()?KonaI18n.t("Today's tasks"):KonaI18n.t("Selected day's tasks"));taskHeading.id='captureTasksHeading';tasks.setAttribute('aria-labelledby',taskHeading.id);
  const addTask=node('button',KonaI18n.t("＋ Add task"),'mini-btn');addTask.type='button';addTask.setAttribute('aria-label',KonaI18n.t("Add task",true));addTask.onclick=()=>{clearTaskForm();openSheet('taskFormModal')};taskHead.append(taskHeading,addTask);tasks.append(taskHead);
- const due=itemsDue(date),pins=new Set(day(date).pins||[]);
+ const due=itemsDue(date);
  // The highlighted task already appears above the composer: no duplicate in Write tasks.
  const remaining=due.filter(t=>!priorityTaskStaysVisible(t,date));
  const pending=remaining.filter(t=>!isTaskDone(t,date)),completed=remaining.filter(t=>isTaskDone(t,date));
- pending.sort((a,b)=>Number(pins.has(taskKey(b,date)))-Number(pins.has(taskKey(a,date))));
+ pending.sort((a,b)=>Number(isTaskImportant(b))-Number(isTaskImportant(a)));
  // Write-only: reuse task actions but organize them in compact, accessible rows.
  function captureTaskRow(task){
   const row=taskRow(task,date,{focusButton:true});
