@@ -65,7 +65,7 @@ for(const [width,theme] of [[320,'light'],[390,'dark'],[1024,'light']]){
   assert(total===4,'all four important tasks shown: '+total);
   await page.screenshot({path:path.join(out,width+'-'+theme+'-four-important.png'),animations:'disabled'});
   // A per-day completion must not change another day's completion or task priority.
-  await pinned('QA Important Daily').locator('.task-check').click();
+  await taskRow('dailyOld').locator('.task-check').click();
   assert((await getState()).checks['dailyOld|2026-11-14']!==undefined,'daily completion is date-scoped');
   await at('2026-11-15');
   assert(await pinned('QA Important Daily').count()===1,'daily important persists next day');
