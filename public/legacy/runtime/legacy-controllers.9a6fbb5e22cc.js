@@ -272,7 +272,18 @@ function migrate(d){
   normalizeWeeklyReflections(d);
   for(const k of ['checks','skip','overrides','days'])if(!d[k]||typeof d[k]!=='object'||Array.isArray(d[k]))d[k]={};
   for(const k of ['events','tasks','prayers'])if(!Array.isArray(d[k]))d[k]=[];
-  for(const t of d.tasks)t.kind=['task','prayer','devotion'].includes(t.kind)?t.kind:'task';
+  // Legacy importance lived in separate date pins; retain any marked task as important on all its dates.
+  // Explicit true/false is authoritative once a task is saved under the new schema.
+  const legacyImportantIds=new Set();
+  for(const v of Object.values(d.days)){
+    for(const key of Array.isArray(v?.pins)?v.pins:[]){
+      if(typeof key==='string'&&key.includes('|'))legacyImportantIds.add(key.slice(0,key.lastIndexOf('|')));
+    }
+  }
+  for(const t of d.tasks){
+    t.kind=['task','prayer','devotion'].includes(t.kind)?t.kind:'task';
+    if(typeof t.important!=='boolean')t.important=legacyImportantIds.has(t.id);
+  }
   if(!ZONES.some(z=>z.id===d.settings.zone))d.settings.zone=ZONES[0].id;
   for(const v of Object.values(d.days)){
     normDay(v);
@@ -446,6 +457,7 @@ const dayEvents=d=>db.events.filter(e=>e.since<=d&&(!e.until||e.until>=d)&&!db.s
   .sort((a,b)=>a.start.localeCompare(b.start)||a.end.localeCompare(b.end));
 const itemsDue=d=>db.tasks.filter(t=>t.since<=d&&(!t.until||t.until>=d)&&(t.repeat==='daily'||t.repeat==='weekly'&&(t.days||[]).includes(weekday(d))||t.repeat==='none'&&(!db.checks[t.id+'|single']||db.checks[t.id+'|single'].date>=d))).sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999'));
 const taskKey=(t,d)=>t.id+'|'+(t.repeat==='none'?'single':d);
+const isTaskImportant=t=>t.important===true;
 const isTaskDone=(t,d)=>!!db.checks[taskKey(t,d)];
 const completedOn=d=>itemsDue(d).filter(t=>t.repeat==='none'?db.checks[t.id+'|single']?.date===d:isTaskDone(t,d)).length;
 function firstSentence(s){const line=(s||'').split(/\n/).map(x=>x.trim()).find(Boolean)||'';const m=line.match(/^(.+?[.!?。])(\s|$)/);return (m?m[1]:line).replace(/\s+/g,' ').slice(0,72)}
@@ -533,10 +545,10 @@ function renderToday(){
   $('todayTasksHeading').textContent=date===nowLocal()?KonaI18n.t("Today's tasks"):KonaI18n.t("Selected day's tasks");
   $('todayScheduleHeading').textContent=date===nowLocal()?KonaI18n.t("Today's schedule"):KonaI18n.t("Selected day's schedule");
   renderHero();renderActiveSessionBanner();renderPins();renderWeekLecture();$('todayTaskCard').hidden=!taskExpanded;
-  const tl=$('todayTaskList');tl.replaceChildren();const tasks=itemsDue(date),pins=new Set(v.pins||[]);
-  const pinnedDaily=t=>t.repeat==='daily'&&pins.has(taskKey(t,date));
+  const tl=$('todayTaskList');tl.replaceChildren();const tasks=itemsDue(date);
+  const pinnedDaily=t=>t.repeat==='daily'&&isTaskImportant(t);
   // A checked Important + Daily task stays above Done. Other checked tasks do not.
-  tasks.filter(t=>!isTaskDone(t,date)||pinnedDaily(t)).sort((a,b)=>Number(pins.has(taskKey(b,date)))-Number(pins.has(taskKey(a,date)))).forEach(t=>tl.append(taskRow(t,date,{focusButton:true})));
+  tasks.filter(t=>!isTaskDone(t,date)||pinnedDaily(t)).sort((a,b)=>Number(isTaskImportant(b))-Number(isTaskImportant(a))).forEach(t=>tl.append(taskRow(t,date,{focusButton:true})));
   const completed=tasks.filter(t=>isTaskDone(t,date)&&!pinnedDaily(t));if(completed.length){const details=el('details','done-tasks');details.open=!!db.settings.showDoneTasks;details.append(el('summary','micro',KonaI18n.format("Done (⟪0⟫)",[completed.length],false)));completed.forEach(t=>details.append(taskRow(t,date,{focusButton:true})));details.ontoggle=()=>{db.settings.showDoneTasks=details.open;save()};tl.append(details)}
   if(!tasks.length)tl.append(el('div','dash','–'));
   renderHomeCheckins();renderTimeline();renderHomeNight();scheduleAutoScroll();
@@ -604,12 +616,11 @@ let taskExpanded=false,lastAddedTaskId='';
 /* Important tasks stay above Write only while pending, except important
    daily repeats: those remain visible there even after today's completion. */
 function priorityTaskStaysVisible(t,d){
- const key=taskKey(t,d);
- return day(d).pins.includes(key)&&(!isTaskDone(t,d)||t.repeat==='daily');
+ return isTaskImportant(t)&&(!isTaskDone(t,d)||t.repeat==='daily');
 }
 function renderPins(){
- const v=day(date),due=itemsDue(date),keys=new Set(due.map(t=>taskKey(t,date)));v.pins=v.pins.filter(k=>keys.has(k));
- const pinned=due.filter(t=>v.pins.includes(taskKey(t,date)));let row=$('pinRow');if(!row){row=document.createElement('div');row.id='pinRow';($('pageheadExtra')||$('page-today'))?.prepend(row)}row.replaceChildren();row.className='pinned-summary';let priority=$('konaPriorityTask');if(!priority){priority=document.createElement('section');priority.id='konaPriorityTask';priority.setAttribute('aria-label',KonaI18n.t("Important task",true));$('page-today').prepend(priority)}priority.replaceChildren();priority.hidden=true;
+ const due=itemsDue(date);
+ const pinned=due.filter(isTaskImportant);let row=$('pinRow');if(!row){row=document.createElement('div');row.id='pinRow';($('pageheadExtra')||$('page-today'))?.prepend(row)}row.replaceChildren();row.className='pinned-summary';let priority=$('konaPriorityTask');if(!priority){priority=document.createElement('section');priority.id='konaPriorityTask';priority.setAttribute('aria-label',KonaI18n.t("Important task",true));$('page-today').prepend(priority)}priority.replaceChildren();priority.hidden=true;
  const heading=el('div','important-head');heading.append(el('strong','pinned-label',KonaI18n.format("Important · ⟪0⟫",[pinned.length],false)));
  heading.append(btn('important-add','＋',KonaI18n.t("Add an important task"),()=>{clearTaskForm();pinNewTask=true;$('taskImportant').checked=true;openSheet('taskFormModal')}));if(pinned.length)row.append(heading);
  const list=el('div','pinned-list');
@@ -621,13 +632,16 @@ function renderPins(){
 function openImportantPicker(){clearTaskForm();pinNewTask=true;$('taskImportant').checked=true;openSheet('taskFormModal')}
 
 function setTaskImportant(task,d){
- const key=taskKey(task,d),pins=day(d).pins,index=pins.indexOf(key);
- if(index<0&&pins.length>=3){toast(KonaI18n.t("You can pin up to three tasks."));return false}
- if(!guardedMutation(()=>{if(index>=0)pins.splice(index,1);else pins.push(key)},KonaI18n.t("Important status was not saved.")))return false;
+ // Updating the task itself covers all past/current/future instances without enumerating dates.
+ if(!guardedMutation(()=>{
+   const current=db.tasks.find(t=>t.id===task.id);
+   if(!current)throw new Error('Task no longer exists');
+   current.important=!isTaskImportant(current);
+ },KonaI18n.t("Important status was not saved.")))return false;
  render();return true;
 }
 function bindImportantPress(target,task,d,onTap){
- const key=taskKey(task,d),isMarked=day(d).pins.includes(key);let timer=null,longPressed=false,suppressClick=false;
+ const isMarked=isTaskImportant(task);let timer=null,longPressed=false,suppressClick=false;
  target.setAttribute('aria-pressed',String(isMarked));target.setAttribute('aria-label',(isMarked?'Important: ':KonaI18n.t("Not important: ",true))+task.title+KonaI18n.t(" · tap to edit, hold to change Importance",true));target.title=KonaI18n.t("Tap to edit · hold to toggle Important",true);
  const clear=()=>{if(timer){clearTimeout(timer);timer=null}};
  target.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;longPressed=false;timer=setTimeout(()=>{timer=null;longPressed=true;suppressClick=true;setTaskImportant(task,d)},520)});
@@ -637,7 +651,7 @@ function bindImportantPress(target,task,d,onTap){
  target.addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();setTaskImportant(task,d)}});
 }
 function taskRow(t,d,{focusButton=false}={}){
-  const row=el('div','quicktask'),done=isTaskDone(t,d),key=taskKey(t,d),pinned=day(d).pins.includes(key);
+  const row=el('div','quicktask'),done=isTaskDone(t,d),key=taskKey(t,d),pinned=isTaskImportant(t);
   row.dataset.taskId=t.id;if(t.id===lastAddedTaskId)row.classList.add('task-just-added');
   const overdue=t.repeat==='none'&&t.due&&t.due<d&&!done;
   const meta=t.repeat!=='none'?(t.repeat==='daily'?KonaI18n.t("Daily"):KonaI18n.t("Weekly · ")+t.days.map(x=>KDAY[x]).join(', ')):t.due?(overdue?'⚠ '+short(t.due):short(t.due)):'–';
@@ -1091,7 +1105,7 @@ function clearEventForm(){editEvent=null;$('eventShortNameDetails').open=false;$
 function beginEditEvent(e){if(!e)return;$('eventShortNameDetails').open=false;editEvent=e.id;editFrom=date;$('eventTitle').value=e.title;$('eventShortTitle').value=e.shortTitle||'';$('eventStart').value=e.start;$('eventEnd').value=e.end;$('eventCategory').value=e.category;$('eventRepeat').value=e.repeat;$('eventSince').value=e.since;$('eventUntil').value=e.until||'';weekdayMarkup('eventWeekdays','event',e.days||[]);$('eventFormHeading').textContent=e.repeat==='none'?KonaI18n.t("Edit event"):KonaI18n.t("Edit recurring event");$('eventScopeHelp').hidden=false;$('eventScopeHelp').textContent=e.repeat==='none'?KonaI18n.t("This event only."):KonaI18n.t("Choose when changes apply: from a date onward or to the whole series. Existing notes stay with their dates.");updateRepeatUI();renderShortPreview();openSheet('eventFormModal')}
 let pinNewTask=false;
 function clearTaskForm(){editTask=null;pinNewTask=false;$('taskForm').reset();$('taskKind').value='task';$('taskRepeat').value='none';$('taskSince').value=date;$('taskUntil').value='';$('taskDueNone').checked=true;$('taskDue').value='';weekdayMarkup('taskWeekdays','task');$('taskFormHeading').textContent=KonaI18n.t("New task");$('taskCancel').classList.add('hidden');updateRepeatUI()}
-function beginEditTask(t){editTask=t.id;pinNewTask=false;$('taskImportant').checked=day(date).pins.includes(taskKey(t,date));$('taskTitle').value=t.title;$('taskKind').value=t.kind||'task';$('taskSince').value=t.since;$('taskRepeat').value=t.repeat;$('taskDueNone').checked=!t.due;$('taskDue').value=t.due||'';$('taskUntil').value=t.until||'';weekdayMarkup('taskWeekdays','task',t.days||[]);$('taskFormHeading').textContent=KonaI18n.t("Edit task");updateRepeatUI();openSheet('taskFormModal')}
+function beginEditTask(t){editTask=t.id;pinNewTask=false;$('taskImportant').checked=isTaskImportant(t);$('taskTitle').value=t.title;$('taskKind').value=t.kind||'task';$('taskSince').value=t.since;$('taskRepeat').value=t.repeat;$('taskDueNone').checked=!t.due;$('taskDue').value=t.due||'';$('taskUntil').value=t.until||'';weekdayMarkup('taskWeekdays','task',t.days||[]);$('taskFormHeading').textContent=KonaI18n.t("Edit task");updateRepeatUI();openSheet('taskFormModal')}
 function splitEvent(prev,obj,from){
   const nid=uid();
   db.events=db.events.map(x=>x.id===prev.id?{...x,until:dayAdd(from,-1)}:x);
@@ -1522,13 +1536,9 @@ $('taskForm').onsubmit=e=>{
   if(until&&until<since){toast(KonaI18n.t("Check the end date."));return}
   if(due&&due<since){toast(KonaI18n.t("Check the due date."));return}
   if(repeat==='none'&&!$('taskDueNone').checked&&!due){toast(KonaI18n.t("A due date is required."));return}
-  const obj={...(editTask?db.tasks.find(t=>t.id===editTask):{}),id:editTask||uid(),title:$('taskTitle').value.trim(),kind:$('taskKind').value,repeat,days,since,until,due};if(!obj.title)return;
+  const obj={...(editTask?db.tasks.find(t=>t.id===editTask):{}),id:editTask||uid(),title:$('taskTitle').value.trim(),kind:$('taskKind').value,repeat,days,since,until,due,important:$('taskImportant').checked};if(!obj.title)return;
   const snapshot=JSON.stringify(db);
-  const previous=editTask?db.tasks.find(t=>t.id===editTask):null,target=day(date),key=taskKey(obj,date),oldKey=previous?taskKey(previous,date):key;
-  const remainingPins=target.pins.filter(k=>k!==oldKey&&k!==key);
-  if($('taskImportant').checked&&remainingPins.length>=3){toast(KonaI18n.t("You can pin up to three tasks."));return}
   if(editTask)db.tasks=db.tasks.map(t=>t.id===editTask?obj:t);else db.tasks.push(obj);
-  target.pins=$('taskImportant').checked?[...remainingPins,key]:remainingPins;
   const isNew=!editTask;if(isNew){taskExpanded=true;lastAddedTaskId=obj.id;setTimeout(()=>{if(lastAddedTaskId===obj.id)lastAddedTaskId=''},2000)}
   if(!save()&&!tutorialPractice){db=JSON.parse(snapshot);toast('Task not saved. Your form is still open; please retry.');return}
   clearTaskForm();closeSheet('taskFormModal');render();toast(KonaI18n.t("Saved"));
