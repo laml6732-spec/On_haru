@@ -41,7 +41,7 @@ for(const [width,theme] of [[320,'light'],[390,'dark'],[1024,'light']]){
   await page.locator('.tabs [data-page="today"]').click();
   const at=async d=>{await page.evaluate(value=>{const picker=document.querySelector('#datePicker');picker.value=value;picker.dispatchEvent(new Event('change',{bubbles:true}));},d);await page.waitForTimeout(90)};
   const getState=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dayframe')));
-  const pinned=id=>page.locator('#page-today #konaPriorityTask .pinned-item').filter({hasText:id});
+  const pinned=id=>page.locator('#konaPriorityTask .pinned-item').filter({hasText:id});
   const taskRow=id=>page.locator('#page-today #todayTaskList .quicktask[data-task-id="'+id+'"]');
   await at('2026-11-14');
   let state=await getState();
@@ -61,7 +61,7 @@ for(const [width,theme] of [[320,'light'],[390,'dark'],[1024,'light']]){
   state=await getState();
   assert(state.tasks.find(t=>t.id==='plainNew').important===true,'mark important persisted on task');
   assert(await pinned('QA Newly Important').count()===1,'fourth important shown, no data loss');
-  const total=await page.locator('#page-today #konaPriorityTask .pinned-item').count();
+  const total=await page.locator('#konaPriorityTask .pinned-item').count();
   assert(total===4,'all four important tasks shown: '+total);
   await page.screenshot({path:path.join(out,width+'-'+theme+'-four-important.png'),animations:'disabled'});
   // A per-day completion must not change another day's completion or task priority.
