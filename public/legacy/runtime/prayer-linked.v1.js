@@ -251,6 +251,9 @@
       (p.lastPrayed?local('마지막 기도 ','Last prayed ')+when(p.lastPrayed)+' · ':'')+
       (p.count||0)+local('회 기도',' prayers'));
     root.append(summary);
+    // Preserve the existing shortcut from Capture-created prayer requests.
+    if(p.sourceNote)root.append(action(local('원본 메모 보기 ↗','View source note ↗'),
+      'prayer-add-response',()=>konaOpenSourceNote(p.sourceNote)));
     const ltasks=linkedTasks(p);
     if(ltasks.length){
       root.append(heading(local('연결된 할 일','Linked tasks')));
