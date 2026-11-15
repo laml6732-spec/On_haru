@@ -56,7 +56,9 @@ async function sample(width,theme){
    await disclosure.locator('summary').click();
    await page.screenshot({path:path.join(out,width+'-'+theme+'-expanded.png'),animations:'disabled'});
    await page.screenshot({path:path.join(out,width+'-'+theme+'-read.png'),animations:'disabled'});
-   check('Reflection is default',await page.getByText('Pause with the passage').isVisible());
+   check('No devotional prompt section',await page.locator('.sm-reflection').count()===0);
+   check('Devotional question removed',await page.getByText('What stands out to you?').count()===0);
+   check('Reflection action retained',await page.getByRole('button',{name:'Write a reflection'}).isVisible());
    check('Memorization is optional',await page.getByRole('button',{name:'Memorize (optional)'}).isVisible());
    check('No recall checkpoint on reading view',await page.getByRole('button',{name:'Check recall'}).count()===0);
    await page.getByRole('button',{name:'Mark as read'}).click();
