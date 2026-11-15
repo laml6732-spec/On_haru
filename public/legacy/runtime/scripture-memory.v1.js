@@ -265,11 +265,7 @@
         });
         content.append(details);
       }
-      const reflection=el('section','sm-reflection');
-      reflection.append(el('h3','',tr('잠시 말씀에 머물러 보세요','Pause with the passage')));
-      reflection.append(el('p','',tr('어떤 표현이 마음에 남나요? 오늘의 삶과 이어지는 부분이 있나요?','What stands out to you? How might it speak into today?')));
-      content.append(reflection);
-      const reflectBtn=button(tr('생각 남기기','Write a reflection'),'sm-primary');
+      const reflectBtn=button(tr('묵상 남기기','Write a reflection'),'sm-primary');
       reflectBtn.onclick=writeReflection;content.append(reflectBtn);
       const actions=el('div','sm-soft-actions');
       const read=recordFor(active.id).last_read_on===today();
