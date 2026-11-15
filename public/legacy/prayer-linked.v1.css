@@ -4,9 +4,9 @@
 #focusLibraryModal .focus-history[hidden]{display:none!important}
 #focusLibraryModal .prayer-box{font-family:var(--font-ui)!important;color:var(--ink)}
 #focusLibraryModal .prayer-library-controls{padding:0 0 2px}
-#focusLibraryModal .prayer-search{width:100%;height:40px;min-height:40px;margin:2px 0 9px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--p3-surface,var(--surface));color:var(--ink);font-family:var(--font-ui);font-size:calc(13px * var(--kona-ui-scale,1))}
+#focusLibraryModal .prayer-search{width:100%;height:44px;min-height:44px;margin:2px 0 9px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--p3-surface,var(--surface));color:var(--ink);font-family:var(--font-ui);font-size:calc(13px * var(--kona-ui-scale,1))}
 #focusLibraryModal .prayer-filters{display:flex;gap:5px;align-items:center;padding-bottom:7px;border-bottom:1px solid var(--line)}
-#focusLibraryModal .prayer-filter{flex:1;min-width:0;min-height:37px;padding:6px 8px;border:0;border-radius:8px;background:transparent;color:var(--sub);font:650 calc(12px * var(--kona-ui-scale,1))/1.25 var(--font-ui)}
+#focusLibraryModal .prayer-filter{flex:1;min-width:0;min-height:44px;padding:8px 8px;border:0;border-radius:8px;background:transparent;color:var(--sub);font:650 calc(12px * var(--kona-ui-scale,1))/1.25 var(--font-ui)}
 #focusLibraryModal .prayer-filter.is-active{background:var(--soft);color:var(--p3-ink,var(--ink))}
 #focusLibraryModal .prayer-link-list{margin-top:1px}
 #focusLibraryModal .prayer-item.prayer-link-row{display:flex!important;align-items:center;justify-content:space-between;gap:3px;min-height:60px;padding:2px 0;border-bottom:1px solid var(--line)!important;opacity:1!important}
@@ -22,13 +22,13 @@
 #focusLibraryModal .prayer-link-add{display:flex;align-items:center;gap:6px;margin:8px 0 4px}
 #focusLibraryModal .prayer-link-add .field{height:44px;min-height:44px;flex:1;min-width:0}
 #focusLibraryModal .prayer-link-add .solid{min-width:44px;height:44px;min-height:44px}
-#focusLibraryModal .prayer-back{height:38px;min-height:38px;padding:0;border:0;background:transparent;color:var(--p3-sub,var(--sub));font:650 calc(12px * var(--kona-ui-scale,1))/1.3 var(--font-ui)}
+#focusLibraryModal .prayer-back{height:44px;min-height:44px;padding:0;border:0;background:transparent;color:var(--p3-sub,var(--sub));font:650 calc(12px * var(--kona-ui-scale,1))/1.3 var(--font-ui)}
 #focusLibraryModal .prayer-detail-title{margin:4px 0 4px;font:700 calc(16px * var(--kona-ui-scale,1))/1.35 var(--font-ui);overflow-wrap:break-word;word-break:keep-all}
 #focusLibraryModal .prayer-detail-meta,#focusLibraryModal .prayer-detail-summary{margin:0 0 7px;color:var(--sub);font-size:calc(12px * var(--kona-ui-scale,1));line-height:1.45}
 #focusLibraryModal .prayer-list-caption{margin:14px 0 3px;padding:8px 0 3px;border-top:1px solid var(--line);font:700 calc(12px * var(--kona-ui-scale,1))/1.35 var(--font-ui);color:var(--p3-ink,var(--ink))}
 #focusLibraryModal .prayer-linked-task{display:flex;justify-content:space-between;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);font-size:calc(13px * var(--kona-ui-scale,1));line-height:1.4;overflow-wrap:anywhere}
 #focusLibraryModal .prayer-linked-task .meta-r{flex:none}
-#focusLibraryModal .prayer-add-response{display:block;padding:8px 0;min-height:40px;border:0;background:transparent;text-align:left;color:var(--hero-ink);font:650 calc(13px * var(--kona-ui-scale,1))/1.35 var(--font-ui)}
+#focusLibraryModal .prayer-add-response{display:block;padding:8px 0;min-height:44px;border:0;background:transparent;text-align:left;color:var(--hero-ink);font:650 calc(13px * var(--kona-ui-scale,1))/1.35 var(--font-ui)}
 #focusLibraryModal .prayer-response-form{margin:3px 0 8px}
 #focusLibraryModal .prayer-response-form[hidden],#focusLibraryModal .prayer-inline-edit[hidden],#focusLibraryModal .prayer-inline-confirm[hidden]{display:none!important}
 #focusLibraryModal .prayer-response-form textarea{display:block;width:100%;min-height:84px;margin:1px 0 7px;padding:9px 10px;resize:vertical;font-family:var(--font-ui);line-height:1.5}
@@ -37,7 +37,7 @@
 #focusLibraryModal .prayer-record-date{display:block;font-size:calc(12px * var(--kona-ui-scale,1));line-height:1.4;color:var(--sub)}
 #focusLibraryModal .prayer-record-text{margin:5px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:calc(13px * var(--kona-ui-scale,1));line-height:1.5;color:var(--ink)}
 #focusLibraryModal .prayer-detail-actions{display:flex;flex-wrap:wrap;gap:5px;padding:8px 0 4px}
-#focusLibraryModal .prayer-detail-actions .mini-btn{min-height:40px!important;height:auto!important;padding:7px 10px!important;font-size:calc(12px * var(--kona-ui-scale,1));border:1px solid var(--line);border-radius:9px;background:var(--p3-surface,var(--surface))}
+#focusLibraryModal .prayer-detail-actions .mini-btn{min-height:44px!important;height:auto!important;padding:7px 10px!important;font-size:calc(12px * var(--kona-ui-scale,1));border:1px solid var(--line);border-radius:9px;background:var(--p3-surface,var(--surface))}
 #focusLibraryModal .prayer-detail-actions .prayer-danger{color:#a43f51!important}
 #focusLibraryModal .prayer-detail-actions .prayer-delete-link{margin-left:auto;color:var(--sub)}
 #focusLibraryModal .prayer-inline-edit input{width:100%;height:40px;margin-top:5px}
