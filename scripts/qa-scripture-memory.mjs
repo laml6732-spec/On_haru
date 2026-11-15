@@ -37,9 +37,17 @@ async function sample(width,theme){
    const disclosure=page.locator('.sm-direct-reading');
    check('Direct-reading disclosure available for supplied sample',await disclosure.count()===1);
    check('Direct-reading collapsed initially',!(await disclosure.evaluate(x=>x.open)));
+   const compact=await disclosure.locator('summary').evaluate(n=>({
+     height:Math.round(n.getBoundingClientRect().height),
+     line:n.querySelector('.sm-direct-line'),
+     pillColor:getComputedStyle(n.querySelector('.sm-direct-label')).backgroundColor
+   }));
+   check('Compact one-row disclosure',compact.height>=44&&compact.height<=58&&!compact.line&&compact.pillColor==='rgba(0, 0, 0, 0)');
+   check('Collapsed label explains action',(await disclosure.locator('summary').innerText()).includes('Show Korean reading aid'));
    check('Direct-reading text hidden while collapsed',!(await page.locator('.sm-direct-body').isVisible()));
    await disclosure.locator('summary').click();
    check('Direct-reading expands on tap',await disclosure.evaluate(x=>x.open));
+   check('Expanded label offers collapse',(await disclosure.locator('summary').innerText()).includes('Hide Korean reading aid'));
    check('Direct-reading shows two corresponding verses',await page.locator('.sm-direct-verse').count()===2);
    check('Direct-reading text visible',await page.locator('.sm-direct-body').isVisible());
    await disclosure.locator('summary').click();
