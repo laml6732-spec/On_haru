@@ -239,16 +239,17 @@
         paper.append(el('p','sm-meta',tr('인터넷 연결·API 접근 권한을 확인하거나 공식 본문을 열어 읽을 수 있어요.','Check your connection or API access, or open the official passage.')));
         if(providerError){const retry=button(tr('다시 시도','Retry'),'sm-link-btn');retry.onclick=()=>loadText(active);paper.append(retry);}
       }
+      const hasDirect=translation==='NLT'&&directVerses.has(active.id);
+      if(hasDirect)paper.classList.add('sm-paper-with-direct');
       content.append(paper);
-      // A quiet, native disclosure. Neither reading nor memorization requires opening it.
-      if(translation==='NLT'&&directVerses.has(active.id)){
+      // Native disclosure: default closed, whole row is touch/keyboard accessible.
+      if(hasDirect){
         const details=el('details','sm-direct-reading');
         details.open=directExpanded;
         const summary=el('summary','sm-direct-summary');
-        summary.append(el('span','sm-direct-label',tr('직독직해 버전','Korean reading aid')));
-        const line=el('span','sm-direct-line');line.setAttribute('aria-hidden','true');
+        summary.append(el('span','sm-direct-label',tr('직독직해 보기','Show Korean reading aid')));
         const arrow=el('span','sm-direct-arrow','›');arrow.setAttribute('aria-hidden','true');
-        summary.append(line,arrow);
+        summary.append(arrow);
         const body=el('div','sm-direct-body');
         body.lang='ko';
         for(const verse of directVerses.get(active.id)){
@@ -257,7 +258,11 @@
           body.append(row);
         }
         details.append(summary,body);
-        details.addEventListener('toggle',()=>{directExpanded=details.open;});
+        details.addEventListener('toggle',()=>{
+          directExpanded=details.open;
+          const label=q('.sm-direct-label',details);
+          if(label)label.textContent=directExpanded?tr('직독직해 접기','Hide Korean reading aid'):tr('직독직해 보기','Show Korean reading aid');
+        });
         content.append(details);
       }
       const reflection=el('section','sm-reflection');
