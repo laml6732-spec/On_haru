@@ -26,8 +26,7 @@
 #focusLibraryModal .prayer-detail-title{margin:4px 0 4px;font:700 calc(16px * var(--kona-ui-scale,1))/1.35 var(--font-ui);overflow-wrap:break-word;word-break:keep-all}
 #focusLibraryModal .prayer-detail-meta,#focusLibraryModal .prayer-detail-summary{margin:0 0 7px;color:var(--sub);font-size:calc(12px * var(--kona-ui-scale,1));line-height:1.45}
 #focusLibraryModal .prayer-list-caption{margin:14px 0 3px;padding:8px 0 3px;border-top:1px solid var(--line);font:700 calc(12px * var(--kona-ui-scale,1))/1.35 var(--font-ui);color:var(--p3-ink,var(--ink))}
-#focusLibraryModal .prayer-linked-task{display:flex;justify-content:space-between;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);font-size:calc(13px * var(--kona-ui-scale,1));line-height:1.4;overflow-wrap:anywhere}
-#focusLibraryModal .prayer-linked-task .meta-r{flex:none}
+#focusLibraryModal .prayer-go-task{display:flex;align-items:center;min-height:44px;padding:0 2px;border:0;background:transparent;color:var(--hero-ink);text-align:left;font:650 calc(13px * var(--kona-ui-scale,1))/1.35 var(--font-ui)}
 #focusLibraryModal .prayer-add-response{display:block;padding:8px 0;min-height:44px;border:0;background:transparent;text-align:left;color:var(--hero-ink);font:650 calc(13px * var(--kona-ui-scale,1))/1.35 var(--font-ui)}
 #focusLibraryModal .prayer-response-form{margin:3px 0 8px}
 #focusLibraryModal .prayer-response-form[hidden],#focusLibraryModal .prayer-inline-edit[hidden],#focusLibraryModal .prayer-inline-confirm[hidden]{display:none!important}
@@ -54,3 +53,5 @@
 :root[data-appearance=dark] #focusLibraryModal .prayer-row-main .prayer-title,:root[data-appearance=dark] #focusLibraryModal .prayer-detail-title,:root[data-appearance=dark] #focusLibraryModal .prayer-record-text{color:#E9F1EA}
 :root[data-appearance=dark] #focusLibraryModal .prayer-row-main .meta-r,:root[data-appearance=dark] #focusLibraryModal .prayer-detail-meta,:root[data-appearance=dark] #focusLibraryModal .prayer-record-date{color:#C1D5C6}
 :root[data-appearance=dark] #focusLibraryModal .prayer-add-response,:root[data-appearance=dark] #focusLibraryModal .prayer-quick-mark.is-done{color:#B8DBC7}
+
+:root[data-appearance=dark] #focusLibraryModal .prayer-go-task{color:#B8DBC7}
