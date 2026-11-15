@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "language": "ko",
+  "kind": "direct-reading-aid",
+  "source_note": "User-provided UI reference example. Not the official Korean Revised Version (개역개정).",
+  "entries": [
+    {
+      "id": "1-corinthians-13-4-5",
+      "reference": "1 Corinthians 13:4-5",
+      "verses": [
+        {
+          "number": 4,
+          "text": "사랑은 오래 참고 친절합니다. 사랑은 시기하지 않고 자랑하지 않으며 교만하지 않습니다."
+        },
+        {
+          "number": 5,
+          "text": "무례하지 않고 자기 방식만을 고집하지 않으며, 쉽게 화내지 않고, 받은 잘못을 기록해 두지 않습니다."
+        }
+      ]
+    }
+  ]
+}
