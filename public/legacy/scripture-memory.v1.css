@@ -199,23 +199,31 @@ html[data-appearance="dark"] body .sm-segment.is-selected{background:var(--hero-
 .sm-foot-actions .sm-link-btn:nth-child(3){grid-column:1 / -1;text-align:right;}
 @media(max-width:350px){.sm-foot-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2px 8px;}}
 
-/* User-requested Korean direct-reading disclosure: compact and collapsed by default. */
-.sm-direct-reading{margin:0 0 17px;padding:0 0 12px;border-bottom:1px solid var(--line);color:var(--ink);}
-.sm-direct-summary{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;list-style:none;outline-offset:2px;}
+/* One quiet disclosure row, preserving the book-like reading rhythm. */
+.sm-paper-with-direct{margin-bottom:0;padding-bottom:12px;border-bottom:0}
+.sm-direct-reading{margin:0 0 16px;padding:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--ink)}
+.sm-direct-summary{
+  min-height:48px;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:0 2px;cursor:pointer;list-style:none;outline-offset:2px
+}
 .sm-direct-summary::-webkit-details-marker{display:none}
 .sm-direct-summary::marker{content:''}
-.sm-direct-summary:focus-visible{outline:2px solid var(--hero-ink);border-radius:6px}
+.sm-direct-summary:focus-visible{outline:2px solid var(--hero-ink);border-radius:5px}
 .sm-direct-label{
-  flex:0 0 auto;padding:5px 11px;border-radius:100px;background:var(--surface);
-  color:var(--hero-ink);font-size:calc(12px * var(--kona-ui-scale,1));
-  font-weight:650;line-height:1.35;
+  font-size:calc(13px * var(--kona-ui-scale,1));font-weight:600;
+  color:var(--ink);line-height:1.4;white-space:normal
 }
-.sm-direct-line{border-top:1px solid var(--line);flex:1;min-width:10px;}
-.sm-direct-arrow{display:inline-flex;justify-content:center;align-items:center;flex:0 0 19px;
-  color:var(--sub);font-size:21px;line-height:1;transform:rotate(0deg);transition:transform .16s ease;}
-.sm-direct-reading[open] .sm-direct-arrow{transform:rotate(90deg)}
-.sm-direct-body{padding:9px 2px 3px;}
-.sm-direct-verse{margin:0 0 9px;font-size:calc(14.5px * var(--kona-ui-scale,1));
-  line-height:1.65;font-weight:400;word-break:keep-all;overflow-wrap:anywhere;}
+.sm-direct-arrow{
+  display:flex;align-items:center;justify-content:center;
+  flex:0 0 22px;color:var(--sub);font-size:21px;line-height:1;
+  transform:rotate(90deg);transition:transform .16s ease
+}
+.sm-direct-reading[open] .sm-direct-arrow{transform:rotate(-90deg)}
+.sm-direct-body{padding:5px 2px 13px}
+.sm-direct-verse{
+  margin:0 0 9px;font-size:calc(14.5px * var(--kona-ui-scale,1));
+  line-height:1.65;font-weight:400;word-break:keep-all;overflow-wrap:anywhere
+}
 .sm-direct-verse:last-child{margin-bottom:0}
 @media(prefers-reduced-motion:reduce){.sm-direct-arrow{transition:none}}
+
