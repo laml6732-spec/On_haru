@@ -57,6 +57,10 @@
     linkCheck.checked=Boolean(t.linkedPrayerId&&db.prayers.some(p=>p.id===t.linkedPrayerId));
     refreshLinkOptions(t.linkedPrayerId||'new');syncLinkVisibility();
   };
+  const linkCaption=document.querySelector('#taskFormModal .prayer-toggle-label');
+  const linkTargetCaption=document.querySelector('#taskPrayerLinkOptions .flabel');
+  if(linkCaption)linkCaption.textContent=local('기도제목에도 추가','Add to prayer requests');
+  if(linkTargetCaption)linkTargetCaption.textContent=local('연결할 기도제목','Prayer request');
   refreshLinkOptions('new');syncLinkVisibility();
 
   // Replace only the task submit handler. Task and optional prayer link are saved atomically.
@@ -187,9 +191,11 @@
   }
   function responseEntries(p){
     const list=storedResponses(p).filter(x=>x&&typeof x==='object').map(x=>({date:x.date||'',text:x.text||'',id:x.id}));
-    if(p.answered){
-      const isDuplicate=list.some(x=>x.date===p.answered&&x.text===(p.note||''));
-      if(!isDuplicate)list.push({date:p.answered,text:p.note||'',legacy:true});
+    // Legacy answer notes remain visible even after a prayer is reopened.
+    if(p.answered||p.note){
+      const originalDate=p.legacyResponseDate||p.answered||p.since||'';
+      const isDuplicate=list.some(x=>x.date===originalDate&&x.text===(p.note||''));
+      if(!isDuplicate)list.push({date:originalDate,text:p.note||'',legacy:true});
     }
     return list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   }
@@ -209,7 +215,7 @@
     }));
     actions.append(action(p.answered?local('다시 기도하기','Reopen'):local('기도 마무리','Close prayer'),'mini-btn',()=>{
       const wasClosed=Boolean(p.answered);
-      if(write(()=>{p.answered=wasClosed?null:nowLocal()},local('변경했어요','Updated'))){
+      if(write(()=>{if(wasClosed){p.legacyResponseDate??=p.answered;p.answered=null}else p.answered=nowLocal()},local('변경했어요','Updated'))){
         render();renderPrayerBox();
       }
     }));
