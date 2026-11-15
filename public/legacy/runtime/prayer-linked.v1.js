@@ -129,11 +129,14 @@
     row.append(main);
     if(!p.answered){
       const today=nowLocal(),on=p.lastPrayed===today;
-      row.append(action(on?'✓':'○','prayer-quick-mark'+(on?' is-done':''),()=>{
+      const quick=action(on?'✓':'○','prayer-quick-mark'+(on?' is-done':''),()=>{
         if(write(()=>{if(on)unmarkPrayed(p,today);else markPrayed(p,today)})){
           render();renderPrayerBox();
         }
-      }));
+      });
+      quick.setAttribute('aria-label',on?
+        local('오늘 기도 기록 취소','Undo today\'s prayer'):local('오늘 기도했어요','Mark prayed today'));
+      row.append(quick);
     }
     return row;
   }
@@ -278,6 +281,7 @@
     const responseForm=node('form','prayer-response-form');responseForm.hidden=true;
     const responseText=node('textarea','field');responseText.maxLength=3000;responseText.rows=3;
     responseText.placeholder=local('응답이나 감사한 내용을 남겨 주세요.','Record a response or gratitude.');
+    responseText.setAttribute('aria-label',local('응답·감사 기록','Response or gratitude note'));
     responseText.required=true;
     const responseSubmit=node('button','mini-btn solid',saveLabel());responseSubmit.type='submit';
     responseForm.append(responseText,responseSubmit);
