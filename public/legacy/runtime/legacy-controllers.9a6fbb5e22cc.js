@@ -152,6 +152,8 @@ const ZONES=[
 const KDAY=[KonaI18n.t("Sun"),KonaI18n.t("Mon"),KonaI18n.t("Tue"),KonaI18n.t("Wed"),KonaI18n.t("Thu"),KonaI18n.t("Fri"),KonaI18n.t("Sat")], KORDER=[KonaI18n.t("Mon"),KonaI18n.t("Tue"),KonaI18n.t("Wed"),KonaI18n.t("Thu"),KonaI18n.t("Fri"),KonaI18n.t("Sat"),KonaI18n.t("Sun")];
 const PHASES=['morning','noon','evening','night'];
 const PNAME={morning:'🌅',noon:'☀️',evening:'🌃',night:'✍️'};
+// Display-only rename. Keep the saved `evening` phase and all legacy data stable.
+const checkinReflectionName=()=>KonaI18n.language==='ko'?'리플렉션':'Reflection';
 const SLOT={morning:390,noon:720,evening:1020,night:1260}; // 타임라인 위치: 06:00 / 12:00 / 17:00
 const PHASE_WINDOW={morning:[390,720],noon:[720,1020],evening:[1020,1260],night:[1260,1320]};
 const phaseAt=t=>t>=390&&t<720?'morning':t>=720&&t<1020?'noon':t>=1020&&t<1260?'evening':t>=1260&&t<1320?'night':null;
@@ -555,7 +557,7 @@ function renderToday(){
 }
 function renderHomeCheckins(){
  const root=$('todayCheckins');root.replaceChildren();
- const labels={morning:KonaI18n.t("Morning"),noon:KonaI18n.t("Midday"),evening:KonaI18n.t("Evening"),night:KonaI18n.t("Day wrap-up")};
+ const labels={morning:KonaI18n.t("Morning"),noon:KonaI18n.t("Midday"),evening:checkinReflectionName(),night:KonaI18n.t("Day wrap-up")};
  const now=date===nowLocal()?mins(timeLocal()):-1;
  for(const p of PHASES){
   const c=readCheck(date,p),m=moodOf(c),actual=c?.moodTime?hm(mins(c.moodTime)):'',done=hasCheck(c),current=now>=0&&p===(now<720?'morning':now<1020?'noon':now<1260?'evening':'night');
@@ -683,7 +685,7 @@ function showRecordPreview(e){
  const d=date;if(previewRecord?.d===d&&previewRecord.e.id===e.id){openRecordEditor(e);return}
  previewRecord={d,e};const p=mealPhase(e),c=p?readCheck(d,p):null;
  let noteHeading=$('recordPreviewNoteTitle');if(!noteHeading){noteHeading=el('strong','user-note');noteHeading.id='recordPreviewNoteTitle';$('recordPreviewText').before(noteHeading)}noteHeading.textContent=eventNoteTitle(d,e.id);noteHeading.hidden=!noteHeading.textContent;
- $('recordPreviewHeading').textContent=p?({morning:KonaI18n.t("Morning check-in"),noon:KonaI18n.t("Midday check-in"),evening:KonaI18n.t("Evening check-in"),night:KonaI18n.t("Day wrap-up")})[p]:e.id==='__day_wrap'?KonaI18n.t("Day wrap-up"):KonaI18n.t("Record");
+ $('recordPreviewHeading').textContent=p?({morning:KonaI18n.t("Morning check-in"),noon:KonaI18n.t("Midday check-in"),evening:checkinReflectionName(),night:KonaI18n.t("Day wrap-up")})[p]:e.id==='__day_wrap'?KonaI18n.t("Day wrap-up"):KonaI18n.t("Record");
  const mood=recordMood(d,e);$('recordPreviewMood').hidden=!p;$('recordPreviewMood').textContent=mood?konaFeelingSummary(mood.e,mood.v):KonaI18n.t("No mood recorded");
  const texts=[e.id==='__day_wrap'?'':konaNoteDisplay(eventMemoText(d,e.id),!p?(db.days[d]?.eventNoteTags?.[e.id]||[]):[]),c?.note].filter(Boolean);
  if(e.id==='__morning_checkin')for(const early of dayEvents(d).filter(x=>mins(x.start)<480&&mins(x.end)>390)){const memo=eventMemoText(d,early.id);if(memo)texts.push(memo)}
@@ -692,7 +694,7 @@ function showRecordPreview(e){
 }
 function openRecordEditor(e,forcedPhase=null){
  const d=date,p=forcedPhase||mealPhase(e);editRecord={d,e,p,tags:[...(db.days[d]?.eventNoteTags?.[e.id]||[])]};closeRecordPreview();const root=$('recordEditFields');root.replaceChildren();
- $('recordEditHeading').textContent=e.id==='__day_headline'?KonaI18n.t("Edit daily note"):p?({morning:KonaI18n.t("Morning"),noon:KonaI18n.t("Midday"),evening:KonaI18n.t("Evening"),night:KonaI18n.t("Day wrap-up")})[p]+' check-in':KonaI18n.t("Edit note");
+ $('recordEditHeading').textContent=e.id==='__day_headline'?KonaI18n.t("Edit daily note"):p?({morning:KonaI18n.t("Morning"),noon:KonaI18n.t("Midday"),evening:checkinReflectionName(),night:KonaI18n.t("Day wrap-up")})[p]+' check-in':KonaI18n.t("Edit note");
  $('recordEditMood').previousElementSibling?.classList.toggle('hidden',e.id==='__day_headline'||!p);$('recordEditMood').classList.toggle('hidden',e.id==='__day_headline'||!p);
  const mood=$('recordEditMood');mood.replaceChildren(new Option(KonaI18n.t("No mood selected"),''));MOODS.flat().forEach(m=>mood.append(new Option(m.f+' '+m.n,m.id)));mood.value=(p?moodOf(readCheck(d,p)):recordMood(d,e))?.id||'';
  const field=(id,label,value)=>{const l=el('label','label',label),t=el('textarea','field');t.id=id;t.rows=4;t.value=value||'';t.setAttribute('aria-label',label);root.append(l,t)};
@@ -759,7 +761,7 @@ function eventMemoText(d,id){
 
 function renderEventCheckin(e){
  const p=mealPhase(e),root=$('eventCheckinArea');root.replaceChildren();root.hidden=!p;
- if(p){const labels={morning:KonaI18n.t("Morning"),noon:KonaI18n.t("Midday"),evening:KonaI18n.t("Evening"),night:KonaI18n.t("Day wrap-up")};root.append(el('h3','',KonaI18n.t("Linked check-in")));root.append(btn('mini-btn',KonaI18n.format("Open ⟪0⟫ check-in ↗",[labels[p]],false),KonaI18n.format("Open ⟪0⟫ check-in",[labels[p]],false),()=>{$('eventModal').hidden=true;nav('checkin',{phase:p})}))}
+ if(p){const labels={morning:KonaI18n.t("Morning"),noon:KonaI18n.t("Midday"),evening:checkinReflectionName(),night:KonaI18n.t("Day wrap-up")};root.append(el('h3','',KonaI18n.t("Linked check-in")));root.append(btn('mini-btn',KonaI18n.format("Open ⟪0⟫ check-in ↗",[labels[p]],false),KonaI18n.format("Open ⟪0⟫ check-in",[labels[p]],false),()=>{$('eventModal').hidden=true;nav('checkin',{phase:p})}))}
  const list=$('eventLinkedRecords');list.replaceChildren();
  for(const item of db.days[date]?.sessions||[]){if(!item.start||mins(item.start)<mins(e.start)||mins(item.start)>=mins(e.end))continue;
  const d=date;list.append(btn('time-record',escapeHTML((KIND[item.kind]?.name||KonaI18n.t("기록"))+' · '+item.start+' · '+formatSessionDuration(item.seconds)),KonaI18n.t("연결된 기록 보기"),()=>{if(item.kind==='devotion'||item.personalPrayer){$('eventModal').hidden=true;openSessionNote(d,item)}else toast(item.task||'집중 기록')}))}
@@ -1186,7 +1188,7 @@ function renderDayReview(){
     const c=readCheck(date,p),m=moodOf(c);
     const parts=[c?.note||'',p==='morning'&&!m&&Number.isInteger(c?.morningEnergy)?KonaI18n.t("Energy · ")+konaEnergyLabel(c.morningEnergy):''].filter(Boolean);
     if(!konaReviewHasCheckContent(c))continue;
-    const checkLabel=KonaI18n.format("⟪0⟫ check-in⟪1⟫",[({morning:KonaI18n.t("Morning"),noon:KonaI18n.t("Midday"),evening:KonaI18n.t("Evening"),night:KonaI18n.t("Day wrap-up")})[p],c?.moodTime?' · '+hm(mins(c.moodTime)):''],false);
+    const checkLabel=KonaI18n.format("⟪0⟫ check-in⟪1⟫",[({morning:KonaI18n.t("Morning"),noon:KonaI18n.t("Midday"),evening:checkinReflectionName(),night:KonaI18n.t("Day wrap-up")})[p],c?.moodTime?' · '+hm(mins(c.moodTime)):''],false);
     const recordTime=checkTime(c,p),sortTime=recordTime??SLOT[p],checkRecord={id:`__checkin_${p}`,title:checkLabel,start:hm(sortTime),end:hm(sortTime+20),category:'personal'};
     entries.push({id:'check-'+p,t:sortTime,displayStamp:recordTime===null?KonaI18n.t("Time not recorded"):displayTime(recordTime),label:checkLabel,mood:m,text:parts.join('\n'),open:()=>nav('checkin',{phase:p}),edit:()=>openRecordEditor(checkRecord,p),remove:()=>{const v=db.days[date];if(v){delete v.checkins?.[p];if(p==='night')delete v.eventNotes?.__day_wrap}}});
   }
@@ -1704,7 +1706,7 @@ const UI_SKIP='input,textarea,select,.eventtitle,.task-title,.slot-preview,.rck-
 function translateUI(){}
 
 render();initPersist();window.finishLaunchScreen();
-const tutorialSteps=[{"title": KonaI18n.t("Capture a moment"), "body": KonaI18n.t("Write first, then choose a tag."), "items": [KonaI18n.t("Add a title if needed, write your note, and tap Save note."), KonaI18n.t("Open More to find all tags. The sheep tag means Hearing God’s Voice: use it when recording thoughts or impressions while listening for God’s voice."), KonaI18n.t("Tap a saved record to edit its text or tags.")], "tip": KonaI18n.t("Today’s anchor stays at the top of Review, regardless of when you wrote it."), "page": "capture"}, {"title": KonaI18n.t("Check in"), "body": KonaI18n.t("Choose a period and record how you feel."), "items": [KonaI18n.t("Morning, class review and Evening keep separate records."), KonaI18n.t("Write a note and adjust the feeling controls. Changes save automatically.")], "tip": KonaI18n.t("Evening and your final end-of-day reflection are separate records."), "page": "checkin"}, {"title": KonaI18n.t("Check your mood & energy"), "body": KonaI18n.t("Mood and Energy are two separate 1–5 choices."), "items": [KonaI18n.t("In Check-in, choose Morning or Evening, then select one Energy level and one Mood level."), KonaI18n.t("Both choices save automatically. You can change or clear them at any time."), KonaI18n.t("In Review, open Mood to see how your feelings change over time.")], "tip": KonaI18n.t("Practice mood entries are temporary. Real check-ins stay on this device."), "page": "checkin"}, {"title": KonaI18n.t("Plan your day"), "body": KonaI18n.t("Keep events and tasks together in Plan."), "items": [KonaI18n.t("Add an event to reserve time. Add a task for an action you want to finish."), KonaI18n.t("Tap an existing item to edit it. Check the repeat scope before saving.")], "tip": KonaI18n.t("A note linked to an event also appears with that event in Review."), "page": "today"}, {"title": KonaI18n.t("Use the focus timer"), "body": KonaI18n.t("Choose Focus, Devotion or Prayer and a duration."), "items": [KonaI18n.t("Start the timer, pause when needed, and end the session when you finish."), KonaI18n.t("Use Leave a thought to record something during the session.")], "tip": KonaI18n.t("The timer is available after you leave practice."), "page": "focus"}, {"title": KonaI18n.t("Return to your records"), "body": KonaI18n.t("Read your notes in Daily, Weekly or All notes."), "items": [KonaI18n.t("Tap a record to edit it. Use search or tags to find a note."), KonaI18n.t("Open Write reflection when you want to reflect on the day.")], "tip": KonaI18n.t("Saved for later gathers records you pinned or highlighted."), "page": "records"}, {"title": KonaI18n.t("Settings and backup"), "body": KonaI18n.t("Open the gear at the top of the app."), "items": [KonaI18n.t("Choose English or Korean, and adjust UI text size."), KonaI18n.t("Export a records backup before moving to another device. Device settings have a separate backup.")], "tip": KonaI18n.t("Records stay in this browser and do not sync between devices."), "page": "settings"}];
+const tutorialSteps=[{"title": KonaI18n.t("Capture a moment"), "body": KonaI18n.t("Write first, then choose a tag."), "items": [KonaI18n.t("Add a title if needed, write your note, and tap Save note."), KonaI18n.t("Open More to find all tags. The sheep tag means Hearing God’s Voice: use it when recording thoughts or impressions while listening for God’s voice."), KonaI18n.t("Tap a saved record to edit its text or tags.")], "tip": KonaI18n.t("Today’s anchor stays at the top of Review, regardless of when you wrote it."), "page": "capture"}, {"title": KonaI18n.t("Check in"), "body": KonaI18n.t("Choose a period and record how you feel."), "items": [(KonaI18n.language==='ko'?'아침·수업 돌아보기·리플렉션은 각각 저장돼요.':'Morning, class review and Reflection are saved separately.'), KonaI18n.t("Write a note and adjust the feeling controls. Changes save automatically.")], "tip": (KonaI18n.language==='ko'?'리플렉션은 기존 저녁 기록을 그대로 사용해요.':'Reflection keeps your existing Evening records.'), "page": "checkin"}, {"title": KonaI18n.t("Check your mood & energy"), "body": KonaI18n.t("Mood and Energy are two separate 1–5 choices."), "items": [(KonaI18n.language==='ko'?'체크인에서 아침 또는 리플렉션을 선택하고 에너지와 기분을 각각 기록하세요.':'In Check-in, choose Morning or Reflection, then record Energy and Mood.'), KonaI18n.t("Both choices save automatically. You can change or clear them at any time."), KonaI18n.t("In Review, open Mood to see how your feelings change over time.")], "tip": KonaI18n.t("Practice mood entries are temporary. Real check-ins stay on this device."), "page": "checkin"}, {"title": KonaI18n.t("Plan your day"), "body": KonaI18n.t("Keep events and tasks together in Plan."), "items": [KonaI18n.t("Add an event to reserve time. Add a task for an action you want to finish."), KonaI18n.t("Tap an existing item to edit it. Check the repeat scope before saving.")], "tip": KonaI18n.t("A note linked to an event also appears with that event in Review."), "page": "today"}, {"title": KonaI18n.t("Use the focus timer"), "body": KonaI18n.t("Choose Focus, Devotion or Prayer and a duration."), "items": [KonaI18n.t("Start the timer, pause when needed, and end the session when you finish."), KonaI18n.t("Use Leave a thought to record something during the session.")], "tip": KonaI18n.t("The timer is available after you leave practice."), "page": "focus"}, {"title": KonaI18n.t("Return to your records"), "body": KonaI18n.t("Read your notes in Daily, Weekly or All notes."), "items": [KonaI18n.t("Tap a record to edit it. Use search or tags to find a note."), KonaI18n.t("Open Write reflection when you want to reflect on the day.")], "tip": KonaI18n.t("Saved for later gathers records you pinned or highlighted."), "page": "records"}, {"title": KonaI18n.t("Settings and backup"), "body": KonaI18n.t("Open the gear at the top of the app."), "items": [KonaI18n.t("Choose English or Korean, and adjust UI text size."), KonaI18n.t("Export a records backup before moving to another device. Device settings have a separate backup.")], "tip": KonaI18n.t("Records stay in this browser and do not sync between devices."), "page": "settings"}];
 
 let tutorialIndex=Math.min(Math.max(Number(db.settings.tutorialIndex)||0,0),tutorialSteps.length-1),tutorialReturnFocus=null;
 const topicSelect=$('tutorialTopics');topicSelect.replaceChildren();$('tutorialProgress').parentElement.setAttribute('aria-valuemax',tutorialSteps.length);tutorialSteps.forEach((step,i)=>{const option=document.createElement('option');option.value=i;option.textContent=(i+1)+'. '+step.title;topicSelect.append(option)});
@@ -2051,7 +2053,7 @@ function makeList(d=date){
   const mood=moodOf(c);
   const notes=[c.note||'',phase==='morning'&&!mood&&Number.isInteger(c.morningEnergy)?KonaI18n.t("Energy · ")+konaEnergyLabel(c.morningEnergy):''].filter(Boolean);
   // Feeling is rendered as a visible tag, separate from the user's note.
-  const title=({morning:KonaI18n.t("Morning"),noon:KonaI18n.t("Previous midday check-in"),evening:KonaI18n.t("Evening"),night:KonaI18n.t("End-of-day mood")})[phase];
+  const title=({morning:KonaI18n.t("Morning"),noon:KonaI18n.t("Previous midday check-in"),evening:checkinReflectionName(),night:KonaI18n.t("End-of-day mood")})[phase];
   const time=validReflectHM(c.moodTime);
   add(mood?KonaI18n.t("Mood & check-in"):KonaI18n.t("Check-in"),title,notes.join('\n\n'),time?mins(time):slot,time||title+KonaI18n.t(" · Time not recorded"),'check-'+phase,mood);
   if(phase==='noon'&&classReviewHasContent(c)){const text=[c.classContext?KonaI18n.t("Class / speaker: ")+c.classContext:'',c.lectureQuote?KonaI18n.t("Memorable words: ")+c.lectureQuote:'',c.lectureReflection?'Reflection: '+c.lectureReflection:'',c.classResponse?'Response: '+c.classResponse:''].filter(Boolean).join('\n\n'),ct=validReflectHM(c.classReviewTime);add(KonaI18n.t("Class review"),konaReviewClassHeading(d,c),text,ct?mins(ct):slot,ct||KonaI18n.t("Class review · Time not recorded"),'class-noon')}
@@ -2099,7 +2101,7 @@ function reviewRecords(d=date){
 }
 // Read-only grouping uses existing schedule links; it never infers a link from time.
 function reviewDailySections(records,events){
- const sections=[{key:'morning',name:KonaI18n.t("Morning"),events:[],records:[]},{key:'afternoon',name:KonaI18n.language==='ko'?'낮':KonaI18n.t("Midday"),events:[],records:[]},{key:'evening',name:KonaI18n.t("Evening"),events:[],records:[]},{key:'untimed',name:KonaI18n.t("Time not recorded"),events:[],records:[]},{key:'night',name:KonaI18n.t("End of day"),events:[],records:[]}];
+ const sections=[{key:'morning',name:KonaI18n.t("Morning"),events:[],records:[]},{key:'afternoon',name:KonaI18n.language==='ko'?'낮':KonaI18n.t("Midday"),events:[],records:[]},{key:'evening',name:checkinReflectionName(),events:[],records:[]},{key:'untimed',name:KonaI18n.t("Time not recorded"),events:[],records:[]},{key:'night',name:KonaI18n.t("End of day"),events:[],records:[]}];
  const index=t=>!Number.isFinite(t)?3:t<720?0:t<1020?1:2;
  const linkedIds=new Set(records.filter(r=>r.kind!=='anchor'&&r.reviewEvent).map(r=>r.reviewEvent.id));
  for(const event of events)if(reviewFilter==='all'&&konaReviewPreferences().showEmpty||linkedIds.has(event.id)){const time=validReflectHM(event.start);sections[index(time?mins(time):null)].events.push(event)}
@@ -2237,7 +2239,7 @@ function reviewRow(record,{grouped=false,preview=false,thoughtView=false,weeklyV
   meta.remove();
   if(thoughtView){
    // Daily only: phase artwork + name + feeling + recorded time, all in one card header.
-   const phaseLabel=({morning:'Morning check-in',noon:'Midday check-in',evening:'Evening check-in',night:'Day wrap-up check-in'})[record.phase]||'Check-in';
+   const phaseLabel=({morning:'Morning check-in',noon:'Midday check-in',evening:checkinReflectionName(),night:'Day wrap-up check-in'})[record.phase]||'Check-in';
    const phaseIcon=reviewDailyFeelingEmoji(record);
    const header=el('div',undefined,'rv-daily-check-header'),icon=el('span',phaseIcon,'rv-daily-phase-icon');
    icon.setAttribute('aria-hidden','true');
@@ -2406,7 +2408,7 @@ function archiveMoodEntries(d){
  const phases=[
   ['morning',KonaI18n.t('Morning')],
   ['noon',KonaI18n.t('Midday')],
-  ['evening',KonaI18n.t('Evening')],
+  ['evening',checkinReflectionName()],
   ['night',KonaI18n.t('End-of-day')]
  ];
  return phases.flatMap(([phase,phaseLabel])=>{
@@ -2570,7 +2572,7 @@ function archiveMoodRender(panel){
   for(const [phase,label] of [
    ['morning',archiveMoodText('Morning','오전')],
    ['noon',archiveMoodText('Midday','낮')],
-   ['evening',archiveMoodText('Evening','저녁')],
+   ['evening',checkinReflectionName()],
    ['night',archiveMoodText('End of day','하루 마무리')]
   ]){
    const item=el('span',undefined,'archive-mood-legend-item');
@@ -2790,7 +2792,7 @@ function drawArchiveSearch(){
   const line=el('span',undefined,'archive-result-head'),isCheck=record.kind==='check',isClass=record.kind==='class';
   if(isCheck){
    const emoji=el('span',reviewDailyFeelingEmoji(record)||'◉','archive-checkin-emoji');emoji.setAttribute('aria-hidden','true');line.append(emoji);
-   const phaseLabel=({morning:'Morning check-in',noon:'Midday check-in',evening:'Evening check-in',night:'Day wrap-up check-in'})[record.phase]||'Check-in';
+   const phaseLabel=({morning:'Morning check-in',noon:'Midday check-in',evening:checkinReflectionName(),night:'Day wrap-up check-in'})[record.phase]||'Check-in';
    line.append(el('span',KonaI18n.t(phaseLabel),'archive-checkin-label'));
    if(record.feeling)line.append(el('span',record.feeling,'archive-checkin-feeling'));
   }else if(isPrayer){
@@ -3134,7 +3136,7 @@ function update(){
  const btn=document.querySelector('#page-checkin .phases [data-phase="night"]');if(btn){btn.hidden=true;btn.style.setProperty('display','none','important');btn.tabIndex=-1}
  const row=document.getElementById('todayCheckins');
  if(row){for(const b of [...row.children])if(b.textContent?.includes(KonaI18n.t("Day wrap-up"))){b.hidden=true;b.style.setProperty('display','none','important');b.tabIndex=-1}
- if(date===nowLocal()&&mins(timeLocal())>=1260&&!row.querySelector('.home-checkin:not([hidden]).is-current')){const e=[...row.querySelectorAll('button')].find(b=>b.textContent?.includes(KonaI18n.t("Evening")));if(e){e.classList.add('is-current');e.setAttribute('aria-current','step')}}}
+ if(date===nowLocal()&&mins(timeLocal())>=1260&&!row.querySelector('.home-checkin:not([hidden]).is-current')){const e=[...row.querySelectorAll('button')].find(b=>b.textContent?.includes(checkinReflectionName()));if(e){e.classList.add('is-current');e.setAttribute('aria-current','step')}}}
  const area=document.getElementById('todayCheckins');
  if(area){
    let link=document.getElementById('konaReflectShortcut');
@@ -3590,20 +3592,20 @@ nav('capture',{skipHistory:true});history.replaceState({yeramingDts:true,page:'c
 
 ;/* controller 15/16: 15-selected-capture-checkin-controller.js */
 (function(){
-const byId=id=>document.getElementById(id),checkRoot=byId('page-checkin'),phases=checkRoot.querySelector('.phases');phases.querySelector('[data-phase="noon"] small').textContent=KonaI18n.t("Class review");phases.querySelector('[data-phase="evening"] small').textContent=KonaI18n.t("Evening");
-const heading=document.createElement('div');heading.id='checkFlowHeading';heading.innerHTML=KonaI18n.markup("<h2 id=\"checkFlowTitle\">Evening check-in</h2>");heading.append(byId('checkState'));phases.after(heading);
+const byId=id=>document.getElementById(id),checkRoot=byId('page-checkin'),phases=checkRoot.querySelector('.phases');phases.querySelector('[data-phase="noon"] small').textContent=KonaI18n.t("Class review");phases.querySelector('[data-phase="evening"] small').textContent=checkinReflectionName();
+const heading=document.createElement('div');heading.id='checkFlowHeading';heading.innerHTML=KonaI18n.markup("<h2 id=\"checkFlowTitle\">Reflection</h2>");heading.append(byId('checkState'));phases.after(heading);
 const classNotesLink=document.createElement('button');classNotesLink.type='button';classNotesLink.className='class-notes-shortcut';classNotesLink.textContent=KonaI18n.t("View class notes");classNotesLink.setAttribute('aria-label',KonaI18n.t("View class notes in Review Archive",true));classNotesLink.title=KonaI18n.t("View class notes",true);classNotesLink.onclick=()=>window.konaOpenArchiveTab?.('class');heading.append(classNotesLink);
 const contextLabel=document.createElement('label');contextLabel.id='classContextLabel';contextLabel.htmlFor='classReviewContext';contextLabel.textContent=KonaI18n.t("Class / speaker · optional");const context=document.createElement('input');context.id='classReviewContext';context.className='field';context.maxLength=300;context.placeholder=KonaI18n.t("A class, speaker, or topic",true);context.setAttribute('aria-label',KonaI18n.t("Class or speaker, optional",true));byId('lectureLinks').before(contextLabel,context);context.oninput=()=>saveCheckFlowField('classContext',context.value);
 const actionLabel=document.createElement('label');actionLabel.id='classActionLabel';actionLabel.htmlFor='lectureAction';actionLabel.textContent=KonaI18n.t("One response from class");byId('lectureAction').parentElement.before(actionLabel);byId('lectureAction').placeholder=KonaI18n.t("One small step to practice",true);byId('lectureAction').setAttribute('aria-label',KonaI18n.t("One response from class",true));byId('lectureAction').oninput=()=>saveCheckFlowField('classResponse',byId('lectureAction').value);
 const legacy=document.createElement('details');legacy.id='legacyMiddayCheckin';const legacyTitle=document.createElement('summary');legacyTitle.textContent=KonaI18n.t("Previous midday check-in");const legacyMood=document.createElement('p');legacyMood.id='legacyMiddayMood';legacy.append(legacyTitle,legacyMood);checkRoot.append(legacy);
 const time=document.createElement('details');time.id='checkTimeDetails';const ts=document.createElement('summary');time.append(ts,checkRoot.querySelector('.recorded-time-row'));checkRoot.append(time);
 const retry=document.createElement('button');retry.id='checkFlowRetry';retry.type='button';retry.textContent=KonaI18n.t("Retry save");retry.hidden=true;retry.onclick=()=>{const draft=readCheckFlowDraft(),ok=commitCheckinPatch(db,date,phase,draft,()=>save()||!!tutorialPractice);if(ok)checkFlowDrafts.delete(date+'|'+phase);setCheckFlowStatus(ok?(tutorialPractice?KonaI18n.t("Practice only · not saved"):KonaI18n.t("Saved on this device")):KonaI18n.t("Not saved · retry or back up"));retry.hidden=ok};heading.after(retry);
-function checkLayout(){if(page!=='checkin')return;const cls=phase==='noon',morning=phase==='morning',c=check(date,phase),draft=readCheckFlowDraft(),status=checkFlowSaveStates.get(date+'|'+phase);byId('checkFlowTitle').textContent=cls?KonaI18n.t("Class review"):morning?KonaI18n.t("Morning check-in"):KonaI18n.t("Evening check-in");byId('pageTitle').textContent=cls?KonaI18n.t("Class review"):morning?KonaI18n.t("Morning check-in"):KonaI18n.t("Evening check-in");checkRoot.dataset.reviewMode=cls?'class':morning?'morning':'evening';const feeling=byId('checkFeelingSummary');if(feeling){heading.append(feeling);feeling.hidden=cls}
+function checkLayout(){if(page!=='checkin')return;const cls=phase==='noon',morning=phase==='morning',c=check(date,phase),draft=readCheckFlowDraft(),status=checkFlowSaveStates.get(date+'|'+phase);byId('checkFlowTitle').textContent=cls?KonaI18n.t("Class review"):morning?KonaI18n.t("Morning check-in"):checkinReflectionName();byId('pageTitle').textContent=cls?KonaI18n.t("Class review"):morning?KonaI18n.t("Morning check-in"):checkinReflectionName();checkRoot.dataset.reviewMode=cls?'class':morning?'morning':'evening';const feeling=byId('checkFeelingSummary');if(feeling){heading.append(feeling);feeling.hidden=cls}
  for(const b of phases.querySelectorAll('button')){if(b.dataset.phase==='morning')b.setAttribute('aria-label',KonaI18n.t("Morning check-in",true));else if(b.dataset.phase==='noon')b.setAttribute('aria-label',KonaI18n.t("Class review",true));else if(b.dataset.phase==='evening')b.setAttribute('aria-label',KonaI18n.t("Evening check-in",true))}
  byId('morningPrayerPrompt').hidden=!morning;byId('moodCard').hidden=cls;byId('lectureNoteCard').classList.toggle('hidden',!cls);byId('lectureNoteCard').hidden=!cls;byId('lectureNoteReveal').hidden=true;
  if(cls){const hasLegacy=!!(c.note||'').trim()||!!moodOf(c);legacy.hidden=!hasLegacy;legacy.append(byId('generalNoteCard'));checkRoot.insertBefore(byId('lectureNoteCard'),legacy);byId('generalNoteTitle').textContent=KonaI18n.t("Previous midday note");const m=moodOf(c);legacyMood.textContent=m?KonaI18n.t("Recorded feeling · ")+konaFeelingSummary(m.e,m.v):'';contextLabel.hidden=false;context.hidden=false;
   if(document.activeElement!==context)context.value=draft.classContext??c.classContext??'';if(document.activeElement!==byId('lectureAction'))byId('lectureAction').value=draft.classResponse??c.classResponse??'';
- }else{legacy.hidden=true;checkRoot.insertBefore(byId('moodCard'),legacy);checkRoot.insertBefore(byId('generalNoteCard'),legacy);byId('generalNoteTitle').textContent=morning?KonaI18n.t("Morning note"):KonaI18n.t("Evening note");byId('checkNote').placeholder=morning?KonaI18n.t("What are you bringing into today?",true):KonaI18n.t("What is on your heart tonight?",true)}
+ }else{legacy.hidden=true;checkRoot.insertBefore(byId('moodCard'),legacy);checkRoot.insertBefore(byId('generalNoteCard'),legacy);byId('generalNoteTitle').textContent=morning?KonaI18n.t("Morning note"):(checkinReflectionName()+(KonaI18n.language==='ko'?' 메모':' note'));byId('checkNote').placeholder=morning?KonaI18n.t("What are you bringing into today?",true):KonaI18n.t("What is on your heart tonight?",true)}
  for(const [id,key] of [['lectureQuote','lectureQuote'],['lectureReflection','lectureReflection'],['checkNote','note']])if(document.activeElement!==byId(id)&&draft[key]!==undefined)byId(id).value=draft[key];
  byId('lectureNoteCard').querySelector('label[for="lectureReflection"]').textContent=KonaI18n.t("What stood out to you?");classNotesLink.hidden=!cls;byId('lectureQuote').placeholder=KonaI18n.t("A quote or phrase to remember",true);byId('lectureReflection').placeholder=KonaI18n.t("What did you notice, learn, or want to explore?",true);byId('addLectureTask').textContent=KonaI18n.t("Add task");
  const hasSaved=cls?classReviewHasContent(c):hasCheck(c);byId('checkState').textContent=status||(tutorialPractice?KonaI18n.t("Practice only · not saved"):hasSaved?KonaI18n.t("Saved"):KonaI18n.t("Autosave"));retry.hidden=!byId('checkState').textContent.startsWith(KonaI18n.t("Not saved"));time.hidden=cls;ts.textContent=c.moodTime?KonaI18n.t("Recorded at ")+c.moodTime+KonaI18n.t(" · Edit time"):KonaI18n.t("Edit recorded time · optional");if(!cls)byId('generalNoteCard').after(time);
@@ -3632,7 +3634,7 @@ function renderHome(){
  if(!shown)card.append(node('p',today?KonaI18n.t("No more scheduled events."):KonaI18n.t("No scheduled events."),'capture-empty'));
  // Compact shortcuts show what is already recorded without copying the Check-in forms.
  const links=node('div',null,'capture-check-links');links.setAttribute('aria-label',KonaI18n.t("Check-in progress",true));
- for(const [p,title]of [['morning',KonaI18n.t("Morning")],['noon',KonaI18n.t("Class review")],['evening',KonaI18n.t("Evening")]]){
+ for(const [p,title]of [['morning',KonaI18n.t("Morning")],['noon',KonaI18n.t("Class review")],['evening',checkinReflectionName()]]){
   const c=check(date,p),done=p==='noon'?classReviewHasContent(c):hasCheck(c),b=node('button',null,'capture-check-link'+(done?' is-done':''));
   b.type='button';b.setAttribute('aria-label',title+(done?KonaI18n.t(", saved",true):KonaI18n.t(", not yet saved",true))+'. Open check-in');
   const marker=node('span',done?'✓':'○','capture-check-mark'),name=node('span',title,'capture-check-name');
