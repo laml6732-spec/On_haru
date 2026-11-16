@@ -32,7 +32,7 @@ body .app #page-schedule #taskManageList .record-item.pm-task-row,
 body .app #page-schedule #eventManageList .record-item.pm-event-row{
   display:flex!important;align-items:center!important;min-width:0!important;
   min-height:56px!important;height:auto!important;
-  margin:0!important;padding:9px 0!important;gap:8px!important;
+  margin:0!important;padding:5px 0!important;gap:8px!important;
   background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;
   border-radius:0!important;box-shadow:none!important;
 }
