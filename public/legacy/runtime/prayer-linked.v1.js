@@ -75,7 +75,7 @@
     if(repeat==='none'&&!$('taskDueNone').checked&&!due){toast(KonaI18n.t('A due date is required.'));return}
     const title=$('taskTitle').value.trim();if(!title)return;
     const prior=editTask?db.tasks.find(t=>t.id===editTask):null;
-    const obj={...(prior||{}),id:editTask||uid(),title,kind:$('taskKind').value,
+    const obj={...(prior||{}),id:editTask||uid(),title,kind:prior?.kind||'task',
       repeat,days,since,until,due,important:$('taskImportant').checked};
     const linked=linkCheck.checked?linkTarget.value:'';
     if(linkCheck.checked&&linked!=='new'&&!db.prayers.some(p=>p.id===linked)){
