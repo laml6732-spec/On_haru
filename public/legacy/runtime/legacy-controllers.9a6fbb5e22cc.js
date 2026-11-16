@@ -694,7 +694,7 @@ function showRecordPreview(e){
 }
 function openRecordEditor(e,forcedPhase=null){
  const d=date,p=forcedPhase||mealPhase(e);editRecord={d,e,p,tags:[...(db.days[d]?.eventNoteTags?.[e.id]||[])]};closeRecordPreview();const root=$('recordEditFields');root.replaceChildren();
- $('recordEditHeading').textContent=e.id==='__day_headline'?KonaI18n.t("Edit daily note"):p?({morning:KonaI18n.t("Morning"),noon:middayCheckinLabel(date),evening:checkinReflectionName(),night:KonaI18n.t("Day wrap-up")})[p]+' check-in':KonaI18n.t("Edit note");
+ $('recordEditHeading').textContent=e.id==='__day_headline'?KonaI18n.t("Edit daily note"):p==='noon'?middayCheckinLabel(date):p?({morning:KonaI18n.t("Morning"),evening:checkinReflectionName(),night:KonaI18n.t("Day wrap-up")})[p]+' check-in':KonaI18n.t("Edit note");
  $('recordEditMood').previousElementSibling?.classList.toggle('hidden',e.id==='__day_headline'||!p);$('recordEditMood').classList.toggle('hidden',e.id==='__day_headline'||!p);
  const mood=$('recordEditMood');mood.replaceChildren(new Option(KonaI18n.t("No mood selected"),''));MOODS.flat().forEach(m=>mood.append(new Option(m.f+' '+m.n,m.id)));mood.value=(p?moodOf(readCheck(d,p)):recordMood(d,e))?.id||'';
  const field=(id,label,value)=>{const l=el('label','label',label),t=el('textarea','field');t.id=id;t.rows=4;t.value=value||'';t.setAttribute('aria-label',label);root.append(l,t)};
@@ -761,7 +761,7 @@ function eventMemoText(d,id){
 
 function renderEventCheckin(e){
  const p=mealPhase(e),root=$('eventCheckinArea');root.replaceChildren();root.hidden=!p;
- if(p){const labels={morning:KonaI18n.t("Morning"),noon:middayCheckinLabel(date),evening:checkinReflectionName(),night:KonaI18n.t("Day wrap-up")};root.append(el('h3','',KonaI18n.t("Linked check-in")));root.append(btn('mini-btn',KonaI18n.format("Open ⟪0⟫ check-in ↗",[labels[p]],false),KonaI18n.format("Open ⟪0⟫ check-in",[labels[p]],false),()=>{$('eventModal').hidden=true;nav('checkin',{phase:p})}))}
+ if(p){const labels={morning:KonaI18n.t("Morning"),noon:middayCheckinLabel(date),evening:checkinReflectionName(),night:KonaI18n.t("Day wrap-up")};root.append(el('h3','',KonaI18n.t("Linked check-in")));root.append(btn('mini-btn',KonaI18n.format("Open ⟪0⟫ ↗",[p==='noon'?labels[p]:labels[p]+' check-in'],false),KonaI18n.format("Open ⟪0⟫",[p==='noon'?labels[p]:labels[p]+' check-in'],false),()=>{$('eventModal').hidden=true;nav('checkin',{phase:p})}))}
  const list=$('eventLinkedRecords');list.replaceChildren();
  for(const item of db.days[date]?.sessions||[]){if(!item.start||mins(item.start)<mins(e.start)||mins(item.start)>=mins(e.end))continue;
  const d=date;list.append(btn('time-record',escapeHTML((KIND[item.kind]?.name||KonaI18n.t("기록"))+' · '+item.start+' · '+formatSessionDuration(item.seconds)),KonaI18n.t("연결된 기록 보기"),()=>{if(item.kind==='devotion'||item.personalPrayer){$('eventModal').hidden=true;openSessionNote(d,item)}else toast(item.task||'집중 기록')}))}
@@ -1200,7 +1200,7 @@ function renderDayReview(){
     const c=readCheck(date,p),m=moodOf(c);
     const parts=[c?.note||'',p==='morning'&&!m&&Number.isInteger(c?.morningEnergy)?KonaI18n.t("Energy · ")+konaEnergyLabel(c.morningEnergy):''].filter(Boolean);
     if(!konaReviewHasCheckContent(c))continue;
-    const checkLabel=KonaI18n.format("⟪0⟫ check-in⟪1⟫",[({morning:KonaI18n.t("Morning"),noon:middayCheckinLabel(date),evening:checkinReflectionName(),night:KonaI18n.t("Day wrap-up")})[p],c?.moodTime?' · '+hm(mins(c.moodTime)):''],false);
+    const checkLabel=p==='noon'?middayCheckinLabel(date)+(c?.moodTime?' · '+hm(mins(c.moodTime)):''):KonaI18n.format("⟪0⟫ check-in⟪1⟫",[({morning:KonaI18n.t("Morning"),evening:checkinReflectionName(),night:KonaI18n.t("Day wrap-up")})[p],c?.moodTime?' · '+hm(mins(c.moodTime)):''],false);
     const recordTime=checkTime(c,p),sortTime=recordTime??SLOT[p],checkRecord={id:`__checkin_${p}`,title:checkLabel,start:hm(sortTime),end:hm(sortTime+20),category:'personal'};
     entries.push({id:'check-'+p,t:sortTime,displayStamp:recordTime===null?KonaI18n.t("Time not recorded"):displayTime(recordTime),label:checkLabel,mood:m,text:parts.join('\n'),open:()=>nav('checkin',{phase:p}),edit:()=>openRecordEditor(checkRecord,p),remove:()=>{const v=db.days[date];if(v){delete v.checkins?.[p];if(p==='night')delete v.eventNotes?.__day_wrap}}});
   }
