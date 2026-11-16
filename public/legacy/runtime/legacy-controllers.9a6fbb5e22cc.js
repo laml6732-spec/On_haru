@@ -2353,6 +2353,7 @@ function archiveToggleSaved(record){
 }
 
 function showReviewArchiveRecord(record,edit=false){
+ if(record.kind==='reflection')edit=false; // Historical Daily Reflection is read-only.
  if(!reviewCanEdit())return;if(!archiveDetailRecord)archiveReturnState={query:document.getElementById('archive-search-input').value,scroll:window.scrollY,type:archiveType,context:archiveContext,period:archivePeriod,exact:archiveExactDate,meaning:archiveMeaning};archiveDetailRecord={date:record.date,id:record.id};mode='archive';root.classList.add('archive-detail');renderRecords();requestAnimationFrame(()=>{document.getElementById('archive-search-results')?.scrollIntoView({block:'start'});if(edit){const row=document.querySelector('#archive-search-results .review-record');if(row)reviewInlineNote(record,row)}})
 }
 
@@ -2390,7 +2391,9 @@ function openArchiveSearchResult(item){root.classList.add('archive-detail');cons
   reviewTab='class';mode='archive';nav('records');document.getElementById('kx-archive').value='class';renderRecords();requestAnimationFrame(()=>{const target=[...document.querySelectorAll('#classNotesList .class-note-entry')].find(node=>node.querySelector('.class-note-head strong')?.textContent.startsWith(fmt(item.date)+' ·'));if(target){target.scrollIntoView({block:'center',behavior:'smooth'});target.querySelector('.class-note-edit')?.focus({preventScroll:true})}});return
  }
  if(item.id==='daily-reflection'){
-  mode='reflect';reflectPeriod='daily';renderRecords();reviewJumpToReflection();return
+  const saved=reviewArchiveRecords().find(r=>r.kind==='reflection'&&r.date===item.date);
+  if(saved)showReviewArchiveRecord(saved,false);
+  return
  }
  mode='archive';reviewTab='log';nav('records');document.getElementById('kx-archive').value='log';renderRecords();requestAnimationFrame(()=>{const row=[...document.querySelectorAll('#dayReviewBody .day-review-entry-row')].find(node=>node.dataset.recordId===item.id);if(row){row.scrollIntoView({block:'center',behavior:'smooth'});row.querySelector('.day-review-entry')?.click()}})
 }
@@ -2677,7 +2680,7 @@ function drawArchiveSearch(){
  if(archiveDetailRecord){
   const back=el('button',KonaI18n.t("← Back to results"),'archive-back');back.type='button';back.onclick=()=>{if(!reviewCanEdit())return;const saved=archiveReturnState;archiveDetailRecord=null;root.classList.remove('archive-detail');if(saved){input.value=saved.query;archiveType=saved.type;archiveContext=saved.context;archivePeriod=saved.period;archiveExactDate=saved.exact;archiveMeaning=saved.meaning||'all'}drawArchiveSearch();requestAnimationFrame(()=>window.scrollTo(0,saved?.scroll||0))};archiveSearch.prepend(back);
   const record=all.find(r=>r.date===archiveDetailRecord.date&&r.id===archiveDetailRecord.id);if(!record){results.append(el('p',KonaI18n.t("This record is no longer available. Your other records are unchanged."),'archive-empty'));return}
-  results.append(el('h3',fmt(record.date),'archive-date-group'));const row=reviewRow(record);results.append(row);if(record.kind==='reflection'||record.kind==='weekly-reflection')konaBindEditTarget(row.querySelector('.rv-note-preview'),KonaI18n.t("Open reflection · ")+record.date,()=>{if(!reviewCanEdit())return;archiveDetailRecord=null;if(date!==record.date)changeDate(record.date);if(record.kind==='weekly-reflection')openWeeklyAt(record.date);else{mode='reflect';reflectPeriod='daily';renderRecords();reviewJumpToReflection()}});else if(record.kind==='meal')konaBindEditTarget(row.querySelector('.rv-note-preview'),KonaI18n.t("Change meal note · ")+record.date,()=>{if(date!==record.date)changeDate(record.date);const event=dayEvents(record.date).find(e=>e.id===record.sourceId);if(event)openMealLog(event)});return;
+  results.append(el('h3',fmt(record.date),'archive-date-group'));const row=reviewRow(record);results.append(row);if(record.kind==='weekly-reflection')konaBindEditTarget(row.querySelector('.rv-note-preview'),KonaI18n.t("Open reflection · ")+record.date,()=>{if(!reviewCanEdit())return;archiveDetailRecord=null;if(date!==record.date)changeDate(record.date);if(record.kind==='weekly-reflection')openWeeklyAt(record.date);else{mode='reflect';reflectPeriod='daily';renderRecords();reviewJumpToReflection()}});else if(record.kind==='meal')konaBindEditTarget(row.querySelector('.rv-note-preview'),KonaI18n.t("Change meal note · ")+record.date,()=>{if(date!==record.date)changeDate(record.date);const event=dayEvents(record.date).find(e=>e.id===record.sourceId);if(event)openMealLog(event)});return;
  }
  root.classList.remove('archive-detail');
  const toolbar=el('div',undefined,'archive-toolbar');searchRow.after(toolbar);
@@ -2813,7 +2816,10 @@ function drawArchiveSearch(){
   const saved=archiveManuallySaved(record),mark=el('button',saved?'★':'☆','archive-save-toggle');mark.type='button';mark.dataset.recordDate=record.date;mark.dataset.recordId=record.id;mark.setAttribute('aria-pressed',String(saved));mark.setAttribute('aria-label',(saved?archiveMoodText('Remove star','별표 해제'):archiveMoodText('Star record','별표 표시'))+' · '+(record.noteTitle||record.title));mark.title=saved?archiveMoodText('Unstar','별표 해제'):archiveMoodText('Star','별표 표시');mark.onclick=e=>{e.stopPropagation();archiveToggleSaved(record)};
   wrap.append(button,mark);
   const extra=el('div',undefined,'archive-record-extra');extra.hidden=!expanded;const info=[record.kind==='check'?record.feeling:''].filter(Boolean);if(info.length)extra.append(el('span',info.join(' · ')));
-  const edit=el('button',archiveMoodText('Edit','수정'));edit.type='button';edit.onclick=e=>{e.stopPropagation();showReviewArchiveRecord(record,true)};extra.append(edit);wrap.append(extra);parent.append(wrap);
+  if(record.kind!=='reflection'){
+    const edit=el('button',archiveMoodText('Edit','수정'));edit.type='button';edit.onclick=e=>{e.stopPropagation();showReviewArchiveRecord(record,true)};extra.append(edit);
+   }
+   wrap.append(extra);parent.append(wrap);
  }
  for(const d of sortedDates){
   const dayRecords=byDate.get(d)||[],heading=reviewDateGroupHeading(d,dayRecords.length);if(!dayRecords.length)heading.querySelector('.review-date-count')?.remove();results.append(heading);
@@ -2911,9 +2917,8 @@ panel.replaceChildren();const sevenDayStrip=drawSevenDayStrip();panel.append(sev
 const header=el('div',undefined,'rv-head rv-daily-head'),titleGroup=el('div',undefined,'rv-head-title');titleGroup.hidden=true;const change=el('div',undefined,'rv-nav');
 for(const [x,shift] of [['‹',-1],[KonaI18n.t("Today"),0],['›',1]]){const b=el('button',x);b.type='button';b.setAttribute('aria-label',shift===-1?KonaI18n.t("Previous day",true):shift===1?KonaI18n.t("Next day",true):KonaI18n.t("Go to today",true));b.title=shift===-1?KonaI18n.t("Previous day",true):shift===1?KonaI18n.t("Next day",true):KonaI18n.t("Go to today",true);b.onclick=()=>changeDate(shift?dayAdd(date,shift):nowLocal());change.append(b)}
 header.append(titleGroup);
-const list=reviewRecords(date),v=db.days[date]||{},dailyDraft={...(v.reflectionNotes||{insight:'',action:''})};
-const momentCount=el('span',undefined,'rv-moment-count');momentCount.setAttribute('aria-label',list.length+' '+(list.length===1?KonaI18n.t('record'):KonaI18n.t('records')));momentCount.append(el('span',list.length+' '+(list.length===1?KonaI18n.t('record'):KonaI18n.t('records')),'rv-moment-count-long'),el('span',list.length+(KonaI18n.language==='ko'?'개':''),'rv-moment-count-short'));header.append(momentCount);const writeReflection=el('button',reflectionHasText(dailyDraft)?KonaI18n.t("Edit reflection"):KonaI18n.t("Write reflection"),'mini-btn review-write-reflection');writeReflection.type='button';writeReflection.setAttribute('aria-controls','dailyReflectionEditor');header.append(writeReflection);
-const anchor=el('section',undefined,'review-daily-anchor rv-reference-anchor');
+const list=reviewRecords(date),v=db.days[date]||{};
+const momentCount=el('span',undefined,'rv-moment-count');momentCount.setAttribute('aria-label',list.length+' '+(list.length===1?KonaI18n.t('record'):KonaI18n.t('records')));momentCount.append(el('span',list.length+' '+(list.length===1?KonaI18n.t('record'):KonaI18n.t('records')),'rv-moment-count-long'),el('span',list.length+(KonaI18n.language==='ko'?'개':''),'rv-moment-count-short'));header.append(momentCount);const anchor=el('section',undefined,'review-daily-anchor rv-reference-anchor');
 const [anchorYear,anchorMonth,anchorDay]=date.split('-').map(Number);
 const dayIndex=new Date(Date.UTC(anchorYear,anchorMonth-1,anchorDay)).getUTCDay();
 const weekday=['일','월','화','수','목','금','토'][dayIndex]; // Intentional compact visual date, e.g. 11/9 (월).
@@ -2922,9 +2927,7 @@ const anchorCopy=el('div',undefined,'rv-anchor-copy');
 anchorCopy.append(anchorLabel);
 if(v.headline?.trim())anchorCopy.append(el('p',v.headline,'rv-anchor-text'));
 anchor.append(anchorCopy);
-konaBindEditTarget(anchor,KonaI18n.t("Change Daily Anchor · ")+date,()=>reviewInlineNote({date,kind:'anchor',body:v.headline||'',tags:[],id:'headline',type:KonaI18n.t("Daily Anchor")},anchor));const dailySummary=el('section',undefined,'rv-daily-summary');if(v.headline?.trim()||reflectionHasText(dailyDraft)){dailySummary.append(anchor);panel.append(dailySummary)}
-const reflectionSummary=el('section',undefined,'review-reflection-summary'),summaryText=el('p',dailyDraft.insight||KonaI18n.t("What stayed with you today?"));reflectionSummary.append(summaryText);konaBindEditTarget(reflectionSummary,KonaI18n.t("Open daily reflection · ")+date,reviewJumpToReflection);
-const reflectionText=()=>[dailyDraft.insight,dailyDraft.action,dailyDraft.additionalNotes,dailyDraft.scripture,dailyDraft.discernment,dailyDraft.followup,...(dailyDraft.followups||[]).map(entry=>entry.text)].filter(text=>typeof text==='string'&&text.trim()).join('\n\n');const savedReflectionText=reflectionText();if(reflectionHasText(dailyDraft)){summaryText.textContent=savedReflectionText||KonaI18n.t("Saved reflection");dailySummary.append(reflectionSummary)}
+konaBindEditTarget(anchor,KonaI18n.t("Change Daily Anchor · ")+date,()=>reviewInlineNote({date,kind:'anchor',body:v.headline||'',tags:[],id:'headline',type:KonaI18n.t("Daily Anchor")},anchor));const dailySummary=el('section',undefined,'rv-daily-summary');if(v.headline?.trim()){dailySummary.append(anchor);panel.append(dailySummary)}
 const timeline=el('div',undefined,'rv-timeline');for(const section of reviewDailySections(list.filter(reviewMatchesFilter).filter(r=>!(r.kind==='check'&&r.phase==='night'&&!r.body.trim())),dayEvents(date)))timeline.append(reviewSection(section));if(!list.length&&!timeline.children.length){
  const empty=el('div',undefined,'onharu-review-empty');
  const heading=el('strong',KonaI18n.t("No notes for this day yet."));
@@ -2933,49 +2936,7 @@ const timeline=el('div',undefined,'rv-timeline');for(const section of reviewDail
  action.type='button';action.onclick=()=>nav('capture');
  empty.append(heading,hint,action);timeline.append(empty);
 }panel.append(timeline);
-const reflectionStart=panel.children.length;panel.append(el('h3',KonaI18n.t("Reflection"),'rv-writing-heading'));
-const night=v.checkins?.night||{},finalFeeling=el('div',undefined,'review-final-feeling');finalFeeling.append(el('small',KonaI18n.t("End-of-day")));const fr={date,kind:'check',phase:'night',id:'check-night',title:KonaI18n.t("End-of-day mood"),energy:night.nightEnergy??night.mood?.energy??null,happiness:night.nightHappiness??night.mood?.happiness??null,feeling:konaFeeling(night.mood)||'',body:night.note||''};const fb=el('button',konaFeeling({energy:fr.energy,happiness:fr.happiness})||fr.feeling||KonaI18n.t("Choose end-of-day mood"),'review-final-feeling-button');fb.type='button';const feelingKey=date+'|end-of-day-editor',feelingOpen=!!reviewUI[feelingKey];fb.setAttribute('aria-expanded',String(feelingOpen));fb.onclick=()=>{if(!reviewCanEdit())return;const open=!reviewUI[feelingKey];reviewUISet(feelingKey,open);fb.setAttribute('aria-expanded',String(open));if(open)reviewFeelingEditor(fr,finalFeeling);else finalFeeling.querySelector('.review-feeling-editor')?.remove()};finalFeeling.append(fb);// An empty day must still offer a way to record its first End-of-day mood.
-finalFeeling.hidden=false;panel.append(finalFeeling);if(feelingOpen)reviewFeelingEditor(fr,finalFeeling);
-const saveStatus=el('span',reflectionSaveStates.get(date)||(tutorialPractice?KonaI18n.t("Practice only · not saved"):reflectionHasText(v.reflectionNotes)?KonaI18n.t("Saved"):KonaI18n.t("Autosave")),'rv-save-status');saveStatus.id='reflectionSaveStatus';saveStatus.setAttribute('role','status');saveStatus.setAttribute('aria-live','polite');
-const retrySave=el('button',KonaI18n.t("Retry save"),'mini-btn');retrySave.type='button';retrySave.hidden=!saveStatus.textContent.startsWith(KonaI18n.t("Not saved"));
-function persistReflection(){saveStatus.textContent=KonaI18n.t("Saving…");const ok=commitDailyReflection(db,date,dailyDraft,()=>save()||!!tutorialPractice),result=ok?(tutorialPractice?KonaI18n.t("Practice only · not saved"):KonaI18n.t("Saved")):KonaI18n.t("Not saved · retry or back up");reflectionSaveStates.set(date,result);saveStatus.textContent=result;retrySave.hidden=ok;if(ok)summaryText.textContent=reflectionText()||KonaI18n.t("What stayed with you today?");return ok}
-retrySave.onclick=persistReflection;const saveFeedback=el('div',undefined,'rv-save-feedback');saveFeedback.append(saveStatus,retrySave);panel.append(saveFeedback);
-const canMarkReflected=()=>list.length>0||reflectionHasText(dailyDraft);let done,doneReason;
-function syncDone(){if(!done)return;done.disabled=!v.reflected&&!canMarkReflected();done.title=done.disabled?KonaI18n.t("Add a note, check-in, or reflection first.",true):'';doneReason.hidden=!done.disabled}
-let taskCheckbox=null,taskHint=null;
-const linkedReflectionTask=()=>db.tasks.find(t=>t.id===day(date).reflectionTaskId)||db.tasks.find(t=>t.sourceReflection===date&&t.sourceKind==='daily-reflection');
-let nextStepPanel;
-for(const [key,label,ph] of [['insight',KonaI18n.t("Daily reflection"),KonaI18n.t("What stayed with you today?")],['action',KonaI18n.t("Next step"),KonaI18n.t("One small thing I want to try…")]]){
- const lab=el('label',undefined,'rv-label '+(key==='insight'?'rv-journal-main':'rv-next-step-field')),input=el('textarea');input.value=dailyDraft[key]||'';input.placeholder=ph;input.setAttribute('aria-label',label);
- input.oninput=()=>{dailyDraft[key]=input.value;persistReflection();if(key==='action'&&taskCheckbox){taskCheckbox.disabled=!input.value.trim()&&!linkedReflectionTask();if(taskHint&&linkedReflectionTask())taskHint.textContent=KonaI18n.t("In Tasks")}syncDone()};lab.append(input);
- if(key==='insight')panel.append(lab);else{nextStepPanel=el('details',undefined,'rv-next-step');nextStepPanel.open=!!String(dailyDraft.action||'').trim();nextStepPanel.append(el('summary',KonaI18n.t("Next step · optional")),lab);panel.append(nextStepPanel)}
-}
-appendReflectionContext(panel,dailyDraft,()=>{persistReflection();syncDone()},true);
-const taskOpt=el('div',undefined,'rv-task-optin');const taskLabel=el('label',undefined,'rv-task-checkbox-label');
-taskCheckbox=el('input');taskCheckbox.type='checkbox';taskCheckbox.id='reflectionAddTask';taskCheckbox.checked=!!linkedReflectionTask();taskCheckbox.disabled=!(dailyDraft.action||'').trim()&&!taskCheckbox.checked;
-const taskWords=el('span',KonaI18n.t("Add to Tasks"),'rv-task-checkbox-text');taskLabel.append(taskCheckbox,taskWords);
-taskHint=el('small',taskCheckbox.checked?KonaI18n.t("Added to Plan and available in Focus. Uncheck to remove the linked task."):'','rv-task-hint');taskHint.id='reflectionAddTaskHint';taskCheckbox.setAttribute('aria-describedby',taskHint.id);
-taskCheckbox.onchange=async()=>{
- const reflectionDate=date,linked=linkedReflectionTask();
- if(taskCheckbox.checked){
-  if(!persistReflection()||!day(reflectionDate).reflectionNotes?.action?.trim()){taskCheckbox.checked=false;taskHint.textContent=KonaI18n.t("Save your response before creating a task.");return}
-  if(linked){taskCheckbox.checked=true;return}
-  const today=nowLocal(),text=day(reflectionDate).reflectionNotes.action.trim();
-  const ok=guardedMutation(()=>{const current=day(reflectionDate);const existing=db.tasks.find(t=>t.sourceReflection===reflectionDate&&t.sourceKind==='daily-reflection');if(existing){current.reflectionTaskId=existing.id;return}const task={id:uid(),title:text.slice(0,160),repeat:'none',days:[],since:today,due:today,until:'',sourceReflection:reflectionDate,sourceKind:'daily-reflection'};db.tasks.push(task);current.reflectionTaskId=task.id},KonaI18n.t("Could not add the task. Your reflection is still saved."));
-  taskCheckbox.checked=ok;taskHint.textContent=ok?KonaI18n.t("Added to Plan and available in Focus. Uncheck to remove the linked task."):KonaI18n.t("Not added · please retry.");
-  if(ok)toast(KonaI18n.t("Added to Tasks"));
- }else{
-  if(!linked){taskCheckbox.checked=false;return}
-  if(!await onHaruConfirm(KonaI18n.t("Remove the linked task from Plan? Your reflection text will be kept."))){taskCheckbox.checked=true;return}
-  const ok=guardedMutation(()=>{db.tasks=db.tasks.filter(t=>t.id!==linked.id);delete day(reflectionDate).reflectionTaskId;for(const v of Object.values(db.days)){if(Array.isArray(v.pins))v.pins=v.pins.filter(k=>!k.startsWith(linked.id+'|'))}for(const k of Object.keys(db.checks))if(k.startsWith(linked.id+'|'))delete db.checks[k]},KonaI18n.t("Could not remove the linked task. Please retry."));
-  taskCheckbox.checked=!ok;taskHint.textContent=ok?KonaI18n.t("Removed from Plan. Your reflection was kept."):KonaI18n.t("Not removed · please retry.");
- }
-};taskOpt.append(taskLabel,taskHint);(nextStepPanel||panel).append(taskOpt);
-const extraRecords=el('details',undefined,'rv-extra-records');extraRecords.append(el('summary',KonaI18n.t("More to record")));for(const part of [nextStepPanel,panel.querySelector('.reflection-context'),panel.querySelector('.reflection-later')]){if(!part)continue;const section=el('section',undefined,part.className+' rv-extra-section');for(const child of [...part.children]){if(child.tagName==='SUMMARY')section.append(el('h4',child.textContent));else section.append(child)}part.remove();extraRecords.append(section)}panel.append(extraRecords);
-const controls=el('div',undefined,'rv-controls');done=el('button',v.reflected?KonaI18n.t("Reopen Review"):KonaI18n.t("Save Review"),'rv-done');done.type='button';done.classList.toggle('is-complete',!!v.reflected);done.disabled=!v.reflected&&!canMarkReflected();done.title=done.disabled?KonaI18n.t("Add a note, check-in, or reflection first.",true):'';done.onclick=()=>{if(!day(date).reflected&&!canMarkReflected())return;if(!persistReflection())return;reviewUISet(date+'|reflection-editor',false);toggleReflection()};doneReason=el('small',KonaI18n.t("Add a daily record or reflection to enable this."),'rv-done-reason');doneReason.id='dailyReflectionDisabledReason';done.setAttribute('aria-describedby','dailyReflectionDisabledReason');doneReason.hidden=!done.disabled;if(v.reflected)controls.append(el('span',KonaI18n.t("Completed"),'review-completed-label'));controls.append(done,doneReason);
-const writingHeading=panel.querySelector('.rv-writing-heading'),writingToolbar=el('div',undefined,'rv-writing-toolbar');writingHeading.before(writingToolbar);writingToolbar.append(writingHeading);panel.append(controls);
-const count=Object.entries(db.days).filter(([d,v])=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&v.reflected===true).length,sets=Math.floor(count/5),level=count>0&&count%5===0?5:count%5;
-const flower=el('div',undefined,'rv-flower');flower.append(el('strong',KonaI18n.t("Reflection flowers")));const strip=el('div',undefined,'rv-strip');for(let i=0;i<5;i++){const img=document.createElement('img');img.src='./assets/hibiscus-task-'+(i<level?'done':'off')+'.png';img.alt=i<level?KonaI18n.t("Flower collected"):KonaI18n.t("Next flower");strip.append(img)}flower.append(strip,el('small',KonaI18n.t("A reminder of days you revisited, not a measure of faith.")));const collection=el('details',undefined,'rv-collection-details');collection.append(el('summary',count+' '+(count===1?KonaI18n.t("day"):KonaI18n.t("days"))+KonaI18n.t(" reflected · Flowers")),flower);panel.append(collection);const block=el('section',undefined,'review-top-reflection');for(const child of [...panel.children].slice(reflectionStart))block.append(child);const feeling=block.querySelector('.review-final-feeling');feeling.querySelector('small')?.remove();writingToolbar.append(feeling);const editor=el('section',undefined,'review-reflection-editor');editor.id='dailyReflectionEditor';editor.hidden=!reviewUI[date+'|reflection-editor'];editor.append(block);timeline.before(editor);writeReflection.setAttribute('aria-expanded',String(!editor.hidden));writeReflection.onclick=()=>{if(!reviewCanEdit())return;editor.hidden=!editor.hidden;reviewUISet(date+'|reflection-editor',!editor.hidden);writeReflection.setAttribute('aria-expanded',String(!editor.hidden));if(!editor.hidden)reviewJumpToReflection()};const filterLabel=KonaI18n.language==='ko'?'메모 필터':'Filter notes';
+const filterLabel=KonaI18n.language==='ko'?'메모 필터':'Filter notes';
 const filterTrigger=el('button',undefined,'rv-review-filter-trigger');
 filterTrigger.type='button';
 filterTrigger.setAttribute('aria-controls','rv-review-filter-panel');
@@ -2997,7 +2958,7 @@ for(const [value,label] of filterOptions){
 filterTrigger.onclick=()=>{filterPanel.hidden=!filterPanel.hidden;filterTrigger.setAttribute('aria-expanded',String(!filterPanel.hidden))};
 filterPanel.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();filterPanel.hidden=true;filterTrigger.setAttribute('aria-expanded','false');filterTrigger.focus()}};
 sevenDayStrip.querySelector('.rv-seven-toolbar-left').append(momentCount,filterTrigger);
-sevenDayStrip.querySelector('.rv-seven-toolbar-right').append(writeReflection);
+// Daily Reflection input/complete UI retired; Check-in Reflection is the single input.
 sevenDayStrip.append(filterPanel);
 if(reviewFilter!=='all'&&!timeline.children.length)timeline.append(el('p',KonaI18n.t("No matching records."),'review-filter-empty'));panel.append(drawInlineWeeklyReflection())}
 const archivePicker=root.querySelector('#kx-archive');if(archivePicker){if(!archivePicker.querySelector('option[value=all]'))archivePicker.prepend(new Option(KonaI18n.t("All records"),'all'));archivePicker.dataset.searchScope=archivePicker.dataset.searchScope||'all';archivePicker.value=archivePicker.dataset.searchScope;archivePicker.onchange=()=>{archivePicker.dataset.searchScope=archivePicker.value;reviewTab=archivePicker.value==='all'?'log':archivePicker.value;renderRecords();archivePicker.value=archivePicker.dataset.searchScope}}
@@ -3008,7 +2969,7 @@ const appSettings=document.getElementById('kx-settings');if(appSettings){const b
 window.konaOpenArchiveTab=tab=>{if(!['log','week','mood','class'].includes(tab))return;reviewTab=tab;const picker=document.getElementById('kx-archive');if(picker){picker.value=tab;picker.dataset.searchScope=tab}nav('records');document.getElementById('rev-archive')?.click()};
 window.konaOpenArchiveRecord=(recordDate,recordId,edit=false)=>{const record=reviewRecords(recordDate).find(r=>r.id==='q-'+recordId);if(!record){toast(KonaI18n.t("The original record could not be found."));return false}nav('records');showReviewArchiveRecord(record,edit);return true};
 
-document.getElementById('konaReflectShortcut')?.addEventListener('click',()=>{reflectPeriod='daily';mode='reflect';renderRecords()});
+// Today's Reflection shortcut now opens Check-in instead of the former Review editor.
 const headright=document.querySelector('.pagehead .headright'),dateControl=headright.querySelector('.datecontrol');let settingsButton=document.querySelector('.pagehead .app-settings-shortcut');if(!settingsButton){settingsButton=el('button','⚙','app-settings-shortcut');settingsButton.type='button';settingsButton.setAttribute('aria-label',KonaI18n.t("Settings",true));settingsButton.title=KonaI18n.t("Settings",true);headright.insertBefore(settingsButton,dateControl)}
 	const settingsPanel=document.getElementById('kx-settings'),backupStatus=document.getElementById('reviewBackupStatus'),app=document.querySelector('.app');if(settingsPanel){settingsPanel.hidden=false;if(settingsPanel.parentElement!==app)app.append(settingsPanel);let body=settingsPanel.querySelector('.settings-panel-body');if(!body){body=el('div',undefined,'settings-panel-body');const actions=settingsPanel.querySelector('.review-reset-link');if(actions)body.append(actions);settingsPanel.append(body)}if(backupStatus&&backupStatus.parentElement!==body)body.prepend(backupStatus);const reflectionSettings=settingsPanel.querySelector('.reflection-settings-open');if(reflectionSettings&&reflectionSettings.parentElement!==body)body.append(reflectionSettings);let close=settingsPanel.querySelector('.settings-close');if(!close){close=el('button',KonaI18n.t("Close"),'settings-close');close.type='button';close.setAttribute('aria-label',KonaI18n.t("Close settings",true));close.onclick=()=>{settingsPanel.open=false};body.prepend(close)}}
 	let settingsReturn=null;
@@ -3142,11 +3103,11 @@ function update(){
    let link=document.getElementById('konaReflectShortcut');
    if(!link){
      link=document.createElement('button');link.type='button';link.id='konaReflectShortcut';link.className='kona-reflect-shortcut';
-     link.onclick=()=>{nav('records');document.getElementById('rev-reflect')?.click()};
+     link.onclick=()=>nav('checkin',{phase:'evening'});
      area.after(link);
    }
-   link.textContent=date===nowLocal()?KonaI18n.t("Reflect on today"):KonaI18n.t("Reflect on this day");
-   link.setAttribute('aria-label',KonaI18n.t("Open daily reflection for ",true)+date);
+   link.textContent=KonaI18n.language==='ko'?'리플렉션 작성 ›':'Open Reflection ›';
+   link.setAttribute('aria-label',(KonaI18n.language==='ko'?'리플렉션 열기 · ':'Open Reflection · ')+date);
  }
  const r=document.getElementById('new-reflect-page');if(r&&!r.hidden){const f=r.querySelector('.rv-flower');if(f){const head=f.querySelector('strong');if(head){const n=(head.textContent||'').match(/(\d+\/5)/)?.[1]||'';head.textContent=KonaI18n.t("Reflection Flowers");let x=f.querySelector('.dts-flower-count');if(!x){x=document.createElement('span');x.className='dts-flower-count';head.after(x)}x.textContent=n}}}
 }
@@ -3168,8 +3129,8 @@ if(!reflectionHasText(r))return;
 const card=document.createElement('section');card.id=id;card.setAttribute('aria-label',KonaI18n.t("Saved daily reflection",true));card.style.cssText='border-top:1px solid var(--line,#dce5df);margin-top:12px;padding:14px 0 6px;';
 const top=document.createElement('div');top.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:8px;';
 const title=document.createElement('strong');title.textContent=KonaI18n.t("Daily Reflection");title.style.cssText='font-size:13px;color:var(--text,#354d42);';
-const btn=document.createElement('button');btn.type='button';btn.className='mini-btn';btn.textContent=KonaI18n.t("Edit in Reflect");btn.setAttribute('aria-label',KonaI18n.t("Open this day in Reflect to edit reflection",true));btn.style.cssText='font-size:12px;min-height:34px;';btn.onclick=()=>{document.getElementById('rev-reflect')?.click();document.getElementById('new-reflect-page')?.scrollIntoView({block:'start'})};
-top.append(title,btn);card.append(top);
+// Historical Daily Reflection entries remain readable in Archive; editing UI is retired.
+ top.append(title);card.append(top);
 for(const [name,value] of [[KonaI18n.t("Insight"),a],[KonaI18n.t("Action"),b],[KonaI18n.t("Scripture or context"),r.scripture],[KonaI18n.t("Further prayer or conversation"),r.discernment],[KonaI18n.t("Later reflection"),r.followup]]){if(!value)continue;const part=document.createElement('div');part.style.cssText='margin-top:10px;';const label=document.createElement('div');label.textContent=name;label.style.cssText='font-size:11px;font-weight:700;color:var(--sub,#607469);';const text=document.createElement('p');text.textContent=value;text.style.cssText='font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0 0;';part.append(label,text);card.append(part)}root.append(card)
 }
 renderDayReview=function(){const r=old.apply(this,arguments);sync();return r};
@@ -3306,14 +3267,11 @@ function mount(){
      link.type='button';
      link.id='konaReflectShortcut';
      link.className='kona-reflect-shortcut';
-     link.onclick=()=>{
-       nav('records');
-       document.getElementById('rev-reflect')?.click();
-     };
+     link.onclick=()=>nav('checkin',{phase:'evening'});
      row.after(link);
    }
-   link.textContent=date===nowLocal()?KonaI18n.t("Reflect on today"):KonaI18n.t("Reflect on this day");
-   link.setAttribute('aria-label',KonaI18n.t("Open daily reflection for ",true)+date);
+   link.textContent=KonaI18n.language==='ko'?'리플렉션 작성 ›':'Open Reflection ›';
+   link.setAttribute('aria-label',(KonaI18n.language==='ko'?'리플렉션 열기 · ':'Open Reflection · ')+date);
  }
 }
 const oldHome=renderHomeCheckins;
@@ -3537,17 +3495,14 @@ const root=document.getElementById('page-records'),calendar=document.getElementB
 if(!root||!calendar)return;
 const tools=document.createElement('div');tools.className='archive-date-tools';tools.setAttribute('aria-label',KonaI18n.t("Archive date",true));
 const selected=document.createElement('strong'),monthButton=document.createElement('button');monthButton.type='button';monthButton.setAttribute('aria-controls','viewCal');tools.append(selected,monthButton);calendar.before(tools);
-const reflection=document.createElement('div');reflection.className='archive-reflection-link';
-const state=document.createElement('span'),open=document.createElement('button');open.type='button';open.textContent=KonaI18n.t("Open reflection →");reflection.append(state,open);calendar.after(reflection);
-open.onclick=()=>document.getElementById('rev-reflect').click();
 monthButton.onclick=()=>{monthOpen=!monthOpen;syncArchive()};
 function syncArchive(){
  const archive=document.getElementById('new-reflect-page')?.hidden===true,log=archive&&reviewTab==='log';
- tools.hidden=!log;reflection.hidden=!log;
- tools.style.display=log?'flex':'none';reflection.style.display=log?'flex':'none';
+ tools.hidden=!log;
+ tools.style.display=log?'flex':'none';
  calendar.hidden=!monthOpen;
  selected.textContent=fmt(date);monthButton.textContent=monthOpen?KonaI18n.t("Hide calendar"):KonaI18n.t("Show calendar");monthButton.setAttribute('aria-expanded',String(monthOpen));
- state.textContent=day(date).reflected?KonaI18n.t("✓ Reflection complete"):KonaI18n.t("Reflection not completed");
+ // Historic reflected values remain stored; no new daily-completion control.
  document.getElementById('reflectionCollection').hidden=true;document.getElementById('reflectDay').hidden=true;
 }
 const original=renderRecords;renderRecords=function(){const result=original.apply(this,arguments);syncArchive();return result};
