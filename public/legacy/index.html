@@ -905,8 +905,8 @@ body .app #page-records #archive-search-results .archive-record-schedule-title +
  <div class="top"><strong id="taskFormHeading">New task</strong><button class="close" data-close="" aria-label="Close">×</button></div>
  <form id="taskForm">
   <input id="taskTitle" class="title-input" maxlength="100" placeholder="Task" required="">
-  <label class="frow task-important-control"><span>Important <small>On every scheduled day</small></span><input id="taskImportant" type="checkbox" role="switch" aria-label="Important for all scheduled dates"></label>
-  <label class="frow" for="taskKind"><span class="flabel">Type</span><select id="taskKind" class="pill-input"><option value="task">Task</option><option value="prayer">Prayer</option><option value="devotion">Devotion</option></select></label>
+  <label class="frow task-important-control"><span>Important</span><input id="taskImportant" type="checkbox" role="switch" aria-label="Important for all scheduled dates"></label>
+  <select id="taskKind" hidden tabindex="-1" aria-hidden="true"><option value="task">Task</option><option value="prayer">Prayer</option><option value="devotion">Devotion</option></select>
   <label class="frow task-prayer-toggle" for="taskAlsoPrayer"><span class="prayer-toggle-label">Add to prayer requests</span><input id="taskAlsoPrayer" type="checkbox" aria-expanded="false" aria-controls="taskPrayerLinkOptions"></label>
   <div id="taskPrayerLinkOptions" hidden><label class="flabel" for="taskLinkedPrayerTarget">Prayer request</label><select id="taskLinkedPrayerTarget" class="pill-input"><option value="new">Create new prayer request</option></select></div>
   <div class="frow col"><span class="flabel">Repeat</span><div class="chips" id="taskRepeatChips"><button class="chip active" type="button">Does not repeat</button><button class="chip" type="button">Daily</button><button class="chip" type="button">Weekly</button></div>
