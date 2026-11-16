@@ -1,0 +1,7 @@
+/* Reuse existing On_HARU theme tokens for the conditional Check-in views.
+   Only repair low-contrast legacy Class Review labels in dark mode. */
+:root[data-appearance="dark"] #page-checkin[data-review-mode="class"] #classContextLabel,
+:root[data-appearance="dark"] #page-checkin[data-review-mode="class"] #lectureNoteCard .label,
+:root[data-appearance="dark"] #page-checkin[data-review-mode="class"] #classActionLabel {
+  color:var(--sub)!important;
+}
