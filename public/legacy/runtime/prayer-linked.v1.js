@@ -351,11 +351,26 @@
     const result=originalRenderPins.apply(this,arguments);
     const controls=document.querySelector('#page-today #pinRow .tasks-overview');
     if(controls){
-      const manage=action(local('할 일 관리 ›','Manage tasks ›'),'task-manage-shortcut',()=>{
+      // Keep both actions in the same place and style regardless of fold state.
+      // The legacy row renders Add only when collapsed and duplicates it inside
+      // the expanded task card; remove that visual inconsistency here.
+      controls.querySelector('.task-add')?.remove();
+      const fold=controls.querySelector('.task-fold');
+      if(fold){
+        fold.setAttribute('aria-expanded',String(taskExpanded));
+        fold.setAttribute('aria-controls','todayTaskCard');
+      }
+      const actions=node('div','task-overview-actions');
+      const add=action(local('＋ 추가','＋ Add'),'task-overview-action',()=>{
+        clearTaskForm();openSheet('taskFormModal');
+      });
+      add.setAttribute('aria-label',local('할 일 추가','Add task'));
+      const manage=action(local('관리 ›','Manage ›'),'task-overview-action',()=>{
         nav('schedule',{sub:'tasks'});
       });
       manage.setAttribute('aria-label',local('할 일 관리 화면 열기','Open task management'));
-      controls.append(manage);
+      actions.append(add,manage);
+      controls.append(actions);
     }
     return result;
   };
