@@ -5621,3 +5621,21 @@ body .app #page-checkin #checkFeelingSummary[hidden]{display:none!important}
 
 /* Let the user's writing take priority over coaching. Restore on editor blur / keyboard close. */
 body.practice-mode #guidedTour[data-typing="true"]{display:none!important}
+/* Notebook and task progress reuse existing paper, typography and form tokens. */
+.notebook-section{border-bottom:1px solid var(--line);margin:0 0 16px;padding:0 0 12px}
+.notebook-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.notebook-toggle{border:0;background:transparent;color:var(--ink);padding:8px 0;min-height:44px;font:700 calc(14px * var(--kona-ui-scale,1))/1.4 var(--font-ui);text-align:left}
+.notebook-help,.notebook-empty{color:var(--sub);font-size:calc(12px * var(--kona-ui-scale,1));line-height:1.5}
+.notebook-row{display:block;width:100%;text-align:left;white-space:normal;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;color:var(--ink);padding:12px 0;min-height:44px;overflow-wrap:anywhere}
+.notebook-row strong,.notebook-row small{display:block;margin-bottom:4px}
+.notebook-preview{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:400;line-height:1.45}
+.notebook-note-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;color:var(--ink)}
+.notebook-actions{display:flex;flex-wrap:wrap;gap:8px}
+.task-note-entry{padding:12px 0;border-bottom:1px solid var(--line)}
+body .app .task-execution-note{flex:0 0 auto!important;min-width:44px!important;min-height:44px!important;padding:4px 6px!important;border:0!important;border-radius:0!important;background:transparent!important;color:var(--sub)!important;font:600 calc(12px * var(--kona-ui-scale,1))/1.35 var(--font-ui)!important}
+body .app .quicktask:has(.task-execution-note){flex-wrap:wrap!important}
+body .app #taskManageList .record-item:has(.task-execution-note){flex-wrap:wrap!important}
+.capture-notebook-choice{display:flex;align-items:center;gap:8px;min-height:44px;font-size:calc(12px * var(--kona-ui-scale,1));color:var(--sub)}
+.capture-notebook-choice input{width:18px;height:18px;flex:0 0 18px}
+.notebook-move-action{min-height:44px;background:transparent;color:var(--sub);border:1px solid var(--line);margin-top:8px}
+.notebook-row:focus-visible,.task-execution-note:focus-visible,.notebook-toggle:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
