@@ -45,7 +45,7 @@ export default {
       return new Response(null, { status: 400, headers });
     }
     if (!message || message.v !== 1 || !ID_PATTERN.test(message.id || '') ||
-        !['visit', 'install'].includes(message.event) ||
+        !['visit', 'install', 'exclude'].includes(message.event) ||
         !['browser', 'standalone'].includes(message.mode)) {
       return new Response(null, { status: 400, headers });
     }
@@ -54,8 +54,11 @@ export default {
     const id = await hashDevice(site, message.id);
     const installed = message.event === 'install' || message.mode === 'standalone' ? 1 : 0;
     const day = new Date().toISOString().slice(0, 10);
-    const tasks = [
-      env.METRICS_DB.prepare(`INSERT INTO metric_devices
+    const tasks = message.event === 'exclude'
+      ? [env.METRICS_DB.prepare(
+        'INSERT OR IGNORE INTO metric_excluded_devices(site, device_id, reason) VALUES (?, ?, ?)'
+      ).bind(site, id, 'developer')]
+      : [env.METRICS_DB.prepare(`INSERT INTO metric_devices
         (site, device_id, first_seen_at, last_seen_at, installed_at)
         VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
                 CASE WHEN ? = 1 THEN CURRENT_TIMESTAMP ELSE NULL END)
