@@ -64,12 +64,14 @@
       const button=document.getElementById(id);
       if(button){button.textContent=label(ko,en);button.classList.add('pm-add-action')}
     }
-    const tutorial=document.getElementById('tutorialButton');
-    if(tutorial){
-      tutorial.textContent='?';
-      tutorial.setAttribute('aria-label',label('사용 방법 보기','Open tutorial'));
-      tutorial.title=label('사용 방법 보기','Tutorial');
-      tutorial.classList.add('pm-tutorial');
+    const back=panel.querySelector('#backFromManage');
+    if(back){
+      back.textContent=label('‹ 계획','‹ Plan');
+      back.setAttribute('aria-label',label('계획 화면으로 돌아가기','Back to Plan'));
+    }
+    for(const [sub,ko,en] of [['events','일정','Schedule'],['tasks','할 일','Tasks']]){
+      const tab=panel.querySelector('[data-schedulesub="'+sub+'"]');
+      if(tab)tab.textContent=label(ko,en);
     }
     const emptyTasks=panel.querySelector('#taskManageList > .dash');
     if(emptyTasks)emptyTasks.textContent=label('등록된 할 일이 없어요.','No tasks yet.');
