@@ -1755,7 +1755,15 @@ let guidedIndex=0,guidedTourActive=false,guidedFinished=false,guidedEvidence=new
 function clearGuidedTarget(){document.querySelectorAll('.guided-target').forEach(n=>n.classList.remove('guided-target'))}
 function guidedText(id,value){if($(id).textContent!==value)$(id).textContent=value}
 function visibleGuidedTarget(step){return [...document.querySelectorAll(step.selector)].find(n=>n.getClientRects().length&&getComputedStyle(n).visibility!=='hidden')||null}
-function positionGuidedCard(){const taskFormOpen=!$('taskFormModal').hidden;const modal=[...document.querySelectorAll('.modal-under')].some(n=>!n.hidden);const keyboard=window.visualViewport&&window.innerHeight-window.visualViewport.height>120;const guide=$('guidedTour');guide.classList.toggle('tour-task-entry',taskFormOpen);guide.dataset.position=taskFormOpen?'bottom':(modal||keyboard?'top':'bottom')}
+// Never move a full coachmark over the editor when a mobile keyboard opens.
+function guidedEditorActive(element){return !!element&&(element.isContentEditable||element.matches('textarea,input:not([type]),input[type=text],input[type=search],input[type=email],input[type=url],input[type=tel],input[type=password],input[type=number]'))}
+function guidedKeyboardOpen(viewport,layoutHeight){return !!viewport&&(viewport.scale||1)<=1.05&&layoutHeight-viewport.height>120}
+function positionGuidedCard(){
+ const taskFormOpen=!$('taskFormModal').hidden,modal=[...document.querySelectorAll('.modal-under')].some(n=>!n.hidden);
+ const keyboard=guidedKeyboardOpen(window.visualViewport,window.innerHeight),typing=guidedEditorActive(document.activeElement)||keyboard,guide=$('guidedTour');
+ guide.classList.toggle('tour-task-entry',taskFormOpen);guide.dataset.typing=String(guidedTourActive&&typing);
+ guide.dataset.position=taskFormOpen?'bottom':(modal?'top':'bottom');
+}
 function refreshGuidedStep(){
  if(!guidedTourActive)return;
  // Opening the task sheet completes the preceding 'Add task' step automatically.
@@ -1799,7 +1807,7 @@ function completeGuidedTour(){
  db.settings.guidedTourSeen=true;db.settings.guidedTourComplete=practiced===guidedSteps.length;db.settings.guidedTourRevision=3;save();
  guidedText('tourCount',KonaI18n.t("Practice finished"));guidedText('tourHeading',practiced===guidedSteps.length?KonaI18n.t("Ready for your own day"):KonaI18n.t("Continue at your own pace"));
  guidedText('tourCopy',KonaI18n.t("Your records are back. Practice entries were temporary and have not been saved."));guidedText('tourFeedback',KonaI18n.t("You can reopen this guide in Settings → Help & About."));
- $('guidedTour').hidden=false;$('guidedTour').dataset.position='bottom';$('tourNext').hidden=false;$('tourNext').disabled=false;guidedText('tourNext',KonaI18n.t("Start my own day"));['tourSkip','tourBack','tourExit'].forEach(id=>$(id).hidden=true);
+ $('guidedTour').hidden=false;$('guidedTour').dataset.typing='false';$('guidedTour').dataset.position='bottom';$('tourNext').hidden=false;$('tourNext').disabled=false;guidedText('tourNext',KonaI18n.t("Start my own day"));['tourSkip','tourBack','tourExit'].forEach(id=>$(id).hidden=true);
 }
 function endGuidedTour(markSeen=true){clearGuidedTarget();guidedTourActive=false;restorePractice();guidedFinished=false;$('guidedTour').hidden=true;if(markSeen){db.settings.guidedTourSeen=true;save()}}
 function advanceGuidedTour(){if(guidedIndex===guidedSteps.length-1)completeGuidedTour();else{guidedIndex++;showGuidedStep()}}
@@ -1819,6 +1827,8 @@ document.addEventListener('click',e=>{
 },true);
 ['input','change','click','submit','focusin','focusout'].forEach(name=>document.addEventListener(name,()=>{clearTimeout(guidedRefreshTimer);guidedRefreshTimer=setTimeout(refreshGuidedStep,80)},true));
 window.visualViewport?.addEventListener('resize',()=>{if(guidedTourActive)positionGuidedCard()});
+window.visualViewport?.addEventListener('scroll',()=>{if(guidedTourActive)positionGuidedCard()});
+window.addEventListener('resize',()=>{if(guidedTourActive)positionGuidedCard()});
 new MutationObserver(()=>{if(guidedTourActive){clearTimeout(guidedRefreshTimer);guidedRefreshTimer=setTimeout(refreshGuidedStep,100)}}).observe(document.body,{childList:true,subtree:true});
 $('tutorialTryFeature').onclick=()=>{const step=tutorialSteps[tutorialIndex];closeTutorial();if(step.page==='settings'){const settings=$('kx-settings');settings.open=true;settings.scrollIntoView({block:'start'})}else nav(step.page)};
 // Keep first-visit onboarding and the guide in Settings; remove only Plan's shortcut.

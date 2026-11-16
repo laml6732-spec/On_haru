@@ -5618,3 +5618,6 @@ body .app #page-checkin #checkFeelingSummary[hidden]{display:none!important}
 :root[data-appearance="dark"] #tutorialModal #startGuidedTour{background:var(--ink)!important;color:var(--bg)!important}
 :root[data-appearance="dark"] #tutorialModal #tutorialBack,
 :root[data-appearance="dark"] #tutorialModal .tour-secondary{background:transparent!important;color:var(--ink)!important}
+
+/* Let the user's writing take priority over coaching. Restore on editor blur / keyboard close. */
+body.practice-mode #guidedTour[data-typing="true"]{display:none!important}
