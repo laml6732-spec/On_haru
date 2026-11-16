@@ -55,3 +55,69 @@ The endpoint is at `https://onharu-metrics.laml6732.workers.dev/event`. It only 
 - Pages auto-deploys `main` to `on-haru-pages.pages.dev`; the existing `on-haru.laml6732.workers.dev` bridge proxies Pages without changing its URL, so both receive the exact same frontend update.
 - Keep HTML's `kona-release` and SW's `RELEASE` in sync. Add the new JS file to SW's CORE list if offline caching is desired.
 - The old `onharu.myeram.chatgpt.site` is not tracked, as it is a separate original.
+
+## Separating development/QA from visits
+
+The original tables and `onharu_overview_utc` remain **raw and unchanged**.
+Do not delete or overwrite the historical IDs to clean up a dashboard.
+
+**Apply the additive schema first** (Cloudflare D1 `onharu-metrics` Console):
+
+```sql
+-- Run the complete file: cloudflare/metrics-segmentation.sql
+```
+
+Then deploy the updated `cloudflare/onharu-metrics-worker.js` Worker,
+and only then release the updated frontend. The new `exclude` event requires
+the `metric_excluded_devices` table; deployment of the frontend alone is
+insufficient. Production release is a separate, explicit step.
+
+The tracker uses these rules:
+
+- **Automated browser/QA:** `navigator.webdriver === true` or
+  `?onharu_metrics=qa` stops telemetry before an anonymous ID is generated.
+  Configure automated scripts that hide `webdriver` to use the explicit
+  QA query parameter. This controls our D1 counter, **not** Cloudflare Web Analytics.
+- **Developer's browser (manual registration):** open the production app **once
+  on each browser/profile** with `?onharu_metrics=developer` (e.g.
+  `/legacy/?onharu_metrics=developer`). The opt-out flag stays in that
+  browser's `localStorage`. It submits an idempotent `exclude` event,
+  keyed to the **existing** anonymous UUID when present. All previous
+  daily visits from that same UUID are excluded from the new filtered views,
+  without being deleted. Do **not** send this link to regular visitors.
+- **Normal browser:** visit/install events still work as before. DNT and
+  Global Privacy Control are still respected.
+
+If a developer had 10 fresh automated browser contexts, registering the one
+personal browser cannot magically identify the 10 other past anonymous IDs.
+The original database deliberately has no usernames/IPs to enable this.
+
+**Read filtered and historical/uncertain metrics:**
+
+```sql
+-- Only explicitly excluded devices are subtracted; legacy raw view is unchanged.
+SELECT * FROM onharu_nonexcluded_overview_utc;
+
+-- Historical suspicion is displayed separately, never deleted or auto-excluded.
+SELECT site, segment, COUNT(*) AS anonymous_ids
+FROM onharu_device_segments_utc
+GROUP BY site, segment
+ORDER BY site, segment;
+
+-- Verify explicit exclusions independently.
+SELECT site, reason, COUNT(*) AS excluded_ids
+FROM metric_excluded_devices
+GROUP BY site, reason;
+```
+
+Historical segments are **estimates**, not verified identities:
+`qa_suspected_high` means 6+ new IDs in one UTC minute,
+`qa_suspected` means 3-5, and `unclassified` means 1-2.
+`developer_confirmed` means this browser explicitly opted out.
+Manual D1 classification as `reason='qa'` should be done only with separately
+verified evidence. None of these numbers is a literal number of people.
+
+**Safe rollback:** restore the frontend and Worker from the original main
+commit; leave the additive exclusion table and views in place. The original
+visit tables and overview continue working without restoration. This does
+not undo Cloudflare Web Analytics events already collected.

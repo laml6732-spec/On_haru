@@ -5,14 +5,18 @@ on:
     branches: [main, feat/privacy-safe-install-metrics]
     paths:
       - 'cloudflare/onharu-metrics-worker.js'
+      - 'cloudflare/metrics-segmentation.sql'
       - 'public/legacy/**'
       - 'scripts/verify-metrics.mjs'
+      - 'scripts/verify-metrics-sql.py'
       - '.github/workflows/metrics-check.yml'
   pull_request:
     paths:
       - 'cloudflare/onharu-metrics-worker.js'
+      - 'cloudflare/metrics-segmentation.sql'
       - 'public/legacy/**'
       - 'scripts/verify-metrics.mjs'
+      - 'scripts/verify-metrics-sql.py'
       - '.github/workflows/metrics-check.yml'
 jobs:
   check:
@@ -25,4 +29,5 @@ jobs:
       - run: node --check public/legacy/runtime/install-metrics.v1.js
       - run: node --input-type=module --check < cloudflare/onharu-metrics-worker.js
       - run: node scripts/verify-metrics.mjs
+      - run: python3 scripts/verify-metrics-sql.py
       - run: node scripts/verify-ui-static.mjs
