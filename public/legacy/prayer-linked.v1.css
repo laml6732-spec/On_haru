@@ -25,7 +25,7 @@
 #focusLibraryModal .prayer-link-add .solid{min-width:44px;height:44px;min-height:44px}
 #focusLibraryModal .prayer-add-task-option{display:flex;align-items:center;gap:8px;min-height:44px;padding:2px 1px;color:var(--ink);font:500 calc(13px * var(--kona-ui-scale,1))/1.4 var(--font-ui);cursor:pointer}
 #focusLibraryModal .prayer-add-task-option input[type=checkbox]{width:19px;min-width:19px;height:19px;accent-color:var(--hero-ink);cursor:pointer}
-#page-today #pinRow .tasks-overview .task-manage-shortcut{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-height:44px;padding:0 4px;margin-left:auto;border:0;background:transparent;color:var(--sub);font:600 calc(12px * var(--kona-ui-scale,1))/1.3 var(--font-ui);white-space:nowrap}
+#page-today #pinRow .tasks-overview .task-manage-shortcut{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;height:44px!important;min-height:44px!important;padding:0 4px;margin-left:auto;border:0;background:transparent;color:var(--sub);font:600 calc(12px * var(--kona-ui-scale,1))/1.3 var(--font-ui);white-space:nowrap}
 #page-today #pinRow .tasks-overview{gap:4px!important;min-height:44px!important}
 #page-today #pinRow .tasks-overview .task-fold{flex:1 1 auto;min-width:0;text-align:left}
 #page-today #pinRow .tasks-overview .task-add{flex:0 0 auto;white-space:nowrap}
