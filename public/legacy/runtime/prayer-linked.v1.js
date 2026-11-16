@@ -365,6 +365,7 @@
         clearTaskForm();openSheet('taskFormModal');
       });
       add.setAttribute('aria-label',local('할 일 추가','Add task'));
+      add.dataset.tutorialAction='add-task';
       const manage=action(local('관리 ›','Manage ›'),'task-overview-action',()=>{
         nav('schedule',{sub:'tasks'});
       });
