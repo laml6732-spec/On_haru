@@ -142,16 +142,30 @@
   }
   function addForm(){
     const form=node('form','prayer-add prayer-link-add');
+    const fields=node('div','prayer-link-add-row');
     const input=node('input','field');
     input.maxLength=80;input.required=true;input.placeholder=local('새 기도제목','New prayer request');
     input.setAttribute('aria-label',local('새 기도제목','New prayer request'));
     const submit=node('button','mini-btn solid','＋');submit.type='submit';
     submit.setAttribute('aria-label',local('기도제목 추가','Add prayer request'));
-    form.append(input,submit);
+    fields.append(input,submit);
+    const taskOption=node('label','prayer-add-task-option');
+    const alsoTask=node('input');alsoTask.type='checkbox';
+    alsoTask.setAttribute('aria-label',local('할 일에도 추가','Also add to tasks'));
+    taskOption.append(alsoTask,node('span','',local('할 일에도 추가','Also add to tasks')));
+    form.append(fields,taskOption);
     form.addEventListener('submit',e=>{
       e.preventDefault();const title=input.value.trim();if(!title)return;
-      if(write(()=>db.prayers.push({id:uid(),title,note:'',since:nowLocal(),answered:null,
-          lastPrayed:null,prevPrayed:null,count:0,responseLogs:[]}),local('추가했어요','Added'))){
+      const date=nowLocal();
+      if(write(()=>{
+        const prayer={id:uid(),title,note:'',since:date,answered:null,
+          lastPrayed:null,prevPrayed:null,count:0,responseLogs:[]};
+        db.prayers.push(prayer);
+        if(alsoTask.checked){
+          db.tasks.push({id:uid(),title,kind:'prayer',repeat:'none',days:[],
+            since:date,until:'',due:'',important:false,linkedPrayerId:prayer.id});
+        }
+      },local('추가했어요','Added'))){
         addOpen=false;render();renderPrayerBox();
       }
     });
@@ -331,6 +345,20 @@
     });
     detailButtons(p,root);
   }
+  // The existing task management view is reachable even when today's task list is collapsed.
+  const originalRenderPins=renderPins;
+  renderPins=function(){
+    const result=originalRenderPins.apply(this,arguments);
+    const controls=document.querySelector('#page-today #pinRow .tasks-overview');
+    if(controls){
+      const manage=action(local('할 일 관리 ›','Manage tasks ›'),'task-manage-shortcut',()=>{
+        nav('schedule',{sub:'tasks'});
+      });
+      manage.setAttribute('aria-label',local('할 일 관리 화면 열기','Open task management'));
+      controls.append(manage);
+    }
+    return result;
+  };
   renderPrayerBox=function(){
     const card=modal.querySelector('.prayer-card'),root=card.querySelector('.prayer-box');
     if(card.hidden)return;
