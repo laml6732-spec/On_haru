@@ -109,3 +109,49 @@ body .app #page-schedule .dash{
  body .app #page-schedule #eventManageList .record-item.pm-event-row{gap:6px!important}
  body .app #page-schedule #taskManageList .record-item.pm-task-row .pm-meta{max-width:32%}
 }
+
+/* Single-row Plan manager navigation: back / Schedule|Tasks / help.
+   No new controls: the existing tab handlers and tutorial button are retained. */
+body .app #page-schedule .manage-head.pm-unified-header{
+  display:grid!important;
+  grid-template-columns:max-content minmax(0,1fr) 44px!important;
+  align-items:center!important;column-gap:6px!important;
+  min-height:48px!important;margin:0 0 12px!important;padding:0!important;
+  border-bottom:1px solid var(--line)!important;
+}
+body .app #page-schedule .manage-head.pm-unified-header .manage-back{
+  align-self:center!important;min-height:44px!important;height:44px!important;
+  min-width:0!important;max-width:100%;padding:0 2px!important;
+  font:700 calc(13px * var(--kona-ui-scale,1))/1.35 var(--font-ui)!important;
+  white-space:nowrap!important;
+}
+body .app #page-schedule .manage-head.pm-unified-header .subtabs{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-self:stretch!important;min-width:0!important;gap:0!important;
+  margin:0!important;padding:0!important;border:0!important;
+}
+body .app #page-schedule .manage-head.pm-unified-header .subtabs button{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  min-width:0!important;max-width:100%!important;
+  height:48px!important;min-height:44px!important;margin:0!important;
+  padding:0 2px!important;white-space:nowrap!important;
+  font:700 calc(12px * var(--kona-ui-scale,1))/1.35 var(--font-ui)!important;
+  border:0!important;border-bottom:2px solid transparent!important;
+}
+body .app #page-schedule .manage-head.pm-unified-header .subtabs button.active{
+  border-bottom-color:var(--hero-ink)!important;color:var(--hero-ink)!important;
+}
+body .app #page-schedule .manage-head.pm-unified-header .pm-tutorial{
+  align-self:center!important;
+  width:44px!important;min-width:44px!important;max-width:44px!important;
+  min-height:44px!important;height:44px!important;
+}
+@media(max-width:360px){
+  body .app #page-schedule .manage-head.pm-unified-header{column-gap:3px!important}
+  body .app #page-schedule .manage-head.pm-unified-header .manage-back{
+    font-size:calc(12px * var(--kona-ui-scale,1))!important;padding:0!important;
+  }
+  body .app #page-schedule .manage-head.pm-unified-header .subtabs button{
+    font-size:calc(11.5px * var(--kona-ui-scale,1))!important;
+  }
+}
