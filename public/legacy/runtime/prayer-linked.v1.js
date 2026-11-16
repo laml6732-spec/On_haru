@@ -387,4 +387,7 @@
     if(globalHistory)globalHistory.hidden=kind==='prayer';
     if(kind==='prayer')renderPrayerBox();
   };
+  // The legacy script renders Capture/Plan before this integration loads.
+  // Populate the shortcut on the very first page load as well as later renders.
+  if(document.querySelector('#page-today #pinRow .tasks-overview'))renderPins();
 })();
