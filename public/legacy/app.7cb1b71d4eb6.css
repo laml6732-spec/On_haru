@@ -5605,3 +5605,10 @@ html[data-appearance=dark] body .app #page-checkin #checkFeelingSummary.onharu-m
 body .app #page-checkin #checkFeelingSummary .check-feeling-emoji{font-size:1em!important;line-height:1!important}
 body .app #page-checkin #checkFeelingSummary:empty,
 body .app #page-checkin #checkFeelingSummary[hidden]{display:none!important}
+
+/* Tutorial: preserve existing screens and tokens; only the next action is filled. */
+#tutorialModal .tutorial-sheet{max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain}
+#tutorialModal #tutorialTryFeature{background:transparent!important;color:var(--ink)!important;border:1px solid var(--line)!important;box-shadow:none!important;font-size:calc(14px * var(--kona-ui-scale,1))!important;min-height:44px}
+#tutorialModal #tutorialTryFeature:focus-visible{outline:2px solid var(--hero-ink);outline-offset:2px}
+#tutorialModal .tutorial-list,#tutorialModal .tutorial-body{overflow-wrap:break-word;word-break:keep-all}
+#tutorialModal .tutorial-tip{font-size:calc(13px * var(--kona-ui-scale,1));line-height:1.55}
