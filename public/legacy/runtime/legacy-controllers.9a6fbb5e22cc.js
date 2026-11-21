@@ -371,6 +371,8 @@ function storeActiveSession(){
   try{if(sess.started)localStorage.setItem(ACTIVE_SESSION_KEY,JSON.stringify(sess));else localStorage.removeItem(ACTIVE_SESSION_KEY)}catch(e){toast(KonaI18n.t("Could not save the timer state. Check browser storage."))}
 }
 let sess=restoreActiveSession();
+// Only the Morning check-in shortcut may mark the next prayer session.
+let morningCheckinPrayerLaunchDate='';
 let persistState=KonaI18n.t("Checking storage…");
 
 /* ===== 데이터 접근 ===== */
@@ -499,6 +501,7 @@ function openChoices(title,items){
 }
 const PAGE_TITLE={capture:KonaI18n.t("Capture"),today:KonaI18n.t("Plan"),schedule:KonaI18n.t("Manage plan"),checkin:KonaI18n.t("Today’s check-in"),focus:KonaI18n.t("Focus"),records:KonaI18n.t("Review")};
 function nav(p,opt={}){
+  if(p!=='focus'&&!sess.started)morningCheckinPrayerLaunchDate='';
   if(page!==p&&!opt.skipHistory&&!tutorialPractice)history.pushState({yeramingDts:true,page:p,phase:opt.phase||phase,scheduleSub:opt.sub||scheduleSub,recView:opt.view||recView},'',location.href);
   closeRecordPreview();$('jumpTimelineNow').classList.add('hidden');page=p;if(opt.phase)phase=opt.phase==='night'?'evening':opt.phase;else if(p==='checkin'&&date===nowLocal())phase=mins(timeLocal())<720?'morning':mins(timeLocal())<1020?'noon':'evening';if(opt.sub)scheduleSub=opt.sub;if(opt.view)recView=opt.view;
   if(opt.kind&&!sess.started){sessKind=opt.kind;sessDurMin=db.settings.timerPresets?.[sessKind]??TIMER_MODES[sessKind].default;if(opt.prayerId!==undefined)focusPrayerId=opt.prayerId;if(opt.taskKey!==undefined)focusTaskKey=opt.taskKey}
@@ -916,6 +919,7 @@ const clockText=s=>{s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600);retur
 function timerDraft(kind=sessKind){db.settings.timerDrafts??={};return db.settings.timerDrafts[kind]??={note:'',context:''}}
 function rememberTimer(){db.settings.timerMode=sessKind;db.settings.timerPresets??={};db.settings.timerPresets[sessKind]=sessDurMin;save()}
 function chooseTimerMode(kind){
+ if(kind!=='prayer')morningCheckinPrayerLaunchDate='';
  if(sess.started){if(sess.kind!==kind){if(sess.running){sess.acc=elapsed();sess.running=false;sess.paused=true;storeActiveSession()}toast(KonaI18n.t("Current session paused. Finish or cancel it before choosing another activity."))}renderFocus();return}
  sessKind=kind;sessDurMin=db.settings.timerPresets?.[kind]??TIMER_MODES[kind].default;rememberTimer();renderFocus();
 }
@@ -1010,7 +1014,9 @@ function startSession(){
  const val=$('focusTarget').value,manual=sessKind==='devotion'?timerDraft('devotion').context:($('focusContext').hidden?'':$('focusContext').value.trim()),tk=sessKind==='focus'?val:'',pid=sessKind==='prayer'&&val!=='personal'?val:'';
  const t=db.tasks.find(t=>taskKey(t,date)===tk),p=db.prayers.find(p=>p.id===pid);
  const title=t?.title||p?.title||manual||(sessKind==='focus'?KonaI18n.t("Focus"):sessKind==='devotion'?KonaI18n.t("Devotion"):KonaI18n.t("Personal prayer"));
- sess={...idleSess(),sessionId:uid(),started:true,running:true,kind:sessKind,dur:sessDurMin*60,acc:0,runStart:Date.now(),startDate:date,startHM:timeLocal(),title,taskKey:tk,prayerId:pid,personalPrayer:sessKind==='prayer'&&!pid,note:$('timerNote').value};
+ const fromMorningCheckin=sessKind==='prayer'&&morningCheckinPrayerLaunchDate===date;
+ morningCheckinPrayerLaunchDate='';
+ sess={...idleSess(),origin:fromMorningCheckin?'morning-checkin':'',sessionId:uid(),started:true,running:true,kind:sessKind,dur:sessDurMin*60,acc:0,runStart:Date.now(),startDate:date,startHM:timeLocal(),title,taskKey:tk,prayerId:pid,personalPrayer:sessKind==='prayer'&&!pid,note:$('timerNote').value};
  storeActiveSession();renderFocus();
 }
 function finishSession(){
@@ -1018,6 +1024,28 @@ function finishSession(){
  if(sess.kind==='focus'&&sess.taskKey&&sess.taskKey!=='custom'){
   openChoices(KonaI18n.t("Save focus session"),[{label:KonaI18n.t("Save & mark task done"),sub:KonaI18n.t("Save time and complete only this task instance"),fn:()=>commitTimerSession(true)},{label:KonaI18n.t("Save time only"),sub:KonaI18n.t("Leave task completion unchanged"),fn:()=>commitTimerSession(false)},{label:KonaI18n.t("Keep working"),sub:KonaI18n.t("Return to this session"),fn:()=>renderFocus()}]);
  }else commitTimerSession(false);
+}
+function offerMorningPrayerAnchor(d){
+ const ko=KonaI18n.language==='ko',today=d===nowLocal();
+ const saved=normalizeDailyHeadline(db.days[d]?.headline);
+ const when=ko?(today?'오늘':'선택한 날'):(today?'today':'that day');
+ const title=ko
+  ?'아침기도를 마쳤어요. '+when+'의 앵커를 '+(saved?'확인하거나 수정하시겠습니까?':'적으시겠습니까?')
+  :'Morning prayer is complete. Would you like to '+(saved?'review or edit':'write')+' your anchor for '+when+'?';
+ openChoices(title,[
+  {label:ko?(saved?'앵커 확인·수정':'앵커 적기'):(saved?'Review / edit anchor':'Write anchor'),
+   sub:ko?'기도 중 마음에 남은 말씀이나 방향을 기록해 보세요.':'Capture a verse, phrase, or direction from prayer.',
+   fn:()=>{
+    if(date!==d)changeDate(d);
+    nav('capture');
+    requestAnimationFrame(()=>{
+     const field=$('dayHeadline');
+     field?.scrollIntoView({block:'center',behavior:'smooth'});
+     field?.focus({preventScroll:true});
+    });
+   }},
+  {label:ko?'나중에':'Not now',fn:()=>{}}
+ ]);
 }
 function commitTimerSession(markDone=false){
  if(!sess.started)return;const seconds=Math.floor(elapsed()/1000);if(seconds<1){toast(KonaI18n.t("Record at least one second before saving."));return}
@@ -1029,7 +1057,7 @@ function commitTimerSession(markDone=false){
   if(sess.kind==='prayer'&&sess.prayerId){const p=db.prayers.find(p=>p.id===sess.prayerId);if(p)markPrayed(p,d)}
  }
  try{if(!tutorialPractice)localStorage.setItem(KEY,JSON.stringify(db))}catch(e){db=JSON.parse(before);toast('Could not save. Your timer and note are kept; try again or back up.');return false}
- const kind=sess.kind;sessKind=kind;sessDurMin=sess.dur/60;timerDraft(kind).note='';rememberTimer();sess=idleSess();storeActiveSession();afterTaskKey=null;if(date!==d)changeDate(d);else render();toast(KonaI18n.t("Session saved"));return true;
+ const kind=sess.kind,fromMorningCheckin=kind==='prayer'&&sess.origin==='morning-checkin';sessKind=kind;sessDurMin=sess.dur/60;timerDraft(kind).note='';rememberTimer();sess=idleSess();storeActiveSession();afterTaskKey=null;if(date!==d)changeDate(d);else render();toast(KonaI18n.t("Session saved"));if(fromMorningCheckin&&!tutorialPractice)offerMorningPrayerAnchor(d);return true;
 }
 async function cancelTimer(){if(!sess.started)return;if((elapsed()>0||(sess.note||'').trim())&&!await onHaruConfirm(KonaI18n.t("Discard this session without saving its time or note?")))return;timerDraft(sess.kind).note='';save();sess=idleSess();storeActiveSession();renderFocus()}
 function tick(){if(sess.started&&page==='focus')updateClock();else if(sess.started)expireTimer()}
@@ -3580,7 +3608,7 @@ function checkLayout(){if(page!=='checkin')return;const cls=phase==='noon'&&clas
  byId('lectureNoteCard').querySelector('label[for="lectureReflection"]').textContent=KonaI18n.t("What stood out to you?");classNotesLink.hidden=!cls;byId('lectureQuote').placeholder=KonaI18n.t("A quote or phrase to remember",true);byId('lectureReflection').placeholder=KonaI18n.t("What did you notice, learn, or want to explore?",true);byId('addLectureTask').textContent=KonaI18n.t("Add task");
  const hasSaved=phase==='noon'?noonCheckinRecorded(c):hasCheck(c);byId('checkState').textContent=status||(tutorialPractice?KonaI18n.t("Practice only · not saved"):hasSaved?KonaI18n.t("Saved"):KonaI18n.t("Autosave"));retry.hidden=!byId('checkState').textContent.startsWith(KonaI18n.t("Not saved"));time.hidden=cls;ts.textContent=c.moodTime?KonaI18n.t("Recorded at ")+c.moodTime+KonaI18n.t(" · Edit time"):KonaI18n.t("Edit recorded time · optional");if(!cls)byId('generalNoteCard').after(time);
 }
-const morningPrayer=document.createElement('section');morningPrayer.id='morningPrayerPrompt';morningPrayer.hidden=true;const flower=document.createElement('img');flower.src='./assets/hibiscus-task-done.png';flower.alt='';const copy=document.createElement('div');const pt=document.createElement('h3');pt.textContent=KonaI18n.t("Begin with prayer");const pp=document.createElement('p');pp.textContent=KonaI18n.t("Take a moment to be with God.");copy.append(pt,pp);const pray=document.createElement('button');pray.type='button';pray.textContent=KonaI18n.t("Begin with prayer");pray.prepend(flower);pray.onclick=()=>nav('focus',{kind:'prayer'});morningPrayer.append(pray);heading.after(morningPrayer);
+const morningPrayer=document.createElement('section');morningPrayer.id='morningPrayerPrompt';morningPrayer.hidden=true;const flower=document.createElement('img');flower.src='./assets/hibiscus-task-done.png';flower.alt='';const copy=document.createElement('div');const pt=document.createElement('h3');pt.textContent=KonaI18n.t("Begin with prayer");const pp=document.createElement('p');pp.textContent=KonaI18n.t("Take a moment to be with God.");copy.append(pt,pp);const pray=document.createElement('button');pray.type='button';pray.textContent=KonaI18n.t("Begin with prayer");pray.prepend(flower);pray.onclick=()=>{if(!sess.started)morningCheckinPrayerLaunchDate=date;nav('focus',{kind:'prayer'})};morningPrayer.append(pray);heading.after(morningPrayer);
 const previousCheck=renderCheck;renderCheck=function(){const result=previousCheck.apply(this,arguments);checkLayout();return result};
 const qc=byId('qc-v2'),composeTitle=document.createElement('h2');composeTitle.id='captureComposerHeading';composeTitle.textContent=KonaI18n.t("Write a note");const desc=document.createElement('p');desc.id='captureComposerDescription';desc.textContent=KonaI18n.t("Write what’s on your mind, a quote, a prayer, or something you want to remember.");(byId('qc-note-title')||byId('qc-text')).before(composeTitle,desc);
 const helper=document.createElement('p');helper.id='captureMicHelp';const mic=document.createElement('img');mic.src=COMPACT_UI_ICONS.mic;mic.alt='';helper.append(mic,document.createTextNode(KonaI18n.t("Use your keyboard mic to speak.")));byId('qc-text').after(helper);const noteTags=qc.querySelector('.kona-capture-tags');if(noteTags)helper.after(noteTags);qc.querySelector('.qc-bottom').insertBefore(byId('captureScheduleLink'),qc.querySelector('.qc-save-action'));
