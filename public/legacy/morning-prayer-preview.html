@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <title>On_HARU · 아침기도 디자인 미리보기</title>
-<link rel="stylesheet" href="./morning-prayer-anchor.v1.css?rev=morninghand8a">
+<link rel="stylesheet" href="./morning-prayer-anchor.v1.css?rev=morninghand8b">
 <style>
 :root{color-scheme:light;--ocean-ink:#103449;--ocean-sub:#244b60}
 *{box-sizing:border-box}
@@ -15,7 +15,7 @@ html,body{margin:0;padding:0;min-width:320px;font-family:system-ui,'Apple SD Got
 .demo-head{position:absolute;top:calc(env(safe-area-inset-top) + 12px);left:14px;right:14px;display:flex;align-items:center;justify-content:space-between}
 .brand{font-family:cursive;font-size:23px;font-weight:700;font-style:italic;letter-spacing:-1.7px}
 .brand em{font:400 15px serif;color:#d59a64}
-.mode{font:500 12px system-ui;border-radius:20px;background:#ffffff80;padding:7px 16px}
+
 .hide-timer{position:absolute;top:calc(env(safe-area-inset-top) + 66px);right:22px;border:0;background:transparent;font:400 12px system-ui;color:var(--ocean-sub);padding:8px;cursor:pointer}
 .app #page-focus{position:relative;min-height:100svh}
 .app #page-focus .focus-clock-area{position:absolute;top:47.8%;left:14px;right:14px;transform:translateY(-50%);text-align:center;display:flex;align-items:center;flex-direction:column}
@@ -49,7 +49,7 @@ body.note-on #focusClock{font-size:64px}
 </head>
 <body class="focus-immersive morning-prayer-running" data-focus-ocean="morning">
 <main class="app demo-shell" aria-label="아침기도 화면 디자인 미리보기">
-  <header class="demo-head"><span class="brand">On_HARU <em>✿</em></span><span class="mode">기도</span></header>
+  <header class="demo-head"><span class="brand">On_HARU <em>✿</em></span></header>
   <button class="hide-timer" id="hideTimer" type="button" aria-pressed="false">타이머 숨기기</button>
   <section id="page-focus" class="page active">
     <div class="focus-clock-area">
@@ -70,7 +70,7 @@ body.note-on #focusClock{font-size:64px}
   <div class="links"><button id="next" type="button">다른 기도문 보기</button><a href="./">앱에서 기도 시작</a></div>
   <span id="previewCount"></span>
 </footer>
-<script src="./runtime/morning-prayer-rotation.v1.js?rev=morninghand8a"></script>
+<script src="./runtime/morning-prayer-rotation.v1.js?rev=morninghand8b"></script>
 <script>
 (() => {
  'use strict';
