@@ -770,3 +770,118 @@ body .app #page-capture #qc-v2 #qc-note-title {
     max-width:none!important;
   }
 }
+
+/* Capture seven-tag optical grid / 2026-11-21.
+   Keep seven existing tags and a separate More button visible in one row at
+   every 320–430px viewport. The button hit regions fill their grid cells;
+   circles are optical artwork, not the hit areas. No tag state logic changes. */
+body .app #page-capture #qc-v2 {
+  --capture-tag-circle:28px;
+}
+@media (min-width:360px) {
+  body .app #page-capture #qc-v2 { --capture-tag-circle:30px; }
+}
+@media (min-width:390px) {
+  body .app #page-capture #qc-v2 { --capture-tag-circle:32px; }
+}
+@media (min-width:420px) {
+  body .app #page-capture #qc-v2 { --capture-tag-circle:34px; }
+}
+html body .app #page-capture #qc-v2 .kona-capture-tag-row {
+  display:block!important;
+  position:relative!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:none!important;
+  overflow:visible!important;
+}
+html body .app #page-capture #qc-v2 #konaCaptureTagTray {
+  display:grid!important;
+  box-sizing:border-box!important;
+  grid-template-columns:repeat(8,minmax(0,1fr))!important;
+  grid-auto-rows:44px!important;
+  gap:5px 0!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  height:auto!important;
+  max-height:none!important;
+  padding:0!important;
+  margin:0!important;
+  overflow:visible!important;
+}
+html body .app #page-capture #qc-v2 #konaCaptureTagTray>button.kona-tag-chip {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  justify-self:stretch!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+html body .app #page-capture #qc-v2 #konaCaptureTagTray>button.kona-tag-chip .kona-tag-symbol {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+  width:var(--capture-tag-circle)!important;
+  height:var(--capture-tag-circle)!important;
+  min-width:var(--capture-tag-circle)!important;
+  min-height:var(--capture-tag-circle)!important;
+  max-width:var(--capture-tag-circle)!important;
+  max-height:var(--capture-tag-circle)!important;
+  padding:0!important;
+  margin:0!important;
+  line-height:1!important;
+  font-size:clamp(19px,calc(19px * var(--kona-ui-scale,1)),calc(var(--capture-tag-circle) - 5px))!important;
+  text-align:center!important;
+}
+html body .app #page-capture #qc-v2 #konaCaptureTagTray>button[data-tag="meaning_listening"] .kona-tag-symbol {
+  overflow:hidden!important;
+  border:1px solid #D5DFD8!important;
+  background:#EEE0C7!important;
+}
+html body .app #page-capture #qc-v2 #konaCaptureTagTray .kona-sheep-icon {
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  object-fit:contain!important;
+  margin:0!important;
+  vertical-align:middle!important;
+}
+html body .app #page-capture #qc-v2 .kona-tag-tray-toggle,
+html body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded .kona-tag-tray-toggle {
+  display:flex!important;
+  position:absolute!important;
+  top:0!important;
+  bottom:auto!important;
+  right:0!important;
+  left:auto!important;
+  width:12.5%!important;
+  max-width:none!important;
+  min-width:0!important;
+  height:44px!important;
+  min-height:44px!important;
+  box-sizing:border-box!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+html body .app #page-capture #qc-v2 .kona-tag-tray-toggle::before {
+  width:var(--capture-tag-circle)!important;
+  height:var(--capture-tag-circle)!important;
+}
