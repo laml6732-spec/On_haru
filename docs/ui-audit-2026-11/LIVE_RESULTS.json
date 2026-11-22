@@ -1,6 +1,6 @@
 {
-  "runId": "44994786116",
-  "sourceCommit": "3150deaac8ea22b314b3a95f3a4d395605aad0f4",
+  "runId": "45001604284",
+  "sourceCommit": "ae31e8a1ac32bd76079545cf80641299745b8909",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": null,
   "smoke": null,
@@ -8,60 +8,60 @@
   "pwa": null,
   "runs": [
     {
-      "id": 44994786154,
-      "sha": "3150deaac8ea22b314b3a95f3a4d395605aad0f4",
-      "name": "On_HARU Review Weekly Archive hierarchy QA",
+      "id": 45001604531,
+      "sha": "ae31e8a1ac32bd76079545cf80641299745b8909",
+      "name": "OnHaru metrics privacy and regression checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 45001604456,
+      "sha": "ae31e8a1ac32bd76079545cf80641299745b8909",
+      "name": "On_HARU Archive Mood tooltip QA",
       "status": "in_progress",
       "conclusion": null
     },
     {
-      "id": 44994786152,
-      "sha": "3150deaac8ea22b314b3a95f3a4d395605aad0f4",
-      "name": "On_HARU Review schedule tags in Daily Weekly Archive",
-      "status": "in_progress",
-      "conclusion": null
-    },
-    {
-      "id": 44994786145,
-      "sha": "3150deaac8ea22b314b3a95f3a4d395605aad0f4",
-      "name": "QA On_HARU time-of-day appearance",
-      "status": "in_progress",
-      "conclusion": null
-    },
-    {
-      "id": 44994786140,
-      "sha": "3150deaac8ea22b314b3a95f3a4d395605aad0f4",
+      "id": 45001604361,
+      "sha": "ae31e8a1ac32bd76079545cf80641299745b8909",
       "name": "On_HARU Check-in and Archive Mood touch regression",
       "status": "in_progress",
       "conclusion": null
     },
     {
-      "id": 44994786116,
-      "sha": "3150deaac8ea22b314b3a95f3a4d395605aad0f4",
-      "name": "OnHaru Workers production verification",
+      "id": 45001604311,
+      "sha": "ae31e8a1ac32bd76079545cf80641299745b8909",
+      "name": "On_HARU Review schedule tags in Daily Weekly Archive",
       "status": "in_progress",
       "conclusion": null
     },
     {
-      "id": 44994786098,
-      "sha": "3150deaac8ea22b314b3a95f3a4d395605aad0f4",
+      "id": 45001604301,
+      "sha": "ae31e8a1ac32bd76079545cf80641299745b8909",
+      "name": "On_HARU Review Weekly Archive hierarchy QA",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 45001604292,
+      "sha": "ae31e8a1ac32bd76079545cf80641299745b8909",
       "name": "On_HARU Capture emoji grid visual regression",
       "status": "in_progress",
       "conclusion": null
     },
     {
-      "id": 44994786094,
-      "sha": "3150deaac8ea22b314b3a95f3a4d395605aad0f4",
-      "name": "OnHaru static UI checks",
+      "id": 45001604284,
+      "sha": "ae31e8a1ac32bd76079545cf80641299745b8909",
+      "name": "OnHaru Workers production verification",
       "status": "in_progress",
       "conclusion": null
     },
     {
-      "id": 44994786045,
-      "sha": "3150deaac8ea22b314b3a95f3a4d395605aad0f4",
-      "name": "On_HARU Archive Mood tooltip QA",
-      "status": "in_progress",
-      "conclusion": null
+      "id": 45001604278,
+      "sha": "ae31e8a1ac32bd76079545cf80641299745b8909",
+      "name": "OnHaru static UI checks",
+      "status": "completed",
+      "conclusion": "success"
     }
   ],
   "allPassed": false
