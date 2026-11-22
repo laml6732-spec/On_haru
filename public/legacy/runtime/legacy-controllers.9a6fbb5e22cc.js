@@ -3854,7 +3854,28 @@ function renderHome(){
   row.classList.add('capture-task-row');
   const title=row.querySelector('.task-title'),meta=row.querySelector('.task-meta'),focus=row.querySelector('.task-start-btn');
   // All controls and metadata share one visual line. The full title is kept for accessible editing.
-  if(title)title.title=task.title;
+  if(title){
+   title.title=task.title;
+   // A double click/tap in Capture marks the task important (existing thick
+   // highlighter style). Delay only a pointer's first click so it doesn't
+   // open Edit before the second click arrives. Keyboard Enter remains instant.
+   const originalClick=title.onclick;
+   let firstClickTimer=null;
+   title.style.touchAction='manipulation';
+   title.onclick=event=>{
+    if(event.detail>=2){
+     if(firstClickTimer){clearTimeout(firstClickTimer);firstClickTimer=null}
+     event.preventDefault();event.stopPropagation();
+     setTaskImportant(task,date);
+    }else if(event.detail===1){
+     if(firstClickTimer)clearTimeout(firstClickTimer);
+     firstClickTimer=setTimeout(()=>{
+      firstClickTimer=null;
+      if(title.isConnected)originalClick?.call(title,event);
+     },310);
+    }else originalClick?.call(title,event);
+   };
+  }
   if(meta){
    const langKo=KonaI18n.language==='ko';
    const due=task.due||'';
