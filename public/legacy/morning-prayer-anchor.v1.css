@@ -230,6 +230,9 @@ body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListe
   overflow-wrap:break-word!important;
   text-shadow:0 1px 15px rgb(230 248 252 / 45%);
 }
+body.focus-immersive.morning-prayer-running .app #page-focus :is(.morning-prayer-opening,.morning-prayer-bridge) {
+  display:block;
+}
 body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage strong {
   display:block!important;
   margin-top:3px!important;
