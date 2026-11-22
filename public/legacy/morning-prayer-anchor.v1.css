@@ -3,9 +3,9 @@
 
 /* The anchor occupies exactly its measured one or two visible text lines.
    JavaScript sets the height after measuring real wrapping at the current width. */
-body .app #page-capture #qc-v2 #konaCarryToday textarea#dayHeadline,
-body .app #page-capture #qc-v2 #konaCarryToday:focus-within textarea#dayHeadline,
-body .app #page-capture #qc-v2 #konaCarryToday.has-anchor textarea#dayHeadline {
+body .app #page-capture #konaCarryToday textarea#dayHeadline,
+body .app #page-capture #konaCarryToday:focus-within textarea#dayHeadline,
+body .app #page-capture #konaCarryToday.has-anchor textarea#dayHeadline {
   box-sizing: border-box!important;
   min-height: 0!important;
   max-height: calc(48px * var(--kona-ui-scale, 1))!important;
