@@ -967,7 +967,13 @@ function syncFocusLayout(){
  document.body.classList.toggle('morning-prayer-running',morningRunning);
  const durationTitle=$('morningPrayerDurationHeading'),listeningMessage=$('morningPrayerListeningMessage');
  if(durationTitle){durationTitle.hidden=!morningSetup;durationTitle.textContent=KonaI18n.language==='ko'?'기도할 시간을 선택해 주세요':'Choose your prayer time'}
- if(listeningMessage){listeningMessage.hidden=!morningRunning;listeningMessage.textContent=KonaI18n.language==='ko'?'하나님이 선물하신 오늘 하루를 기대하는 마음으로 하나님의 음성을 들어보세요':'Listen for God’s voice with anticipation for the day God has given you.'}
+ if(listeningMessage){
+  listeningMessage.hidden=!morningRunning;
+  if(KonaI18n.language==='ko'){
+   const emphasis=document.createElement('strong');emphasis.className='morning-prayer-emphasis';emphasis.textContent='하나님의 음성을 들어보세요';
+   listeningMessage.replaceChildren(document.createTextNode('하나님이 선물하신 오늘 하루를 기대하는 마음으로 '),emphasis);
+  }else listeningMessage.textContent='Listen for God’s voice with anticipation for the day God has given you.';
+ }
  if(on&&(morningSetup||morningRunning))$('pageTitle').textContent=KonaI18n.language==='ko'?'아침기도':'Morning prayer';
  document.body.classList.toggle('focus-screen',on);document.body.classList.toggle('focus-immersive',active);if(active)syncFocusOceanTheme();
  if(sess.started&&focusUiSession!==sess.sessionId){focusUiSession=sess.sessionId;focusNoteOpen=false}if(!sess.started){focusUiSession='';focusNoteOpen=false}
