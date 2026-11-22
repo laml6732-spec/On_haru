@@ -13,7 +13,7 @@ const assert=(ok,msg)=>{if(!ok)throw Error(msg)};
 async function state(field){
  return field.evaluate(el=>{
   const c=getComputedStyle(el);
-  return {height:el.getBoundingClientRect().height,line:parseFloat(c.lineHeight),scroll:el.scrollHeight,overflow:c.overflowY,minHeight:c.minHeight,maxHeight:c.maxHeight,style:el.getAttribute('style'),value:el.value};
+  return {height:el.getBoundingClientRect().height,computedHeight:c.height,offsetHeight:el.offsetHeight,parentHeight:el.parentElement?.getBoundingClientRect().height,flexShrink:c.flexShrink,line:parseFloat(c.lineHeight),scroll:el.scrollHeight,overflow:c.overflowY,minHeight:c.minHeight,maxHeight:c.maxHeight,style:el.getAttribute('style'),value:el.value};
  });
 }
 for(const width of [320,390,1024]) for(const theme of ['light','dark']){
