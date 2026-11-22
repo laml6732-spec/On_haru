@@ -1142,3 +1142,14 @@ html body .app #page-capture #qc-v2 #captureScheduleLink[open]>summary::after{
 html[data-appearance="dark"] body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-menu{
   box-shadow:0 7px 24px rgba(0,0,0,.28)!important;
 }
+
+/* The menu follows the same legible dark surfaces as the rest of Capture. */
+html[data-appearance="dark"] body .app #page-capture #qc-v2 #captureScheduleLink summary span,
+html[data-appearance="dark"] body .app #page-capture #qc-v2 #captureScheduleLink summary::after{
+  color:var(--ink,#e0e9e1)!important;
+}
+html[data-appearance="dark"] body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-option[aria-checked="true"],
+html[data-appearance="dark"] body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-option:hover,
+html[data-appearance="dark"] body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-option:focus-visible{
+  background:#34483e!important;
+}
