@@ -30,8 +30,10 @@ const edit=async(page,clickTarget,field,edited,checkValue)=>{
  await clickTarget.click({force:true});
  const modal=page.locator('#konaReviewEditor');
  await modal.waitFor({state:'visible'});
- await modal.getByRole('textbox',{name:field,exact:true}).fill(edited);
- await modal.getByRole('button',{name:'Save',exact:true}).click();
+ const editFields=modal.locator('.sheet > label > textarea');
+ const entry=field==='Memorable words'?editFields.first():editFields.last();
+ await entry.fill(edited);
+ await modal.locator('.rv-edit-actions button.solid').click();
  await modal.waitFor({state:'detached'});
  const value=await page.evaluate(checkValue);
  ensure(value===edited,'Edit did not persist in storage',{field,value,expected:edited});
