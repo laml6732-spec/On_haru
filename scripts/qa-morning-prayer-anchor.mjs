@@ -72,6 +72,10 @@ for(const width of [320,390,1024]) for(const theme of ['light','dark']){
   assert(Math.abs(visual.width-visual.parentWidth)<=2,'Prayer CTA is not full width: '+JSON.stringify(visual));
   assert(visual.bg===(theme==='dark'?'rgb(59, 112, 93)':'rgb(39, 78, 71)'),'Prayer CTA color incorrect: '+JSON.stringify(visual));
   assert(visual.color==='rgb(255, 255, 255)','Prayer CTA text lacks white contrast: '+JSON.stringify(visual));
+  const flower=button.locator('img');
+  assert((await flower.getAttribute('src')).endsWith('hibiscus-task-off.png'),'Uncompleted Morning prayer must use muted flower');
+  const incompleteFilter=await flower.evaluate(el=>getComputedStyle(el).filter);
+  assert(incompleteFilter!=='none','Uncompleted Morning prayer flower must be desaturated');
   await page.screenshot({path:`${out}/${width}-${theme}-morning.png`,animations:'disabled'});
   await page.locator('#page-checkin [data-phase="noon"]').click();
   assert(!(await prayer.isVisible()),'Morning prayer button leaked into Midday');
@@ -79,11 +83,25 @@ for(const width of [320,390,1024]) for(const theme of ['light','dark']){
   assert(!(await prayer.isVisible()),'Morning prayer button leaked into Reflection');
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
   assert(overflow<=2,'Horizontal overflow '+overflow+'px');
+  await page.locator('#page-checkin [data-phase="morning"]').click();
+  await button.click();
+  assert(await page.locator('#page-focus').isVisible(),'Morning prayer did not open Focus');
+  assert(await page.locator('#morningPrayerDurationHeading').isVisible(),'Only time selection should be presented');
+  assert(!(await page.locator('#kindSeg').isVisible()),'Mode selection must be hidden for Morning shortcut');
+  assert(!(await page.locator('.focus-controls').isVisible()),'Prayer request selector must be hidden');
+  assert(!(await page.locator('#focusNoteToggle').isVisible()),'Extra prayer notes should be hidden until starting');
+  assert(!(await page.locator('#focusClock').isVisible()),'Countdown must not distract from choosing a duration');
+  assert((await page.locator('#focusDurations [data-time]').count())>=4,'Duration choices missing');
+  assert(!(await page.locator('#morningPrayerListeningMessage').isVisible()),'Listening message must wait for timer start');
+  await page.screenshot({path:`${out}/${width}-${theme}-duration-setup.png`,animations:'disabled'});
   if(width===390&&theme==='light'){
-   await page.locator('#page-checkin [data-phase="morning"]').click();
-   await button.click();
-   assert(await page.locator('#page-focus').isVisible(),'Morning prayer did not open Focus');
+   await page.locator('#focusDurations [data-time="5"]').click();
+   assert(await page.locator('#focusDurations [data-time="5"]').getAttribute('aria-pressed')==='true','Selected duration was not applied');
    await page.locator('#focusStart').click();
+   assert(await page.locator('#morningPrayerListeningMessage').isVisible(),'Listening message should appear after prayer starts');
+   assert((await page.locator('#morningPrayerListeningMessage').innerText()).trim()==='하나님이 선물하신 오늘 하루를 기대하는 마음으로 하나님의 음성을 들어보세요','Listening message wording mismatch');
+   assert(await page.locator('body').evaluate(el=>el.classList.contains('morning-prayer-running')),'Morning-running context missing');
+   await page.screenshot({path:`${out}/${width}-${theme}-prayer-running.png`,animations:'disabled'});
    await page.waitForTimeout(1400);
    await page.locator('#focusEnd').click();
    await page.locator('#choiceModal').waitFor({state:'visible'});
@@ -91,12 +109,26 @@ for(const width of [320,390,1024]) for(const theme of ['light','dark']){
    await page.screenshot({path:`${out}/${width}-${theme}-prayer-complete.png`,animations:'disabled'});
    await page.locator('#choiceModal .choice').first().click();
    assert(await page.locator('#page-capture').isVisible(),'Anchor action did not navigate to Capture');
+   const lastSaved=await page.evaluate(()=>day(date).sessions.at(-1));
+   assert(lastSaved?.origin==='morning-checkin','Stored prayer record must retain Morning origin');
+   await page.locator('.tabs [data-page="checkin"]').click();
+   await page.locator('#page-checkin [data-phase="morning"]').click();
+   assert((await flower.getAttribute('src')).endsWith('hibiscus-task-done.png'),'Flower must turn colored after successful save');
+   assert(await flower.evaluate(el=>getComputedStyle(el).filter)==='none','Completed flower must show original colors');
+   await page.screenshot({path:`${out}/${width}-${theme}-prayer-completed-flower.png`,animations:'disabled'});
+   await page.locator('.tabs [data-page="capture"]').click();
    assert((await field.inputValue())===saved,'Morning prayer overwrote an existing anchor');
    await page.locator('.tabs [data-page="focus"]').click();
+   assert(!(await page.locator('#morningPrayerListeningMessage').isVisible()),'Morning text must not leak into ordinary Focus prayer setup');
    await page.locator('#focusStart').click();
+   assert(!(await page.locator('#morningPrayerListeningMessage').isVisible()),'Morning text must not leak into ordinary prayer session');
    await page.waitForTimeout(1400);
    await page.locator('#focusEnd').click();
    assert(!(await page.locator('#choiceModal').isVisible()),'Ordinary Focus prayer unexpectedly suggested an anchor');
+  }else{
+   await page.locator('.tabs [data-page="checkin"]').click();
+   await page.locator('#page-checkin [data-phase="morning"]').click();
+   assert((await flower.getAttribute('src')).endsWith('hibiscus-task-off.png'),'Merely opening time setup should not color the flower');
   }
   assert(errors.length===0,'JavaScript errors: '+errors.join('; '));
   console.log('PASS',width,theme);
