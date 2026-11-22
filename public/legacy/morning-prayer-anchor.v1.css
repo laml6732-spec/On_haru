@@ -1,0 +1,737 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+/* Thin, naturally varied pen handwriting (Korea Copyright Commission, OFL). */
+@font-face {
+  font-family:'KCC Eunyoung';
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/KCC-eunyoung-Regular.woff') format('woff');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+
+/* Morning Check-in prayer CTA and compact Capture anchor — 2026-11-21.
+   Local overrides only. Preserve the legacy palette and text scaling. */
+
+/* The anchor occupies exactly its measured one or two visible text lines.
+   JavaScript sets the height after measuring real wrapping at the current width. */
+body .app #page-capture #konaCarryToday textarea#dayHeadline,
+body .app #page-capture #konaCarryToday:focus-within textarea#dayHeadline,
+body .app #page-capture #konaCarryToday.has-anchor textarea#dayHeadline {
+  box-sizing: border-box!important;
+  flex: 0 0 auto!important;
+  min-height: 0!important;
+  max-height: calc(48px * var(--kona-ui-scale, 1))!important;
+  padding-top: 0!important;
+  padding-bottom: 0!important;
+  border: 0!important;
+  line-height: calc(24px * var(--kona-ui-scale, 1))!important;
+  resize: none!important;
+  overflow-y: hidden!important;
+  overflow-x: hidden!important;
+  word-break: keep-all!important;
+  overflow-wrap: break-word!important;
+}
+
+/* Place one primary action directly below the Check-in title, not inside
+   the small title/status row. The Morning-only hidden state stays authoritative. */
+body .app #page-checkin #morningPrayerPrompt {
+  display: block!important;
+  box-sizing: border-box!important;
+  width: 100%!important;
+  grid-column: 1 / -1!important;
+  grid-row: auto!important;
+  justify-self: stretch!important;
+  margin: 2px 0 14px!important;
+  padding: 0!important;
+  background: transparent!important;
+  border: 0!important;
+}
+body .app #page-checkin #morningPrayerPrompt[hidden] {display:none!important}
+body .app #page-checkin #morningPrayerPrompt button {
+  position: relative!important;
+  display: flex!important;
+  align-items: center!important;
+  justify-content: center!important;
+  gap: 10px!important;
+  box-sizing: border-box!important;
+  width: 100%!important;
+  min-height: 52px!important;
+  height: auto!important;
+  margin: 0!important;
+  padding: 12px 42px!important;
+  border-radius: 10px!important;
+  border: 1px solid #274e47!important;
+  background: #274e47!important;
+  color: #fff!important;
+  font-family: var(--font-ui)!important;
+  font-size: calc(14px * var(--kona-ui-scale, 1))!important;
+  font-weight: 650!important;
+  line-height: 1.4!important;
+  text-align: center!important;
+  white-space: normal!important;
+  overflow-wrap: break-word;
+  box-shadow: 0 2px 5px rgb(24 59 45 / 13%)!important;
+  cursor: pointer;
+}
+body .app #page-checkin #morningPrayerPrompt button img {
+  width: 21px!important;
+  height: 21px!important;
+  flex: 0 0 21px!important;
+  object-fit: contain!important;
+  filter: grayscale(1) brightness(0) invert(.83);
+}
+body .app #page-checkin #morningPrayerPrompt button::after {
+  content: "→";
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+  opacity: .87;
+  pointer-events: none;
+}
+body .app #page-checkin #morningPrayerPrompt button:hover {background:#315d52!important}
+body .app #page-checkin #morningPrayerPrompt button:focus-visible {
+  outline: 3px solid #c9b972!important;
+  outline-offset: 3px!important;
+}
+html[data-appearance="dark"] body .app #page-checkin #morningPrayerPrompt button {
+  background: #3b705d!important;
+  border-color: #53826b!important;
+  color: #fff!important;
+}
+html[data-appearance="dark"] body .app #page-checkin #morningPrayerPrompt button:hover {background:#467b68!important}
+@media (max-width: 360px) {
+  body .app #page-checkin #morningPrayerPrompt button {
+    padding-left: 34px!important;
+    padding-right: 34px!important;
+  }
+}
+
+/* Prayer completion changes the *same* flower from muted to original color.
+   State is derived from a saved Morning Check-in prayer record for this date. */
+body .app #page-checkin #morningPrayerPrompt.morning-prayer-completed button img {
+  filter: none!important;
+}
+
+/* From Morning Check-in: one decision only — duration, then start. */
+body.morning-prayer-setup .app #page-focus :is(
+  #kindSeg,.focus-controls,#focusSetupMore,#quietTimerMessage,
+  #focusResumeHint,#focusSessionTitle,#timerStatus,#focusClock,
+  #timerProgress,#focusAlarm,.alarm-caption,#focusNoteToggle,
+  #timerNoteLabel,#timerNote,#focusMore,#focusAfter,.focus-summary,
+  #focusLaunchSummary
+) {display:none!important}
+body .app #page-focus #morningPrayerDurationHeading[hidden],
+body .app #page-focus #morningPrayerListeningMessage[hidden] {display:none!important}
+body.morning-prayer-setup .app #page-focus .focus-clock-area {
+  min-height:0!important;
+  margin:20px 0 12px!important;
+  padding:4px 0!important;
+  gap:18px!important;
+}
+body.morning-prayer-setup .app #page-focus #morningPrayerDurationHeading {
+  display:block;
+  width:100%;
+  margin:0!important;
+  font-family:var(--font-ui)!important;
+  font-size:calc(17px * var(--kona-ui-scale,1))!important;
+  font-weight:650!important;
+  line-height:1.5!important;
+  text-align:center!important;
+  color:#274e47!important;
+}
+body.morning-prayer-setup .app #page-focus #focusDurations {
+  display:flex!important;
+  justify-content:center!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+}
+body.morning-prayer-setup .app #page-focus #focusDurations button[data-time] {
+  flex:0 1 50px!important;
+  width:48px!important;
+  min-width:44px!important;
+  height:46px!important;
+  min-height:44px!important;
+}
+body.morning-prayer-setup .app #page-focus .timer-row {margin:12px 0 0!important;}
+body.morning-prayer-setup .app #page-focus #focusStart {
+  width:100%!important;
+  min-height:50px!important;
+  background:#274e47!important;
+  border-color:#274e47!important;
+  color:#fff!important;
+}
+html[data-appearance='dark'] body.morning-prayer-setup .app #page-focus #morningPrayerDurationHeading {
+  color:#d7ebdb!important;
+}
+html[data-appearance='dark'] body.morning-prayer-setup .app #page-focus #focusStart {
+  background:#3b705d!important;
+  border-color:#53826b!important;
+  color:#fff!important;
+}
+
+/* Exact reflection sentence appears in the running Morning prayer timer only. */
+body.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+  display:block!important;
+  width:min(100%,340px)!important;
+  margin:0 auto 15px!important;
+  font-family:var(--font-ui)!important;
+  font-size:calc(16px * var(--kona-ui-scale,1))!important;
+  font-weight:600!important;
+  line-height:1.65!important;
+  text-align:center!important;
+  word-break:keep-all!important;
+  overflow-wrap:break-word!important;
+  color:inherit!important;
+  opacity:.96;
+}
+
+/* Still Ocean A — only sessions launched from Morning Check-in.
+   Keep the original Focus buttons and clock; use the same Morning art
+   regardless of the clock time. Relative path works in / and /legacy/. */
+body.focus-immersive.morning-prayer-running[data-focus-ocean] {
+  --focus-image:url('./assets/kona-focus-ocean-morning.png');
+  --focus-base:#DFF6FB;
+  --focus-ink:#103449;
+  --focus-sub:#244B60;
+  --focus-line:#173D5459;
+  --focus-badge:#FFFFFF70;
+  --focus-note:#FFFFFF70;
+  --focus-control-surface:#EFFAFF;
+  --focus-button:#123E56;
+  --focus-button-ink:#F4FBFF;
+  --focus-scrim:rgba(240,251,255,.12);
+}
+body.focus-immersive.morning-prayer-running[data-focus-ocean] .app {
+  background:linear-gradient(var(--focus-scrim),var(--focus-scrim)),
+    var(--focus-image) center / cover no-repeat,var(--focus-base)!important;
+}
+
+/* The existing clock-area flex flow, not absolute positioning, prevents
+   the phrase, countdown, progress and controls from overlapping. */
+body.focus-immersive.morning-prayer-running .app #page-focus #timerStatus {
+  order:0;
+  margin:0 auto 15px!important;
+  color:#244B60!important;
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;
+  font-weight:500!important;
+  letter-spacing:.045em!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+  order:1;
+  display:block!important;
+  box-sizing:border-box!important;
+  width:min(100%,350px)!important;
+  margin:0 auto 24px!important;
+  padding:0 10px!important;
+  font-family:'Gowun Batang','AppleMyungjo','Nanum Myeongjo','Noto Serif KR',serif!important;
+  font-size:calc(clamp(18px,4.9vw,20px) * var(--kona-ui-scale,1))!important;
+  font-weight:400!important;
+  line-height:1.72!important;
+  letter-spacing:-.04em!important;
+  color:#173D52!important;
+  opacity:1!important;
+  text-align:center!important;
+  word-break:keep-all!important;
+  overflow-wrap:break-word!important;
+  text-shadow:0 1px 15px rgb(230 248 252 / 45%);
+}
+body.focus-immersive.morning-prayer-running .app #page-focus :is(.morning-prayer-opening,.morning-prayer-bridge) {
+  display:block;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage strong {
+  display:block!important;
+  margin-top:3px!important;
+  font-weight:700!important;
+  color:#103449!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #focusClock {order:2}
+body.focus-immersive.morning-prayer-running .app #page-focus #timerProgress {order:3}
+
+/* Writing a session note should reclaim the space used by the guidance. */
+body.focus-immersive.morning-prayer-running.focus-note-open .app #page-focus #morningPrayerListeningMessage {
+  display:none!important;
+}
+@media (max-width:360px), (max-height:700px) {
+  body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+    font-size:calc(17px * var(--kona-ui-scale,1))!important;
+    line-height:1.62!important;
+    margin-bottom:14px!important;
+    padding-inline:5px!important;
+  }
+  body.focus-immersive.morning-prayer-running .app #page-focus #timerStatus {
+    margin-bottom:10px!important;
+  }
+}
+
+/* Still Ocean A — dark-theme contrast repair.
+   A Morning image stays luminous even when the rest of the app is dark.
+   Existing global dark rules target nested spans and numerals, so scope
+   their ink and surfaces to this Morning-origin session only. */
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app .pagehead {
+  background:transparent!important;
+  border-color:transparent!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #page-focus
+  #morningPrayerListeningMessage :is(.morning-prayer-opening,.morning-prayer-bridge) {
+  color:#173D52!important;
+  -webkit-text-fill-color:#173D52!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #page-focus
+  #focusClock .timer-digit {
+  color:#103449!important;
+  -webkit-text-fill-color:#103449!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #page-focus #focusStart {
+  background:#123E56!important;
+  color:#F4FBFF!important;
+  -webkit-text-fill-color:#F4FBFF!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #page-focus
+  :is(#focusEnd,#focusMore,#focusNoteToggle) {
+  background:#EFFAFF!important;
+  color:#103449!important;
+  -webkit-text-fill-color:#103449!important;
+  border-color:#173D5459!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean].focus-note-open .app #page-focus #timerNote {
+  background:rgba(242,251,253,.94)!important;
+  color:#103449!important;
+  -webkit-text-fill-color:#103449!important;
+  caret-color:#103449!important;
+  border-color:#173D5459!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean].focus-note-open .app #page-focus #timerNote::placeholder {
+  color:#476779!important;
+  -webkit-text-fill-color:#476779!important;
+}
+
+/* Still Ocean A — toolbar contrast in dark mode on a light Morning sky. */
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #focusModeBadge {
+  background:rgba(255,255,255,.74)!important;
+  color:#244B60!important;
+  -webkit-text-fill-color:#244B60!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #page-focus #quietTimerToggle {
+  color:#244B60!important;
+  -webkit-text-fill-color:#244B60!important;
+}
+
+/* Morning prayer rotating handwritten copy.
+   Three intentional lines when room permits; natural wrapping at 320px.
+   CSS-only styling: words remain actual text for translation and accessibility. */
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+  font-family:'KCC Eunyoung','Gowun Batang','AppleMyungjo',serif!important;
+  font-size:calc(clamp(28px,7.5vw,32px) * var(--kona-ui-scale,1))!important;
+  font-weight:400!important;
+  letter-spacing:-.012em!important;
+  line-height:1.48!important;
+  width:min(100%,370px)!important;
+  padding-inline:6px!important;
+  margin-bottom:19px!important;
+  color:#123C54!important;
+  word-break:keep-all!important;
+  overflow-wrap:break-word!important;
+  text-shadow:0 1px 11px rgba(233,251,255,.46);
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage .morning-prayer-line {
+  display:block!important;
+  color:#123C54!important;
+  -webkit-text-fill-color:#123C54!important;
+  font-weight:400!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage .morning-prayer-line:last-child {
+  color:#0D354D!important;
+  -webkit-text-fill-color:#0D354D!important;
+}
+@media(max-width:360px), (max-height:700px) {
+  body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+    font-size:calc(26px * var(--kona-ui-scale,1))!important;
+    line-height:1.35!important;
+    margin-bottom:12px!important;
+    padding-inline:3px!important;
+  }
+  body.focus-immersive.morning-prayer-running .app #page-focus #timerStatus {
+    margin-bottom:8px!important;
+  }
+}
+@media(max-height:580px) {
+  body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+    font-size:calc(24px * var(--kona-ui-scale,1))!important;
+    line-height:1.32!important;
+    margin-bottom:8px!important;
+  }
+}
+
+/* Focus modes use the existing in-session status; the top-right pill is redundant.
+   Hide it consistently for prayer, devotion and concentration without changing
+   the controller's session state or the other header controls. */
+html body.focus-immersive .app .pagehead #focusModeBadge,
+html body.focus-screen .app .pagehead #focusModeBadge {
+  display:none!important;
+  visibility:hidden!important;
+}
+
+/* Handwritten PNG + progress-eye controls — Preview only.
+   The original sentence remains as accessible text in the DOM, while
+   the PNG has empty alt and cannot announce the same prayer twice. */
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-direction:column!important;
+  width:min(100%,380px)!important;
+  padding-inline:0!important;
+  margin-bottom:12px!important;
+  max-width:100%!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage .morning-prayer-fallback {
+  display:block;
+  width:100%;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage.morning-prayer-image-ready .morning-prayer-fallback {
+  position:absolute!important;
+  width:1px!important;height:1px!important;
+  padding:0!important;margin:-1px!important;border:0!important;
+  overflow:hidden!important;clip-path:inset(50%)!important;
+  white-space:nowrap!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage img.morning-prayer-handwriting {
+  display:none!important;
+  width:auto!important;height:auto!important;
+  max-width:100%!important;
+  max-height:clamp(125px,24svh,204px)!important;
+  object-fit:contain!important;
+  margin:0 auto!important;
+  padding:0!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage.morning-prayer-image-ready img.morning-prayer-handwriting:not([hidden]) {
+  display:block!important;
+}
+@media(max-width:360px), (max-height:700px) {
+  body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage img.morning-prayer-handwriting {
+    max-height:min(25svh,154px)!important;
+  }
+}
+/* Keep the focus clock progress visually centered and its eye control
+   adjacent, with an accessible 44 × 44 touch target. */
+body .app #page-focus #timerProgressRail[hidden],
+body .app #page-focus #quietTimerToggle[hidden] {
+  display:none!important;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail:not([hidden]) {
+  display:flex!important;
+  order:3;
+  position:relative!important;
+  width:min(100%,286px)!important;
+  height:44px!important;
+  min-height:44px!important;
+  flex:0 0 44px!important;
+  box-sizing:border-box!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0!important;
+  margin:2px auto 0!important;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail #timerProgress:not([hidden]) {
+  display:block!important;
+  flex:0 1 180px!important;
+  width:min(180px,calc(100% - 64px))!important;
+  max-width:calc(100% - 64px)!important;
+  height:3px!important;
+  min-height:3px!important;
+  margin:0!important;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail #quietTimerToggle:not([hidden]) {
+  display:inline-flex!important;
+  position:absolute!important;
+  right:0!important;top:0!important;
+  align-items:center!important;justify-content:center!important;
+  box-sizing:border-box!important;
+  width:44px!important;height:44px!important;
+  min-width:44px!important;min-height:44px!important;
+  margin:0!important;padding:0!important;
+  border:0!important;border-radius:999px!important;
+  background:transparent!important;
+  color:var(--focus-ink,#315F71)!important;
+  -webkit-text-fill-color:var(--focus-ink,#315F71)!important;
+  font-size:0!important;
+  cursor:pointer!important;
+  opacity:.92;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail #quietTimerToggle svg {
+  display:block;
+  width:21px;height:21px;
+  pointer-events:none;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail #quietTimerToggle[aria-pressed="true"] .timer-eye-hide,
+body.focus-immersive .app #page-focus .timer-progress-rail #quietTimerToggle[aria-pressed="false"] .timer-eye-show {
+  display:none!important;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail #quietTimerToggle:focus-visible {
+  outline:2px solid var(--focus-ink,#315F71)!important;
+  outline-offset:2px!important;
+}
+body.focus-immersive.morning-prayer-running.quiet-listening-timer .app #page-focus #quietTimerMessage {
+  display:none!important;
+}
+
+/* Quiet mode removes the numeric clock and the progress ink; the eye button
+   remains in its 44px slot so the user can restore the timer. */
+body.quiet-listening-timer.focus-immersive .app #page-focus #timerProgressRail #timerProgress {
+  display:none!important;
+}
+
+/* Inline Quick Capture draft feedback — 2026-11-21.
+   Draft state, schedule disclosure, and final-save button share one 44px row.
+   Keep existing draft and finalized record handlers untouched. */
+body .app #page-capture #qc-v2 .qc-bottom {
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr) auto!important;
+  grid-template-rows:minmax(44px,auto)!important;
+  align-items:center!important;
+  column-gap:6px!important;
+  row-gap:0!important;
+  padding:2px 0 0!important;
+  margin-top:2px!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink {
+  grid-column:1!important;
+  grid-row:1!important;
+  width:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  padding:0!important;
+  margin:0!important;
+  position:relative!important;
+  align-self:center!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink summary {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:44px!important;
+  min-width:44px!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:10px!important;
+  cursor:pointer!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink summary span {
+  /* Full schedule information remains on the summary's aria-label. */
+  display:none!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink summary img {
+  width:18px!important;
+  height:18px!important;
+  max-width:18px!important;
+  flex:0 0 18px!important;
+  margin:0!important;
+  opacity:.85!important;
+}
+body .app #page-capture #qc-v2 #qc-state-group,
+body .app #page-capture #qc-v2 #qc-state-group.has-feedback {
+  grid-column:2!important;
+  grid-row:1!important;
+  display:flex!important;
+  align-items:center!important;
+  min-width:0!important;
+  min-height:0!important;
+  width:auto!important;
+  padding:0!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+body .app #page-capture #qc-v2 #qc-state-group:not(.has-feedback) {display:none!important}
+body .app #page-capture #qc-v2 #qc-state {
+  min-width:0!important;
+  max-width:100%!important;
+  margin:0!important;
+  line-height:1.5!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+body .app #page-capture #qc-v2 #qc-state[data-retryable="true"] {
+  color:#A14C3A!important;
+  text-decoration:underline;
+  text-underline-offset:2px;
+  cursor:pointer;
+}
+body .app #page-capture #qc-v2 .qc-save-action {
+  grid-column:3!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  min-width:0!important;
+  min-height:44px!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink[open] {z-index:11!important}
+body .app #page-capture #qc-v2 #captureScheduleLink[open]::before {
+  content:"";
+  position:absolute;
+  top:44px;
+  left:0;
+  width:min(270px,calc(100vw - 48px));
+  height:102px;
+  box-sizing:border-box;
+  border:1px solid #d5e4db;
+  border-radius:10px;
+  background:var(--card-bg,#fff);
+  box-shadow:0 9px 20px #123e561f;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink[open]>label {
+  position:absolute!important;
+  top:52px;
+  left:10px;
+  width:min(250px,calc(100vw - 68px))!important;
+  z-index:1;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink[open]>select {
+  position:absolute!important;
+  top:76px;
+  left:10px;
+  width:min(250px,calc(100vw - 68px))!important;
+  z-index:1;
+}
+
+/* Capture schedule visibility repair.
+   Restore a readable schedule link above the draft state in the LEFT action
+   column; keep Save aligned on the RIGHT. This costs only ~18px more than
+   the icon-only row, rather than adding a full-width status row. */
+body .app #page-capture #qc-v2 .qc-bottom {
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-rows:44px minmax(18px,auto)!important;
+  gap:0 8px!important;
+  align-items:center!important;
+  padding:2px 0 0!important;
+  margin-top:2px!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink {
+  grid-column:1!important;
+  grid-row:1!important;
+  position:relative!important;
+  justify-self:stretch!important;
+  align-self:start!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  min-height:44px!important;
+  height:44px!important;
+  padding:0!important;
+  margin:0!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink summary {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:7px!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:44px!important;
+  min-height:44px!important;
+  padding:0 2px!important;
+  box-sizing:border-box!important;
+  text-align:left!important;
+  background:transparent!important;
+  border:0!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink summary img {
+  display:block!important;
+  width:17px!important;
+  height:17px!important;
+  max-width:17px!important;
+  flex:0 0 17px!important;
+  opacity:.83!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink summary span {
+  display:block!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:ellipsis!important;
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;
+  font-weight:550!important;
+  color:#315F71!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink summary::after {
+  content:"⌄";
+  display:block;
+  flex:0 0 10px;
+  font-size:14px;
+  line-height:1;
+  color:#607E7B;
+}
+body .app #page-capture #qc-v2 #qc-state-group,
+body .app #page-capture #qc-v2 #qc-state-group.has-feedback {
+  grid-column:1!important;
+  grid-row:2!important;
+  align-self:start!important;
+  justify-self:start!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:18px!important;
+  height:auto!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  padding:0 0 0 26px!important;
+  margin:0!important;
+}
+body .app #page-capture #qc-v2 #qc-state-group:not(.has-feedback) {
+  display:none!important;
+}
+body .app #page-capture #qc-v2 #qc-state {
+  display:block!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+  font-weight:450!important;
+  line-height:18px!important;
+  color:#657B72!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+body .app #page-capture #qc-v2 .qc-save-action {
+  grid-column:2!important;
+  grid-row:1 / 3!important;
+  align-self:center!important;
+  justify-self:end!important;
+  width:auto!important;
+  min-height:44px!important;
+  margin:0!important;
+}
+
+/* Morning prayer CTA A — 2026-11-21.
+   Preserve the existing deep green, flower completion filter and focus ring. */
+body .app #page-checkin #morningPrayerPrompt button {
+  min-height:54px!important;
+  height:54px!important;
+  font-size:calc(14.5px * var(--kona-ui-scale,1))!important;
+  font-weight:700!important;
+}
+body .app #page-checkin #morningPrayerPrompt button img {
+  width:27px!important;
+  height:27px!important;
+  flex:0 0 27px!important;
+}
+html[data-ui-enlarged="true"] body .app #page-checkin #morningPrayerPrompt button {
+  height:auto!important;
+  min-height:54px!important;
+}
+/* Keep native inline text and flow intact at smaller widths. */
+@media(max-width:360px) {
+  body .app #page-checkin #morningPrayerPrompt button {
+    padding-left:32px!important;
+    padding-right:32px!important;
+  }
+}

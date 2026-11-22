@@ -1,0 +1,30 @@
+name: On_HARU Morning prayer and anchor QA
+on:
+  push:
+    branches: ['feat/morning-checkin-prayer-anchor-20261121']
+    paths: ['public/legacy/**', 'scripts/qa-morning-prayer-anchor.mjs', '.github/workflows/qa-morning-prayer-anchor.yml']
+  pull_request:
+    branches: ['main']
+    paths: ['public/legacy/**', 'scripts/qa-morning-prayer-anchor.mjs', '.github/workflows/qa-morning-prayer-anchor.yml']
+jobs:
+  morning-prayer-anchor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node --check public/legacy/runtime/legacy-controllers.9a6fbb5e22cc.js
+      - run: node --check scripts/qa-morning-prayer-anchor.mjs
+      - run: node scripts/verify-ui-static.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-morning-anchor.log 2>&1 &
+      - run: node scripts/qa-morning-prayer-anchor.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: morning-prayer-anchor-visuals
+          path: test-results/morning-prayer-anchor/
+          retention-days: 14
