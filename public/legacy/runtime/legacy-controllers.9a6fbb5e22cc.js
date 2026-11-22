@@ -43,8 +43,52 @@ function konaOpenReviewEditor(d,id){
  let marked=!!source?.important||(v.important||[]).includes(isCapture?source.id:isEvent?eventId:id),later=null;
  if(isCapture||isEvent){const highlight=node('button',marked?KonaI18n.t("Remove highlight"):KonaI18n.t("Highlight · Important"));highlight.type='button';highlight.className='note-highlight-toggle';highlight.setAttribute('aria-pressed',String(marked));highlight.onclick=()=>{marked=!marked;highlight.setAttribute('aria-pressed',String(marked));highlight.textContent=marked?KonaI18n.t("Remove highlight"):KonaI18n.t("Highlight · Important")};sheet.append(highlight);const revisit=node('details'),summary=node('summary',KonaI18n.t("Revisit later"));later=node('textarea');later.className='field';later.setAttribute('aria-label',KonaI18n.t("Later reflection",true));revisit.append(summary,later);sheet.append(revisit)}
  const status=node('p');status.setAttribute('role','status');sheet.append(status);const actions=node('div');actions.className='rv-edit-actions';const cancel=node('button',KonaI18n.t("Cancel")),saveButton=node('button',KonaI18n.t("Save")),remove=node('button',KonaI18n.t("Delete"));for(const b of [cancel,saveButton,remove])b.type='button';cancel.className='mini-btn';saveButton.className='solid';remove.className='outline danger';actions.append(cancel,saveButton,remove);sheet.append(actions);
- const finish=()=>{modal.remove();render();if(page==='records')renderDayReview()};cancel.onclick=()=>modal.remove();modal.onclick=e=>{if(e.target===modal)modal.remove()};
- saveButton.onclick=()=>{const ok=guardedMutation(()=>{const dayValue=day(d),tags=draft.tags.filter(tag=>marked||tag!=='important');if(isCapture||isEvent){const key=isCapture?source.id:eventId;dayValue.important??=[];dayValue.important=dayValue.important.filter(k=>k!==key);if(marked)dayValue.important.push(key);if(isCapture)source.important=marked;if(later?.value?.trim()){const entry={text:later.value.trim(),createdAt:new Date().toISOString()};if(isCapture){source.laterReflections??=[];source.laterReflections.push(entry)}else{dayValue.eventNoteReflections??={};dayValue.eventNoteReflections[eventId]??=[];dayValue.eventNoteReflections[eventId].push(entry)}}}if(isClass){const c=check(d,'noon');for(const key of ['lectureQuote','lectureReflection','classResponse'])c[key]=fields[key].value;c.classTags=tags}else if(isCapture){source.title=fields.title.value.trim();source.text=fields.note.value;source.tags=tags}else if(isSession||isCheck){source.note=fields.note.value;source.tags=tags;if(id==='check-night')dayValue.eventNotes.__day_wrap=source.note}else if(isAnchor){dayValue.headline=normalizeDailyHeadline(fields.note.value);dayValue.headlineTags=tags}else if(isFree){dayValue.timeNotes??={};dayValue.timeNotes[id.slice(5)]??={};dayValue.timeNotes[id.slice(5)].free={...(typeof oldFree==='object'?oldFree:{}),text:fields.note.value,tags}}else if(isMeal){dayValue.meals??={};dayValue.meals[id.slice(5)]=fields.note.value;dayValue.eventNoteTags??={};dayValue.eventNoteTags[id.slice(5)]=tags}else{dayValue.eventNotes[eventId]=fields.note.value;setEventNoteTitle(d,eventId,fields.title.value);dayValue.eventNoteTags??={};dayValue.eventNoteTags[eventId]=tags;dayValue.unifiedNotesSaved??=[];if(!dayValue.unifiedNotesSaved.includes(eventId))dayValue.unifiedNotesSaved.push(eventId);dayValue.legacyMergedIds??=[];if(!dayValue.legacyMergedIds.includes(eventId))dayValue.legacyMergedIds.push(eventId)}},KonaI18n.t("Not saved. Your changes are still here."));if(ok)finish();else status.textContent=KonaI18n.t("Not saved · retry.")};
+ const finish=()=>{modal.remove();render();if(page==='records')window.konaRefreshCurrentReview?.()};cancel.onclick=()=>modal.remove();modal.onclick=e=>{if(e.target===modal)modal.remove()};
+ // All record kinds must save; previously every non-capture/event branch was
+ // nested under isCapture||isEvent and silently discarded the user's edits.
+ saveButton.onclick=()=>{
+  const ok=guardedMutation(()=>{
+   const dayValue=day(d),tags=draft.tags.filter(tag=>marked||tag!=='important');
+   if(isCapture||isEvent){
+    const key=isCapture?source.id:eventId;
+    dayValue.important??=[];
+    dayValue.important=dayValue.important.filter(k=>k!==key);
+    if(marked)dayValue.important.push(key);
+    if(later?.value?.trim()){
+     const entry={text:later.value.trim(),createdAt:new Date().toISOString()};
+     if(isCapture){source.laterReflections??=[];source.laterReflections.push(entry)}
+     else{dayValue.eventNoteReflections??={};dayValue.eventNoteReflections[eventId]??=[];dayValue.eventNoteReflections[eventId].push(entry)}
+    }
+   }
+   if(isClass){
+    // Class notes share the noon check-in object, not an event note.
+    for(const key of ['lectureQuote','lectureReflection','classResponse'])source[key]=fields[key].value;
+    source.classTags=tags;
+   }else if(isCapture){
+    source.title=fields.title.value.trim();source.text=fields.note.value;source.tags=tags;source.important=marked;
+   }else if(isSession||isCheck){
+    source.note=fields.note.value;source.tags=tags;
+    if(id==='check-night'){dayValue.eventNotes??={};dayValue.eventNotes.__day_wrap=source.note}
+   }else if(isAnchor){
+    dayValue.headline=normalizeDailyHeadline(fields.note.value);dayValue.headlineTags=tags;
+   }else if(isFree){
+    dayValue.timeNotes??={};dayValue.timeNotes[id.slice(5)]??={};
+    dayValue.timeNotes[id.slice(5)].free={...(typeof oldFree==='object'?oldFree:{}),text:fields.note.value,tags};
+   }else if(isMeal){
+    dayValue.meals??={};dayValue.meals[id.slice(5)]=fields.note.value;
+    dayValue.eventNoteTags??={};dayValue.eventNoteTags[id.slice(5)]=tags;
+   }else if(isEvent){
+    dayValue.eventNotes??={};dayValue.eventNotes[eventId]=fields.note.value;
+    setEventNoteTitle(d,eventId,fields.title.value);
+    dayValue.eventNoteTags??={};dayValue.eventNoteTags[eventId]=tags;
+    dayValue.unifiedNotesSaved??=[];
+    if(!dayValue.unifiedNotesSaved.includes(eventId))dayValue.unifiedNotesSaved.push(eventId);
+    dayValue.legacyMergedIds??=[];
+    if(!dayValue.legacyMergedIds.includes(eventId))dayValue.legacyMergedIds.push(eventId);
+   }
+  },KonaI18n.t("Not saved. Your changes are still here."));
+  if(ok)finish();else status.textContent=KonaI18n.t("Not saved · retry.");
+ };
  remove.onclick=async()=>{if(await onHaruConfirm(KonaI18n.t("Delete this record?"))&&guardedMutation(()=>konaDeleteReviewSource(d,id),KonaI18n.t("Delete failed. The record was kept.")))finish()};document.body.append(modal);openSheet('konaReviewEditor');(fields.note||fields.lectureQuote)?.focus({preventScroll:true});
 }
 
@@ -646,13 +690,34 @@ function setTaskImportant(task,d){
  render();return true;
 }
 function bindImportantPress(target,task,d,onTap){
- const isMarked=isTaskImportant(task);let timer=null,longPressed=false,suppressClick=false;
- target.setAttribute('aria-pressed',String(isMarked));target.setAttribute('aria-label',(isMarked?'Important: ':KonaI18n.t("Not important: ",true))+task.title+KonaI18n.t(" · tap to edit, hold to change Importance",true));target.title=KonaI18n.t("Tap to edit · hold to toggle Important",true);
+ const isMarked=isTaskImportant(task);
+ let timer=null,longPressed=false,suppressClick=false,firstTapTimer=null,lastTapAt=0;
+ target.style.touchAction='manipulation'; // Prevent double-tap viewport zoom on mobile.
+ target.setAttribute('aria-pressed',String(isMarked));
+ target.setAttribute('aria-label',(isMarked?'Important: ':KonaI18n.t("Not important: ",true))+task.title+KonaI18n.t(" · tap to edit, hold to change Importance",true));
+ target.title=KonaI18n.t("Tap to edit · hold to toggle Important",true);
  const clear=()=>{if(timer){clearTimeout(timer);timer=null}};
  target.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;longPressed=false;timer=setTimeout(()=>{timer=null;longPressed=true;suppressClick=true;setTaskImportant(task,d)},520)});
  ['pointerup','pointerleave','pointercancel'].forEach(type=>target.addEventListener(type,clear));
  target.addEventListener('contextmenu',e=>{e.preventDefault();if(!longPressed){clear();longPressed=true;suppressClick=true;setTaskImportant(task,d)}});
- target.onclick=e=>{if(suppressClick){e.preventDefault();e.stopImmediatePropagation();suppressClick=false;return}if(onTap)onTap();else setTaskImportant(task,d)};
+ const tap=()=>{if(onTap)onTap();else setTaskImportant(task,d)};
+ target.onclick=e=>{
+  if(suppressClick){e.preventDefault();e.stopImmediatePropagation();suppressClick=false;return}
+  // A Capture double-click/double-tap toggles the existing important ink,
+  // including the pinned task after it moves above the editor. Other tabs
+  // keep their original instant single-click editing behavior.
+  if(!target.closest('#page-capture')||e.detail===0){tap();return}
+  const now=performance.now();
+  if(e.detail>=2||(lastTapAt&&now-lastTapAt<340)){
+   if(firstTapTimer){clearTimeout(firstTapTimer);firstTapTimer=null}
+   lastTapAt=0;e.preventDefault();e.stopPropagation();
+   setTaskImportant(task,d);
+  }else{
+   lastTapAt=now;
+   if(firstTapTimer)clearTimeout(firstTapTimer);
+   firstTapTimer=setTimeout(()=>{firstTapTimer=null;lastTapAt=0;if(target.isConnected)tap()},340);
+  }
+ };
  target.addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();setTaskImportant(task,d)}});
 }
 function taskRow(t,d,{focusButton=false}={}){
@@ -1279,7 +1344,9 @@ function renderDayReview(){
   }
   for(const q of v.quickCaptureEntries||[]){if(!(q.text||'').trim()&&!(q.title||'').trim()&&!q.tags?.length)continue;entries.push({id:'q-'+q.id,important:!!q.important||q.tags?.includes('important'),t:/^\d{2}:\d{2}$/.test(q.time||'')?mins(q.time):Infinity,displayStamp:/^\d{2}:\d{2}$/.test(q.time||'')?displayTime(mins(q.time)):'',label:q.title?konaNoteDisplay(q.title,q.tags):KonaI18n.t("Personal note"),text:q.title?(q.text||''):konaNoteDisplay(q.text||'',q.tags||[]),edit:()=>window.konaOpenArchiveRecord?.(date,q.id,true),remove:()=>{v.quickCaptureEntries=v.quickCaptureEntries.filter(x=>x.id!==q.id)}})}
   for(const item of entries){const source=konaReviewTagSource(v,item.id),tags=item.id==='class-noon'?source?.classTags:source?.tags;if(!item.id.startsWith('q-')&&tags?.length){const emoji=konaNoteTagEmoji(tags[0]);if(emoji)item.label=emoji+' '+(item.id.startsWith('s-')?item.label.replace(/^[^\p{L}\p{N}]+\s*/u,''):item.label)}}
-  entries.sort((a,b)=>a.t-b.t);
+  // The legacy Daily log follows the same predictable check-in order.
+  const checkinRank={'check-morning':0,'check-noon':1,'check-evening':2};
+  entries.sort((a,b)=>(checkinRank[a.id]??3)-(checkinRank[b.id]??3)||a.t-b.t);
   const list=el('div','day-review-list');
   for(const item of entries){
     const row=el('div','day-review-entry-row'),b=el('button','day-review-entry');row.dataset.recordId=item.id||'';if(item.important||(v.important||[]).includes(String(item.id).replace(/^(event-|old-|q-)/,'')))row.classList.add('review-is-important');b.type='button';b.setAttribute('aria-label',KonaI18n.format("View ⟪0⟫ record",[item.label],true));
@@ -2265,11 +2332,17 @@ function reviewRecords(d=date){
 }
 // Read-only grouping uses existing schedule links; it never infers a link from time.
 function reviewDailySections(records,events){
- const sections=[{key:'morning',name:KonaI18n.t("Morning"),events:[],records:[]},{key:'afternoon',name:KonaI18n.language==='ko'?'낮':KonaI18n.t("Midday"),events:[],records:[]},{key:'evening',name:checkinReflectionName(),events:[],records:[]},{key:'untimed',name:KonaI18n.t("Time not recorded"),events:[],records:[]},{key:'night',name:KonaI18n.t("End of day"),events:[],records:[]}];
- const index=t=>!Number.isFinite(t)?3:t<720?0:t<1020?1:2;
+ // The three check-ins are a single first-class reading sequence, independent
+ // of when a user happened to save each one. Other records stay time-grouped.
+ const sections=[{key:'checkins',name:KonaI18n.language==='ko'?'체크인':'Check-ins',events:[],records:[]},{key:'morning',name:KonaI18n.t("Morning"),events:[],records:[]},{key:'afternoon',name:KonaI18n.language==='ko'?'낮':KonaI18n.t("Midday"),events:[],records:[]},{key:'evening',name:checkinReflectionName(),events:[],records:[]},{key:'untimed',name:KonaI18n.t("Time not recorded"),events:[],records:[]},{key:'night',name:KonaI18n.t("End of day"),events:[],records:[]}];
+ const index=t=>!Number.isFinite(t)?4:t<720?1:t<1020?2:3;
  const linkedIds=new Set(records.filter(r=>r.kind!=='anchor'&&r.reviewEvent).map(r=>r.reviewEvent.id));
  for(const event of events)if(reviewFilter==='all'&&konaReviewPreferences().showEmpty||linkedIds.has(event.id)){const time=validReflectHM(event.start);sections[index(time?mins(time):null)].events.push(event)}
- for(const record of records)if(record.kind!=='anchor')sections[record.kind==='class'?1:record.kind==='check'&&record.phase==='night'?4:record.kind==='check'&&record.phase==='morning'?0:record.kind==='check'&&record.phase==='noon'?1:record.kind==='check'&&record.phase==='evening'?2:index(record.t)].records.push(record);
+ for(const record of records){
+  if(record.kind==='anchor')continue;
+  const position=record.kind==='check'&&['morning','noon','evening'].includes(record.phase)?0:record.kind==='class'?2:record.kind==='check'&&record.phase==='night'?5:index(record.t);
+  sections[position].records.push(record);
+ }
  return sections.filter(x=>x.records.length>0||x.events.length>0);
 }
 let reviewFilter='all',reviewFilterScroll=0;
@@ -2293,7 +2366,10 @@ function reviewSection(section){
 // Daily: Morning Class notes stay first in Afternoon regardless of writing time.
 // Other check-ins, schedules and records retain their existing relative order.
 const priority=item=>item.record?.kind==='class'?-1:item.record?.kind==='check'?0:(item.event?.category==='lecture'&&linked.has(item.event.id))?1:2;
-objects.sort((a,b)=>priority(a)-priority(b)||a.time-b.time);
+if(section.key==='checkins'){
+ const phaseOrder={morning:0,noon:1,evening:2};
+ objects.sort((a,b)=>(phaseOrder[a.record?.phase]??99)-(phaseOrder[b.record?.phase]??99));
+}else objects.sort((a,b)=>priority(a)-priority(b)||a.time-b.time);
  for(const item of objects){if(item.record){
    if(item.record.kind==='class'){
     // Daily-only visual treatment: one paper-like book card, not a nested chip/card.
@@ -2328,6 +2404,8 @@ document.addEventListener('change',event=>{if(reviewActiveEdit?.dirty()&&event.t
 function reviewCanEdit(){if(!reviewActiveEdit)return true;if(reviewActiveEdit.dirty()){toast(KonaI18n.t("Save or cancel the note you are editing first."));return false}reviewActiveEdit.cancel();return true}
 window.konaCanChangeLanguage=reviewCanEdit;
 function reviewAfterChange(){const y=window.scrollY;draw();requestAnimationFrame(()=>window.scrollTo(0,y))}
+// Keep the modern Review timeline in sync after the shared legacy editor saves.
+window.konaRefreshCurrentReview=reviewAfterChange;
 function reviewInlineNote(record,row){if(!reviewCanEdit())return;konaOpenReviewEditor(record.date,record.id)}
 
 function reviewFeelingEditor(record,row,dimension='happiness'){
