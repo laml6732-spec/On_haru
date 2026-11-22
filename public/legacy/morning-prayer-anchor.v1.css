@@ -231,6 +231,8 @@ body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListe
   text-shadow:0 1px 15px rgb(230 248 252 / 45%);
 }
 body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage strong {
+  display:block!important;
+  margin-top:3px!important;
   font-weight:700!important;
   color:#103449!important;
 }
