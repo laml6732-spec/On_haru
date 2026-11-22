@@ -2055,7 +2055,110 @@ function paintCaptureTags(){tagChips.replaceChildren();for(const tag of KONA_CAP
 paintCaptureTags();
 const events=d=>dayEvents(d)||[];
 function current(){return konaCaptureScheduleAt(events(date),date,nowLocal(),mins(timeLocal()))}
-function paintCaptureLink(){const event=events(date).find(e=>e.id===chosen),summary=document.querySelector('#captureScheduleLink>summary');if(summary){const icon=document.createElement('img');icon.src=COMPACT_UI_ICONS.calendar3;icon.alt='';const text=document.createElement('span');text.textContent=event?event.title:(KonaI18n.language==='ko'?'연결된 일정 없음':'No linked schedule');summary.replaceChildren(icon,text);summary.classList.add('kona-auto-link-chip');summary.setAttribute('aria-label',KonaI18n.t("Linked schedule: ",true)+(event?.title||KonaI18n.t("None",true))+(manual?'. Change schedule':'. Automatic, through 15 minutes after the event. Change schedule'))}select.value=manual?chosen:'__auto__'}
+/* The connection mode is internal. The visible status is an event name or
+   Personal note. Keep the original select as the one source of draft state. */
+let captureScheduleDisclosure=null,captureScheduleSummary=null,captureScheduleMenu=null;
+function renderCaptureScheduleMenu(){
+  if(!captureScheduleMenu)return;
+  const es=events(date),ko=KonaI18n.language==='ko';
+  const rows=[];
+  const option=(value,label,detail,checked,secondary=false)=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='capture-schedule-option'+(secondary?' is-secondary':'');
+    button.setAttribute('role','menuitemradio');
+    button.setAttribute('aria-checked',String(checked));
+    const check=document.createElement('span');
+    check.className='capture-schedule-check';
+    check.setAttribute('aria-hidden','true');
+    check.textContent=checked?'✓':'';
+    const copy=document.createElement('span');
+    copy.className='capture-schedule-copy';
+    const title=document.createElement('span');
+    title.className='capture-schedule-name';
+    title.textContent=label;
+    copy.append(title);
+    if(detail){
+      const small=document.createElement('span');
+      small.className='capture-schedule-time';
+      small.textContent=detail;
+      copy.append(small);
+    }
+    button.append(check,copy);
+    button.addEventListener('click',()=>{
+      if(saving)return;
+      select.value=value;
+      select.dispatchEvent(new Event('change',{bubbles:true}));
+      captureScheduleDisclosure.open=false;
+      captureScheduleSummary.focus({preventScroll:true});
+    });
+    rows.push(button);
+  };
+  option('','Personal note',ko?'일정에 연결하지 않음':'Not linked to a schedule',!chosen);
+  for(const e of es)option(e.id,e.title||KonaI18n.eventLabel(e),e.start&&e.end?e.start+'–'+e.end:'',chosen===e.id);
+  if(manual){
+    const divider=document.createElement('div');
+    divider.className='capture-schedule-divider';
+    divider.setAttribute('role','separator');
+    rows.push(divider);
+    option('__auto__',ko?'기본 연결로 돌아가기':'Use default connection','',false,true);
+  }
+  captureScheduleMenu.replaceChildren(...rows);
+}
+function ensureCaptureScheduleMenu(){
+  const link=document.getElementById('captureScheduleLink');
+  if(!link)return false;
+  if(captureScheduleDisclosure===link)return true;
+  captureScheduleDisclosure=link;
+  captureScheduleSummary=link.querySelector('summary');
+  captureScheduleMenu=document.createElement('div');
+  captureScheduleMenu.id='captureScheduleMenu';
+  captureScheduleMenu.className='capture-schedule-menu';
+  captureScheduleMenu.setAttribute('role','menu');
+  captureScheduleMenu.setAttribute('aria-label',KonaI18n.language==='ko'?'연결할 일정 선택':'Choose note connection');
+  link.append(captureScheduleMenu);
+  select.tabIndex=-1;
+  select.setAttribute('aria-hidden','true');
+  link.addEventListener('toggle',()=>{
+    if(!link.open)return;
+    renderCaptureScheduleMenu();
+    const bounds=captureScheduleSummary.getBoundingClientRect();
+    const viewportBottom=window.visualViewport?window.visualViewport.offsetTop+window.visualViewport.height:window.innerHeight;
+    const below=viewportBottom-bounds.bottom;
+    const above=bounds.top-(window.visualViewport?.offsetTop||0);
+    const height=Math.min(280,captureScheduleMenu.scrollHeight);
+    captureScheduleMenu.classList.toggle('is-upward',below<height+12&&above>below);
+  });
+  document.addEventListener('pointerdown',event=>{
+    if(link.open&&!link.contains(event.target))link.open=false;
+  });
+  link.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&link.open){
+      link.open=false;
+      captureScheduleSummary.focus({preventScroll:true});
+      event.preventDefault();
+    }
+  });
+  return true;
+}
+function paintCaptureLink(){
+  select.value=manual?chosen:'__auto__';
+  if(!ensureCaptureScheduleMenu())return;
+  const event=events(date).find(e=>e.id===chosen);
+  const label=event?.title||'Personal note';
+  const icon=document.createElement('img');
+  icon.src=COMPACT_UI_ICONS.calendar3;
+  icon.alt='';
+  const text=document.createElement('span');
+  text.textContent=label;
+  captureScheduleSummary.replaceChildren(icon,text);
+  captureScheduleSummary.classList.add('kona-auto-link-chip');
+  captureScheduleSummary.setAttribute('aria-label',(KonaI18n.language==='ko'?'메모 연결: ':'Note connection: ')+label+(KonaI18n.language==='ko'?', 변경하기':', change'));
+  // Render before the native details toggle event, so first tap is immediately ready.
+  renderCaptureScheduleMenu();
+}
+// This element is created later in the legacy controller boot sequence.
+queueMicrotask(()=>{if(ensureCaptureScheduleMenu())paintCaptureLink()});
 function updateSubmit(){submit.disabled=saving||(!input.value.trim()&&!captureTitle.value.trim()&&!captureTags.length);const label=document.getElementById('qc-submit-label');if(label)label.textContent=saving?KonaI18n.t("Saving…"):KonaI18n.t("Save")}
 function draft(){if(!manual)chosen=current();paintCaptureLink();day(date).qcDraft={title:captureTitle.value,text:input.value,eventId:chosen,manual,tags:[...captureTags],important:captureImportant};const ok=save()||!!tutorialPractice;state.textContent=ok?(input.value.trim()||captureTitle.value.trim()||captureTags.length?KonaI18n.t("Draft saved"):''):KonaI18n.t("Draft not saved · please retry");document.getElementById('qc-view')?.setAttribute('hidden','');updateSubmit()}
 function refresh(){
