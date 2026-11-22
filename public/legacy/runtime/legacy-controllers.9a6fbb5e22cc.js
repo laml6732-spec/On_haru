@@ -690,13 +690,33 @@ function setTaskImportant(task,d){
  render();return true;
 }
 function bindImportantPress(target,task,d,onTap){
- const isMarked=isTaskImportant(task);let timer=null,longPressed=false,suppressClick=false;
- target.setAttribute('aria-pressed',String(isMarked));target.setAttribute('aria-label',(isMarked?'Important: ':KonaI18n.t("Not important: ",true))+task.title+KonaI18n.t(" · tap to edit, hold to change Importance",true));target.title=KonaI18n.t("Tap to edit · hold to toggle Important",true);
+ const isMarked=isTaskImportant(task);
+ let timer=null,longPressed=false,suppressClick=false,firstTapTimer=null,lastTapAt=0;
+ target.setAttribute('aria-pressed',String(isMarked));
+ target.setAttribute('aria-label',(isMarked?'Important: ':KonaI18n.t("Not important: ",true))+task.title+KonaI18n.t(" · tap to edit, hold to change Importance",true));
+ target.title=KonaI18n.t("Tap to edit · hold to toggle Important",true);
  const clear=()=>{if(timer){clearTimeout(timer);timer=null}};
  target.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;longPressed=false;timer=setTimeout(()=>{timer=null;longPressed=true;suppressClick=true;setTaskImportant(task,d)},520)});
  ['pointerup','pointerleave','pointercancel'].forEach(type=>target.addEventListener(type,clear));
  target.addEventListener('contextmenu',e=>{e.preventDefault();if(!longPressed){clear();longPressed=true;suppressClick=true;setTaskImportant(task,d)}});
- target.onclick=e=>{if(suppressClick){e.preventDefault();e.stopImmediatePropagation();suppressClick=false;return}if(onTap)onTap();else setTaskImportant(task,d)};
+ const tap=()=>{if(onTap)onTap();else setTaskImportant(task,d)};
+ target.onclick=e=>{
+  if(suppressClick){e.preventDefault();e.stopImmediatePropagation();suppressClick=false;return}
+  // A Capture double-click/double-tap toggles the existing important ink,
+  // including the pinned task after it moves above the editor. Other tabs
+  // keep their original instant single-click editing behavior.
+  if(!target.closest('#page-capture')||e.detail===0){tap();return}
+  const now=performance.now();
+  if(e.detail>=2||(lastTapAt&&now-lastTapAt<340)){
+   if(firstTapTimer){clearTimeout(firstTapTimer);firstTapTimer=null}
+   lastTapAt=0;e.preventDefault();e.stopPropagation();
+   setTaskImportant(task,d);
+  }else{
+   lastTapAt=now;
+   if(firstTapTimer)clearTimeout(firstTapTimer);
+   firstTapTimer=setTimeout(()=>{firstTapTimer=null;lastTapAt=0;if(target.isConnected)tap()},340);
+  }
+ };
  target.addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();setTaskImportant(task,d)}});
 }
 function taskRow(t,d,{focusButton=false}={}){
@@ -3854,28 +3874,7 @@ function renderHome(){
   row.classList.add('capture-task-row');
   const title=row.querySelector('.task-title'),meta=row.querySelector('.task-meta'),focus=row.querySelector('.task-start-btn');
   // All controls and metadata share one visual line. The full title is kept for accessible editing.
-  if(title){
-   title.title=task.title;
-   // A double click/tap in Capture marks the task important (existing thick
-   // highlighter style). Delay only a pointer's first click so it doesn't
-   // open Edit before the second click arrives. Keyboard Enter remains instant.
-   const originalClick=title.onclick;
-   let firstClickTimer=null;
-   title.style.touchAction='manipulation';
-   title.onclick=event=>{
-    if(event.detail>=2){
-     if(firstClickTimer){clearTimeout(firstClickTimer);firstClickTimer=null}
-     event.preventDefault();event.stopPropagation();
-     setTaskImportant(task,date);
-    }else if(event.detail===1){
-     if(firstClickTimer)clearTimeout(firstClickTimer);
-     firstClickTimer=setTimeout(()=>{
-      firstClickTimer=null;
-      if(title.isConnected)originalClick?.call(title,event);
-     },310);
-    }else originalClick?.call(title,event);
-   };
-  }
+  if(title)title.title=task.title;
   if(meta){
    const langKo=KonaI18n.language==='ko';
    const due=task.due||'';
