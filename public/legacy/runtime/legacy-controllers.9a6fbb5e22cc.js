@@ -1323,7 +1323,9 @@ function renderDayReview(){
   }
   for(const q of v.quickCaptureEntries||[]){if(!(q.text||'').trim()&&!(q.title||'').trim()&&!q.tags?.length)continue;entries.push({id:'q-'+q.id,important:!!q.important||q.tags?.includes('important'),t:/^\d{2}:\d{2}$/.test(q.time||'')?mins(q.time):Infinity,displayStamp:/^\d{2}:\d{2}$/.test(q.time||'')?displayTime(mins(q.time)):'',label:q.title?konaNoteDisplay(q.title,q.tags):KonaI18n.t("Personal note"),text:q.title?(q.text||''):konaNoteDisplay(q.text||'',q.tags||[]),edit:()=>window.konaOpenArchiveRecord?.(date,q.id,true),remove:()=>{v.quickCaptureEntries=v.quickCaptureEntries.filter(x=>x.id!==q.id)}})}
   for(const item of entries){const source=konaReviewTagSource(v,item.id),tags=item.id==='class-noon'?source?.classTags:source?.tags;if(!item.id.startsWith('q-')&&tags?.length){const emoji=konaNoteTagEmoji(tags[0]);if(emoji)item.label=emoji+' '+(item.id.startsWith('s-')?item.label.replace(/^[^\p{L}\p{N}]+\s*/u,''):item.label)}}
-  entries.sort((a,b)=>a.t-b.t);
+  // The legacy Daily log follows the same predictable check-in order.
+  const checkinRank={'check-morning':0,'check-noon':1,'check-evening':2};
+  entries.sort((a,b)=>(checkinRank[a.id]??3)-(checkinRank[b.id]??3)||a.t-b.t);
   const list=el('div','day-review-list');
   for(const item of entries){
     const row=el('div','day-review-entry-row'),b=el('button','day-review-entry');row.dataset.recordId=item.id||'';if(item.important||(v.important||[]).includes(String(item.id).replace(/^(event-|old-|q-)/,'')))row.classList.add('review-is-important');b.type='button';b.setAttribute('aria-label',KonaI18n.format("View ⟪0⟫ record",[item.label],true));
@@ -2309,11 +2311,17 @@ function reviewRecords(d=date){
 }
 // Read-only grouping uses existing schedule links; it never infers a link from time.
 function reviewDailySections(records,events){
- const sections=[{key:'morning',name:KonaI18n.t("Morning"),events:[],records:[]},{key:'afternoon',name:KonaI18n.language==='ko'?'낮':KonaI18n.t("Midday"),events:[],records:[]},{key:'evening',name:checkinReflectionName(),events:[],records:[]},{key:'untimed',name:KonaI18n.t("Time not recorded"),events:[],records:[]},{key:'night',name:KonaI18n.t("End of day"),events:[],records:[]}];
- const index=t=>!Number.isFinite(t)?3:t<720?0:t<1020?1:2;
+ // The three check-ins are a single first-class reading sequence, independent
+ // of when a user happened to save each one. Other records stay time-grouped.
+ const sections=[{key:'checkins',name:KonaI18n.language==='ko'?'체크인':'Check-ins',events:[],records:[]},{key:'morning',name:KonaI18n.t("Morning"),events:[],records:[]},{key:'afternoon',name:KonaI18n.language==='ko'?'낮':KonaI18n.t("Midday"),events:[],records:[]},{key:'evening',name:checkinReflectionName(),events:[],records:[]},{key:'untimed',name:KonaI18n.t("Time not recorded"),events:[],records:[]},{key:'night',name:KonaI18n.t("End of day"),events:[],records:[]}];
+ const index=t=>!Number.isFinite(t)?4:t<720?1:t<1020?2:3;
  const linkedIds=new Set(records.filter(r=>r.kind!=='anchor'&&r.reviewEvent).map(r=>r.reviewEvent.id));
  for(const event of events)if(reviewFilter==='all'&&konaReviewPreferences().showEmpty||linkedIds.has(event.id)){const time=validReflectHM(event.start);sections[index(time?mins(time):null)].events.push(event)}
- for(const record of records)if(record.kind!=='anchor')sections[record.kind==='class'?1:record.kind==='check'&&record.phase==='night'?4:record.kind==='check'&&record.phase==='morning'?0:record.kind==='check'&&record.phase==='noon'?1:record.kind==='check'&&record.phase==='evening'?2:index(record.t)].records.push(record);
+ for(const record of records){
+  if(record.kind==='anchor')continue;
+  const position=record.kind==='check'&&['morning','noon','evening'].includes(record.phase)?0:record.kind==='class'?2:record.kind==='check'&&record.phase==='night'?5:index(record.t);
+  sections[position].records.push(record);
+ }
  return sections.filter(x=>x.records.length>0||x.events.length>0);
 }
 let reviewFilter='all',reviewFilterScroll=0;
@@ -2337,7 +2345,10 @@ function reviewSection(section){
 // Daily: Morning Class notes stay first in Afternoon regardless of writing time.
 // Other check-ins, schedules and records retain their existing relative order.
 const priority=item=>item.record?.kind==='class'?-1:item.record?.kind==='check'?0:(item.event?.category==='lecture'&&linked.has(item.event.id))?1:2;
-objects.sort((a,b)=>priority(a)-priority(b)||a.time-b.time);
+if(section.key==='checkins'){
+ const phaseOrder={morning:0,noon:1,evening:2};
+ objects.sort((a,b)=>(phaseOrder[a.record?.phase]??99)-(phaseOrder[b.record?.phase]??99));
+}else objects.sort((a,b)=>priority(a)-priority(b)||a.time-b.time);
  for(const item of objects){if(item.record){
    if(item.record.kind==='class'){
     // Daily-only visual treatment: one paper-like book card, not a nested chip/card.
