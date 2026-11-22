@@ -7,6 +7,7 @@ body .app #page-capture #konaCarryToday textarea#dayHeadline,
 body .app #page-capture #konaCarryToday:focus-within textarea#dayHeadline,
 body .app #page-capture #konaCarryToday.has-anchor textarea#dayHeadline {
   box-sizing: border-box!important;
+  flex: 0 0 auto!important;
   min-height: 0!important;
   max-height: calc(48px * var(--kona-ui-scale, 1))!important;
   padding-top: 0!important;
