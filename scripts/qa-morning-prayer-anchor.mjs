@@ -13,7 +13,7 @@ const assert=(ok,msg)=>{if(!ok)throw Error(msg)};
 async function state(field){
  return field.evaluate(el=>{
   const c=getComputedStyle(el);
-  return {height:el.getBoundingClientRect().height,line:parseFloat(c.lineHeight),scroll:el.scrollHeight,overflow:c.overflowY,value:el.value};
+  return {height:el.getBoundingClientRect().height,line:parseFloat(c.lineHeight),scroll:el.scrollHeight,overflow:c.overflowY,minHeight:c.minHeight,maxHeight:c.maxHeight,style:el.getAttribute('style'),value:el.value};
  });
 }
 for(const width of [320,390,1024]) for(const theme of ['light','dark']){
@@ -35,20 +35,20 @@ for(const width of [320,390,1024]) for(const theme of ['light','dark']){
   await page.locator('.tabs [data-page="capture"]').click();
   const field=page.locator('#dayHeadline');
   assert(await field.getAttribute('rows')==='1','Anchor must start from one row');
-  await field.fill('주님을 신뢰하는 하루');
+  await field.fill('주님을 신뢰하는 하루');await page.waitForTimeout(80);
   const single=await state(field);
   assert(Math.abs(single.height-single.line)<3,'One-line anchor expanded: '+JSON.stringify(single));
   await page.screenshot({path:`${out}/${width}-${theme}-one-line.png`,animations:'disabled'});
   let two=null;
   for(let i=1;i<=12;i++){
-   await field.fill('주님의 선하심을 신뢰하며 '.repeat(i));
+   await field.fill('주님의 선하심을 신뢰하며 '.repeat(i));await page.waitForTimeout(80);
    const test=await state(field);
    if(test.scroll>test.line*1.5&&test.scroll<test.line*2.4){two=test;break;}
   }
   assert(two&&Math.abs(two.height-2*two.line)<3,'Two-line anchor did not size to two rows: '+JSON.stringify(two));
   await page.screenshot({path:`${out}/${width}-${theme}-two-lines.png`,animations:'disabled'});
   const longText='주님의 선하심을 신뢰하며 오늘 하루를 걸어가겠습니다. '.repeat(8);
-  await field.fill(longText);
+  await field.fill(longText);await page.waitForTimeout(80);
   const long=await state(field);
   assert(long.scroll>long.line*2.4,'Long test must wrap to three or more lines: '+JSON.stringify(long));
   assert(long.height<=2*long.line+3,'Long anchor exceeded two-line cap: '+JSON.stringify(long));
