@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+
 /* Morning Check-in prayer CTA and compact Capture anchor — 2026-11-21.
    Local overrides only. Preserve the legacy palette and text scaling. */
 
@@ -176,4 +178,77 @@ body.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
   overflow-wrap:break-word!important;
   color:inherit!important;
   opacity:.96;
+}
+
+/* Still Ocean A — only sessions launched from Morning Check-in.
+   Keep the original Focus buttons and clock; use the same Morning art
+   regardless of the clock time. Relative path works in / and /legacy/. */
+body.focus-immersive.morning-prayer-running[data-focus-ocean] {
+  --focus-image:url('./assets/kona-focus-ocean-morning.png');
+  --focus-base:#DFF6FB;
+  --focus-ink:#103449;
+  --focus-sub:#244B60;
+  --focus-line:#173D5459;
+  --focus-badge:#FFFFFF70;
+  --focus-note:#FFFFFF70;
+  --focus-control-surface:#EFFAFF;
+  --focus-button:#123E56;
+  --focus-button-ink:#F4FBFF;
+  --focus-scrim:rgba(240,251,255,.12);
+}
+body.focus-immersive.morning-prayer-running[data-focus-ocean] .app {
+  background:linear-gradient(var(--focus-scrim),var(--focus-scrim)),
+    var(--focus-image) center / cover no-repeat,var(--focus-base)!important;
+}
+
+/* The existing clock-area flex flow, not absolute positioning, prevents
+   the phrase, countdown, progress and controls from overlapping. */
+body.focus-immersive.morning-prayer-running .app #page-focus #timerStatus {
+  order:0;
+  margin:0 auto 15px!important;
+  color:#244B60!important;
+  font-size:calc(12px * var(--kona-ui-scale,1))!important;
+  font-weight:500!important;
+  letter-spacing:.045em!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+  order:1;
+  display:block!important;
+  box-sizing:border-box!important;
+  width:min(100%,350px)!important;
+  margin:0 auto 24px!important;
+  padding:0 10px!important;
+  font-family:'Gowun Batang','AppleMyungjo','Nanum Myeongjo','Noto Serif KR',serif!important;
+  font-size:calc(clamp(18px,4.9vw,20px) * var(--kona-ui-scale,1))!important;
+  font-weight:400!important;
+  line-height:1.72!important;
+  letter-spacing:-.04em!important;
+  color:#173D52!important;
+  opacity:1!important;
+  text-align:center!important;
+  word-break:keep-all!important;
+  overflow-wrap:break-word!important;
+  text-shadow:0 1px 15px rgb(230 248 252 / 45%);
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage strong {
+  font-weight:700!important;
+  color:#103449!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #focusClock {order:2}
+body.focus-immersive.morning-prayer-running .app #page-focus #timerProgress {order:3}
+
+/* Writing a session note should reclaim the space used by the guidance. */
+body.focus-immersive.morning-prayer-running.focus-note-open .app #page-focus #morningPrayerListeningMessage {
+  display:none!important;
+}
+@media (max-width:360px), (max-height:700px) {
+  body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+    font-size:calc(17px * var(--kona-ui-scale,1))!important;
+    line-height:1.62!important;
+    margin-bottom:14px!important;
+    padding-inline:5px!important;
+  }
+  body.focus-immersive.morning-prayer-running .app #page-focus #timerStatus {
+    margin-bottom:10px!important;
+  }
 }
