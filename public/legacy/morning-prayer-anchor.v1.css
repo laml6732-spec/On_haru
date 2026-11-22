@@ -886,15 +886,44 @@ html body .app #page-capture #qc-v2 .kona-tag-tray-toggle::before {
   height:var(--capture-tag-circle)!important;
 }
 
-/* Accessibility override: seven featured tags remain one row even when the
-   app's enlarged-text mode otherwise switches the tray to auto-fit columns.
-   Text and other controls still use the user's requested scale. */
+/* Enlarged-text accessibility: featured tags may wrap into multiple rows
+   so each button retains a generous target. More follows below the tray,
+   never overlapping a tag; normal-size phones keep seven in one row. */
+:root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 .kona-capture-tag-row {
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:4px!important;
+}
 :root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 #konaCaptureTagTray {
   display:grid!important;
-  grid-template-columns:repeat(8,minmax(0,1fr))!important;
-  grid-auto-rows:44px!important;
-  gap:5px 0!important;
+  grid-template-columns:repeat(auto-fit,minmax(max(44px,calc(36px * var(--kona-ui-scale,1))),1fr))!important;
+  grid-auto-rows:minmax(44px,auto)!important;
+  gap:4px!important;
   width:100%!important;
   max-width:none!important;
   min-width:0!important;
+}
+:root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 #konaCaptureTagTray>button.kona-tag-chip {
+  height:max(44px,calc(36px * var(--kona-ui-scale,1)))!important;
+  min-height:44px!important;
+}
+:root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 .kona-tag-tray-toggle,
+:root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded .kona-tag-tray-toggle {
+  position:static!important;
+  align-self:flex-end!important;
+  width:44px!important;
+  max-width:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  height:44px!important;
+  flex:0 0 44px!important;
+  margin:0!important;
+}
+:root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray>button.kona-tag-chip:nth-child(n+8) {
+  grid-column:auto!important;
+  grid-row:auto!important;
+}
+:root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 {
+  --capture-tag-circle:clamp(32px,calc(28px * var(--kona-ui-scale,1)),40px);
 }
