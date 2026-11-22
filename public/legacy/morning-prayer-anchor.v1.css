@@ -257,3 +257,45 @@ body.focus-immersive.morning-prayer-running.focus-note-open .app #page-focus #mo
     margin-bottom:10px!important;
   }
 }
+
+/* Still Ocean A — dark-theme contrast repair.
+   A Morning image stays luminous even when the rest of the app is dark.
+   Existing global dark rules target nested spans and numerals, so scope
+   their ink and surfaces to this Morning-origin session only. */
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app .pagehead {
+  background:transparent!important;
+  border-color:transparent!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #page-focus
+  #morningPrayerListeningMessage :is(.morning-prayer-opening,.morning-prayer-bridge) {
+  color:#173D52!important;
+  -webkit-text-fill-color:#173D52!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #page-focus
+  #focusClock .timer-digit {
+  color:#103449!important;
+  -webkit-text-fill-color:#103449!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #page-focus #focusStart {
+  background:#123E56!important;
+  color:#F4FBFF!important;
+  -webkit-text-fill-color:#F4FBFF!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #page-focus
+  :is(#focusEnd,#focusMore,#focusNoteToggle) {
+  background:#EFFAFF!important;
+  color:#103449!important;
+  -webkit-text-fill-color:#103449!important;
+  border-color:#173D5459!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean].focus-note-open .app #page-focus #timerNote {
+  background:rgba(242,251,253,.94)!important;
+  color:#103449!important;
+  -webkit-text-fill-color:#103449!important;
+  caret-color:#103449!important;
+  border-color:#173D5459!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean].focus-note-open .app #page-focus #timerNote::placeholder {
+  color:#476779!important;
+  -webkit-text-fill-color:#476779!important;
+}
