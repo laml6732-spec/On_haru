@@ -735,3 +735,38 @@ html[data-ui-enlarged="true"] body .app #page-checkin #morningPrayerPrompt butto
     padding-right:32px!important;
   }
 }
+
+/* Alignment sweep: inline important toggle and review week strip (2026-11-21).
+   Geometric corrections only: no data, color or typography changes. */
+body .app #page-capture #qc-v2 > button#qc-important-highlighter {
+  top:14px!important;
+  right:14px!important;
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  background:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+body .app #page-capture #qc-v2 #qc-note-title {
+  padding-right:54px!important;
+}
+@media(min-width:350px) {
+  body .app #page-records #new-reflect-page .rv-seven-strip {
+    box-sizing:border-box!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    left:auto!important;
+    transform:none!important;
+  }
+}
+@media(max-width:349px) {
+  body .app #page-records #new-reflect-page .rv-seven-strip {
+    box-sizing:border-box!important;
+    width:calc(100vw - 16px)!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+}
