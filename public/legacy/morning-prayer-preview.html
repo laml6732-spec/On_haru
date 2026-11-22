@@ -16,7 +16,16 @@ html,body{margin:0;padding:0;min-width:320px;font-family:system-ui,'Apple SD Got
 .brand{font-family:cursive;font-size:23px;font-weight:700;font-style:italic;letter-spacing:-1.7px}
 .brand em{font:400 15px serif;color:#d59a64}
 
-.hide-timer{position:absolute;top:calc(env(safe-area-inset-top) + 66px);right:22px;border:0;background:transparent;font:400 12px system-ui;color:var(--ocean-sub);padding:8px;cursor:pointer}
+
+.preview-progress-rail{order:3;position:relative;display:flex;align-items:center;justify-content:center;width:min(100%,286px);height:44px;margin:3px auto 0}
+.preview-progress-rail .progress{width:180px;max-width:calc(100% - 64px);height:3px;margin:0!important;background:#24566b50;position:relative}
+.preview-progress-rail .progress span{display:block;width:6px;height:3px;background:#103449}
+.hide-timer{position:absolute;right:0;top:0;display:flex;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;min-height:44px;border:0;border-radius:50%;background:transparent;color:var(--ocean-sub);padding:0;cursor:pointer}
+.hide-timer svg{width:21px;height:21px}
+.hide-timer[aria-pressed="true"] .timer-eye-hide,.hide-timer[aria-pressed="false"] .timer-eye-show{display:none}
+.hide-timer:focus-visible{outline:2px solid var(--ocean-sub);outline-offset:2px}
+#focusClock[hidden],.progress[hidden]{display:none!important}
+
 .app #page-focus{position:relative;min-height:100svh}
 .app #page-focus .focus-clock-area{position:absolute;top:47.8%;left:14px;right:14px;transform:translateY(-50%);text-align:center;display:flex;align-items:center;flex-direction:column}
 #timerStatus{display:block;color:var(--ocean-sub);font-size:12px;font-weight:500;letter-spacing:.04em;margin:0 auto 14px!important}
@@ -50,13 +59,13 @@ body.note-on #focusClock{font-size:64px}
 <body class="focus-immersive morning-prayer-running" data-focus-ocean="morning">
 <main class="app demo-shell" aria-label="아침기도 화면 디자인 미리보기">
   <header class="demo-head"><span class="brand">On_HARU <em>✿</em></span></header>
-  <button class="hide-timer" id="hideTimer" type="button" aria-pressed="false">타이머 숨기기</button>
+  
   <section id="page-focus" class="page active">
     <div class="focus-clock-area">
       <p id="timerStatus">기도 중</p>
       <p id="morningPrayerListeningMessage" aria-label="오늘의 기도문"></p>
       <div id="focusClock" aria-label="남은 시간">10:00</div>
-      <div class="progress" aria-hidden="true"><span></span></div>
+      <div class="preview-progress-rail"><div class="progress" aria-hidden="true"><span></span></div><button class="hide-timer" id="hideTimer" type="button" aria-label="타이머 숨기기" title="타이머 숨기기" aria-pressed="false"><svg class="timer-eye-hide" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c5.5 0 9.6 4.5 10 7a11 11 0 0 1-4.1 5.5"/><path d="M6.6 6.5C4.2 8.1 2.5 10.2 2 12c.8 3.8 4.8 7 10 7 1.6 0 3-.3 4.3-.9"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M3 3l18 18"/></svg><svg class="timer-eye-show" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
     </div>
     <textarea id="note" class="note" hidden placeholder="생각을 남겨보세요. 이 미리보기의 메모는 저장되지 않아요."></textarea>
     <div class="actions">
@@ -87,7 +96,7 @@ body.note-on #focusClock{font-size:64px}
  document.getElementById('end').onclick=()=>{seconds=600;paused=true;timer.textContent='10:00';button.textContent='일시 정지';};
  document.getElementById('noteToggle').onclick=()=>{noteOpen=!noteOpen;document.body.classList.toggle('note-on',noteOpen);document.getElementById('note').hidden=!noteOpen;document.getElementById('noteToggle').textContent=noteOpen?'메모 닫기':'생각 남기기';};
  document.getElementById('more').onclick=()=>alert('이 페이지는 디자인만 확인하는 미리보기입니다. 기도 기록을 저장하려면 아래 “앱에서 기도 시작”을 누르세요.');
- document.getElementById('hideTimer').onclick=()=>{hideClock=!hideClock;timer.hidden=hideClock;document.querySelector('.progress').hidden=hideClock;document.getElementById('hideTimer').textContent=hideClock?'타이머 보기':'타이머 숨기기';document.getElementById('hideTimer').setAttribute('aria-pressed',String(hideClock));};
+ document.getElementById('hideTimer').onclick=()=>{hideClock=!hideClock;timer.hidden=hideClock;document.querySelector('.progress').hidden=hideClock;const eye=document.getElementById('hideTimer'),label=hideClock?'타이머 보기':'타이머 숨기기';eye.setAttribute('aria-label',label);eye.title=label;eye.setAttribute('aria-pressed',String(hideClock));};
  document.getElementById('next').onclick=()=>{index=(index+1)%lib.copy.length;draw();window.scrollTo({top:0,behavior:'smooth'});};
  setInterval(tick,1000);
 })();
