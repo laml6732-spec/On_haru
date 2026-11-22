@@ -1,5 +1,6 @@
 /* On_HARU iOS text entry + keyboard viewport. Text outside editors is unchanged. */
 @supports (-webkit-touch-callout: none) {
+@media (pointer: coarse) {
   /* Prevent Safari's sub-16px text-focus zoom without scaling the app UI. */
   body :is(
     input:not([type]),
@@ -11,6 +12,12 @@
   ) {
     font-size:max(16px, calc(var(--reading-size, 13.5px) * var(--kona-ui-scale, 1)))!important;
   }
+  /* These editors already use a larger base size in the existing design. */
+  body #page-capture #dayHeadline,
+  body #konaActionInputModal .kona-input-field {
+    font-size:max(16px, calc(16px * var(--kona-ui-scale, 1)))!important;
+  }
+}
 }
 
 /* Only while the iOS on-screen keyboard actually reduces the visual viewport. */
