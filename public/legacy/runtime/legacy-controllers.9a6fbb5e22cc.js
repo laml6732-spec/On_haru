@@ -2154,7 +2154,8 @@ function paintCaptureLink(){
   captureScheduleSummary.replaceChildren(icon,text);
   captureScheduleSummary.classList.add('kona-auto-link-chip');
   captureScheduleSummary.setAttribute('aria-label',(KonaI18n.language==='ko'?'메모 연결: ':'Note connection: ')+label+(KonaI18n.language==='ko'?', 변경하기':', change'));
-  if(captureScheduleDisclosure.open)renderCaptureScheduleMenu();
+  // Render before the native details toggle event, so first tap is immediately ready.
+  renderCaptureScheduleMenu();
 }
 // This element is created later in the legacy controller boot sequence.
 queueMicrotask(()=>{if(ensureCaptureScheduleMenu())paintCaptureLink()});
