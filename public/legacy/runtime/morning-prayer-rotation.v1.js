@@ -32,17 +32,42 @@
    try{localStorage.setItem(KEY,JSON.stringify({day,choice,remaining}))}catch(e){}
    return COPY[choice];
  }
+ const assetHeights=[450,417,431,400,499,416,400,400];
  function draw(element,entry){
    if(!element || !entry)return;
-   const fragment=document.createDocumentFragment();
+   const id=String(entry.id).padStart(2,'0');
+   // syncFocusLayout runs repeatedly: do not re-create or re-download
+   // the image for an unchanged prayer during an active timer session.
+   if(element.dataset.morningPrayerAssetId===id && element.querySelector('.morning-prayer-handwriting'))return;
+   element.dataset.morningPrayerAssetId=id;
+   element.classList.remove('morning-prayer-image-ready','morning-prayer-image-error');
+   const fallback=document.createElement('span');
+   fallback.className='morning-prayer-fallback';
    entry.lines.forEach((line,i)=>{
-     if(i)fragment.appendChild(document.createTextNode(' '));
+     if(i)fallback.appendChild(document.createTextNode(' '));
      const span=document.createElement('span');
      span.className='morning-prayer-line';
      span.textContent=line;
-     fragment.appendChild(span);
+     fallback.appendChild(span);
    });
-   element.replaceChildren(fragment);
+   const image=document.createElement('img');
+   image.className='morning-prayer-handwriting';
+   image.alt='';
+   image.setAttribute('aria-hidden','true');
+   image.width=800;
+   image.height=assetHeights[entry.id-1]||400;
+   image.decoding='async';
+   image.onload=()=>{
+     if(element.dataset.morningPrayerAssetId===id)element.classList.add('morning-prayer-image-ready');
+   };
+   image.onerror=()=>{
+     if(element.dataset.morningPrayerAssetId===id){
+       image.hidden=true;
+       element.classList.add('morning-prayer-image-error');
+     }
+   };
+   element.replaceChildren(fallback,image);
+   image.src='./assets/morning-prayer-'+id+'.png';
  }
  window.OnHaruMorningPrayer=Object.freeze({pick,draw,copy:COPY});
 })();
