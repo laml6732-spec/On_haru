@@ -1014,3 +1014,131 @@ html body .app #page-capture #qc-v2 #captureScheduleLink summary {
     justify-self:end!important;
   }
 }
+
+
+/* Single-layer note connection menu. The native select remains functional
+   in script but is no longer a second, visible dropdown. */
+html body .app #page-capture #qc-v2 #captureScheduleLink[open]::before{
+  display:none!important;
+  content:none!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink>label,
+html body .app #page-capture #qc-v2 #captureScheduleLink>select,
+html body .app #page-capture #qc-v2 #captureScheduleLink>#kx-schedule{
+  display:none!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink[open]{
+  z-index:60!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-menu{
+  display:none!important;
+  position:absolute!important;
+  left:0!important;
+  top:calc(100% + 6px)!important;
+  bottom:auto!important;
+  box-sizing:border-box!important;
+  width:min(308px,calc(100vw - 48px))!important;
+  max-width:calc(100vw - 48px)!important;
+  max-height:min(280px,calc(100dvh - 120px))!important;
+  margin:0!important;
+  padding:5px!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  border:1px solid var(--line,#e0e5df)!important;
+  border-radius:12px!important;
+  background:var(--surface,#fff)!important;
+  color:var(--ink,#243330)!important;
+  box-shadow:0 7px 24px rgba(25,47,38,.12)!important;
+  z-index:65!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink[open] .capture-schedule-menu{
+  display:block!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink[open] .capture-schedule-menu.is-upward{
+  top:auto!important;
+  bottom:calc(100% + 6px)!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-option{
+  appearance:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:9px!important;
+  width:100%!important;
+  min-height:44px!important;
+  height:auto!important;
+  margin:0!important;
+  padding:9px 10px!important;
+  box-sizing:border-box!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:var(--ink,#243330)!important;
+  font-family:var(--font-ui,system-ui,sans-serif)!important;
+  font-size:calc(13px * var(--kona-ui-scale,1))!important;
+  font-weight:500!important;
+  line-height:1.3!important;
+  text-align:left!important;
+  cursor:pointer!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-option[aria-checked="true"]{
+  background:var(--soft,#eef4ef)!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-option:hover,
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-option:focus-visible{
+  background:var(--soft,#eef4ef)!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-option:focus-visible{
+  outline:2px solid var(--solid,#286657)!important;
+  outline-offset:-2px!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-check{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 16px!important;
+  width:16px!important;
+  color:var(--solid,#286657)!important;
+  font-size:15px!important;
+  line-height:1!important;
+  font-weight:700!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-copy{
+  display:flex!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  flex-direction:column!important;
+  gap:3px!important;
+  overflow:hidden!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-name{
+  display:block!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  color:inherit!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-time{
+  display:block!important;
+  color:var(--sub,#68766f)!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+  font-weight:400!important;
+  line-height:1.25!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-divider{
+  height:1px!important;
+  margin:5px 9px!important;
+  background:var(--line,#e0e5df)!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-option.is-secondary{
+  color:var(--sub,#68766f)!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink[open]>summary::after{
+  transform:rotate(180deg)!important;
+}
+html[data-appearance="dark"] body .app #page-capture #qc-v2 #captureScheduleLink .capture-schedule-menu{
+  box-shadow:0 7px 24px rgba(0,0,0,.28)!important;
+}
