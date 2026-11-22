@@ -60,7 +60,7 @@ for(const width of [320,390,1024])for(const appearance of ['light','dark']){
       return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,viewport:innerWidth,options:[...el.querySelectorAll('button')].map(x=>x.textContent.trim())};
     });
     check(menuInfo.right<=width+1&&menuInfo.left>=-1,'Menu horizontally clipped: '+JSON.stringify(menuInfo));
-    check(menuInfo.options.some(x=>x.includes('Personal note')),'Personal note option missing');
+    check(menuInfo.options.some(x=>x.includes('Personal note')),'Personal note option missing: '+JSON.stringify(menuInfo)+' HTML='+await menu.innerHTML());
     check(menuInfo.options.some(x=>x.includes('QA Morning prayer')),'Matching event option missing');
     await page.screenshot({path:`${out}/${width}-${appearance}-menu.png`,animations:'disabled',caret:'hide'});
 
