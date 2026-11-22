@@ -692,6 +692,7 @@ function setTaskImportant(task,d){
 function bindImportantPress(target,task,d,onTap){
  const isMarked=isTaskImportant(task);
  let timer=null,longPressed=false,suppressClick=false,firstTapTimer=null,lastTapAt=0;
+ target.style.touchAction='manipulation'; // Prevent double-tap viewport zoom on mobile.
  target.setAttribute('aria-pressed',String(isMarked));
  target.setAttribute('aria-label',(isMarked?'Important: ':KonaI18n.t("Not important: ",true))+task.title+KonaI18n.t(" · tap to edit, hold to change Importance",true));
  target.title=KonaI18n.t("Tap to edit · hold to toggle Important",true);
