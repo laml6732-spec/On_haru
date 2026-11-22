@@ -927,3 +927,10 @@ html body .app #page-capture #qc-v2 .kona-tag-tray-toggle::before {
 :root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 {
   --capture-tag-circle:clamp(32px,calc(28px * var(--kona-ui-scale,1)),40px);
 }
+
+/* Enlarged More optical containment.
+   Its legacy static positioning would otherwise anchor the circle artwork to
+   the entire tag row rather than the real, accessible button hit area. */
+:root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 .kona-tag-tray-toggle {
+  contain:layout!important;
+}
