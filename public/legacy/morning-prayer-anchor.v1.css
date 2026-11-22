@@ -299,3 +299,14 @@ html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-fo
   color:#476779!important;
   -webkit-text-fill-color:#476779!important;
 }
+
+/* Still Ocean A — toolbar contrast in dark mode on a light Morning sky. */
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #focusModeBadge {
+  background:rgba(255,255,255,.74)!important;
+  color:#244B60!important;
+  -webkit-text-fill-color:#244B60!important;
+}
+html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #page-focus #quietTimerToggle {
+  color:#244B60!important;
+  -webkit-text-fill-color:#244B60!important;
+}
