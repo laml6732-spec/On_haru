@@ -710,3 +710,28 @@ body .app #page-capture #qc-v2 .qc-save-action {
   min-height:44px!important;
   margin:0!important;
 }
+
+/* Morning prayer CTA A — 2026-11-21.
+   Preserve the existing deep green, flower completion filter and focus ring. */
+body .app #page-checkin #morningPrayerPrompt button {
+  min-height:54px!important;
+  height:54px!important;
+  font-size:calc(14.5px * var(--kona-ui-scale,1))!important;
+  font-weight:700!important;
+}
+body .app #page-checkin #morningPrayerPrompt button img {
+  width:27px!important;
+  height:27px!important;
+  flex:0 0 27px!important;
+}
+html[data-ui-enlarged="true"] body .app #page-checkin #morningPrayerPrompt button {
+  height:auto!important;
+  min-height:54px!important;
+}
+/* Keep native inline text and flow intact at smaller widths. */
+@media(max-width:360px) {
+  body .app #page-checkin #morningPrayerPrompt button {
+    padding-left:32px!important;
+    padding-right:32px!important;
+  }
+}
