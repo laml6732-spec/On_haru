@@ -477,3 +477,9 @@ body.focus-immersive .app #page-focus .timer-progress-rail #quietTimerToggle:foc
 body.focus-immersive.morning-prayer-running.quiet-listening-timer .app #page-focus #quietTimerMessage {
   display:none!important;
 }
+
+/* Quiet mode removes the numeric clock and the progress ink; the eye button
+   remains in its 44px slot so the user can restore the timer. */
+body.quiet-listening-timer.focus-immersive .app #page-focus #timerProgressRail #timerProgress {
+  display:none!important;
+}
