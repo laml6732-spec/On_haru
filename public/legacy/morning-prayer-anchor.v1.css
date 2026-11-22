@@ -373,3 +373,107 @@ html body.focus-screen .app .pagehead #focusModeBadge {
   display:none!important;
   visibility:hidden!important;
 }
+
+/* Handwritten PNG + progress-eye controls — Preview only.
+   The original sentence remains as accessible text in the DOM, while
+   the PNG has empty alt and cannot announce the same prayer twice. */
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-direction:column!important;
+  width:min(100%,380px)!important;
+  padding-inline:0!important;
+  margin-bottom:12px!important;
+  max-width:100%!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage .morning-prayer-fallback {
+  display:block;
+  width:100%;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage.morning-prayer-image-ready .morning-prayer-fallback {
+  position:absolute!important;
+  width:1px!important;height:1px!important;
+  padding:0!important;margin:-1px!important;border:0!important;
+  overflow:hidden!important;clip-path:inset(50%)!important;
+  white-space:nowrap!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage img.morning-prayer-handwriting {
+  display:none!important;
+  width:auto!important;height:auto!important;
+  max-width:100%!important;
+  max-height:clamp(125px,24svh,204px)!important;
+  object-fit:contain!important;
+  margin:0 auto!important;
+  padding:0!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage.morning-prayer-image-ready img.morning-prayer-handwriting:not([hidden]) {
+  display:block!important;
+}
+@media(max-width:360px), (max-height:700px) {
+  body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage img.morning-prayer-handwriting {
+    max-height:min(25svh,154px)!important;
+  }
+}
+/* Keep the focus clock progress visually centered and its eye control
+   adjacent, with an accessible 44 × 44 touch target. */
+body .app #page-focus #timerProgressRail[hidden],
+body .app #page-focus #quietTimerToggle[hidden] {
+  display:none!important;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail:not([hidden]) {
+  display:flex!important;
+  order:3;
+  position:relative!important;
+  width:min(100%,286px)!important;
+  height:44px!important;
+  min-height:44px!important;
+  flex:0 0 44px!important;
+  box-sizing:border-box!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0!important;
+  margin:2px auto 0!important;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail #timerProgress:not([hidden]) {
+  display:block!important;
+  flex:0 1 180px!important;
+  width:min(180px,calc(100% - 64px))!important;
+  max-width:calc(100% - 64px)!important;
+  height:3px!important;
+  min-height:3px!important;
+  margin:0!important;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail #quietTimerToggle:not([hidden]) {
+  display:inline-flex!important;
+  position:absolute!important;
+  right:0!important;top:0!important;
+  align-items:center!important;justify-content:center!important;
+  box-sizing:border-box!important;
+  width:44px!important;height:44px!important;
+  min-width:44px!important;min-height:44px!important;
+  margin:0!important;padding:0!important;
+  border:0!important;border-radius:999px!important;
+  background:transparent!important;
+  color:var(--focus-ink,#315F71)!important;
+  -webkit-text-fill-color:var(--focus-ink,#315F71)!important;
+  font-size:0!important;
+  cursor:pointer!important;
+  opacity:.92;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail #quietTimerToggle svg {
+  display:block;
+  width:21px;height:21px;
+  pointer-events:none;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail #quietTimerToggle[aria-pressed="true"] .timer-eye-hide,
+body.focus-immersive .app #page-focus .timer-progress-rail #quietTimerToggle[aria-pressed="false"] .timer-eye-show {
+  display:none!important;
+}
+body.focus-immersive .app #page-focus .timer-progress-rail #quietTimerToggle:focus-visible {
+  outline:2px solid var(--focus-ink,#315F71)!important;
+  outline-offset:2px!important;
+}
+body.focus-immersive.morning-prayer-running.quiet-listening-timer .app #page-focus #quietTimerMessage {
+  display:none!important;
+}
