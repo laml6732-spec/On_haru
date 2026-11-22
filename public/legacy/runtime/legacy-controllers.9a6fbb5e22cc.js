@@ -970,8 +970,10 @@ function syncFocusLayout(){
  if(listeningMessage){
   listeningMessage.hidden=!morningRunning;
   if(KonaI18n.language==='ko'){
+   const opening=document.createElement('span');opening.className='morning-prayer-opening';opening.textContent='하나님이 선물하신 오늘 하루를';
+   const bridge=document.createElement('span');bridge.className='morning-prayer-bridge';bridge.textContent=' 기대하는 마음으로 ';
    const emphasis=document.createElement('strong');emphasis.className='morning-prayer-emphasis';emphasis.textContent='하나님의 음성을 들어보세요';
-   listeningMessage.replaceChildren(document.createTextNode('하나님이 선물하신 오늘 하루를 기대하는 마음으로 '),emphasis);
+   listeningMessage.replaceChildren(opening,bridge,emphasis);
   }else listeningMessage.textContent='Listen for God’s voice with anticipation for the day God has given you.';
  }
  if(on&&(morningSetup||morningRunning))$('pageTitle').textContent=KonaI18n.language==='ko'?'아침기도':'Morning prayer';
