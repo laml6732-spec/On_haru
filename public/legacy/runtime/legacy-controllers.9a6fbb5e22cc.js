@@ -961,6 +961,14 @@ function focusOceanPhase(localTime){const hour=Number(String(localTime).split(':
 function syncFocusOceanTheme(){if(page!=='focus'||!sess.started)return;const theme=focusOceanPhase(timeLocal());if(document.body.dataset.focusOcean!==theme)document.body.dataset.focusOcean=theme}
 function syncFocusLayout(){
  const on=page==='focus',active=on&&sess.started,kind=sess.started?sess.kind:sessKind;
+ const morningSetup=on&&!sess.started&&kind==='prayer'&&morningCheckinPrayerLaunchDate===date;
+ const morningRunning=active&&kind==='prayer'&&sess.origin==='morning-checkin';
+ document.body.classList.toggle('morning-prayer-setup',morningSetup);
+ document.body.classList.toggle('morning-prayer-running',morningRunning);
+ const durationTitle=$('morningPrayerDurationHeading'),listeningMessage=$('morningPrayerListeningMessage');
+ if(durationTitle){durationTitle.hidden=!morningSetup;durationTitle.textContent=KonaI18n.language==='ko'?'기도할 시간을 선택해 주세요':'Choose your prayer time'}
+ if(listeningMessage){listeningMessage.hidden=!morningRunning;listeningMessage.textContent=KonaI18n.language==='ko'?'하나님이 선물하신 오늘 하루를 기대하는 마음으로 하나님의 음성을 들어보세요':'Listen for God’s voice with anticipation for the day God has given you.'}
+ if(on&&(morningSetup||morningRunning))$('pageTitle').textContent=KonaI18n.language==='ko'?'아침기도':'Morning prayer';
  document.body.classList.toggle('focus-screen',on);document.body.classList.toggle('focus-immersive',active);if(active)syncFocusOceanTheme();
  if(sess.started&&focusUiSession!==sess.sessionId){focusUiSession=sess.sessionId;focusNoteOpen=false}if(!sess.started){focusUiSession='';focusNoteOpen=false}
  document.body.classList.toggle('focus-note-open',active&&focusNoteOpen);document.body.classList.toggle('focus-awaiting-save',active&&!!sess.awaitingSave);
@@ -1052,7 +1060,7 @@ function commitTimerSession(markDone=false){
  if(storageRecovery.active){toast(KonaI18n.t("Saved data needs recovery. Restore a valid backup before saving a session."));return false}
  const before=JSON.stringify(db),d=sess.startDate;const id=sess.sessionId||uid();sess.sessionId=id;
  if(!day(d).sessions.some(s=>s.id===id)){
-  day(d).sessions.push({id,sessionId:id,kind:sess.kind,task:sess.title,taskKey:sess.taskKey,prayerId:sess.prayerId,personalPrayer:!!sess.personalPrayer,start:sess.startHM,seconds,plannedSeconds:sess.dur||null,at:timeLocal(),note:sess.note||'',taskMarkedDone:!!markDone});
+  day(d).sessions.push({id,sessionId:id,kind:sess.kind,task:sess.title,taskKey:sess.taskKey,prayerId:sess.prayerId,personalPrayer:!!sess.personalPrayer,...(sess.origin==='morning-checkin'?{origin:'morning-checkin'}:{}),start:sess.startHM,seconds,plannedSeconds:sess.dur||null,at:timeLocal(),note:sess.note||'',taskMarkedDone:!!markDone});
   if(markDone&&sess.kind==='focus'&&sess.taskKey&&sess.taskKey!=='custom'&&!db.checks[sess.taskKey])db.checks[sess.taskKey]={date:d,time:new Date().toISOString()};
   if(sess.kind==='prayer'&&sess.prayerId){const p=db.prayers.find(p=>p.id===sess.prayerId);if(p)markPrayed(p,d)}
  }
@@ -3600,7 +3608,12 @@ function checkLayout(){if(page!=='checkin')return;const cls=phase==='noon'&&clas
  for(const b of phases.querySelectorAll('button')){if(b.dataset.phase==='morning')b.setAttribute('aria-label',KonaI18n.t("Morning check-in",true));else if(b.dataset.phase==='noon')b.setAttribute('aria-label',middayCheckinLabel(date));else if(b.dataset.phase==='evening')b.setAttribute('aria-label',checkinReflectionName())}
  phases.querySelector('[data-phase="noon"] small').textContent=middayCheckinLabel(date);
  phases.querySelector('[data-phase="evening"] small').textContent=checkinReflectionName();
- byId('morningPrayerPrompt').hidden=!morning;byId('moodCard').hidden=cls;byId('lectureNoteCard').classList.toggle('hidden',!cls);byId('lectureNoteCard').hidden=!cls;byId('lectureNoteReveal').hidden=true;
+ byId('morningPrayerPrompt').hidden=!morning;
+ const completedMorning=(db.days[date]?.sessions||[]).some(s=>s.kind==='prayer'&&s.origin==='morning-checkin');
+ const morningButtonFlower=byId('morningPrayerPrompt').querySelector('button img');
+ if(morningButtonFlower)morningButtonFlower.src='./assets/hibiscus-task-'+(completedMorning?'done':'off')+'.png';
+ byId('morningPrayerPrompt').classList.toggle('morning-prayer-completed',completedMorning);
+ byId('moodCard').hidden=cls;byId('lectureNoteCard').classList.toggle('hidden',!cls);byId('lectureNoteCard').hidden=!cls;byId('lectureNoteReveal').hidden=true;
  if(cls){const hasLegacy=!!(c.note||'').trim()||!!moodOf(c);legacy.hidden=!hasLegacy;legacy.append(byId('generalNoteCard'));checkRoot.insertBefore(byId('lectureNoteCard'),legacy);byId('generalNoteTitle').textContent=KonaI18n.t("Previous midday note");const m=moodOf(c);legacyMood.textContent=m?KonaI18n.t("Recorded feeling · ")+konaFeelingSummary(m.e,m.v):'';contextLabel.hidden=false;context.hidden=false;
   if(document.activeElement!==context)context.value=draft.classContext??c.classContext??'';if(document.activeElement!==byId('lectureAction'))byId('lectureAction').value=draft.classResponse??c.classResponse??'';
  }else{legacy.hidden=true;checkRoot.insertBefore(byId('moodCard'),legacy);checkRoot.insertBefore(byId('generalNoteCard'),legacy);byId('generalNoteTitle').textContent=morning?KonaI18n.t("Morning note"):midday?(KonaI18n.language==='ko'?'오후 메모':'Midday note'):(checkinReflectionName()+(KonaI18n.language==='ko'?' 메모':' note'));byId('checkNote').placeholder=morning?KonaI18n.t("What are you bringing into today?",true):midday?KonaI18n.t("Check in with yourself. What do you need for the rest of the day?",true):KonaI18n.t("What is on your heart tonight?",true)}
@@ -3608,7 +3621,7 @@ function checkLayout(){if(page!=='checkin')return;const cls=phase==='noon'&&clas
  byId('lectureNoteCard').querySelector('label[for="lectureReflection"]').textContent=KonaI18n.t("What stood out to you?");classNotesLink.hidden=!cls;byId('lectureQuote').placeholder=KonaI18n.t("A quote or phrase to remember",true);byId('lectureReflection').placeholder=KonaI18n.t("What did you notice, learn, or want to explore?",true);byId('addLectureTask').textContent=KonaI18n.t("Add task");
  const hasSaved=phase==='noon'?noonCheckinRecorded(c):hasCheck(c);byId('checkState').textContent=status||(tutorialPractice?KonaI18n.t("Practice only · not saved"):hasSaved?KonaI18n.t("Saved"):KonaI18n.t("Autosave"));retry.hidden=!byId('checkState').textContent.startsWith(KonaI18n.t("Not saved"));time.hidden=cls;ts.textContent=c.moodTime?KonaI18n.t("Recorded at ")+c.moodTime+KonaI18n.t(" · Edit time"):KonaI18n.t("Edit recorded time · optional");if(!cls)byId('generalNoteCard').after(time);
 }
-const morningPrayer=document.createElement('section');morningPrayer.id='morningPrayerPrompt';morningPrayer.hidden=true;const flower=document.createElement('img');flower.src='./assets/hibiscus-task-done.png';flower.alt='';const copy=document.createElement('div');const pt=document.createElement('h3');pt.textContent=KonaI18n.t("Begin with prayer");const pp=document.createElement('p');pp.textContent=KonaI18n.t("Take a moment to be with God.");copy.append(pt,pp);const pray=document.createElement('button');pray.type='button';pray.textContent=KonaI18n.language==='ko'?'기도로 아침 시작하기':'Begin the day with prayer';pray.prepend(flower);pray.onclick=()=>{if(!sess.started)morningCheckinPrayerLaunchDate=date;nav('focus',{kind:'prayer'})};morningPrayer.append(pray);heading.after(morningPrayer);
+const morningPrayer=document.createElement('section');morningPrayer.id='morningPrayerPrompt';morningPrayer.hidden=true;const flower=document.createElement('img');flower.src='./assets/hibiscus-task-off.png';flower.alt='';const copy=document.createElement('div');const pt=document.createElement('h3');pt.textContent=KonaI18n.t("Begin with prayer");const pp=document.createElement('p');pp.textContent=KonaI18n.t("Take a moment to be with God.");copy.append(pt,pp);const pray=document.createElement('button');pray.type='button';pray.textContent=KonaI18n.language==='ko'?'기도로 아침 시작하기':'Begin the day with prayer';pray.prepend(flower);pray.onclick=()=>{if(sess.started){nav('focus');return}morningCheckinPrayerLaunchDate=date;nav('focus',{kind:'prayer',prayerId:''})};morningPrayer.append(pray);heading.after(morningPrayer);
 const previousCheck=renderCheck;renderCheck=function(){const result=previousCheck.apply(this,arguments);checkLayout();return result};
 const qc=byId('qc-v2'),composeTitle=document.createElement('h2');composeTitle.id='captureComposerHeading';composeTitle.textContent=KonaI18n.t("Write a note");const desc=document.createElement('p');desc.id='captureComposerDescription';desc.textContent=KonaI18n.t("Write what’s on your mind, a quote, a prayer, or something you want to remember.");(byId('qc-note-title')||byId('qc-text')).before(composeTitle,desc);
 const helper=document.createElement('p');helper.id='captureMicHelp';const mic=document.createElement('img');mic.src=COMPACT_UI_ICONS.mic;mic.alt='';helper.append(mic,document.createTextNode(KonaI18n.t("Use your keyboard mic to speak.")));byId('qc-text').after(helper);const noteTags=qc.querySelector('.kona-capture-tags');if(noteTags)helper.after(noteTags);qc.querySelector('.qc-bottom').insertBefore(byId('captureScheduleLink'),qc.querySelector('.qc-save-action'));
