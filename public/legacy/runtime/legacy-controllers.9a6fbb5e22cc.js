@@ -371,6 +371,8 @@ function storeActiveSession(){
   try{if(sess.started)localStorage.setItem(ACTIVE_SESSION_KEY,JSON.stringify(sess));else localStorage.removeItem(ACTIVE_SESSION_KEY)}catch(e){toast(KonaI18n.t("Could not save the timer state. Check browser storage."))}
 }
 let sess=restoreActiveSession();
+// Only the Morning check-in shortcut may mark the next prayer session.
+let morningCheckinPrayerLaunchDate='';
 let persistState=KonaI18n.t("Checking storage…");
 
 /* ===== 데이터 접근 ===== */
@@ -499,6 +501,7 @@ function openChoices(title,items){
 }
 const PAGE_TITLE={capture:KonaI18n.t("Capture"),today:KonaI18n.t("Plan"),schedule:KonaI18n.t("Manage plan"),checkin:KonaI18n.t("Today’s check-in"),focus:KonaI18n.t("Focus"),records:KonaI18n.t("Review")};
 function nav(p,opt={}){
+  if(p!=='focus'&&!sess.started)morningCheckinPrayerLaunchDate='';
   if(page!==p&&!opt.skipHistory&&!tutorialPractice)history.pushState({yeramingDts:true,page:p,phase:opt.phase||phase,scheduleSub:opt.sub||scheduleSub,recView:opt.view||recView},'',location.href);
   closeRecordPreview();$('jumpTimelineNow').classList.add('hidden');page=p;if(opt.phase)phase=opt.phase==='night'?'evening':opt.phase;else if(p==='checkin'&&date===nowLocal())phase=mins(timeLocal())<720?'morning':mins(timeLocal())<1020?'noon':'evening';if(opt.sub)scheduleSub=opt.sub;if(opt.view)recView=opt.view;
   if(opt.kind&&!sess.started){sessKind=opt.kind;sessDurMin=db.settings.timerPresets?.[sessKind]??TIMER_MODES[sessKind].default;if(opt.prayerId!==undefined)focusPrayerId=opt.prayerId;if(opt.taskKey!==undefined)focusTaskKey=opt.taskKey}
@@ -916,6 +919,7 @@ const clockText=s=>{s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600);retur
 function timerDraft(kind=sessKind){db.settings.timerDrafts??={};return db.settings.timerDrafts[kind]??={note:'',context:''}}
 function rememberTimer(){db.settings.timerMode=sessKind;db.settings.timerPresets??={};db.settings.timerPresets[sessKind]=sessDurMin;save()}
 function chooseTimerMode(kind){
+ if(kind!=='prayer')morningCheckinPrayerLaunchDate='';
  if(sess.started){if(sess.kind!==kind){if(sess.running){sess.acc=elapsed();sess.running=false;sess.paused=true;storeActiveSession()}toast(KonaI18n.t("Current session paused. Finish or cancel it before choosing another activity."))}renderFocus();return}
  sessKind=kind;sessDurMin=db.settings.timerPresets?.[kind]??TIMER_MODES[kind].default;rememberTimer();renderFocus();
 }
@@ -957,6 +961,14 @@ function focusOceanPhase(localTime){const hour=Number(String(localTime).split(':
 function syncFocusOceanTheme(){if(page!=='focus'||!sess.started)return;const theme=focusOceanPhase(timeLocal());if(document.body.dataset.focusOcean!==theme)document.body.dataset.focusOcean=theme}
 function syncFocusLayout(){
  const on=page==='focus',active=on&&sess.started,kind=sess.started?sess.kind:sessKind;
+ const morningSetup=on&&!sess.started&&kind==='prayer'&&morningCheckinPrayerLaunchDate===date;
+ const morningRunning=active&&kind==='prayer'&&sess.origin==='morning-checkin';
+ document.body.classList.toggle('morning-prayer-setup',morningSetup);
+ document.body.classList.toggle('morning-prayer-running',morningRunning);
+ const durationTitle=$('morningPrayerDurationHeading'),listeningMessage=$('morningPrayerListeningMessage');
+ if(durationTitle){durationTitle.hidden=!morningSetup;durationTitle.textContent=KonaI18n.language==='ko'?'기도할 시간을 선택해 주세요':'Choose your prayer time'}
+ if(listeningMessage){listeningMessage.hidden=!morningRunning;listeningMessage.textContent=KonaI18n.language==='ko'?'하나님이 선물하신 오늘 하루를 기대하는 마음으로 하나님의 음성을 들어보세요':'Listen for God’s voice with anticipation for the day God has given you.'}
+ if(on&&(morningSetup||morningRunning))$('pageTitle').textContent=KonaI18n.language==='ko'?'아침기도':'Morning prayer';
  document.body.classList.toggle('focus-screen',on);document.body.classList.toggle('focus-immersive',active);if(active)syncFocusOceanTheme();
  if(sess.started&&focusUiSession!==sess.sessionId){focusUiSession=sess.sessionId;focusNoteOpen=false}if(!sess.started){focusUiSession='';focusNoteOpen=false}
  document.body.classList.toggle('focus-note-open',active&&focusNoteOpen);document.body.classList.toggle('focus-awaiting-save',active&&!!sess.awaitingSave);
@@ -1010,7 +1022,9 @@ function startSession(){
  const val=$('focusTarget').value,manual=sessKind==='devotion'?timerDraft('devotion').context:($('focusContext').hidden?'':$('focusContext').value.trim()),tk=sessKind==='focus'?val:'',pid=sessKind==='prayer'&&val!=='personal'?val:'';
  const t=db.tasks.find(t=>taskKey(t,date)===tk),p=db.prayers.find(p=>p.id===pid);
  const title=t?.title||p?.title||manual||(sessKind==='focus'?KonaI18n.t("Focus"):sessKind==='devotion'?KonaI18n.t("Devotion"):KonaI18n.t("Personal prayer"));
- sess={...idleSess(),sessionId:uid(),started:true,running:true,kind:sessKind,dur:sessDurMin*60,acc:0,runStart:Date.now(),startDate:date,startHM:timeLocal(),title,taskKey:tk,prayerId:pid,personalPrayer:sessKind==='prayer'&&!pid,note:$('timerNote').value};
+ const fromMorningCheckin=sessKind==='prayer'&&morningCheckinPrayerLaunchDate===date;
+ morningCheckinPrayerLaunchDate='';
+ sess={...idleSess(),origin:fromMorningCheckin?'morning-checkin':'',sessionId:uid(),started:true,running:true,kind:sessKind,dur:sessDurMin*60,acc:0,runStart:Date.now(),startDate:date,startHM:timeLocal(),title,taskKey:tk,prayerId:pid,personalPrayer:sessKind==='prayer'&&!pid,note:$('timerNote').value};
  storeActiveSession();renderFocus();
 }
 function finishSession(){
@@ -1019,17 +1033,39 @@ function finishSession(){
   openChoices(KonaI18n.t("Save focus session"),[{label:KonaI18n.t("Save & mark task done"),sub:KonaI18n.t("Save time and complete only this task instance"),fn:()=>commitTimerSession(true)},{label:KonaI18n.t("Save time only"),sub:KonaI18n.t("Leave task completion unchanged"),fn:()=>commitTimerSession(false)},{label:KonaI18n.t("Keep working"),sub:KonaI18n.t("Return to this session"),fn:()=>renderFocus()}]);
  }else commitTimerSession(false);
 }
+function offerMorningPrayerAnchor(d){
+ const ko=KonaI18n.language==='ko',today=d===nowLocal();
+ const saved=normalizeDailyHeadline(db.days[d]?.headline);
+ const when=ko?(today?'오늘':'선택한 날'):(today?'today':'that day');
+ const title=ko
+  ?'아침기도를 마쳤어요. '+when+'의 앵커를 '+(saved?'확인하거나 수정하시겠습니까?':'적으시겠습니까?')
+  :'Morning prayer is complete. Would you like to '+(saved?'review or edit':'write')+' your anchor for '+when+'?';
+ openChoices(title,[
+  {label:ko?(saved?'앵커 확인·수정':'앵커 적기'):(saved?'Review / edit anchor':'Write anchor'),
+   sub:ko?'기도 중 마음에 남은 말씀이나 방향을 기록해 보세요.':'Capture a verse, phrase, or direction from prayer.',
+   fn:()=>{
+    if(date!==d)changeDate(d);
+    nav('capture');
+    requestAnimationFrame(()=>{
+     const field=$('dayHeadline');
+     field?.scrollIntoView({block:'center',behavior:'smooth'});
+     field?.focus({preventScroll:true});
+    });
+   }},
+  {label:ko?'나중에':'Not now',fn:()=>{}}
+ ]);
+}
 function commitTimerSession(markDone=false){
  if(!sess.started)return;const seconds=Math.floor(elapsed()/1000);if(seconds<1){toast(KonaI18n.t("Record at least one second before saving."));return}
  if(storageRecovery.active){toast(KonaI18n.t("Saved data needs recovery. Restore a valid backup before saving a session."));return false}
  const before=JSON.stringify(db),d=sess.startDate;const id=sess.sessionId||uid();sess.sessionId=id;
  if(!day(d).sessions.some(s=>s.id===id)){
-  day(d).sessions.push({id,sessionId:id,kind:sess.kind,task:sess.title,taskKey:sess.taskKey,prayerId:sess.prayerId,personalPrayer:!!sess.personalPrayer,start:sess.startHM,seconds,plannedSeconds:sess.dur||null,at:timeLocal(),note:sess.note||'',taskMarkedDone:!!markDone});
+  day(d).sessions.push({id,sessionId:id,kind:sess.kind,task:sess.title,taskKey:sess.taskKey,prayerId:sess.prayerId,personalPrayer:!!sess.personalPrayer,...(sess.origin==='morning-checkin'?{origin:'morning-checkin'}:{}),start:sess.startHM,seconds,plannedSeconds:sess.dur||null,at:timeLocal(),note:sess.note||'',taskMarkedDone:!!markDone});
   if(markDone&&sess.kind==='focus'&&sess.taskKey&&sess.taskKey!=='custom'&&!db.checks[sess.taskKey])db.checks[sess.taskKey]={date:d,time:new Date().toISOString()};
   if(sess.kind==='prayer'&&sess.prayerId){const p=db.prayers.find(p=>p.id===sess.prayerId);if(p)markPrayed(p,d)}
  }
  try{if(!tutorialPractice)localStorage.setItem(KEY,JSON.stringify(db))}catch(e){db=JSON.parse(before);toast('Could not save. Your timer and note are kept; try again or back up.');return false}
- const kind=sess.kind;sessKind=kind;sessDurMin=sess.dur/60;timerDraft(kind).note='';rememberTimer();sess=idleSess();storeActiveSession();afterTaskKey=null;if(date!==d)changeDate(d);else render();toast(KonaI18n.t("Session saved"));return true;
+ const kind=sess.kind,fromMorningCheckin=kind==='prayer'&&sess.origin==='morning-checkin';sessKind=kind;sessDurMin=sess.dur/60;timerDraft(kind).note='';rememberTimer();sess=idleSess();storeActiveSession();afterTaskKey=null;if(date!==d)changeDate(d);else render();toast(KonaI18n.t("Session saved"));if(fromMorningCheckin&&!tutorialPractice)offerMorningPrayerAnchor(d);return true;
 }
 async function cancelTimer(){if(!sess.started)return;if((elapsed()>0||(sess.note||'').trim())&&!await onHaruConfirm(KonaI18n.t("Discard this session without saving its time or note?")))return;timerDraft(sess.kind).note='';save();sess=idleSess();storeActiveSession();renderFocus()}
 function tick(){if(sess.started&&page==='focus')updateClock();else if(sess.started)expireTimer()}
@@ -3572,7 +3608,12 @@ function checkLayout(){if(page!=='checkin')return;const cls=phase==='noon'&&clas
  for(const b of phases.querySelectorAll('button')){if(b.dataset.phase==='morning')b.setAttribute('aria-label',KonaI18n.t("Morning check-in",true));else if(b.dataset.phase==='noon')b.setAttribute('aria-label',middayCheckinLabel(date));else if(b.dataset.phase==='evening')b.setAttribute('aria-label',checkinReflectionName())}
  phases.querySelector('[data-phase="noon"] small').textContent=middayCheckinLabel(date);
  phases.querySelector('[data-phase="evening"] small').textContent=checkinReflectionName();
- byId('morningPrayerPrompt').hidden=!morning;byId('moodCard').hidden=cls;byId('lectureNoteCard').classList.toggle('hidden',!cls);byId('lectureNoteCard').hidden=!cls;byId('lectureNoteReveal').hidden=true;
+ byId('morningPrayerPrompt').hidden=!morning;
+ const completedMorning=(db.days[date]?.sessions||[]).some(s=>s.kind==='prayer'&&s.origin==='morning-checkin');
+ const morningButtonFlower=byId('morningPrayerPrompt').querySelector('button img');
+ if(morningButtonFlower)morningButtonFlower.src='./assets/hibiscus-task-'+(completedMorning?'done':'off')+'.png';
+ byId('morningPrayerPrompt').classList.toggle('morning-prayer-completed',completedMorning);
+ byId('moodCard').hidden=cls;byId('lectureNoteCard').classList.toggle('hidden',!cls);byId('lectureNoteCard').hidden=!cls;byId('lectureNoteReveal').hidden=true;
  if(cls){const hasLegacy=!!(c.note||'').trim()||!!moodOf(c);legacy.hidden=!hasLegacy;legacy.append(byId('generalNoteCard'));checkRoot.insertBefore(byId('lectureNoteCard'),legacy);byId('generalNoteTitle').textContent=KonaI18n.t("Previous midday note");const m=moodOf(c);legacyMood.textContent=m?KonaI18n.t("Recorded feeling · ")+konaFeelingSummary(m.e,m.v):'';contextLabel.hidden=false;context.hidden=false;
   if(document.activeElement!==context)context.value=draft.classContext??c.classContext??'';if(document.activeElement!==byId('lectureAction'))byId('lectureAction').value=draft.classResponse??c.classResponse??'';
  }else{legacy.hidden=true;checkRoot.insertBefore(byId('moodCard'),legacy);checkRoot.insertBefore(byId('generalNoteCard'),legacy);byId('generalNoteTitle').textContent=morning?KonaI18n.t("Morning note"):midday?(KonaI18n.language==='ko'?'오후 메모':'Midday note'):(checkinReflectionName()+(KonaI18n.language==='ko'?' 메모':' note'));byId('checkNote').placeholder=morning?KonaI18n.t("What are you bringing into today?",true):midday?KonaI18n.t("Check in with yourself. What do you need for the rest of the day?",true):KonaI18n.t("What is on your heart tonight?",true)}
@@ -3580,13 +3621,27 @@ function checkLayout(){if(page!=='checkin')return;const cls=phase==='noon'&&clas
  byId('lectureNoteCard').querySelector('label[for="lectureReflection"]').textContent=KonaI18n.t("What stood out to you?");classNotesLink.hidden=!cls;byId('lectureQuote').placeholder=KonaI18n.t("A quote or phrase to remember",true);byId('lectureReflection').placeholder=KonaI18n.t("What did you notice, learn, or want to explore?",true);byId('addLectureTask').textContent=KonaI18n.t("Add task");
  const hasSaved=phase==='noon'?noonCheckinRecorded(c):hasCheck(c);byId('checkState').textContent=status||(tutorialPractice?KonaI18n.t("Practice only · not saved"):hasSaved?KonaI18n.t("Saved"):KonaI18n.t("Autosave"));retry.hidden=!byId('checkState').textContent.startsWith(KonaI18n.t("Not saved"));time.hidden=cls;ts.textContent=c.moodTime?KonaI18n.t("Recorded at ")+c.moodTime+KonaI18n.t(" · Edit time"):KonaI18n.t("Edit recorded time · optional");if(!cls)byId('generalNoteCard').after(time);
 }
-const morningPrayer=document.createElement('section');morningPrayer.id='morningPrayerPrompt';morningPrayer.hidden=true;const flower=document.createElement('img');flower.src='./assets/hibiscus-task-done.png';flower.alt='';const copy=document.createElement('div');const pt=document.createElement('h3');pt.textContent=KonaI18n.t("Begin with prayer");const pp=document.createElement('p');pp.textContent=KonaI18n.t("Take a moment to be with God.");copy.append(pt,pp);const pray=document.createElement('button');pray.type='button';pray.textContent=KonaI18n.t("Begin with prayer");pray.prepend(flower);pray.onclick=()=>nav('focus',{kind:'prayer'});morningPrayer.append(pray);heading.after(morningPrayer);
+const morningPrayer=document.createElement('section');morningPrayer.id='morningPrayerPrompt';morningPrayer.hidden=true;const flower=document.createElement('img');flower.src='./assets/hibiscus-task-off.png';flower.alt='';const copy=document.createElement('div');const pt=document.createElement('h3');pt.textContent=KonaI18n.t("Begin with prayer");const pp=document.createElement('p');pp.textContent=KonaI18n.t("Take a moment to be with God.");copy.append(pt,pp);const pray=document.createElement('button');pray.type='button';pray.textContent=KonaI18n.language==='ko'?'기도로 아침 시작하기':'Begin the day with prayer';pray.prepend(flower);pray.onclick=()=>{if(sess.started){nav('focus');return}morningCheckinPrayerLaunchDate=date;nav('focus',{kind:'prayer',prayerId:''})};morningPrayer.append(pray);heading.after(morningPrayer);
 const previousCheck=renderCheck;renderCheck=function(){const result=previousCheck.apply(this,arguments);checkLayout();return result};
 const qc=byId('qc-v2'),composeTitle=document.createElement('h2');composeTitle.id='captureComposerHeading';composeTitle.textContent=KonaI18n.t("Write a note");const desc=document.createElement('p');desc.id='captureComposerDescription';desc.textContent=KonaI18n.t("Write what’s on your mind, a quote, a prayer, or something you want to remember.");(byId('qc-note-title')||byId('qc-text')).before(composeTitle,desc);
 const helper=document.createElement('p');helper.id='captureMicHelp';const mic=document.createElement('img');mic.src=COMPACT_UI_ICONS.mic;mic.alt='';helper.append(mic,document.createTextNode(KonaI18n.t("Use your keyboard mic to speak.")));byId('qc-text').after(helper);const noteTags=qc.querySelector('.kona-capture-tags');if(noteTags)helper.after(noteTags);qc.querySelector('.qc-bottom').insertBefore(byId('captureScheduleLink'),qc.querySelector('.qc-save-action'));
 const edit=document.createElement('button');edit.type='button';edit.className='carry-edit';edit.setAttribute('aria-label',KonaI18n.t("Edit verse or phrase for today",true));const pencil=document.createElement('img');pencil.src=COMPACT_UI_ICONS.pencil;pencil.alt='';edit.append(pencil);edit.onclick=()=>byId('dayHeadline').focus();byId('page-capture').querySelector('.day-signature').append(edit);
-function captureLayout(){const emoji=byId('dayEmoji');if(!day(date).emoji||day(date).emoji==='🌺'){if(!emoji.querySelector('img')){const flower=document.createElement('img');flower.src='./assets/hibiscus-task-done.png';flower.alt='';emoji.replaceChildren(flower)}}const h=byId('dayHeadline'),anchor=h.closest('.day-signature'),hasAnchor=!!h.value.trim();anchor?.classList.toggle('has-anchor',hasAnchor);h.style.setProperty('height','auto','important');h.style.setProperty('height',Math.max(hasAnchor?38:24,h.scrollHeight)+'px','important');const note=byId('qc-text');note.placeholder=KonaI18n.t("What would you like to remember?",true);note.style.setProperty('height','auto','important');note.style.setProperty('height',Math.min(240,Math.max(64,note.scrollHeight))+'px','important');if(page==='checkin')checkLayout()}
-const previousRender=render;render=function(){const r=previousRender.apply(this,arguments);captureLayout();return r};byId('dayHeadline').addEventListener('input',captureLayout);byId('qc-text').addEventListener('input',captureLayout);captureLayout();
+function fitTodayAnchor(field){
+ if(!field)return;
+ // A one-row textarea makes scrollHeight reflect wrapping rather than a
+ // fixed two-row default. Keep stored text even when more than two lines.
+ field.rows=1;
+ field.style.setProperty('height','auto','important');
+ const style=getComputedStyle(field);
+ const line=Math.max(1,parseFloat(style.lineHeight)||parseFloat(style.fontSize)*1.4);
+ const pad=(parseFloat(style.paddingTop)||0)+(parseFloat(style.paddingBottom)||0);
+ const single=Math.ceil(line+pad),double=Math.ceil(line*2+pad);
+ const measured=field.scrollHeight||single;
+ field.style.setProperty('height',Math.min(double,Math.max(single,measured))+'px','important');
+ field.style.setProperty('overflow-y',measured>double+1?'auto':'hidden','important');
+}
+function captureLayout(){const emoji=byId('dayEmoji');if(!day(date).emoji||day(date).emoji==='🌺'){if(!emoji.querySelector('img')){const flower=document.createElement('img');flower.src='./assets/hibiscus-task-done.png';flower.alt='';emoji.replaceChildren(flower)}}const h=byId('dayHeadline'),anchor=h.closest('.day-signature'),hasAnchor=!!h.value.trim();anchor?.classList.toggle('has-anchor',hasAnchor);fitTodayAnchor(h);const note=byId('qc-text');note.placeholder=KonaI18n.t("What would you like to remember?",true);note.style.setProperty('height','auto','important');note.style.setProperty('height',Math.min(240,Math.max(64,note.scrollHeight))+'px','important');if(page==='checkin')checkLayout()}
+const previousRender=render;render=function(){const r=previousRender.apply(this,arguments);captureLayout();return r};byId('dayHeadline').addEventListener('input',()=>{captureLayout();requestAnimationFrame(()=>fitTodayAnchor(byId('dayHeadline')))});byId('qc-text').addEventListener('input',captureLayout);window.addEventListener('resize',()=>fitTodayAnchor(byId('dayHeadline')));document.fonts?.ready.then(()=>fitTodayAnchor(byId('dayHeadline')));captureLayout();
 })();
 
 (function(){
