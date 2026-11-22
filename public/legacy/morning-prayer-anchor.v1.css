@@ -1,4 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Hi+Melody&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+/* Thin, naturally varied pen handwriting (Korea Copyright Commission, OFL). */
+@font-face {
+  font-family:'KCC Eunyoung';
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/KCC-eunyoung-Regular.woff') format('woff');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
 
 /* Morning Check-in prayer CTA and compact Capture anchor — 2026-11-21.
    Local overrides only. Preserve the legacy palette and text scaling. */
@@ -315,11 +323,11 @@ html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-fo
    Three intentional lines when room permits; natural wrapping at 320px.
    CSS-only styling: words remain actual text for translation and accessibility. */
 body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
-  font-family:'Hi Melody','Gowun Batang','AppleMyungjo',serif!important;
-  font-size:calc(clamp(24px,6.5vw,27px) * var(--kona-ui-scale,1))!important;
+  font-family:'KCC Eunyoung','Gowun Batang','AppleMyungjo',serif!important;
+  font-size:calc(clamp(28px,7.5vw,32px) * var(--kona-ui-scale,1))!important;
   font-weight:400!important;
-  letter-spacing:-.028em!important;
-  line-height:1.43!important;
+  letter-spacing:-.012em!important;
+  line-height:1.48!important;
   width:min(100%,370px)!important;
   padding-inline:6px!important;
   margin-bottom:19px!important;
@@ -340,8 +348,8 @@ body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListe
 }
 @media(max-width:360px), (max-height:700px) {
   body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
-    font-size:calc(23px * var(--kona-ui-scale,1))!important;
-    line-height:1.24!important;
+    font-size:calc(26px * var(--kona-ui-scale,1))!important;
+    line-height:1.35!important;
     margin-bottom:12px!important;
     padding-inline:3px!important;
   }
@@ -351,8 +359,8 @@ body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListe
 }
 @media(max-height:580px) {
   body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
-    font-size:calc(21px * var(--kona-ui-scale,1))!important;
-    line-height:1.19!important;
+    font-size:calc(24px * var(--kona-ui-scale,1))!important;
+    line-height:1.32!important;
     margin-bottom:8px!important;
   }
 }
