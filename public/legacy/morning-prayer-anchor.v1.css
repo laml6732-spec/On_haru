@@ -934,3 +934,51 @@ html body .app #page-capture #qc-v2 .kona-tag-tray-toggle::before {
 :root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 .kona-tag-tray-toggle {
   contain:layout!important;
 }
+
+/* Capture A option: meaningful More badge and inline schedule chevron.
+   Retain 44px hit surfaces, all seven featured tags, and the original schedule picker.
+   The expander's visible badge follows aria-expanded, so it cannot desync. */
+html body .app #page-capture #qc-v2 .kona-tag-tray-toggle::before {
+  width:var(--capture-tag-circle)!important;
+  height:var(--capture-tag-circle)!important;
+  min-width:var(--capture-tag-circle)!important;
+  min-height:var(--capture-tag-circle)!important;
+  max-width:var(--capture-tag-circle)!important;
+  max-height:var(--capture-tag-circle)!important;
+}
+html body .app #page-capture #qc-v2 .kona-tag-tray-toggle::after {
+  content:"+8"!important;
+  width:auto!important;
+  height:auto!important;
+  border:0!important;
+  border-radius:0!important;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  font:600 12px/1 system-ui,sans-serif!important;
+  letter-spacing:-.025em!important;
+  color:inherit!important;
+}
+html body .app #page-capture #qc-v2 .kona-tag-tray-toggle[aria-expanded="true"]::after {
+  content:"−"!important;
+  font-size:19px!important;
+  font-weight:400!important;
+}
+/* Full summary stays tappable; its chevron follows the actual event title,
+   not the far edge of the schedule column. Long event names still ellipsize. */
+html body .app #page-capture #qc-v2 #captureScheduleLink summary {
+  gap:4px!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink summary span {
+  flex:0 1 auto!important;
+  width:auto!important;
+  max-width:calc(100% - 37px)!important;
+}
+html body .app #page-capture #qc-v2 #captureScheduleLink summary::after {
+  content:"⌄"!important;
+  flex:0 0 10px!important;
+  font-size:13px!important;
+  line-height:1!important;
+  margin:0!important;
+}
