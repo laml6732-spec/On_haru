@@ -80,7 +80,7 @@ try {
    row.steps.push('session-edit');
    await edit(page,x.locator('.review-record').filter({hasText:'QA capture original'}).first().locator('.rv-note-preview'),'Note','QA captured updated',()=>day(date).quickCaptureEntries.find(q=>q.id==='qa-review-capture').text);
    row.steps.push('capture-edit');
-   await edit(page,x.locator('.review-record').filter({hasText:'QA free note original'}).first().locator('.rv-note-preview'),'Note','QA free updated',()=>day(date).timeNotes['15'].free.text);
+   await edit(page,x.locator('.review-record').filter({hasText:'QA free note original'}).first().locator('.rv-daily-inferred-title'),'Note','QA free updated',()=>day(date).timeNotes['15'].free.text);
    row.steps.push('free-edit');
    await edit(page,x.locator('.rv-reference-anchor').first(),'Note','QA anchor updated',()=>day(date).headline);
    row.steps.push('anchor-edit');
@@ -105,7 +105,7 @@ try {
    row.ok=true;console.log('REVIEW_CAPTURE_QA_PASS',cfg.width,cfg.theme,cfg.lang,row.steps.join(','));
   }catch(error){
    row.error=String(error);
-   console.error('REVIEW_CAPTURE_QA_FAIL',cfg.width,cfg.theme,cfg.lang,row.error,row.errors);
+   console.error('REVIEW_CAPTURE_QA_FAIL',cfg.width,cfg.theme,cfg.lang,'completed='+row.steps.join(','),row.error,row.errors);
    await page.screenshot({path:`${dir}/${cfg.width}-${cfg.theme}-${cfg.lang}-failed.png`,animations:'disabled'}).catch(()=>{});
   }finally{await ctx.close()}
  }
