@@ -3637,7 +3637,7 @@ const morningPrayer=document.createElement('section');morningPrayer.id='morningP
 const previousCheck=renderCheck;renderCheck=function(){const result=previousCheck.apply(this,arguments);checkLayout();return result};
 const qc=byId('qc-v2'),composeTitle=document.createElement('h2');composeTitle.id='captureComposerHeading';composeTitle.textContent=KonaI18n.t("Write a note");const desc=document.createElement('p');desc.id='captureComposerDescription';desc.textContent=KonaI18n.t("Write what’s on your mind, a quote, a prayer, or something you want to remember.");(byId('qc-note-title')||byId('qc-text')).before(composeTitle,desc);
 const helper=document.createElement('p');helper.id='captureMicHelp';const mic=document.createElement('img');mic.src=COMPACT_UI_ICONS.mic;mic.alt='';helper.append(mic,document.createTextNode(KonaI18n.t("Use your keyboard mic to speak.")));byId('qc-text').after(helper);const noteTags=qc.querySelector('.kona-capture-tags');if(noteTags)helper.after(noteTags);qc.querySelector('.qc-bottom').insertBefore(byId('captureScheduleLink'),qc.querySelector('.qc-save-action'));
-const edit=document.createElement('button');edit.type='button';edit.className='carry-edit';edit.setAttribute('aria-label',KonaI18n.t("Edit verse or phrase for today",true));const pencil=document.createElement('img');pencil.src=COMPACT_UI_ICONS.pencil;pencil.alt='';edit.append(pencil);edit.onclick=()=>byId('dayHeadline').focus();byId('page-capture').querySelector('.day-signature').append(edit);
+// The Today anchor textarea is already editable; omit its redundant pencil action.
 function fitTodayAnchor(field){
  if(!field)return;
  // A one-row textarea makes scrollHeight reflect wrapping rather than a
