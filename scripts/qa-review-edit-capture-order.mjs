@@ -90,14 +90,18 @@ try {
    await task.dblclick({force:true});
    let important=await page.evaluate(()=>db.tasks.find(t=>t.id==='qa-double-important')?.important);
    ensure(important===true,'Capture double click did not apply importance ink',important);
-   const marked=page.locator('#page-capture .capture-task-row').filter({hasText:'QA Double tap task'}).locator('.task-title');
+   // An important task intentionally moves above the composer, so follow it.
+   const marked=page.locator('#page-capture #konaPriorityTask .pinned-title').filter({hasText:'QA Double tap task'});
+   await marked.waitFor({state:'visible'});
    ensure(await marked.evaluate(n=>n.classList.contains('important')),'Important task lost highlight class');
    row.steps.push('double-click-important');
    await marked.dblclick({force:true});
    important=await page.evaluate(()=>db.tasks.find(t=>t.id==='qa-double-important')?.important);
    ensure(important===false,'Second double click did not remove important flag',important);
    row.steps.push('double-click-unmark');
-   await marked.click({force:true});
+   const unmarked=page.locator('#page-capture .capture-task-row').filter({hasText:'QA Double tap task'}).locator('.task-title');
+   await unmarked.waitFor({state:'visible'});
+   await unmarked.click({force:true});
    await page.waitForTimeout(390);
    ensure(await page.locator('#taskFormModal').isVisible(),'Single click must still edit task');
    row.steps.push('single-click-edit');
