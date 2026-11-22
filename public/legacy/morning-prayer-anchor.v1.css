@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Pen+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Single+Day&display=swap');
 
 /* Morning Check-in prayer CTA and compact Capture anchor — 2026-11-21.
    Local overrides only. Preserve the legacy palette and text scaling. */
@@ -315,11 +315,11 @@ html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-fo
    Three intentional lines when room permits; natural wrapping at 320px.
    CSS-only styling: words remain actual text for translation and accessibility. */
 body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
-  font-family:'Nanum Pen Script','Gowun Batang','AppleMyungjo',serif!important;
-  font-size:calc(clamp(24px,6.7vw,30px) * var(--kona-ui-scale,1))!important;
+  font-family:'Single Day','Gowun Batang','AppleMyungjo',serif!important;
+  font-size:calc(clamp(24px,6.4vw,27px) * var(--kona-ui-scale,1))!important;
   font-weight:400!important;
-  letter-spacing:-.018em!important;
-  line-height:1.32!important;
+  letter-spacing:-.028em!important;
+  line-height:1.35!important;
   width:min(100%,370px)!important;
   padding-inline:6px!important;
   margin-bottom:19px!important;
@@ -356,3 +356,8 @@ body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListe
     margin-bottom:8px!important;
   }
 }
+
+/* Focus modes use the existing in-session status; the top-right pill is redundant.
+   Hide it consistently for prayer, devotion and concentration without changing
+   the controller's session state or the other header controls. */
+body .app #focusModeBadge { display:none!important; }
