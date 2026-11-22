@@ -360,4 +360,8 @@ body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListe
 /* Focus modes use the existing in-session status; the top-right pill is redundant.
    Hide it consistently for prayer, devotion and concentration without changing
    the controller's session state or the other header controls. */
-body .app #focusModeBadge { display:none!important; }
+html body.focus-immersive .app .pagehead #focusModeBadge,
+html body.focus-screen .app .pagehead #focusModeBadge {
+  display:none!important;
+  visibility:hidden!important;
+}
