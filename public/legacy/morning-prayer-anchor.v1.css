@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Pen+Script&display=swap');
 
 /* Morning Check-in prayer CTA and compact Capture anchor — 2026-11-21.
    Local overrides only. Preserve the legacy palette and text scaling. */
@@ -309,4 +309,50 @@ html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-fo
 html[data-appearance="dark"] body.focus-immersive.morning-prayer-running[data-focus-ocean] .app #page-focus #quietTimerToggle {
   color:#244B60!important;
   -webkit-text-fill-color:#244B60!important;
+}
+
+/* Morning prayer rotating handwritten copy.
+   Three intentional lines when room permits; natural wrapping at 320px.
+   CSS-only styling: words remain actual text for translation and accessibility. */
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+  font-family:'Nanum Pen Script','Gowun Batang','AppleMyungjo',serif!important;
+  font-size:calc(clamp(24px,6.7vw,30px) * var(--kona-ui-scale,1))!important;
+  font-weight:400!important;
+  letter-spacing:-.018em!important;
+  line-height:1.32!important;
+  width:min(100%,370px)!important;
+  padding-inline:6px!important;
+  margin-bottom:19px!important;
+  color:#123C54!important;
+  word-break:keep-all!important;
+  overflow-wrap:break-word!important;
+  text-shadow:0 1px 11px rgba(233,251,255,.46);
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage .morning-prayer-line {
+  display:block!important;
+  color:#123C54!important;
+  -webkit-text-fill-color:#123C54!important;
+  font-weight:400!important;
+}
+body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage .morning-prayer-line:last-child {
+  color:#0D354D!important;
+  -webkit-text-fill-color:#0D354D!important;
+}
+@media(max-width:360px), (max-height:700px) {
+  body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+    font-size:calc(23px * var(--kona-ui-scale,1))!important;
+    line-height:1.24!important;
+    margin-bottom:12px!important;
+    padding-inline:3px!important;
+  }
+  body.focus-immersive.morning-prayer-running .app #page-focus #timerStatus {
+    margin-bottom:8px!important;
+  }
+}
+@media(max-height:580px) {
+  body.focus-immersive.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+    font-size:calc(21px * var(--kona-ui-scale,1))!important;
+    line-height:1.19!important;
+    margin-bottom:8px!important;
+  }
 }
