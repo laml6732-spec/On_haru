@@ -27,7 +27,7 @@ const fixtures=()=>{
 };
 const selectPage=async(page,name)=>{await page.locator('.tabs [data-page="'+name+'"]').click({force:true});await page.waitForTimeout(120)};
 const edit=async(page,clickTarget,field,edited,checkValue)=>{
- await clickTarget.click({force:true});
+ await clickTarget.click();
  const modal=page.locator('#konaReviewEditor');
  await modal.waitFor({state:'visible'});
  const editFields=modal.locator('.sheet > label > textarea');
@@ -74,7 +74,7 @@ try {
    row.steps.push('midday-edit');
    await edit(page,x.locator('.rv-daily-check-evening .rv-daily-check-name'),'Note','QA reflection updated',()=>day(date).checkins.evening.note);
    row.steps.push('reflection-edit');
-   await edit(page,x.locator('.rv-daily-book-heading').first(),'Memorable words','QA class quote updated',()=>day(date).checkins.noon.lectureQuote);
+   await edit(page,x.locator('.rv-daily-class-group .rv-daily-book-heading').first(),'Memorable words','QA class quote updated',()=>day(date).checkins.noon.lectureQuote);
    row.steps.push('class-edit');
    await edit(page,x.locator('.review-session-record .rv-note-preview').first(),'Note','QA session updated',()=>day(date).sessions.find(x=>x.id==='qa-prayer-session').note);
    row.steps.push('session-edit');
