@@ -483,3 +483,118 @@ body.focus-immersive.morning-prayer-running.quiet-listening-timer .app #page-foc
 body.quiet-listening-timer.focus-immersive .app #page-focus #timerProgressRail #timerProgress {
   display:none!important;
 }
+
+/* Inline Quick Capture draft feedback — 2026-11-21.
+   Draft state, schedule disclosure, and final-save button share one 44px row.
+   Keep existing draft and finalized record handlers untouched. */
+body .app #page-capture #qc-v2 .qc-bottom {
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr) auto!important;
+  grid-template-rows:minmax(44px,auto)!important;
+  align-items:center!important;
+  column-gap:6px!important;
+  row-gap:0!important;
+  padding:2px 0 0!important;
+  margin-top:2px!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink {
+  grid-column:1!important;
+  grid-row:1!important;
+  width:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  padding:0!important;
+  margin:0!important;
+  position:relative!important;
+  align-self:center!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink summary {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:44px!important;
+  min-width:44px!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:10px!important;
+  cursor:pointer!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink summary span {
+  /* Full schedule information remains on the summary's aria-label. */
+  display:none!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink summary img {
+  width:18px!important;
+  height:18px!important;
+  max-width:18px!important;
+  flex:0 0 18px!important;
+  margin:0!important;
+  opacity:.85!important;
+}
+body .app #page-capture #qc-v2 #qc-state-group,
+body .app #page-capture #qc-v2 #qc-state-group.has-feedback {
+  grid-column:2!important;
+  grid-row:1!important;
+  display:flex!important;
+  align-items:center!important;
+  min-width:0!important;
+  min-height:0!important;
+  width:auto!important;
+  padding:0!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+body .app #page-capture #qc-v2 #qc-state-group:not(.has-feedback) {display:none!important}
+body .app #page-capture #qc-v2 #qc-state {
+  min-width:0!important;
+  max-width:100%!important;
+  margin:0!important;
+  line-height:1.5!important;
+  font-size:calc(11px * var(--kona-ui-scale,1))!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+body .app #page-capture #qc-v2 #qc-state[data-retryable="true"] {
+  color:#A14C3A!important;
+  text-decoration:underline;
+  text-underline-offset:2px;
+  cursor:pointer;
+}
+body .app #page-capture #qc-v2 .qc-save-action {
+  grid-column:3!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  min-width:0!important;
+  min-height:44px!important;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink[open] {z-index:11!important}
+body .app #page-capture #qc-v2 #captureScheduleLink[open]::before {
+  content:"";
+  position:absolute;
+  top:44px;
+  left:0;
+  width:min(270px,calc(100vw - 48px));
+  height:102px;
+  box-sizing:border-box;
+  border:1px solid #d5e4db;
+  border-radius:10px;
+  background:var(--card-bg,#fff);
+  box-shadow:0 9px 20px #123e561f;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink[open]>label {
+  position:absolute!important;
+  top:52px;
+  left:10px;
+  width:min(250px,calc(100vw - 68px))!important;
+  z-index:1;
+}
+body .app #page-capture #qc-v2 #captureScheduleLink[open]>select {
+  position:absolute!important;
+  top:76px;
+  left:10px;
+  width:min(250px,calc(100vw - 68px))!important;
+  z-index:1;
+}
