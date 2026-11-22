@@ -989,7 +989,7 @@ function syncFocusLayout(){
  launch.hidden=!!sess.started;const duration=sessDurMin?sessDurMin+KonaI18n.t(" min"):KonaI18n.t("No time limit"),selected=$('focusTarget').selectedOptions?.[0],topic=($('focusContext').hidden?'':$('focusContext').value.trim())||(selected?.value&&!['custom','personal'].includes(selected.value)?selected.textContent:'');launch.textContent=[({prayer:KonaI18n.t("Prayer"),devotion:KonaI18n.t("Devotion"),focus:KonaI18n.t("Focus")})[kind],duration,topic].filter(Boolean).join(' · ');
  const listening=kind==='prayer'||kind==='devotion';$('listeningTools').hidden=!listening;$('listeningPrompt').textContent='';$('listeningPrompt').hidden=true;
  const progressRail=$('timerProgressRail');if(progressRail)progressRail.hidden=!active;
- const eyeToggle=$('quietTimerToggle'),eyeLabel=quietTimer?KonaI18n.t("Show timer"):KonaI18n.t("Hide timer");
+ const eyeToggle=$('quietTimerToggle'),eyeLabel=KonaI18n.language==='ko'?(quietTimer?'타이머 보기':'타이머 숨기기'):(quietTimer?KonaI18n.t("Show timer"):KonaI18n.t("Hide timer"));
  eyeToggle.hidden=!(active&&listening);eyeToggle.setAttribute('aria-label',eyeLabel);eyeToggle.title=eyeLabel;eyeToggle.setAttribute('aria-pressed',String(quietTimer));
  document.body.classList.toggle('quiet-listening-timer',on&&listening&&quietTimer);$('quietTimerMessage').hidden=!(on&&listening&&quietTimer);
  $('focusLibraryOpen').textContent=kind==='prayer'?KonaI18n.format("Prayer requests (⟪0⟫) ▸",[activePrayers().length],false):kind==='focus'?KonaI18n.format("Tasks (⟪0⟫) ▸",[itemsDue(date).length],false):KonaI18n.t("Recent devotions ▸");
