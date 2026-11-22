@@ -3628,7 +3628,7 @@ function fitTodayAnchor(field){
  field.style.setProperty('overflow-y',measured>double+1?'auto':'hidden','important');
 }
 function captureLayout(){const emoji=byId('dayEmoji');if(!day(date).emoji||day(date).emoji==='🌺'){if(!emoji.querySelector('img')){const flower=document.createElement('img');flower.src='./assets/hibiscus-task-done.png';flower.alt='';emoji.replaceChildren(flower)}}const h=byId('dayHeadline'),anchor=h.closest('.day-signature'),hasAnchor=!!h.value.trim();anchor?.classList.toggle('has-anchor',hasAnchor);fitTodayAnchor(h);const note=byId('qc-text');note.placeholder=KonaI18n.t("What would you like to remember?",true);note.style.setProperty('height','auto','important');note.style.setProperty('height',Math.min(240,Math.max(64,note.scrollHeight))+'px','important');if(page==='checkin')checkLayout()}
-const previousRender=render;render=function(){const r=previousRender.apply(this,arguments);captureLayout();return r};byId('dayHeadline').addEventListener('input',captureLayout);byId('qc-text').addEventListener('input',captureLayout);window.addEventListener('resize',()=>fitTodayAnchor(byId('dayHeadline')));document.fonts?.ready.then(()=>fitTodayAnchor(byId('dayHeadline')));captureLayout();
+const previousRender=render;render=function(){const r=previousRender.apply(this,arguments);captureLayout();return r};byId('dayHeadline').addEventListener('input',()=>{captureLayout();requestAnimationFrame(()=>fitTodayAnchor(byId('dayHeadline')))});byId('qc-text').addEventListener('input',captureLayout);window.addEventListener('resize',()=>fitTodayAnchor(byId('dayHeadline')));document.fonts?.ready.then(()=>fitTodayAnchor(byId('dayHeadline')));captureLayout();
 })();
 
 (function(){
