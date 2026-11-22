@@ -982,3 +982,35 @@ html body .app #page-capture #qc-v2 #captureScheduleLink summary::after {
   line-height:1!important;
   margin:0!important;
 }
+
+/* Extra room for a readable linked schedule on narrow enlarged displays.
+   Normal-size cards keep their compact one-line schedule/save layout. */
+html body .app #page-capture #qc-v2 #captureScheduleLink summary {
+  text-decoration:none!important;
+}
+@media(max-width:359px) {
+  :root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 .qc-bottom {
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-rows:44px minmax(44px,auto)!important;
+    row-gap:1px!important;
+    column-gap:8px!important;
+  }
+  :root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 #captureScheduleLink {
+    grid-column:1/-1!important;
+    grid-row:1!important;
+    width:100%!important;
+  }
+  :root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 #qc-state-group,
+  :root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 #qc-state-group.has-feedback {
+    grid-column:1!important;
+    grid-row:2!important;
+    align-self:center!important;
+  }
+  :root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 .qc-save-action {
+    grid-column:2!important;
+    grid-row:2!important;
+    align-self:center!important;
+    justify-self:end!important;
+  }
+}
