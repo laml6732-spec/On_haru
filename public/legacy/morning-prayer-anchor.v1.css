@@ -885,3 +885,16 @@ html body .app #page-capture #qc-v2 .kona-tag-tray-toggle::before {
   width:var(--capture-tag-circle)!important;
   height:var(--capture-tag-circle)!important;
 }
+
+/* Accessibility override: seven featured tags remain one row even when the
+   app's enlarged-text mode otherwise switches the tray to auto-fit columns.
+   Text and other controls still use the user's requested scale. */
+:root[data-ui-enlarged="true"] body .app #page-capture #qc-v2 #konaCaptureTagTray {
+  display:grid!important;
+  grid-template-columns:repeat(8,minmax(0,1fr))!important;
+  grid-auto-rows:44px!important;
+  gap:5px 0!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+}
