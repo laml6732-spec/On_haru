@@ -67,7 +67,7 @@ body .app #page-checkin #morningPrayerPrompt button img {
   height: 21px!important;
   flex: 0 0 21px!important;
   object-fit: contain!important;
-  filter: brightness(0) invert(1);
+  filter: grayscale(1) brightness(0) invert(.83);
 }
 body .app #page-checkin #morningPrayerPrompt button::after {
   content: "→";
@@ -97,4 +97,83 @@ html[data-appearance="dark"] body .app #page-checkin #morningPrayerPrompt button
     padding-left: 34px!important;
     padding-right: 34px!important;
   }
+}
+
+/* Prayer completion changes the *same* flower from muted to original color.
+   State is derived from a saved Morning Check-in prayer record for this date. */
+body .app #page-checkin #morningPrayerPrompt.morning-prayer-completed button img {
+  filter: none!important;
+}
+
+/* From Morning Check-in: one decision only — duration, then start. */
+body.morning-prayer-setup .app #page-focus :is(
+  #kindSeg,.focus-controls,#focusSetupMore,#quietTimerMessage,
+  #focusResumeHint,#focusSessionTitle,#timerStatus,#focusClock,
+  #timerProgress,#focusAlarm,.alarm-caption,#focusNoteToggle,
+  #timerNoteLabel,#timerNote,#focusMore,#focusAfter,.focus-summary,
+  #focusLaunchSummary
+) {display:none!important}
+body .app #page-focus #morningPrayerDurationHeading[hidden],
+body .app #page-focus #morningPrayerListeningMessage[hidden] {display:none!important}
+body.morning-prayer-setup .app #page-focus .focus-clock-area {
+  min-height:0!important;
+  margin:20px 0 12px!important;
+  padding:4px 0!important;
+  gap:18px!important;
+}
+body.morning-prayer-setup .app #page-focus #morningPrayerDurationHeading {
+  display:block;
+  width:100%;
+  margin:0!important;
+  font-family:var(--font-ui)!important;
+  font-size:calc(17px * var(--kona-ui-scale,1))!important;
+  font-weight:650!important;
+  line-height:1.5!important;
+  text-align:center!important;
+  color:#274e47!important;
+}
+body.morning-prayer-setup .app #page-focus #focusDurations {
+  display:flex!important;
+  justify-content:center!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+}
+body.morning-prayer-setup .app #page-focus #focusDurations button[data-time] {
+  flex:0 1 50px!important;
+  width:48px!important;
+  min-width:44px!important;
+  height:46px!important;
+  min-height:44px!important;
+}
+body.morning-prayer-setup .app #page-focus .timer-row {margin:12px 0 0!important;}
+body.morning-prayer-setup .app #page-focus #focusStart {
+  width:100%!important;
+  min-height:50px!important;
+  background:#274e47!important;
+  border-color:#274e47!important;
+  color:#fff!important;
+}
+html[data-appearance='dark'] body.morning-prayer-setup .app #page-focus #morningPrayerDurationHeading {
+  color:#d7ebdb!important;
+}
+html[data-appearance='dark'] body.morning-prayer-setup .app #page-focus #focusStart {
+  background:#3b705d!important;
+  border-color:#53826b!important;
+  color:#fff!important;
+}
+
+/* Exact reflection sentence appears in the running Morning prayer timer only. */
+body.morning-prayer-running .app #page-focus #morningPrayerListeningMessage {
+  display:block!important;
+  width:min(100%,340px)!important;
+  margin:0 auto 15px!important;
+  font-family:var(--font-ui)!important;
+  font-size:calc(16px * var(--kona-ui-scale,1))!important;
+  font-weight:600!important;
+  line-height:1.65!important;
+  text-align:center!important;
+  word-break:keep-all!important;
+  overflow-wrap:break-word!important;
+  color:inherit!important;
+  opacity:.96;
 }
