@@ -14,6 +14,7 @@ const fixtures=()=>{
  date='2026-11-21';
  db.events=[];
  const v=day(date);
+ v.checkins??={};v.sessions??=[];v.quickCaptureEntries??=[];v.timeNotes??={};db.tasks??=[];
  v.checkins.morning={note:'QA morning original',morningEnergy:4,morningHappiness:4,moodTime:'19:40'};
  v.checkins.noon={note:'QA midday original',noonEnergy:3,noonHappiness:3,moodTime:'07:15',lectureQuote:'QA class quote original',lectureReflection:'QA class reflection',classResponse:'QA class response'};
  v.checkins.evening={note:'QA reflection original',eveningEnergy:2,eveningHappiness:5,moodTime:'11:32'};
