@@ -43,8 +43,52 @@ function konaOpenReviewEditor(d,id){
  let marked=!!source?.important||(v.important||[]).includes(isCapture?source.id:isEvent?eventId:id),later=null;
  if(isCapture||isEvent){const highlight=node('button',marked?KonaI18n.t("Remove highlight"):KonaI18n.t("Highlight · Important"));highlight.type='button';highlight.className='note-highlight-toggle';highlight.setAttribute('aria-pressed',String(marked));highlight.onclick=()=>{marked=!marked;highlight.setAttribute('aria-pressed',String(marked));highlight.textContent=marked?KonaI18n.t("Remove highlight"):KonaI18n.t("Highlight · Important")};sheet.append(highlight);const revisit=node('details'),summary=node('summary',KonaI18n.t("Revisit later"));later=node('textarea');later.className='field';later.setAttribute('aria-label',KonaI18n.t("Later reflection",true));revisit.append(summary,later);sheet.append(revisit)}
  const status=node('p');status.setAttribute('role','status');sheet.append(status);const actions=node('div');actions.className='rv-edit-actions';const cancel=node('button',KonaI18n.t("Cancel")),saveButton=node('button',KonaI18n.t("Save")),remove=node('button',KonaI18n.t("Delete"));for(const b of [cancel,saveButton,remove])b.type='button';cancel.className='mini-btn';saveButton.className='solid';remove.className='outline danger';actions.append(cancel,saveButton,remove);sheet.append(actions);
- const finish=()=>{modal.remove();render();if(page==='records')renderDayReview()};cancel.onclick=()=>modal.remove();modal.onclick=e=>{if(e.target===modal)modal.remove()};
- saveButton.onclick=()=>{const ok=guardedMutation(()=>{const dayValue=day(d),tags=draft.tags.filter(tag=>marked||tag!=='important');if(isCapture||isEvent){const key=isCapture?source.id:eventId;dayValue.important??=[];dayValue.important=dayValue.important.filter(k=>k!==key);if(marked)dayValue.important.push(key);if(isCapture)source.important=marked;if(later?.value?.trim()){const entry={text:later.value.trim(),createdAt:new Date().toISOString()};if(isCapture){source.laterReflections??=[];source.laterReflections.push(entry)}else{dayValue.eventNoteReflections??={};dayValue.eventNoteReflections[eventId]??=[];dayValue.eventNoteReflections[eventId].push(entry)}}}if(isClass){const c=check(d,'noon');for(const key of ['lectureQuote','lectureReflection','classResponse'])c[key]=fields[key].value;c.classTags=tags}else if(isCapture){source.title=fields.title.value.trim();source.text=fields.note.value;source.tags=tags}else if(isSession||isCheck){source.note=fields.note.value;source.tags=tags;if(id==='check-night')dayValue.eventNotes.__day_wrap=source.note}else if(isAnchor){dayValue.headline=normalizeDailyHeadline(fields.note.value);dayValue.headlineTags=tags}else if(isFree){dayValue.timeNotes??={};dayValue.timeNotes[id.slice(5)]??={};dayValue.timeNotes[id.slice(5)].free={...(typeof oldFree==='object'?oldFree:{}),text:fields.note.value,tags}}else if(isMeal){dayValue.meals??={};dayValue.meals[id.slice(5)]=fields.note.value;dayValue.eventNoteTags??={};dayValue.eventNoteTags[id.slice(5)]=tags}else{dayValue.eventNotes[eventId]=fields.note.value;setEventNoteTitle(d,eventId,fields.title.value);dayValue.eventNoteTags??={};dayValue.eventNoteTags[eventId]=tags;dayValue.unifiedNotesSaved??=[];if(!dayValue.unifiedNotesSaved.includes(eventId))dayValue.unifiedNotesSaved.push(eventId);dayValue.legacyMergedIds??=[];if(!dayValue.legacyMergedIds.includes(eventId))dayValue.legacyMergedIds.push(eventId)}},KonaI18n.t("Not saved. Your changes are still here."));if(ok)finish();else status.textContent=KonaI18n.t("Not saved · retry.")};
+ const finish=()=>{modal.remove();render();if(page==='records')window.konaRefreshCurrentReview?.()};cancel.onclick=()=>modal.remove();modal.onclick=e=>{if(e.target===modal)modal.remove()};
+ // All record kinds must save; previously every non-capture/event branch was
+ // nested under isCapture||isEvent and silently discarded the user's edits.
+ saveButton.onclick=()=>{
+  const ok=guardedMutation(()=>{
+   const dayValue=day(d),tags=draft.tags.filter(tag=>marked||tag!=='important');
+   if(isCapture||isEvent){
+    const key=isCapture?source.id:eventId;
+    dayValue.important??=[];
+    dayValue.important=dayValue.important.filter(k=>k!==key);
+    if(marked)dayValue.important.push(key);
+    if(later?.value?.trim()){
+     const entry={text:later.value.trim(),createdAt:new Date().toISOString()};
+     if(isCapture){source.laterReflections??=[];source.laterReflections.push(entry)}
+     else{dayValue.eventNoteReflections??={};dayValue.eventNoteReflections[eventId]??=[];dayValue.eventNoteReflections[eventId].push(entry)}
+    }
+   }
+   if(isClass){
+    // Class notes share the noon check-in object, not an event note.
+    for(const key of ['lectureQuote','lectureReflection','classResponse'])source[key]=fields[key].value;
+    source.classTags=tags;
+   }else if(isCapture){
+    source.title=fields.title.value.trim();source.text=fields.note.value;source.tags=tags;source.important=marked;
+   }else if(isSession||isCheck){
+    source.note=fields.note.value;source.tags=tags;
+    if(id==='check-night'){dayValue.eventNotes??={};dayValue.eventNotes.__day_wrap=source.note}
+   }else if(isAnchor){
+    dayValue.headline=normalizeDailyHeadline(fields.note.value);dayValue.headlineTags=tags;
+   }else if(isFree){
+    dayValue.timeNotes??={};dayValue.timeNotes[id.slice(5)]??={};
+    dayValue.timeNotes[id.slice(5)].free={...(typeof oldFree==='object'?oldFree:{}),text:fields.note.value,tags};
+   }else if(isMeal){
+    dayValue.meals??={};dayValue.meals[id.slice(5)]=fields.note.value;
+    dayValue.eventNoteTags??={};dayValue.eventNoteTags[id.slice(5)]=tags;
+   }else if(isEvent){
+    dayValue.eventNotes??={};dayValue.eventNotes[eventId]=fields.note.value;
+    setEventNoteTitle(d,eventId,fields.title.value);
+    dayValue.eventNoteTags??={};dayValue.eventNoteTags[eventId]=tags;
+    dayValue.unifiedNotesSaved??=[];
+    if(!dayValue.unifiedNotesSaved.includes(eventId))dayValue.unifiedNotesSaved.push(eventId);
+    dayValue.legacyMergedIds??=[];
+    if(!dayValue.legacyMergedIds.includes(eventId))dayValue.legacyMergedIds.push(eventId);
+   }
+  },KonaI18n.t("Not saved. Your changes are still here."));
+  if(ok)finish();else status.textContent=KonaI18n.t("Not saved · retry.");
+ };
  remove.onclick=async()=>{if(await onHaruConfirm(KonaI18n.t("Delete this record?"))&&guardedMutation(()=>konaDeleteReviewSource(d,id),KonaI18n.t("Delete failed. The record was kept.")))finish()};document.body.append(modal);openSheet('konaReviewEditor');(fields.note||fields.lectureQuote)?.focus({preventScroll:true});
 }
 
@@ -2328,6 +2372,8 @@ document.addEventListener('change',event=>{if(reviewActiveEdit?.dirty()&&event.t
 function reviewCanEdit(){if(!reviewActiveEdit)return true;if(reviewActiveEdit.dirty()){toast(KonaI18n.t("Save or cancel the note you are editing first."));return false}reviewActiveEdit.cancel();return true}
 window.konaCanChangeLanguage=reviewCanEdit;
 function reviewAfterChange(){const y=window.scrollY;draw();requestAnimationFrame(()=>window.scrollTo(0,y))}
+// Keep the modern Review timeline in sync after the shared legacy editor saves.
+window.konaRefreshCurrentReview=reviewAfterChange;
 function reviewInlineNote(record,row){if(!reviewCanEdit())return;konaOpenReviewEditor(record.date,record.id)}
 
 function reviewFeelingEditor(record,row,dimension='happiness'){
