@@ -85,7 +85,7 @@ for(const width of [320,390,1024])for(const appearance of ['light','dark']){
     check(stored?.scheduleId==='qa-other','Saved note did not retain user-chosen schedule');
 
     await summary.click();
-    await page.locator('#captureComposerHeading').click({force:true});
+    await page.locator('#qc-text').click({force:true});
     check(!(await menu.isVisible()),'Outside click must close menu');
     check(errors.length===0,'Runtime errors: '+errors.join('; '));
     results.push({width,appearance,ok:true,menuInfo,savedSchedule:stored.scheduleId});
