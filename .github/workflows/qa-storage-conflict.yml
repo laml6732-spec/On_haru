@@ -26,3 +26,13 @@ jobs:
       - run: node scripts/verify-metrics.mjs
       - run: python3 -m http.server 8080 --directory public > /tmp/onharu-storage-qa.log 2>&1 &
       - run: node scripts/qa-storage-conflict.mjs
+      - run: node scripts/ui-pwa.mjs
+      - run: node scripts/qa-review-overall.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-storage-pwa-review-qa
+          path: |
+            test-results/pwa/
+            test-results/review-overall/
+          retention-days: 7
