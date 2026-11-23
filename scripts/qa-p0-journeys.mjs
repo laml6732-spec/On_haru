@@ -69,7 +69,7 @@ try {
    await p.locator('#konaScheduleMore [data-go="schedule"]').click();
    await p.locator('#page-schedule .subtabs [data-schedulesub="events"]').click();
    await p.locator('#eventManageList .record-item').filter({hasText:'QA SAFE SCHEDULE'}).click();
-   await p.locator('#choiceList button').filter({hasText:'Edit event'}).click();
+   await p.locator('#choiceList button').filter({has:p.getByText('Edit',{exact:true})}).click();
    await p.locator('#eventTitle').fill('QA UPDATED SCHEDULE');
    await p.locator('#eventSave').click();
    const s=await p.evaluate(({eventId,memoId})=>({
@@ -79,14 +79,14 @@ try {
  });
  await check('P-02: exiting schedule delete options preserves original schedule',async()=>{
    await p.locator('#eventManageList .record-item').filter({hasText:'QA UPDATED SCHEDULE'}).click();
-   await p.locator('#choiceList button').filter({hasText:'Delete options'}).click();
+   await p.locator('#choiceList button').filter({has:p.getByText('Delete scope',{exact:true})}).click();
    need(await p.locator('#choiceList').isVisible(),'Delete choices did not open');
    await p.keyboard.press('Escape');
    need(await p.evaluate(id=>db.events.some(e=>e.id===id),eventId),'Escape deleted schedule unexpectedly');
  });
  await check('P-15/E-05: removing a schedule does not delete its linked Capture memo',async()=>{
    await p.locator('#eventManageList .record-item').filter({hasText:'QA UPDATED SCHEDULE'}).click();
-   await p.locator('#choiceList button').filter({hasText:'Delete options'}).click();
+   await p.locator('#choiceList button').filter({has:p.getByText('Delete scope',{exact:true})}).click();
    await p.locator('#choiceList button').getByText('Delete',{exact:true}).click();
    need(!(await p.evaluate(id=>db.events.some(e=>e.id===id),eventId)),'Delete did not remove selected schedule');
    const after=await p.evaluate(id=>day('2026-11-21').quickCaptureEntries.filter(x=>x.id===id),memoId);
