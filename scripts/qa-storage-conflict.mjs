@@ -18,7 +18,7 @@ try{
  const before=await first.evaluate(k=>{
   const actual=window.localStorage.getItem(k),original=lastKnownSavedRaw;
   const a=actual?JSON.parse(actual):{},b=original?JSON.parse(original):{};
-  return {conflict:storageConflict,equal:actual===original,inMemoryEqual:JSON.stringify(db)===original,differentTopLevel:Object.keys(a).filter(k=>JSON.stringify(a[k])!==JSON.stringify(b[k]))};
+  return {conflict:storageConflict,equal:actual===original,inMemoryEqual:JSON.stringify(db)===original,differentTopLevel:Object.keys(a).filter(k=>JSON.stringify(a[k])!==JSON.stringify(b[k])),onDiskSettings:a.settings,baselineSettings:b.settings,tabState:db.settings};
  },key);
  console.log('TWO_TAB_BASELINE',JSON.stringify(before));
  const firstWrite=await first.evaluate(d=>{day(d).headline='TAB_A_PROTECTED';return save()},date);
