@@ -33,8 +33,10 @@ for(const {width,theme} of configs){
  const make=async(title,repeat,important=true)=>{
   await open('today');
   const fold=page.locator('#page-today #pinRow .task-fold');
-  if(await fold.getAttribute('aria-expanded')==='true')await fold.click();
-  await page.locator('#page-today #pinRow .task-add').click();
+  const add=page.locator('#page-today #pinRow .task-add');
+  if(!await add.count())await fold.click();
+  if(!await add.count())throw Error('Plan Add task control missing after collapse: '+JSON.stringify(await page.evaluate(()=>({expanded:taskExpanded,pinRow:document.querySelector('#pinRow')?.outerHTML.slice(0,800),parent:document.querySelector('#pinRow')?.parentElement?.id}))));
+  await add.click();
   await page.locator('#taskTitle').fill(title);
   if(await page.locator('#taskTitle').inputValue()!==title)throw new Error('Task form truncated a QA title: '+title);
   if(important)await page.locator('#taskImportant').check();

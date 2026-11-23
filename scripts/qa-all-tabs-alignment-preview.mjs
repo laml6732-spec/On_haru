@@ -64,6 +64,8 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
     // An opaque, top-layer More menu is expected to cover the plan beneath it.
     // Only flag overlapping peer controls, not a deliberate popover over page content.
     if(!!a.el.closest('#konaScheduleMore .kona-more-panel')!==!!b.el.closest('#konaScheduleMore .kona-more-panel'))continue;
+    // A deliberate schedule-link popover may overlay the composer; it must still be in-viewport and dismissible.
+    if(!!a.el.closest('#captureScheduleMenu')!==!!b.el.closest('#captureScheduleMenu'))continue;
     const x=Math.max(0,Math.min(a.rect.right,b.rect.right)-Math.max(a.rect.left,b.rect.left));
     const y=Math.max(0,Math.min(a.rect.bottom,b.rect.bottom)-Math.max(a.rect.top,b.rect.top));
     if(x>5&&y>5&&x*y>100)overlaps.push({a:a.id||a.name,b:b.id||b.name,intersection:Math.round(x*y)});
@@ -130,9 +132,12 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   }
   await openTab('today');
   await state('plan-closed','#page-today');
-  if(await visible(page.locator('#page-today #pinRow .task-add'))){
+  if(await visible(page.locator('#page-today #pinRow .task-fold'))){
    await attempt(row,'create isolated task',async()=>{
-    await page.locator('#page-today #pinRow .task-add').click();
+    const add=page.locator('#page-today #pinRow .task-add');
+    if(!await add.count())await page.locator('#page-today #pinRow .task-fold').click();
+    if(!await add.count())throw Error('Plan Add task missing after collapsing');
+    await add.click();
     await page.locator('#taskTitle').fill('QA task with a longer description to examine alignment');
     await page.locator('#taskImportant').check();
     await page.locator('#taskSave').click();
