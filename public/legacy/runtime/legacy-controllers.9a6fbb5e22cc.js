@@ -602,10 +602,12 @@ function renderDock(){
   syncDock();
 }
 function renderFooter(){
-  const t=KonaI18n.format("⟪0⟫ · Last backup ⟪1⟫",[persistState,db.settings.lastBackup?short(db.settings.lastBackup):'–'],false);
-  $('storageNote').textContent=t;
+  // Browsers cannot confirm that a requested download was actually kept by the user.
+  // Keep the existing lastBackup field for compatibility, but describe it as a request.
+  const requestDate=db.settings.lastBackup?short(db.settings.lastBackup):'–';
+  $('storageNote').textContent=KonaI18n.language==='ko'?persistState+' · 마지막 백업 요청 '+requestDate:KonaI18n.format("⟪0⟫ · Last backup requested ⟪1⟫",[persistState,requestDate],false);
   const last=db.settings.lastBackup,age=last?Math.floor((parseDay(nowLocal())-parseDay(last))/864e5):Infinity;
-  $('backupStatusText').textContent=KonaI18n.format("Last record export: ⟪0⟫",[last?fmt(last):KonaI18n.t("never")],false);
+  $('backupStatusText').textContent=KonaI18n.language==='ko'?'마지막 백업 다운로드 요청: '+(last?fmt(last):'없음'):'Last backup download requested: '+(last?fmt(last):KonaI18n.t("never"));
   $('reviewBackupStatus').classList.toggle('stale',age>7);
 }
 
@@ -1285,9 +1287,16 @@ function openEventMemo(e){
 }
 function updateEvPray(){const e=selectedEvent;if(!e)return;const on=(db.days[date]?.sessions||[]).some(s=>s.eventId===e.id);$('evPray').classList.toggle('mini-btn',false);$('evPray').style.background=on?'var(--pray)':'';$('evPray').style.color=on?'#fff':''}
 function toggleEventPrayer(){
-  const e=selectedEvent;if(!e)return;const v=day(date),i=v.sessions.findIndex(s=>s.eventId===e.id),isToday=date===nowLocal();
-  if(i>=0){const s=v.sessions[i];v.sessions.splice(i,1);const p=s.prayerId?db.prayers.find(x=>x.id===s.prayerId):null;if(p&&isToday)unmarkPrayed(p,date);save();toast(KonaI18n.t("Prayer log removed"))}
-  else{const p=isToday?todayPrayer():null,a=mins(e.start),z=mins(e.end);v.sessions.push({kind:'prayer',task:p?p.title:e.title,prayerId:p?.id||'',start:e.start,seconds:(z-a)*60,at:e.end,eventId:e.id});if(p)markPrayed(p,date);save();toast(KonaI18n.t("Prayer logged"))}
+  const e=selectedEvent;if(!e)return;
+  let removed=false;
+  const ok=guardedMutation(()=>{
+    const v=day(date),i=v.sessions.findIndex(s=>s.eventId===e.id),isToday=date===nowLocal();
+    removed=i>=0;
+    if(removed){const s=v.sessions[i];v.sessions.splice(i,1);const p=s.prayerId?db.prayers.find(x=>x.id===s.prayerId):null;if(p&&isToday)unmarkPrayed(p,date)}
+    else{const p=isToday?todayPrayer():null,a=mins(e.start),z=mins(e.end);v.sessions.push({kind:'prayer',task:p?p.title:e.title,prayerId:p?.id||'',start:e.start,seconds:(z-a)*60,at:e.end,eventId:e.id});if(p)markPrayed(p,date)}
+  },KonaI18n.t("Prayer log could not be saved. Please retry."));
+  if(!ok)return;
+  toast(KonaI18n.t(removed?"Prayer log removed":"Prayer logged"));
   updateEvPray();render();
 }
 function isMorningLecture(e){return e.category==='lecture'&&mins(e.start)>=360&&mins(e.end)<=720}
@@ -1649,7 +1658,7 @@ $('addEventBtn').onclick=()=>{clearEventForm();openSheet('eventFormModal')};
 $('addTaskBtn').onclick=()=>{clearTaskForm();openSheet('taskFormModal')};
 $('dayHeadline').oninput=e=>{const value=e.target.value;day(date).headline=value;save();$('useSuggest').classList.toggle('hidden',!!value.trim()||!headlineSuggest(date))};
 $('dayHeadline').onblur=e=>{const value=normalizeDailyHeadline(e.target.value);if(e.target.value!==value)e.target.value=value;if(day(date).headline!==value){day(date).headline=value;save()}renderToday()};
-$('useSuggest').onclick=()=>{const s=headlineSuggest(date);if(!s)return;day(date).headline=s;save();render();toast(KonaI18n.t("Saved"))};
+$('useSuggest').onclick=()=>{const s=headlineSuggest(date);if(!s)return;if(!guardedMutation(()=>{day(date).headline=s}))return;render();toast(KonaI18n.t("Saved"))};
 $('dayEmoji').onclick=()=>{makeEmojiChoices();$('emojiModal').hidden=false};
 function isSingleEmoji(s){const parts=[...new Intl.Segmenter('ko',{granularity:'grapheme'}).segment(s)];return parts.length===1&&/\p{Extended_Pictographic}|\p{Regional_Indicator}|\u20e3/u.test(s)}
 function addCustomEmoji(){
@@ -1657,14 +1666,23 @@ function addCustomEmoji(){
   if(!isSingleEmoji(value)){toast(KonaI18n.t("Enter one emoji."));return}
   const mine=Array.isArray(db.settings.customEmojis)?db.settings.customEmojis.filter(x=>typeof x==='string'):[];
   if(!mine.includes(value))mine.push(value);
-  db.settings.customEmojis=mine;
-  $('customEmoji').value='';updateDayEmoji(value);makeEmojiChoices();toast(KonaI18n.t("Saved to My emojis and applied today."));
+  if(updateDayEmoji(value,mine)){$('customEmoji').value='';makeEmojiChoices()}
 }
 $('useCustomEmoji').onclick=addCustomEmoji;
 $('customEmoji').onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addCustomEmoji()}};
 
 $('clearEmoji').onclick=()=>updateDayEmoji('');
-function updateDayEmoji(v){day(date).emoji=v;if(v)db.settings.recentEmojis=[v,...(Array.isArray(db.settings.recentEmojis)?db.settings.recentEmojis:[]).filter(x=>x!==v)].slice(0,8);save();$('emojiModal').hidden=true;render();toast(KonaI18n.t("Saved"))}
+function updateDayEmoji(v,customEmojis=null){
+  const ok=guardedMutation(()=>{
+    if(customEmojis)db.settings.customEmojis=customEmojis;
+    day(date).emoji=v;
+    if(v)db.settings.recentEmojis=[v,...(Array.isArray(db.settings.recentEmojis)?db.settings.recentEmojis:[]).filter(x=>x!==v)].slice(0,8);
+  },KonaI18n.t("Emoji was not saved. Please retry."));
+  if(!ok)return false;
+  $('emojiModal').hidden=true;render();
+  toast(KonaI18n.t(customEmojis?"Saved to My emojis and applied today.":"Saved"));
+  return true;
+}
 function makeEmojiChoices(){
   const root=$('emojiChoices');root.replaceChildren();
   const mine=Array.isArray(db.settings.customEmojis)?db.settings.customEmojis.filter(x=>typeof x==='string'&&isSingleEmoji(x)):[];

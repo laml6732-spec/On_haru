@@ -47,11 +47,26 @@ try{
  await second.locator('#restoreFile').setInputFiles(backupPath);
  await second.locator('.onharu-native-replacement .onharu-dialog-accept').click();
  ensure(await second.evaluate(k=>JSON.parse(window.localStorage.getItem(k)).days['2026-11-22'].headline,key)==='TAB_A_PROTECTED','Accepted backup restore failed to recover original record');
+ // Simulate a full browser quota: UI actions must not pretend a failed write succeeded.
+ const failedWrites=await second.evaluate(storageKey=>{
+  const before=JSON.stringify(db),raw=window.localStorage.getItem(storageKey),original=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(k===storageKey)throw new DOMException('Storage full (synthetic)','QuotaExceededError');return original.call(this,k,v)};
+  try{
+   const emojiResult=updateDayEmoji('🌼');
+   const emojiRolledBack=JSON.stringify(db)===before;
+   selectedEvent=db.events[0];
+   toggleEventPrayer();
+   return {emojiResult,emojiRolledBack,prayerRolledBack:JSON.stringify(db)===before,storageUnchanged:window.localStorage.getItem(storageKey)===raw};
+  }finally{Storage.prototype.setItem=original}
+ },key);
+ ensure(failedWrites.emojiResult===false&&failedWrites.emojiRolledBack,'Emoji UI failed to roll back a denied save');
+ ensure(failedWrites.prayerRolledBack,'Prayer toggle failed to roll back a denied save');
+ ensure(failedWrites.storageUnchanged,'Storage mutated during a synthetic quota failure');
  await second.evaluate(k=>{const data=JSON.parse(window.localStorage.getItem(k));data.version=9999;window.localStorage.setItem(k,JSON.stringify(data))},key);
  await second.reload({waitUntil:'domcontentloaded'});
  await second.waitForFunction(()=>typeof storageRecovery!=='undefined');
  const forward=await second.evaluate(k=>({protected:storageRecovery.active,version:JSON.parse(window.localStorage.getItem(k)).version}),key);
  ensure(forward.protected&&forward.version===9999,'Future-version records were overwritten or accepted');
  ensure(!errors.length,'Unexpected page JavaScript errors: '+errors.join(' | '));
- console.log('PASS: cross-tab collision, stale export blocked, fresh backup verified, cancelled/accepted restore, future-schema preservation');
+ console.log('PASS: cross-tab collision, stale export blocked, fresh backup verified, cancelled/accepted restore, quota-failure rollback, future-schema preservation');
 }finally{await ctx.close();await browser.close()}
