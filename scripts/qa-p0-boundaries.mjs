@@ -84,28 +84,30 @@ try{
     assert(restored.some(x=>x.text==='QA PERSONAL UNLINK NOTE'&&x.scheduleId===''),'Reload linked Personal note');
   });
   await test('D-14: malformed JSON and missing backup structure do not mutate saved data',async()=>{
-    const prior=await page.evaluate(k=>localStorage.getItem(k),KEY);
+    const prior=await page.evaluate(k=>window.localStorage.getItem(k),KEY);
+    assert(typeof prior==='string'&&prior.includes('QA PERSONAL UNLINK NOTE'),'Baseline journal was not stored');
     for(const [name,body] of [['malformed','{not json'],['missing-fields','{}']]){
       await page.locator('#restoreFile').setInputFiles({name:name+'.json',mimeType:'application/json',buffer:Buffer.from(body)});
       await page.waitForTimeout(350);
-      const after=await page.evaluate(k=>localStorage.getItem(k),KEY);
+      const after=await page.evaluate(k=>window.localStorage.getItem(k),KEY);
       assert(after===prior,name+' unexpectedly modified records');
     }
   });
   await test('D-08/D-14: restoring future-version backup is refused even after user confirmation',async()=>{
-    const original=await page.evaluate(k=>localStorage.getItem(k),KEY);
+    const original=await page.evaluate(k=>window.localStorage.getItem(k),KEY);
+    assert(typeof original==='string','No baseline backup data');
     const future=JSON.parse(original);future.version=99999;
     await page.locator('#restoreFile').setInputFiles({name:'future.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(future))});
     const dialog=page.locator('.onharu-native-replacement .onharu-dialog-accept');
     await dialog.waitFor({state:'visible'});
     await dialog.click();
     await page.waitForTimeout(350);
-    assert(await page.evaluate(k=>localStorage.getItem(k),KEY)===original,'Future-version import overwrote original records');
+    assert(await page.evaluate(k=>window.localStorage.getItem(k),KEY)===original,'Future-version import overwrote original records');
   });
   await test('D-07/C-01: denied Capture save preserves text and prior storage, then retries',async()=>{
     await page.evaluate(()=>{document.getElementById('launchScreen')?.remove();nav('capture');changeDate('2026-11-21')});
     await page.locator('#qc-text').fill('QA QUOTA RETRY NOTE');
-    const prior=await page.evaluate(k=>localStorage.getItem(k),KEY);
+    const prior=await page.evaluate(k=>window.localStorage.getItem(k),KEY);
     await page.evaluate(k=>{
       window.__qaSetItemOriginal=Storage.prototype.setItem;
       Storage.prototype.setItem=function(key,val){if(key===k)throw new DOMException('Synthetic full disk','QuotaExceededError');return window.__qaSetItemOriginal.call(this,key,val)};
@@ -113,7 +115,7 @@ try{
     try{
       await page.locator('#qc-submit').click();
       assert(await page.locator('#qc-text').inputValue()==='QA QUOTA RETRY NOTE','Failed save erased Capture text');
-      assert(await page.evaluate(k=>localStorage.getItem(k),KEY)===prior,'Failed save mutated persisted records');
+      assert(await page.evaluate(k=>window.localStorage.getItem(k),KEY)===prior,'Failed save mutated persisted records');
       assert((await page.locator('#qc-state').innerText()).toLowerCase().includes('not saved'),'Failed save falsely announced success');
     }finally{
       await page.evaluate(()=>{if(window.__qaSetItemOriginal){Storage.prototype.setItem=window.__qaSetItemOriginal;delete window.__qaSetItemOriginal}});
