@@ -15,13 +15,14 @@ try{
   page.on('pageerror',e=>errors.push(String(e)));
   await page.goto(URL,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>typeof save==='function'&&typeof day==='function');
+  await page.evaluate(()=>{document.getElementById('launchScreen')?.remove();const t=document.getElementById('tutorialModal');if(t){t.hidden=true;t.style.display='none'}const w=document.getElementById('welcomeModal');if(w){w.hidden=true;w.style.display='none'}});
  }
  const firstWrite=await first.evaluate(d=>{day(d).headline='TAB_A_PROTECTED';return save()},date);
  ensure(firstWrite===true,'First tab failed to save');
  const staleWrite=await second.evaluate(d=>{day(d).headline='TAB_B_MUST_NOT_OVERWRITE';return save()},date);
  ensure(staleWrite===false,'Stale second tab write was not blocked');
  let blockedExports=0;second.on('download',()=>blockedExports++);
- await second.evaluate(()=>nav('records'));
+ await second.locator('.app-settings-shortcut').click();
  await second.locator('#backupNow').click();await second.waitForTimeout(250);
  ensure(blockedExports===0,'Stale tab was allowed to download an outdated backup');
  const diskAfterConflict=await first.evaluate(k=>JSON.parse(window.localStorage.getItem(k)).days['2026-11-22'].headline,key);
@@ -29,7 +30,7 @@ try{
  await second.reload({waitUntil:'domcontentloaded'});
  await second.waitForFunction(()=>typeof save==='function');
  ensure(await second.evaluate(d=>day(d).headline,date)==='TAB_A_PROTECTED','Reload failed to recover latest data');
- await second.evaluate(()=>nav('records'));
+ await second.locator('.app-settings-shortcut').click();
  const backupReady=second.waitForEvent('download',{timeout:5000});
  await second.locator('#backupNow').click();
  const backup=await backupReady,backupPath=await backup.path();
