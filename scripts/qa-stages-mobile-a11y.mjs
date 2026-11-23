@@ -48,7 +48,13 @@ for(const width of widthList)for(const theme of ['light','dark'])for(const langu
    });
    row.observations.push({tab,...stat});
    note(tab+' viewport and active dock',{ok:stat.overflow<=2&&stat.tab===tab,overflow:stat.overflow,active:stat.tab});
-   if(width<600)note(tab+' visible text inputs at least 16 CSS px',{ok:stat.textInputs.every(x=>x.px>=16),inputsBelow16:stat.textInputs.filter(x=>x.px<16)});
+   // On_HARU enforces 16px under iOS Safari's @supports (-webkit-touch-callout:none) + coarse pointer.
+   // Chromium is not Safari: smaller reading fonts in this engine do not prove iOS zoom.
+   if(width<600){
+    const safariGuard=await p.evaluate(()=>CSS.supports('-webkit-touch-callout','none')&&matchMedia('(pointer:coarse)').matches);
+    if(safariGuard)note(tab+' Safari input fonts >=16 CSS px',{ok:stat.textInputs.every(x=>x.px>=16),inputsBelow16:stat.textInputs.filter(x=>x.px<16)});
+    else row.observations.push({tab,scope:'Safari-only zoom rule not applicable in Chromium; actual iPhone zoom UNVERIFIED',chromeSub16:stat.textInputs.filter(x=>x.px<16)});
+   }
    if(stat.smallCount>0&&width===390&&language==='ko')console.log('STAGES_SMALL_TARGETS',theme,tab,JSON.stringify(stat.small));
    if(width===390&&theme==='light'&&language==='en')console.log('STAGES_INPUT_FONTS',tab,JSON.stringify(stat.textInputs));
    if(width===320&&language==='en')await p.screenshot({path:OUT+'/'+width+'-'+theme+'-'+tab+'.png',animations:'disabled',caret:'hide'});
