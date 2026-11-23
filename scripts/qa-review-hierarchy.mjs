@@ -1,126 +1,106 @@
+// Current Review IA: Daily has a seven-day selector and inline weekly reflection;
+// Archive supports grouped dates, schedule provenance, search and composable filters.
 import {chromium} from 'playwright-core';
 import {existsSync} from 'node:fs';
 import fs from 'node:fs/promises';
-
+const exe=[process.env.CHROME_PATH,chromium.executablePath(),'/usr/bin/google-chrome','/usr/bin/chromium'].find(p=>p&&existsSync(p));
+if(!exe)throw Error('Chrome unavailable');
+const browser=await chromium.launch({executablePath:exe,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const url=process.env.ONHARU_URL||'http://127.0.0.1:8080/legacy/';
 const out=process.env.ONHARU_ARTIFACTS||'test-results/review-hierarchy';
 await fs.mkdir(out,{recursive:true});
-const exe=[process.env.CHROME_PATH,chromium.executablePath(),'/usr/bin/google-chrome','/usr/bin/chromium'].find(p=>p&&existsSync(p));
-if(!exe)throw Error('Chrome not available');
-const browser=await chromium.launch({executablePath:exe,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+const check=(ok,message)=>{if(!ok)throw Error(message)};
 const all=[];
 try{
-  for(const width of [320,390,1024])for(const theme of ['light','dark']){
-    const context=await browser.newContext({viewport:{width,height:850},isMobile:width<600,hasTouch:width<600,locale:'en-US',timezoneId:'Pacific/Honolulu',serviceWorkers:'block',reducedMotion:'reduce'});
-    const page=await context.newPage();page.setDefaultTimeout(8500);
-    const result={width,theme,ok:false},errors=[];
-    page.on('pageerror',e=>errors.push(String(e)));
-    try{
-      await page.clock.setFixedTime(new Date('2026-11-05T09:30:00-10:00'));
-      await page.goto(url,{waitUntil:'domcontentloaded'});
-      await page.locator('#tutorialChooseEn').click();
-      await page.locator('#welcomeSkip').click();
-      await page.evaluate(t=>{
-        document.getElementById('launchScreen')?.remove();
-        const modal=document.getElementById('tutorialModal');if(modal){modal.hidden=true;modal.style.display='none'}
-        document.documentElement.dataset.appearance=t;document.documentElement.style.colorScheme=t;
-        date='2026-11-05';
-        for(const [d,id] of [['2026-11-05','qa-today'],['2026-11-04','qa-yesterday']]){
-          const evt=dayEvents(d).find(e=>e?.id)||dayEvents(d)[0];
-          const dayData=day(d);
-          dayData.quickCaptureEntries=[...(dayData.quickCaptureEntries||[]),{
-            id,time:'14:43',createdAt:d+'T20:43:00Z',title:'QA-AH title',
-            text:'QA-ARCHIVE-HIERARCHY '+id+' long preview to test search and opening the full detailed record.',
-            scheduleId:evt?.id||'',scheduleTitle:evt?.title||'',tags:[]
-          }];
-          if(d==='2026-11-05'){
-            dayData.quickCaptureEntries.push({
-              id:'qa-independent',time:'12:44',title:'Independent note',
-              text:'QA-PERSONAL-SAMPLE',scheduleId:'',tags:[]
-            });
-            dayData.sessions=[...(dayData.sessions||[]),{
-              id:'qa-prayer',start:'12:46',seconds:600,kind:'prayer',
-              task:'QA prayer',note:'QA-PRACTICE-SAMPLE'
-            }];
-          }
-        }
-      },theme);
-      await page.locator('.tabs [data-page="records"]').click();
-      await page.locator('#rev-weekly').click();
-      const weekHead=page.locator('#new-reflect-page .review-weekly-records .weekly-day>.review-date-header').first();
-      await weekHead.waitFor();
-      result.weekly=await weekHead.evaluate(e=>{const c=getComputedStyle(e),r=e.getBoundingClientRect();return{bg:c.backgroundColor,width:r.width,date:e.querySelector('.review-date-label')?.textContent,count:e.querySelector('.review-date-count')?.textContent}});
-      if(!result.weekly.date||!result.weekly.count)throw Error('Weekly date/count missing');
-      await page.screenshot({path:out+'/'+width+'-'+theme+'-weekly.png',animations:'disabled'});
-      await page.locator('#rev-archive').click();
-      await page.locator('#archive-search-input').waitFor();
-      const search=page.locator('#archive-search-input');
-      if((await search.getAttribute('placeholder'))!=='Search records…')throw Error('Search placeholder missing');
-      const disclosure=page.locator('#archive-search .archive-filter-disclosure');
-      await disclosure.waitFor();
-      if(await disclosure.evaluate(e=>e.open))throw Error('Filter pane should default to closed');
-      const top=await page.locator('#archive-search .archive-saved-filters').count();
-      const todayCategories=await page.locator('#archive-search-results .archive-record-category').allTextContents();
-      if(!['Schedule-linked','Prayer · Focus · Devotion','Unlinked notes'].every(label=>todayCategories.some(t=>t.includes(label))))throw Error('All three semantic sections not visible');
-      if(!await page.locator('#archive-search-results .archive-search-result').filter({hasText:'QA-PRACTICE-SAMPLE'}).count())throw Error('Prayer record missing');
-      if(!await page.locator('#archive-search-results .archive-search-result').filter({hasText:'QA-PERSONAL-SAMPLE'}).count())throw Error('Independent note missing');
-      const baseline=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
-      if(baseline>1)throw Error('Archive overflow on initial view '+baseline);
-      await page.screenshot({path:out+'/'+width+'-'+theme+'-archive-collapsed.png',animations:'disabled'});
-      // Test combined search + type and period filters, including persistent details state.
-      await search.fill('QA-ARCHIVE-HIERARCHY');
-      const rows=page.locator('#archive-search-results .archive-search-result');
-      if(await rows.count()!==2)throw Error('Expected two QA search results, got '+await rows.count());
-      const heads=page.locator('#archive-search-results>.review-date-header');
-      if(await heads.count()!==2)throw Error('Expected two date groups');
-      const first=await heads.first().evaluate(e=>{const c=getComputedStyle(e);return{bg:c.backgroundColor,date:e.querySelector('.review-date-label')?.textContent,count:e.querySelector('.review-date-count')?.textContent}});
-      if(first.bg!==result.weekly.bg)throw Error('Weekly/Archive date header backgrounds differ');
-      if(!first.count?.includes('1 record'))throw Error('Archive date count missing');
-      const groupLabels=await page.locator('#archive-search-results .archive-record-category').allTextContents();
-      if(groupLabels.length!==2||!groupLabels.every(s=>s.includes('Schedule-linked')))throw Error('Category headings missing');
-      if(await page.locator('#archive-search-results .archive-record-schedule-title').count()!==2)throw Error('Schedule names not grouped');
-      const firstRow=rows.first();
-      const order=await firstRow.evaluate(e=>[...e.children].map(x=>x.className));
-      if(order[0]!=='archive-result-head'||order[1]!=='archive-search-preview')throw Error('Metadata not first '+order);
-      const clamp=await firstRow.locator('.archive-search-preview').evaluate(e=>getComputedStyle(e).webkitLineClamp);
-      if(clamp!=='2')throw Error('Record preview not two lines: '+clamp);
-      await disclosure.locator('summary').click();
-      if(!await disclosure.evaluate(e=>e.open))throw Error('Filters cannot expand');
-      const type=page.locator('#archive-search .archive-filter-row select[aria-label="Type"]');
-      await type.selectOption('schedule');
-      const reopened=page.locator('#archive-search .archive-filter-disclosure');
-      if(!await reopened.evaluate(e=>e.open))throw Error('Filter pane collapsed after selecting type');
-      if(await rows.count()!==2)throw Error('Type filter incorrectly removed notes');
-      const period=page.locator('#archive-search .archive-filter-row select[aria-label="Period"]');
-      await period.selectOption('date');
-      const picked=page.locator('#archive-search .review-archive-context input[type=date]');
-      await picked.fill('2026-11-04');await picked.dispatchEvent('change');
-      if(await rows.count()!==1)throw Error('Date+Type+Search intersection failed');
-      const chips=page.locator('#archive-search .archive-active-filter-chip');
-      if(await chips.count()<2)throw Error('Active filter chips missing');
-      await page.screenshot({path:out+'/'+width+'-'+theme+'-archive-filtered.png',animations:'disabled'});
-      const firstResult=rows.first();await firstResult.click();
-      if(await page.locator('#archive-search-results .review-record').count()!==1)throw Error('Archive detail view not opened');
-      const detail=await page.locator('#archive-search-results .review-record').innerText();
-      if(!detail.includes('QA-ARCHIVE-HIERARCHY'))throw Error('Full record detail missing');
-      await page.locator('#archive-search .archive-back').click();
-      if(await rows.count()!==1)throw Error('Archive back did not restore combined filters');
-      // Both All records / Saved for later tabs must control their selected states.
-      await page.locator('#archive-search .review-saved-filters button').filter({hasText:'Saved for later'}).click();
-      const selected=await page.locator('#archive-search .review-saved-filters button').filter({hasText:'Saved for later'}).getAttribute('aria-pressed');
-      if(selected!=='true')throw Error('Saved for later tab selection invalid');
-      await page.locator('#archive-search .review-saved-filters button').filter({hasText:'All records'}).click();
-      if(await rows.count()!==1)throw Error('All records tab did not restore results');
-      // Bottom dock must not permanently obscure last result when scrolled into view.
-      await rows.last().scrollIntoViewIfNeeded();
-      if(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>1)throw Error('Archive horizontal overflow after interactions');
-      if(errors.length)throw Error('Browser JS exceptions: '+errors.join('; '));
-      result.archive={dateGroups:2,metadataFirst:true,filterCount:await chips.count(),searchWorked:true,detailWorked:true,overflow:baseline};
-      result.ok=true;
-      console.log('PASS',width,theme,'Weekly/Archive date headers, search, combined filters, details, saved tab, overflow');
-    }catch(e){result.error=String(e);console.error('FAIL',width,theme,String(e))}
-    all.push(result);await context.close();
-  }
+ for(const width of [320,390,1024])for(const theme of ['light','dark']){
+  const ctx=await browser.newContext({viewport:{width,height:850},isMobile:width<600,hasTouch:width<600,locale:'en-US',timezoneId:'Pacific/Honolulu',serviceWorkers:'block',reducedMotion:'reduce'});
+  const page=await ctx.newPage(),errors=[];page.setDefaultTimeout(8500);page.on('pageerror',e=>errors.push(String(e)));
+  const result={width,theme,ok:false};
+  try{
+   await page.clock.setFixedTime(new Date('2026-11-05T09:30:00-10:00'));
+   await page.goto(url,{waitUntil:'domcontentloaded'});
+   await page.locator('#tutorialChooseEn').click();
+   await page.locator('#welcomeSkip').click();
+   await page.evaluate(t=>{
+    document.getElementById('launchScreen')?.remove();
+    const modal=document.getElementById('tutorialModal');if(modal){modal.hidden=true;modal.style.display='none'}
+    document.documentElement.dataset.appearance=t;document.documentElement.style.colorScheme=t;
+    date='2026-11-05';
+    for(const [d,id] of [['2026-11-05','qa-today'],['2026-11-04','qa-yesterday']]){
+     const evt=dayEvents(d).find(e=>e?.id);
+     if(!evt)throw Error('Synthetic fixture has no schedule');
+     const v=day(d);
+     v.quickCaptureEntries=[...(v.quickCaptureEntries||[]),{
+      id,time:'14:43',createdAt:d+'T20:43:00Z',title:'QA-AH title',
+      text:'QA-ARCHIVE-HIERARCHY '+id+' long preview for Archive search and record expansion.',
+      scheduleId:evt.id,scheduleTitle:evt.title,tags:[]
+     }];
+     if(d==='2026-11-05'){
+      v.quickCaptureEntries.push({id:'qa-independent',time:'12:44',title:'Independent note',text:'QA-PERSONAL-SAMPLE',scheduleId:'',tags:[]});
+      v.sessions=[...(v.sessions||[]),{id:'qa-prayer',start:'12:46',seconds:600,kind:'prayer',task:'QA prayer',note:'QA-PRACTICE-SAMPLE'}];
+     }
+    }
+   },theme);
+   await page.locator('.tabs [data-page="records"]').click();
+   await page.locator('#rev-reflect').click();
+   const dayButtons=page.locator('#new-reflect-page .rv-seven-day');
+   check(await dayButtons.count()===7,'Weekly day selector is missing');
+   const weekly=page.locator('#new-reflect-page .rv-weekly-inline-details');
+   check(await weekly.count()===1,'Inline weekly reflection is absent');
+   await weekly.locator('summary').click();
+   check(await weekly.evaluate(e=>e.open),'Weekly reflection does not open');
+   await page.locator('#new-reflect-page .rv-seven-day[aria-label^="2026-11-04"]').click();
+   check(await page.locator('#new-reflect-page .rv-linked-group').filter({hasText:'qa-yesterday'}).count()>=1,'Changing day lost the scheduled note');
+   await page.screenshot({path:out+'/'+width+'-'+theme+'-daily-week.png',animations:'disabled'});
+   await page.locator('#rev-archive').click();
+   const archive=page.locator('#archive-search');
+   const rows=page.locator('#archive-search-results .archive-search-result');
+   check(await rows.filter({hasText:'QA-PRACTICE-SAMPLE'}).count()===1,'Prayer practice missing from Archive');
+   check(await rows.filter({hasText:'QA-PERSONAL-SAMPLE'}).count()===1,'Personal note missing from Archive');
+   check(await archive.locator('.archive-records-star-button').count()===1,'Current Archive star toggle missing');
+   const initialOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+   check(initialOverflow<=1,'Archive overflow before searching: '+initialOverflow);
+   await archive.locator('.archive-records-search-button').click();
+   const search=archive.locator('#archive-search-input');
+   await search.fill('QA-ARCHIVE-HIERARCHY');
+   check(await rows.count()===2,'Expected exactly two searched notes');
+   const headings=page.locator('#archive-search-results>.review-date-header');
+   check(await headings.count()===2,'Search results were not grouped by two dates');
+   const dates=await rows.evaluateAll(xs=>xs.map(e=>e.dataset.recordDate));
+   check(dates[0]==='2026-11-05'&&dates[1]==='2026-11-04','Archive sorting by date changed: '+dates);
+   check(await rows.locator('.review-schedule-label').count()===2,'Scheduled provenance tags missing from Archive rows');
+   await archive.locator('.archive-records-search-back').click();
+   const disclosure=archive.locator('.archive-filter-disclosure');
+   await disclosure.locator('summary').click();
+   check(await disclosure.evaluate(e=>e.open),'Archive filters did not expand');
+   await archive.locator('.archive-filter-row select[aria-label="Type"]').selectOption('schedule');
+   check(await rows.count()===2,'Schedule filter incorrectly dropped linked records');
+   await archive.locator('.archive-filter-row select[aria-label="Period"]').selectOption('date');
+   const dateField=archive.locator('.review-archive-context input[type=date]');
+   await dateField.fill('2026-11-04');await dateField.dispatchEvent('change');
+   check(await rows.count()===1,'Combined search, schedule and exact-date filter failed');
+   const row=rows.first();
+   check((await row.getAttribute('data-record-date'))==='2026-11-04','Wrong date after filtering');
+   await row.click();
+   check(await rows.first().getAttribute('aria-expanded')==='true','Record preview cannot expand');
+   check(await archive.locator('.archive-record-expanded .archive-record-extra').isVisible(),'Record actions missing after expansion');
+   await rows.first().click();
+   check(await rows.first().getAttribute('aria-expanded')==='false','Record preview cannot collapse');
+   const starred=archive.locator('.archive-records-star-button');
+   await starred.click();
+   check(await archive.locator('.archive-records-star-button').getAttribute('aria-pressed')==='true','Starred filter selection not reflected');
+   check(await rows.count()===0,'Unsaved note should be excluded from Starred filter');
+   await archive.locator('.archive-records-star-button').click();
+   check(await rows.count()===1,'All records did not restore search/filter results');
+   await rows.first().scrollIntoViewIfNeeded();
+   check(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)<=1,'Archive overflows after filtering');
+   check(!errors.length,'Browser errors: '+errors.join(' | '));
+   await page.screenshot({path:out+'/'+width+'-'+theme+'-archive-filtered.png',animations:'disabled'});
+   result.ok=true;result.search=true;result.combinedFilters=true;result.expand=true;
+   console.log('PASS '+width+'/'+theme+' Daily weekly access, Archive date groups, search/filter, expand and Starred');
+  }catch(e){result.error=String(e);result.errors=errors;console.error('FAIL '+width+'/'+theme+' '+String(e))}
+  finally{all.push(result);await ctx.close()}
+ }
 }finally{await browser.close()}
 await fs.writeFile(out+'/report.json',JSON.stringify(all,null,2));
-if(all.some(x=>!x.ok))process.exitCode=1;
+if(all.some(r=>!r.ok))process.exitCode=1;
