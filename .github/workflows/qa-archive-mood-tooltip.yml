@@ -3,6 +3,9 @@ on:
   push:
     branches: [main, 'fix/archive-mood-legend-tooltip-2026-11-05']
     paths: ['public/legacy/**', 'scripts/qa-archive-mood-tooltip.mjs', '.github/workflows/qa-archive-mood-tooltip.yml']
+  pull_request:
+    branches: [main]
+    paths: ['public/legacy/**', 'scripts/qa-archive-mood-tooltip.mjs', '.github/workflows/qa-archive-mood-tooltip.yml']
   workflow_dispatch:
 jobs:
   archive-mood-tooltip:
