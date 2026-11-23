@@ -355,6 +355,7 @@ function migrate(d){
   return d;
 }
 let storageRecovery={active:false,raw:null,sourceKey:null,reason:''};
+let lastKnownSavedRaw=null,storageConflict=false;
 function protectDamagedStorage(raw,sourceKey,reason){
  storageRecovery={active:true,raw,sourceKey,reason};
  try{
@@ -365,7 +366,7 @@ function protectDamagedStorage(raw,sourceKey,reason){
 function load(){
  let raw=null,sourceKey=KEY;
  try{
-  raw=localStorage.getItem(KEY);
+  raw=localStorage.getItem(KEY);lastKnownSavedRaw=raw;
   if(!raw)for(const k of OLD_KEYS){const old=localStorage.getItem(k);if(old){raw=old;sourceKey=k;break}}
  }catch(_){}
  const empty=()=>{const n=blank();n.events=defaultEvents();return n};
@@ -375,6 +376,7 @@ function load(){
  if(!parsed||typeof parsed!=='object'||!parsed.days||typeof parsed.days!=='object'||Array.isArray(parsed.days)||!Array.isArray(parsed.events)||!Array.isArray(parsed.tasks)){
   protectDamagedStorage(raw,sourceKey,KonaI18n.t("Saved data has an unexpected format."));return empty()
  }
+ if(Number(parsed.version)>VERSION){protectDamagedStorage(raw,sourceKey,KonaI18n.language==='ko'?'더 최신 앱에서 작성된 데이터예요. 업데이트 후 다시 열어주세요.':'These records were saved by a newer app version. Update the app before opening them.');return empty()}
  try{return migrate(parsed)}catch(e){protectDamagedStorage(raw,sourceKey,KonaI18n.t("Saved data could not be migrated."));return empty()}
 }
 let toastTimer;
@@ -382,7 +384,24 @@ let saveFailShown=false;
 let tutorialPractice=null;
 function save(){
  if(tutorialPractice||storageRecovery.active)return false;
- try{localStorage.setItem(KEY,JSON.stringify(db));return true}catch(e){if(!saveFailShown){toast(KonaI18n.t("Save failed. Export a JSON backup."));saveFailShown=true}return false}
+ try{
+  const onDisk=localStorage.getItem(KEY);
+  if(storageConflict||onDisk!==lastKnownSavedRaw){
+   storageConflict=true;
+   if(!saveFailShown){
+    toast(KonaI18n.language==='ko'?'다른 탭에서 기록이 변경됐어요. 덮어쓰기를 막기 위해 저장을 중단했어요. 필요한 기록을 백업하고 새로고침하세요.':'Records changed in another tab. Saving paused to avoid overwriting. Back up any unsaved work and reload.');
+    saveFailShown=true;
+   }
+   return false;
+  }
+  const serialized=JSON.stringify(db);
+  localStorage.setItem(KEY,serialized);
+  lastKnownSavedRaw=serialized;
+  return true;
+ }catch(e){
+  if(!saveFailShown){toast(KonaI18n.t("Save failed. Export a JSON backup."));saveFailShown=true}
+  return false;
+ }
 }
 function guardedMutation(mutate,failureMessage=KonaI18n.t("Changes were not saved. Please retry or export a backup.")){
  const snapshot=JSON.stringify(db);
@@ -392,6 +411,15 @@ function guardedMutation(mutate,failureMessage=KonaI18n.t("Changes were not save
 }
 let db=load();
 if(!storageRecovery.active)save();
+window.addEventListener('storage',event=>{
+ if(event.storageArea!==window.localStorage||(event.key!==null&&event.key!=='kona.legacy.v1.'+KEY))return;
+ if(event.newValue===lastKnownSavedRaw)return;
+ storageConflict=true;
+ if(!saveFailShown){
+  toast(KonaI18n.language==='ko'?'다른 탭에서 기록이 변경됐어요. 이 탭에서는 저장을 중단했어요. 백업 후 새로고침하세요.':'Another tab changed your records. Saving in this tab is paused. Back up and reload.');
+  saveFailShown=true;
+ }
+});
 
 /* ===== 시간대 ===== */
 const zoneInfo=()=>ZONES.find(z=>z.id===db.settings.zone)||ZONES[0];
@@ -1141,7 +1169,7 @@ function commitTimerSession(markDone=false){
   if(markDone&&sess.kind==='focus'&&sess.taskKey&&sess.taskKey!=='custom'&&!db.checks[sess.taskKey])db.checks[sess.taskKey]={date:d,time:new Date().toISOString()};
   if(sess.kind==='prayer'&&sess.prayerId){const p=db.prayers.find(p=>p.id===sess.prayerId);if(p)markPrayed(p,d)}
  }
- try{if(!tutorialPractice)localStorage.setItem(KEY,JSON.stringify(db))}catch(e){db=JSON.parse(before);toast('Could not save. Your timer and note are kept; try again or back up.');return false}
+ if(!tutorialPractice&&!save()){db=JSON.parse(before);toast('Could not save. Your timer and note are kept; try again or back up.');return false}
  const kind=sess.kind,fromMorningCheckin=kind==='prayer'&&sess.origin==='morning-checkin';sessKind=kind;sessDurMin=sess.dur/60;timerDraft(kind).note='';rememberTimer();sess=idleSess();storeActiveSession();afterTaskKey=null;if(date!==d)changeDate(d);else render();toast(KonaI18n.t("Session saved"));if(fromMorningCheckin&&!tutorialPractice)offerMorningPrayerAnchor(d);return true;
 }
 async function cancelTimer(){if(!sess.started)return;if((elapsed()>0||(sess.note||'').trim())&&!await onHaruConfirm(KonaI18n.t("Discard this session without saving its time or note?")))return;timerDraft(sess.kind).note='';save();sess=idleSess();storeActiveSession();renderFocus()}
@@ -1542,7 +1570,19 @@ function freshAppData(){const fresh=blank();fresh.events=defaultEvents();return 
 function resetApp(){
   if(tutorialPractice||$('appResetConfirm').value.trim()!=='RESET')return;
   const fresh=freshAppData();
-  try{localStorage.setItem(KEY,JSON.stringify(fresh));localStorage.removeItem(ACTIVE_SESSION_KEY);for(const key of OLD_KEYS)localStorage.removeItem(key)}
+  try{
+   const onDisk=localStorage.getItem(KEY);
+   if(storageConflict||onDisk!==lastKnownSavedRaw){
+    storageConflict=true;
+    $('appResetStatus').textContent=KonaI18n.language==='ko'?'다른 탭에서 기록이 변경됐어요. 기존 데이터를 보호하기 위해 초기화를 중단했어요.':'Another tab changed the records. Reset paused to protect them.';
+    return;
+   }
+   const freshText=JSON.stringify(fresh);
+   localStorage.setItem(KEY,freshText);
+   lastKnownSavedRaw=freshText;
+   localStorage.removeItem(ACTIVE_SESSION_KEY);
+   for(const key of OLD_KEYS)localStorage.removeItem(key);
+  }
   catch(e){$('appResetStatus').textContent=KonaI18n.t("Could not reset browser storage. Please try again.");return}
   db=fresh;sess=idleSess();reviewUndo=null;location.reload();
 }
@@ -1555,7 +1595,7 @@ function restoreJson(file){
       [...d.events,...d.tasks,...(Array.isArray(d.prayers)?d.prayers:[])].some(v=>!v||typeof v!=='object'||Array.isArray(v))){toast(KonaI18n.t("This is not a valid backup file."));return}
     if(!await onHaruConfirm(KonaI18n.t("Replace records, schedules and app preferences? Language, display settings and font size on this device will stay unchanged. This cannot be undone.")))return;
     let restored;
-    try{restored=migrate(d)}catch(e){toast(KonaI18n.t("This backup cannot be restored. The original data is unchanged."));return}
+    try{if(Number(d.version)>VERSION)throw Error('Unsupported future data version');restored=migrate(d)}catch(e){toast(KonaI18n.t("This backup cannot be restored. The original data is unchanged."));return}
     const priorDb=db,priorRecovery=storageRecovery;
     db=restored;storageRecovery={active:false,raw:null,sourceKey:null,reason:''};
     if(!save()){db=priorDb;storageRecovery=priorRecovery;toast(KonaI18n.t("Restore failed. The original saved data is unchanged."));return}
