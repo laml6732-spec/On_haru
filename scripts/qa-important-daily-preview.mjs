@@ -40,6 +40,12 @@ for(const {width,theme} of configs){
   if(important)await page.locator('#taskImportant').check();
   if(repeat!=='none'){
    await page.locator('#taskRepeatChips button').filter({hasText:repeat==='daily'?'Daily':'Weekly'}).click();
+   if(repeat==='weekly'){
+    // The real default repeat days are Mon–Fri. Include the selected day so
+    // this regression tests a due weekly task even when CI runs on weekends.
+    const weekday=await page.evaluate(()=>new Date(date+'T12:00:00Z').getUTCDay());
+    await page.locator('#taskWeekdays input[type="checkbox"][value="'+weekday+'"]').check();
+   }
   }
   const selected=await page.locator('#taskRepeat').inputValue();
   check(row,title+' repeat type selected',selected===repeat,{expected:repeat,selected});
