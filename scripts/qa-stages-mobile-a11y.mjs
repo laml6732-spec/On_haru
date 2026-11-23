@@ -44,10 +44,16 @@ for(const width of widthList)for(const theme of ['light','dark'])for(const langu
     const unnamed=elements.filter(el=>el.tagName==='BUTTON' && !(el.getAttribute('aria-label')||el.getAttribute('title')||el.textContent?.trim()||el.querySelector('img[alt]')?.getAttribute('alt'))).map(el=>el.id||String(el.className).slice(0,45));
     const textInputs=elements.filter(el=>['INPUT','TEXTAREA'].includes(el.tagName)&&['text','search','email','tel','url','number',''].includes(el.getAttribute('type')||'')).map(el=>({id:el.id,px:parseFloat(getComputedStyle(el).fontSize)}));
     return {overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),tab:document.querySelector('.tabs button.active')?.dataset.page,
-      smallCount:small.length,small:small.slice(0,15),unnamed:unnamed.slice(0,20),textInputs};
+      smallCount:small.length,small:small.slice(0,15),unnamed:unnamed.slice(0,20),textInputs,
+      keyTargets:[...document.querySelectorAll('#brandName,#new-reflect-page .rv-seven-arrow')].filter(on).map(el=>{
+       const r=el.getBoundingClientRect();return {id:el.id||el.className,label:el.getAttribute('aria-label')||'',
+        width:Math.round(r.width),height:Math.round(r.height)}
+      })};
    });
    row.observations.push({tab,...stat});
    note(tab+' viewport and active dock',{ok:stat.overflow<=2&&stat.tab===tab,overflow:stat.overflow,active:stat.tab});
+   note(tab+' major tap targets 24px minimum',{ok:stat.keyTargets.every(t=>t.width>=24&&t.height>=24),targets:stat.keyTargets});
+   if(tab==='records')note('Review week arrow tap areas at least 40×44px',{ok:stat.keyTargets.filter(t=>t.id==='rv-seven-arrow').every(t=>t.width>=40&&t.height>=44),targets:stat.keyTargets.filter(t=>t.id==='rv-seven-arrow')});
    // On_HARU enforces 16px under iOS Safari's @supports (-webkit-touch-callout:none) + coarse pointer.
    // Chromium is not Safari: smaller reading fonts in this engine do not prove iOS zoom.
    if(width<600){
