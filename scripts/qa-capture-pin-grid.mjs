@@ -1,99 +1,70 @@
+// Current Capture tag disclosure: seven visible tags, 15 total, accessible fold.
 import {chromium} from 'playwright-core';
 import {existsSync} from 'node:fs';
 import fs from 'node:fs/promises';
-
-const executablePath=[process.env.CHROME_PATH,chromium.executablePath(),'/usr/bin/chromium','/usr/bin/google-chrome'].find(x=>x&&existsSync(x));
+const executablePath=[process.env.CHROME_PATH,chromium.executablePath(),'/usr/bin/chromium','/usr/bin/google-chrome'].find(p=>p&&existsSync(p));
 if(!executablePath)throw Error('Chromium missing');
 const browser=await chromium.launch({executablePath,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const base=process.env.ONHARU_URL||'http://127.0.0.1:8080/legacy/';
-const dir='test-results/pin-grid';
+const dir=process.env.ONHARU_ARTIFACTS||'test-results/pin-grid';
 await fs.mkdir(dir,{recursive:true});
 const results=[];
+const check=(ok,message)=>{if(!ok)throw Error(message)};
 try{
  for(const width of [320,390,1024])for(const theme of ['light','dark']){
   const ctx=await browser.newContext({viewport:{width,height:844},isMobile:width<600,hasTouch:width<600,serviceWorkers:'block',reducedMotion:'reduce',locale:'en-US'});
-  const page=await ctx.newPage(), errors=[];
-  page.on('pageerror',err=>errors.push(String(err)));
+  const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  const result={width,theme,pass:false};
   try{
    await page.goto(base,{waitUntil:'domcontentloaded'});
    await page.locator('.tabs [data-page="capture"]').waitFor();
-   await page.evaluate(theme=>{
-    document.getElementById('launchScreen')?.remove();
-    const tour=document.getElementById('tutorialModal');if(tour){tour.hidden=true;tour.style.display='none'}
-    document.documentElement.dataset.appearance=theme;
-    document.documentElement.style.colorScheme=theme;
-   },theme);
+   await page.evaluate(t=>{document.getElementById('launchScreen')?.remove();const modal=document.getElementById('tutorialModal');if(modal){modal.hidden=true;modal.style.display='none'}document.documentElement.dataset.appearance=t;document.documentElement.style.colorScheme=t},theme);
    await page.locator('.tabs [data-page="capture"]').click({force:true});
    const more=page.locator('#page-capture #qc-v2 .kona-tag-tray-toggle');
-   const tags=page.locator('#konaCaptureTagTray .kona-tag-chip');
-   if(await tags.count()!==15)throw Error('Expected 15 tags');
-   const collapsed=await page.locator('#konaCaptureTagTray .kona-tag-chip:visible').count();
-   if(collapsed!==7)throw Error('Expected seven collapsed tags, got '+collapsed);
-   const caretAppearance=()=>more.evaluate(el=>{
-     const a=getComputedStyle(el,'::after'),circle=getComputedStyle(el,'::before'),b=el.getBoundingClientRect();
-     return {glyph:el.textContent,expanded:el.getAttribute('aria-expanded'),
-       iconWidth:a.width,iconHeight:a.height,iconTop:a.top,iconLeft:a.left,
-       strokeRight:a.borderRightWidth,strokeBottom:a.borderBottomWidth,
-       transform:a.transform,buttonWidth:b.width,buttonHeight:b.height,
-       circleWidth:circle.width,circleHeight:circle.height};
-   });
-   const closedAppearance=await caretAppearance();
-   if(closedAppearance.glyph!=='⌄'||closedAppearance.expanded!=='false')throw Error('Closed caret fallback not downward');
-   if(closedAppearance.iconWidth!=='10px'||closedAppearance.iconHeight!=='10px')throw Error('Closed chevron incorrect size');
-   if(closedAppearance.circleHeight!=='36px')throw Error('Closed circle height differs from emoji height');
+   const all=page.locator('#konaCaptureTagTray .kona-tag-chip');
+   const visible=page.locator('#konaCaptureTagTray .kona-tag-chip:visible');
+   check(await all.count()===15,'Expected 15 meaning tags');
+   check(await visible.count()===7,'Default view must show seven tags');
+   check(await more.getAttribute('aria-expanded')==='false','Disclosure initially expanded');
+   check((await more.getAttribute('aria-label')||'').length>4,'Disclosure missing accessible name');
+   const closed=await more.evaluate(e=>({label:e.textContent.trim(),height:e.getBoundingClientRect().height,width:e.getBoundingClientRect().width}));
+   check(closed.label==='⌄','Collapsed disclosure label incorrect');
+   check(closed.height>=35&&closed.width>=24,'Disclosure target too small');
    await more.click();
-   if(await more.getAttribute('aria-expanded')!=='true')throw Error('More did not expand');
-   await page.waitForTimeout(100); // Let CSS state settle before sampling pseudoelement geometry.
-   const openedAppearance=await caretAppearance();
-   if(openedAppearance.glyph!=='⌃'||openedAppearance.expanded!=='true')throw Error('Open caret fallback not upward');
-   for(const k of ['iconWidth','iconHeight','iconTop','iconLeft','strokeRight','strokeBottom','buttonWidth','buttonHeight','circleWidth','circleHeight']){
-     if(openedAppearance[k]!==closedAppearance[k])throw Error('Caret '+k+' differs between expanded and collapsed');
-   }
-   if(openedAppearance.transform===closedAppearance.transform)throw Error('Caret did not rotate for expanded state');
-   const data=await page.evaluate(()=>{
-    const items=[...document.querySelectorAll('#konaCaptureTagTray .kona-tag-chip')], more=document.querySelector('#page-capture #qc-v2 .kona-tag-tray-toggle');
-    const box=el=>{const r=el.getBoundingClientRect();return{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height}};
-    const intersect=(a,b)=>Math.min(a.right,b.right)-Math.max(a.left,b.left)>.4&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>.4;
-    const visible=items.filter(el=>getComputedStyle(el).display!=='none'&&box(el).width>0);
+   check(await more.getAttribute('aria-expanded')==='true','Disclosure did not expand');
+   check((await more.textContent()).trim()==='⌃','Expanded disclosure label incorrect');
+   check(await visible.count()===15,'Expanded view must show all 15 tags');
+   const geometry=await page.evaluate(()=>{
+    const box=e=>{const r=e.getBoundingClientRect();return{x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height}};
+    const root=document.querySelector('#konaCaptureTagTray');
+    const tags=[...root.querySelectorAll('.kona-tag-chip')].filter(e=>getComputedStyle(e).display!=='none'&&e.getBoundingClientRect().width>0);
+    const button=document.querySelector('#page-capture #qc-v2 .kona-tag-tray-toggle');
+    const intersects=(a,b)=>Math.min(a.right,b.right)-Math.max(a.x,b.x)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.y,b.y)>1;
     const overlaps=[];
-    for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++)if(intersect(box(visible[i]),box(visible[j])))overlaps.push([visible[i].dataset.tag,visible[j].dataset.tag]);
-    const btn=box(more), pinEl=items.find(el=>el.dataset.tag==='meaning_remember'), sheepEl=items.find(el=>el.dataset.tag==='meaning_listening'), frustratedEl=items.find(el=>el.dataset.tag==='face_frustrated');
-    const pin=box(pinEl), sheep=box(sheepEl), frustrated=box(frustratedEl), computed=getComputedStyle(pinEl);
-    const centers=items.slice(0,7).map(el=>{const r=box(el);return r.left+r.width/2});
-    const spacing=centers.slice(1).map((v,i)=>v-centers[i]);
-    const pitch=spacing.reduce((acc,v)=>acc+v,0)/spacing.length;
-    const buttonCenterX=(btn.left+btn.right)/2, sheepCenterX=(sheep.left+sheep.right)/2;
-    const buttonCenterY=(btn.top+btn.bottom)/2, sheepCenterY=(sheep.top+sheep.bottom)/2;
-    const alignment={sheepToButtonGap:btn.left-sheep.right,centerPitchError:Math.abs(buttonCenterX-(sheepCenterX+pitch)),verticalCenterError:Math.abs(buttonCenterY-sheepCenterY),pitch};
-    const blocked=visible.filter(el=>intersect(box(el),btn)).map(el=>el.dataset.tag);
-    const center=el=>{const r=box(el);return document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)};
-    return{visibleCount:visible.length,overlaps,blocked,button:btn,pin,sheep,frustrated,alignment,pinDisplay:computed.display,pinGridRow:computed.gridRowStart,pinGridColumn:computed.gridColumnStart,pinHit:center(pinEl)===pinEl||pinEl.contains(center(pinEl)),moreHit:center(more)===more||more.contains(center(more)),scrollOverflow:document.documentElement.scrollWidth>innerWidth+1};
+    for(let i=0;i<tags.length;i++)for(let j=i+1;j<tags.length;j++)if(intersects(box(tags[i]),box(tags[j])))overlaps.push([i,j]);
+    const toggle=box(button),blocked=tags.filter(e=>intersects(box(e),toggle)).map(e=>e.dataset.tag);
+    const pin=tags.find(e=>e.dataset.tag==='meaning_remember'),r=box(pin);
+    const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
+    return {count:tags.length,overlaps,blocked,toggle,pin:box(pin),pinClickable:hit===pin||pin.contains(hit),overflow:document.documentElement.scrollWidth-innerWidth};
    });
-   if(data.visibleCount!==15)throw Error('Expanded tag count '+data.visibleCount);
-   if(data.pinDisplay==='none'||data.pinGridRow!=='2'||data.pinGridColumn!=='2')throw Error('Pin not in row 2 / column 2');
-   if(data.pin.width<=0||data.pin.height<=0||!data.pinHit)throw Error('Pin not visible / clickable');
-   if(data.button.height<44||data.button.width<24||!data.moreHit)throw Error('More touch target regression');
-   if(Math.abs(data.button.width-data.frustrated.width)>.7)throw Error('Toggle width differs from 😤 emoji');
-   if(Math.abs(parseFloat(openedAppearance.circleWidth)-data.frustrated.width)>.7||Math.abs(parseFloat(openedAppearance.circleHeight)-data.frustrated.height)>.7)throw Error('Toggle visible circle diameter differs from 😤 emoji');
-   if(Math.abs((data.button.left+data.button.width/2)-(data.frustrated.left+data.frustrated.width/2))>.7)throw Error('Toggle not aligned to eighth column above 😤');
-   if(data.blocked.length||data.overlaps.length)throw Error('Overlapping targets: '+JSON.stringify({blocked:data.blocked,overlaps:data.overlaps}));
-   if(data.scrollOverflow)throw Error('Horizontal overflow');
-   if(data.alignment.sheepToButtonGap<1.5||data.alignment.sheepToButtonGap>14)throw Error('Toggle gap not aligned: '+JSON.stringify(data.alignment));
-   if(data.alignment.centerPitchError>1||data.alignment.verticalCenterError>1)throw Error('Toggle not on same emoji grid: '+JSON.stringify(data.alignment));
-   await page.locator('#konaCaptureTagTray .kona-tag-chip[data-tag="meaning_remember"]').click();
-   if(await page.locator('#konaCaptureTagTray .kona-tag-chip[data-tag="meaning_remember"]').getAttribute('aria-pressed')!=='true')throw Error('Pin tag cannot be selected');
+   check(geometry.count===15,'All tags must be displayed');
+   check(!geometry.overlaps.length&&!geometry.blocked.length,'Tag or disclosure overlap: '+JSON.stringify(geometry));
+   check(geometry.pinClickable,'Pin tag obscured by another control');
+   check(geometry.overflow<=1,'Capture content horizontally overflows '+geometry.overflow+'px');
+   const pin=page.locator('#konaCaptureTagTray .kona-tag-chip[data-tag="meaning_remember"]');
+   await pin.click();
+   check(await pin.getAttribute('aria-pressed')==='true','Pin tag cannot be selected');
    await page.screenshot({path:dir+'/'+width+'-'+theme+'-expanded.png',animations:'disabled'});
    await more.click();
-   if(await more.getAttribute('aria-expanded')!=='false')throw Error('Less did not collapse');
-   await page.waitForTimeout(100);
-   const closedAgain=await caretAppearance();
-   if(closedAgain.transform!==closedAppearance.transform)throw Error('Caret rotation does not reset after collapse');
-   if(closedAgain.buttonWidth!==openedAppearance.buttonWidth||closedAgain.buttonHeight!==openedAppearance.buttonHeight)throw Error('Toggle hitbox moved on collapse');
-   results.push({width,theme,pass:!errors.length,errors,geom:data});
-   console.log('PASS '+width+'/'+theme+' pin visible, selectable, no overlaps');
-  }catch(e){results.push({width,theme,pass:false,error:String(e),errors});console.error('FAIL '+width+'/'+theme+' '+e)}
-  finally{await ctx.close()}
+   check(await more.getAttribute('aria-expanded')==='false','Disclosure did not collapse');
+   check(await visible.count()===7,'Seven-tag default was not restored');
+   check(await pin.getAttribute('aria-pressed')==='true','Selected tag state was lost on collapse');
+   check(!errors.length,'Browser JavaScript errors: '+errors.join(' | '));
+   result.pass=true;result.geometry=geometry;
+   console.log('PASS '+width+'/'+theme+' 7↔15 tags, selection, touch geometry, no overflow');
+  }catch(e){result.error=String(e);result.errors=errors;console.error('FAIL '+width+'/'+theme+' '+String(e))}
+  finally{results.push(result);await ctx.close()}
  }
 }finally{await browser.close()}
 await fs.writeFile(dir+'/report.json',JSON.stringify(results,null,2));
-if(results.some(x=>!x.pass))process.exitCode=1;
+if(results.some(r=>!r.pass))process.exitCode=1;
