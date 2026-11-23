@@ -3238,7 +3238,7 @@ const list=reviewRecords(date),v=db.days[date]||{};
 const momentCount=el('span',undefined,'rv-moment-count');momentCount.setAttribute('aria-label',list.length+' '+(list.length===1?KonaI18n.t('record'):KonaI18n.t('records')));momentCount.append(el('span',list.length+' '+(list.length===1?KonaI18n.t('record'):KonaI18n.t('records')),'rv-moment-count-long'),el('span',list.length+(KonaI18n.language==='ko'?'개':''),'rv-moment-count-short'));header.append(momentCount);const anchor=el('section',undefined,'review-daily-anchor rv-reference-anchor');
 const [anchorYear,anchorMonth,anchorDay]=date.split('-').map(Number);
 const dayIndex=new Date(Date.UTC(anchorYear,anchorMonth-1,anchorDay)).getUTCDay();
-const weekday=['일','월','화','수','목','금','토'][dayIndex]; // Intentional compact visual date, e.g. 11/9 (월).
+const weekday=(KonaI18n.language==='ko'?['일','월','화','수','목','금','토']:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'])[dayIndex]; // Compact date follows the UI language.
 const anchorLabel=el('h3',anchorMonth+'/'+anchorDay+' ('+weekday+')','rv-anchor-date');
 const anchorCopy=el('div',undefined,'rv-anchor-copy');
 anchorCopy.append(anchorLabel);
