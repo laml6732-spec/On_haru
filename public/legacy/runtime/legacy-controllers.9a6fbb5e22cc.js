@@ -2190,6 +2190,7 @@ function paintCaptureTags(){tagChips.replaceChildren();for(const tag of KONA_CAP
 
 paintCaptureTags();
 const events=d=>dayEvents(d)||[];
+const KONA_CAPTURE_CALENDAR_ICONS={linked:'./assets/calendar-note-linked.v1.svg',personal:'./assets/calendar-note-personal.v1.svg'};
 function current(){return konaCaptureScheduleAt(events(date),date,nowLocal(),mins(timeLocal()))}
 /* The connection mode is internal. The visible status is an event name or
    Personal note. Keep the original select as the one source of draft state. */
@@ -2204,6 +2205,11 @@ function renderCaptureScheduleMenu(){
     button.className='capture-schedule-option'+(secondary?' is-secondary':'');
     button.setAttribute('role','menuitemradio');
     button.setAttribute('aria-checked',String(checked));
+    const icon=document.createElement('img');
+    icon.className='capture-schedule-icon';
+    icon.src=value===''?KONA_CAPTURE_CALENDAR_ICONS.personal:KONA_CAPTURE_CALENDAR_ICONS.linked;
+    icon.alt='';
+    icon.setAttribute('aria-hidden','true');
     const check=document.createElement('span');
     check.className='capture-schedule-check';
     check.setAttribute('aria-hidden','true');
@@ -2220,7 +2226,7 @@ function renderCaptureScheduleMenu(){
       small.textContent=detail;
       copy.append(small);
     }
-    button.append(check,copy);
+    button.append(icon,copy,check);
     button.addEventListener('click',()=>{
       if(saving)return;
       select.value=value;
@@ -2283,7 +2289,7 @@ function paintCaptureLink(){
   const event=events(date).find(e=>e.id===chosen);
   const label=event?.title||'Personal note';
   const icon=document.createElement('img');
-  icon.src=COMPACT_UI_ICONS.calendar3;
+  icon.src=event?KONA_CAPTURE_CALENDAR_ICONS.linked:KONA_CAPTURE_CALENDAR_ICONS.personal;
   icon.alt='';
   const text=document.createElement('span');
   text.textContent=label;
@@ -2296,7 +2302,7 @@ function paintCaptureLink(){
 // This element is created later in the legacy controller boot sequence.
 queueMicrotask(()=>{if(ensureCaptureScheduleMenu())paintCaptureLink()});
 function updateSubmit(){submit.disabled=saving||(!input.value.trim()&&!captureTitle.value.trim()&&!captureTags.length);const label=document.getElementById('qc-submit-label');if(label)label.textContent=saving?KonaI18n.t("Saving…"):KonaI18n.t("Save")}
-function draft(){if(!manual)chosen=current();paintCaptureLink();day(date).qcDraft={title:captureTitle.value,text:input.value,eventId:chosen,manual,tags:[...captureTags],important:captureImportant};const ok=save()||!!tutorialPractice;state.textContent=ok?(input.value.trim()||captureTitle.value.trim()||captureTags.length?KonaI18n.t("Draft saved"):''):KonaI18n.t("Draft not saved · please retry");document.getElementById('qc-view')?.setAttribute('hidden','');updateSubmit()}
+function draft(){if(!manual)chosen=current();paintCaptureLink();day(date).qcDraft={title:captureTitle.value,text:input.value,eventId:chosen,manual,tags:[...captureTags],important:captureImportant};const ok=save()||!!tutorialPractice;state.textContent=ok?(input.value.trim()||captureTitle.value.trim()||captureTags.length?KonaI18n.t("Draft saved"):''):KonaI18n.t("Draft not saved · please retry");updateSubmit()}
 function refresh(){
 if(page!=='today'&&page!=='capture')return;const es=events(date),sig=es.map(e=>[e.id,e.start,e.end,e.title].join('/')).join('|'),newday=last!==date;
 if(newday){last=date;const d=db.days[date]?.qcDraft;chosen=d?.eventId||'';manual=d?!!d.manual:false;input.value=d?.text||'';captureTitle.value=d?.title||'';captureTags=Array.isArray(d?.tags)?d.tags.filter(tag=>KONA_NOTE_TAGS.some(([id])=>id===tag)):[];captureImportant=!!d?.important;paintCaptureTags();paintCaptureMarker();signature=''}
@@ -2310,8 +2316,8 @@ submit.addEventListener('click',()=>{
 const text=input.value.trim();if(saving)return;if(!text&&!captureTitle.value.trim()&&!captureTags.length){state.textContent=KonaI18n.t("Write a note or choose an emoji first");input.focus();updateSubmit();return}
 saving=true;updateSubmit();state.textContent=KonaI18n.t("Saving…");
 const id=manual?chosen:current(),e=events(date).find(e=>e.id===id),savedId=uid(),savedDate=date,now=timeLocal(),stamp=new Date().toISOString();
-try{const d=day(savedDate),previous=d.quickCaptureEntries,previousDraft=d.qcDraft;d.quickCaptureEntries=[...(previous||[]),{id:savedId,title:captureTitle.value.trim(),text,createdAt:stamp,time:now,date:savedDate,scheduleId:e?.id||'',scheduleTitle:e?.title||KonaI18n.t("Personal note"),scheduleTime:e?e.start+'–'+e.end:'',tags:[...captureTags],important:captureImportant}];delete d.qcDraft;if(!save()&&!tutorialPractice){if(previous===undefined)delete d.quickCaptureEntries;else d.quickCaptureEntries=previous;if(previousDraft!==undefined)d.qcDraft=previousDraft;saving=false;document.getElementById('qc-view')?.setAttribute('hidden','');state.textContent=KonaI18n.t("Not saved · your text is still here. Please retry.");updateSubmit();return}input.value='';captureTitle.value='';manual=false;chosen='';captureTags=[];captureImportant=false;paintCaptureTags();paintCaptureMarker();last='';saving=false;render();state.textContent=tutorialPractice?KonaI18n.t("Practice only · not saved"):KonaI18n.t("Saved");const recordLink=document.getElementById('qc-view');if(recordLink){recordLink.dataset.recordId=savedId;recordLink.dataset.recordDate=savedDate;recordLink.hidden=!!tutorialPractice}updateSubmit()}
-catch(error){saving=false;document.getElementById('qc-view')?.setAttribute('hidden','');state.textContent=KonaI18n.t("Could not save; try again");updateSubmit()}
+try{const d=day(savedDate),previous=d.quickCaptureEntries,previousDraft=d.qcDraft;d.quickCaptureEntries=[...(previous||[]),{id:savedId,title:captureTitle.value.trim(),text,createdAt:stamp,time:now,date:savedDate,scheduleId:e?.id||'',scheduleTitle:e?.title||KonaI18n.t("Personal note"),scheduleTime:e?e.start+'–'+e.end:'',tags:[...captureTags],important:captureImportant}];delete d.qcDraft;if(!save()&&!tutorialPractice){if(previous===undefined)delete d.quickCaptureEntries;else d.quickCaptureEntries=previous;if(previousDraft!==undefined)d.qcDraft=previousDraft;saving=false;state.textContent=KonaI18n.t("Not saved · your text is still here. Please retry.");updateSubmit();return}input.value='';captureTitle.value='';manual=false;chosen='';captureTags=[];captureImportant=false;paintCaptureTags();paintCaptureMarker();last='';saving=false;render();state.textContent=tutorialPractice?KonaI18n.t("Practice only · not saved"):KonaI18n.t("Saved");if(!tutorialPractice)toast(KonaI18n.t("Saved"));updateSubmit()}
+catch(error){saving=false;state.textContent=KonaI18n.t("Could not save; try again");updateSubmit()}
 });
 function appendReview(){} // Capture entries now share the chronological list.
 
@@ -3844,7 +3850,9 @@ const original=renderToday;renderToday=function(){const result=original.apply(th
 const plan=document.getElementById('page-today'),signature=plan.querySelector('.day-signature'),capture=document.createElement('section');capture.id='page-capture';capture.className='page';capture.setAttribute('aria-label',KonaI18n.t("Capture a thought",true));plan.before(capture);const composer=document.getElementById('qc-v2');capture.append(composer,document.getElementById('activeSessionBanner'));composer.prepend(signature);
 const headline=document.getElementById('dayHeadline'),carry=document.createElement('label');carry.htmlFor='dayHeadline';carry.className='carry-label';carry.textContent=KonaI18n.t("Today’s anchor");headline.before(carry);headline.setAttribute('aria-label',KonaI18n.t("Verse or phrase to carry today",true));
 const qc=document.getElementById('qc-v2'),link=document.createElement('details');link.className='capture-link';link.id='captureScheduleLink';const summary=document.createElement('summary');summary.textContent=KonaI18n.t("Link to schedule · optional");link.append(summary,qc.querySelector('label[for="qc-select"]'),document.getElementById('qc-select'),document.getElementById('kx-schedule'));qc.append(link);
-let view=qc.querySelector('#qc-view');if(!view){view=document.createElement('button');view.id='qc-view';view.type='button';view.hidden=true;view.textContent=KonaI18n.t("View record");view.setAttribute('aria-label',KonaI18n.t("View saved note in Review Archive",true));view.title=KonaI18n.t("View record",true);view.onclick=()=>{const recordId=view.dataset.recordId,recordDate=view.dataset.recordDate;if(recordId&&recordDate)window.konaOpenArchiveRecord?.(recordDate,recordId)}}qc.querySelector('#qc-state-group').append(view);
+// The saved record is already accessible in Review and recent notes.
+// No redundant Open button or second status column in the composer.
+qc.querySelector('#qc-view')?.remove();
 const tabs=document.querySelector('#dock .tabs'),planTab=tabs.querySelector('[data-page="today"]');planTab.lastChild.textContent=KonaI18n.t("Plan");planTab.setAttribute('aria-label',KonaI18n.t("Plan",true));planTab.querySelector('.navico').innerHTML=KonaI18n.markup("<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"4\" y=\"5\" width=\"16\" height=\"16\" rx=\"2\"></rect><path d=\"M8 3v4m8-4v4M4 11h16\"></path></svg>");
 const captureTab=document.createElement('button');captureTab.type='button';captureTab.dataset.page='capture';captureTab.innerHTML=KonaI18n.markup("<span class=\"navico\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m4 20 4-1L21 6l-3-3L5 16l-1 4M14 7l3 3\"></path></svg></span>Capture");captureTab.onclick=()=>nav('capture');tabs.prepend(captureTab);tabs.insertBefore(tabs.querySelector('[data-page="checkin"]'),planTab);captureTab.lastChild.textContent=KonaI18n.t('Write tab');tabs.querySelector('[data-page="records"]').lastChild.textContent=KonaI18n.t('Review tab');
 const title=document.createElement('h2');title.className='kona-plan-heading';title.textContent=KonaI18n.t("Plan");plan.prepend(title);document.getElementById('backFromManage').textContent=KonaI18n.t("‹ Plan");document.getElementById('backFromManage').setAttribute('aria-label',KonaI18n.t("Return to Plan",true));
@@ -3983,8 +3991,13 @@ const label=document.getElementById('qc-submit-label'),submit=document.getElemen
 const status=document.getElementById('qc-state'),statusGroup=document.getElementById('qc-state-group');
 function syncStatus(){
  if(!statusGroup||!status)return;
- const t=status.textContent.trim(),hasFeedback=!!t&&!/^(Ready to capture|Ready|Note)$/i.test(t);
- const retryable=/(저장 실패|임시 저장에 실패|Save failed|Draft not saved)/i.test(t);
+ const t=status.textContent.trim();
+ // Successful autosave and final save are announced to screen readers, but
+ // no longer create an orphaned second line below the schedule selector.
+ // Final save uses the existing short toast; only actionable feedback remains inline.
+ const informational=/^(Ready to capture|Ready|Note|Draft saved|Saved|임시저장 완료|임시 저장됨|저장됨)$/i.test(t);
+ const hasFeedback=!!t&&!informational;
+ const retryable=/(저장 실패|임시 저장에 실패|Save failed|Draft not saved|Could not save|Not saved)/i.test(t);
  statusGroup.classList.toggle('has-feedback',hasFeedback);
  status.dataset.retryable=String(retryable);
  if(retryable){
