@@ -267,7 +267,7 @@ function defaultEvents(){
   ev('Monday Worship','18:30','20:30','worship',[1]);ev('Scripture Study','18:00','20:00','lecture',[2]);ev('Design Class','18:30','20:30','lecture',[3]);ev('Ministry Night','18:30','20:30','worship',[4]);ev('Evening Devotion','18:30','20:30','worship',[0]);
   return a;
 }
-const blank=()=>({version:VERSION,settings:{zone:ZONES[0].id,lastBackup:'',dtsStart:''},days:{},events:[],tasks:[],checks:{},skip:{},overrides:{},prayers:[]});
+const blank=()=>({version:VERSION,settings:{zone:ZONES[0].id,lastBackup:'',dtsStart:'',weeklyReflectionDay:0},days:{},weeklyReflections:{},events:[],tasks:[],checks:{},skip:{},overrides:{},prayers:[]});
 function normDay(v){
  v.reflected??=false;v.emoji??='';v.headline??='';v.checkins??={};v.eventNotes??={};v.meals??={};
  if(!v.checkins.night&&v.eventNotes.__day_wrap)v.checkins.night={note:v.eventNotes.__day_wrap,mood:v.eventMoods?.__day_wrap?{id:v.eventMoods.__day_wrap}:null,moodTime:''};
