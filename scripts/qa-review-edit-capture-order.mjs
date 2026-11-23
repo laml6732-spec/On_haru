@@ -32,7 +32,12 @@ const edit=async(page,clickTarget,field,edited,checkValue)=>{
  await modal.waitFor({state:'visible'});
  const editFields=modal.locator('.sheet > label > textarea');
  const entry=field==='Memorable words'?editFields.first():editFields.last();
+ const initiallyFocused = await entry.evaluate(field => new Promise(resolve => {
+  requestAnimationFrame(() => requestAnimationFrame(() => resolve(document.activeElement === field)));
+ }));
+ ensure(initiallyFocused, 'Review editor focus moved away from the primary input', field);
  await entry.fill(edited);
+ ensure(await entry.inputValue()===edited, 'Edit input did not receive the typed value', field);
  await modal.locator('.rv-edit-actions button.solid').click();
  await modal.waitFor({state:'detached'});
  const value=await page.evaluate(checkValue);
