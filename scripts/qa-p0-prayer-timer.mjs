@@ -43,6 +43,7 @@ try{
   need(await p.evaluate(()=>sess.started&&sess.running&&!sess.paused),'Resume did not start timer');
   await p.evaluate(()=>{sess.runStart=Date.now()-2000;storeActiveSession()});
   await p.reload({waitUntil:'domcontentloaded'});await p.waitForFunction(()=>typeof sess!=='undefined');await clear();
+  await p.locator('.tabs [data-page="focus"]').click();
   const resumed=await p.evaluate(()=>({running:sess.running,started:sess.started,start:sess.startDate,acc:sess.acc,sessionId:sess.sessionId,elapsed:elapsed()}));
   need(resumed.running&&resumed.started&&resumed.start==='2026-11-21'&&resumed.elapsed>=8000,'Reload did not restore active prayer time');
   need((await p.evaluate(()=>db.days['2026-11-21']?.sessions?.length||0))===0,'Unfinished timer was logged as completed');
