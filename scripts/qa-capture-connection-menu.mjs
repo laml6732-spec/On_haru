@@ -41,6 +41,8 @@ for(const width of [320,390,1024])for(const appearance of ['light','dark']){
     const menu=page.locator('#captureScheduleMenu');
     check(await menu.count()===1,'Connection menu must initialize once');
     check((await text.innerText()).trim()==='Personal note','No matching event must show Personal note');
+    check((await summary.locator('img').getAttribute('src'))?.endsWith('/calendar-note-personal.v1.svg')|| (await summary.locator('img').getAttribute('src'))?.endsWith('calendar-note-personal.v1.svg'),'Personal note must have the plain calendar icon');
+    check(await page.locator('#qc-view').count()===0,'The redundant Open control must not exist');
     check(await page.locator('#qc-select').inputValue()==='__auto__','No matching event should preserve default automatic mode');
 
     await page.evaluate(()=>{
@@ -51,6 +53,7 @@ for(const width of [320,390,1024])for(const appearance of ['light','dark']){
       render();
     });
     check((await text.innerText()).trim()==='QA Morning prayer','Automatic match must display actual event title');
+    check((await summary.locator('img').getAttribute('src'))?.endsWith('calendar-note-linked.v1.svg'),'Linked event must show the checked calendar icon');
     check(await page.locator('#qc-select').inputValue()==='__auto__','Auto-picked event must not be marked manual');
     await summary.click();
     check(await menu.isVisible(),'Menu must open on one click');
@@ -62,13 +65,20 @@ for(const width of [320,390,1024])for(const appearance of ['light','dark']){
     check(menuInfo.right<=width+1&&menuInfo.left>=-1,'Menu horizontally clipped: '+JSON.stringify(menuInfo));
     check(menuInfo.options.some(x=>x.includes('Personal note')),'Personal note option missing: '+JSON.stringify(menuInfo)+' HTML='+await menu.innerHTML());
     check(menuInfo.options.some(x=>x.includes('QA Morning prayer')),'Matching event option missing');
+    check((await menu.getByRole('menuitemradio',{name:/Personal note/}).locator('img').getAttribute('src'))?.endsWith('calendar-note-personal.v1.svg'),'Menu personal icon must be plain');
+    check((await menu.getByRole('menuitemradio',{name:/QA Morning prayer/}).locator('img').getAttribute('src'))?.endsWith('calendar-note-linked.v1.svg'),'Menu linked icon must have checkmark');
+    const headerLayout=await page.evaluate(()=>{const a=document.querySelector('#captureScheduleLink>summary').getBoundingClientRect(),b=document.getElementById('qc-submit').getBoundingClientRect();return {scheduleRight:a.right,saveLeft:b.left}});
+    check(headerLayout.scheduleRight<=headerLayout.saveLeft+1,'Schedule and Save controls overlap: '+JSON.stringify(headerLayout));
     await page.screenshot({path:`${out}/${width}-${appearance}-menu.png`,animations:'disabled',caret:'hide'});
 
     await menu.getByRole('menuitemradio',{name:/Personal note/}).click();
     check((await text.innerText()).trim()==='Personal note','Explicit no-link must show Personal note');
     check(await page.locator('#qc-select').inputValue()==='','Explicit Personal note must opt out of auto');
+    check((await summary.locator('img').getAttribute('src'))?.endsWith('calendar-note-personal.v1.svg'),'Manual Personal note icon must be plain');
     await page.locator('#qc-text').fill('Draft remains private and linked explicitly');
     check(await page.locator('#qc-select').inputValue()==='','Typing cannot override explicit no-link');
+    check(!(await page.locator('#qc-state-group').isVisible()),'Autosave success should not add a visible row');
+    check((await page.locator('#qc-state').innerText()).trim().length>0,'Autosave must keep accessible feedback');
     await summary.click();
     await menu.getByRole('menuitemradio',{name:/Use default connection/}).click();
     check((await text.innerText()).trim()==='QA Morning prayer','Return to default should restore current schedule');
@@ -78,11 +88,21 @@ for(const width of [320,390,1024])for(const appearance of ['light','dark']){
     await menu.getByRole('menuitemradio',{name:/QA Other event/}).click();
     check((await text.innerText()).includes('QA Other event'),'Manually chosen schedule title must show');
     check(await page.locator('#qc-select').inputValue()==='qa-other','Manual schedule not selected');
+    check((await summary.locator('img').getAttribute('src'))?.endsWith('calendar-note-linked.v1.svg'),'Manual event uses checked calendar');
     const persisted=await page.evaluate(()=>day(date).qcDraft);
     check(persisted?.eventId==='qa-other'&&persisted.manual===true,'Manual link must persist in draft');
     await page.locator('#qc-submit').click();
     const stored=await page.evaluate(()=>day(date).quickCaptureEntries.at(-1));
     check(stored?.scheduleId==='qa-other','Saved note did not retain user-chosen schedule');
+    check(await page.locator('#qc-view').count()===0,'Open must stay removed after final save');
+    check(!(await page.locator('#qc-state-group').isVisible()),'Final Saved should not create a permanent extra row');
+    check((await page.locator('#toast').innerText()).trim().length>0&&await page.locator('#toast').evaluate(el=>el.classList.contains('show')),'Saving must show short, non-blocking confirmation toast');
+    await page.locator('#qc-state').evaluate(el=>el.textContent='Save failed · Retry');
+    await page.waitForTimeout(30);
+    check(await page.locator('#qc-state-group').isVisible(),'Failed save must remain visible');
+    await page.locator('#qc-state').evaluate(el=>el.textContent='');
+    await page.waitForTimeout(30);
+    check(!(await page.locator('#qc-state-group').isVisible()),'Cleared error should not reserve a blank row');
 
     await summary.click();
     await page.locator('#qc-text').click({force:true});
