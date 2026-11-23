@@ -42,9 +42,9 @@ try{
    if(!result.daily.notes)throw Error('Daily record not grouped with schedule');
    // Weekly reflection remains discoverable in the same Daily screen.
    const weekly=page.locator('#new-reflect-page .rv-weekly-inline-details');
-   await weekly.locator('summary').waitFor();
-   if(!(await weekly.locator('summary').innerText()).includes('Weekly reflection'))throw Error('Inline weekly reflection missing');
-   if(!(await weekly.evaluate(el=>el.open)))await weekly.locator('summary').click();
+   await weekly.locator('summary').first().waitFor();
+   if(!(await weekly.locator('summary').first().innerText()).includes('Weekly reflection'))throw Error('Inline weekly reflection missing');
+   if(!(await weekly.evaluate(el=>el.open)))await weekly.locator('summary').first().click();
    if(!await weekly.locator('textarea').first().isVisible())throw Error('Inline weekly reflection cannot expand');
    await page.screenshot({path:folder+'/'+width+'-'+theme+'-daily.png',animations:'disabled'});
    // Archive opens in the list mode; tapping Search shows the field.
