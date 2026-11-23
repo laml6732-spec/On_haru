@@ -2,14 +2,36 @@
 
 This file documents the release path **without changing the live worker**. On_HARU stores personal journals in the browser's origin-scoped localStorage; the public Workers URL must remain stable.
 
-## Release topology (verified 2026-11-23 UTC)
+## Release topology (observed 2026-11-23 UTC; verify again before release)
 
 - Live entrypoint: `https://on-haru.laml6732.workers.dev/legacy/` — Cloudflare Worker `on-haru`
 - Pages production project: `on-haru-pages`, `main`, built directly from GitHub `public/`
 - The **live Worker script is not the same** as `cloudflare/on-haru-edge-preview.js` in Git; that tracked file is historical and must **not** be redeployed.
-- Current live Worker contains `SOURCE = "https://3a7ed0a7.on-haru-pages.pages.dev"` and `x-on-haru-release = "captureios20261122a"`.
-- The pending PR's actual HTML / Service Worker release is `safestor20261122d`. This is **not deployed** to the live Workers URL.
+- Current live Worker (read through Cloudflare API on 2026-11-23) contains `SOURCE = "https://530298dd.on-haru-pages.pages.dev"` and `x-on-haru-release = "safesave20261123b"`, while its Pages target is commit `23c67417` with HTML/SW release `prayerrecords20261123a`. **The old header is a verified deployment-marker bug.**
+- Draft PR #94 has HTML/SW release `reviewweekday20261123a` and a passing Preview QA. It is **not deployed to the live Workers URL**.
 - The live Worker also rewrites startup-art HTML/service-worker assets, so exact-byte comparison must account for *only those documented transformations*; `scripts/verify-live-release.mjs` does this.
+
+## Repair the observed release-header mismatch without replacing the Worker
+
+The active `on-haru` script is a **legacy service-worker-syntax** bridge with embedded startup image data, origin routing, and custom asset transforms. The old `cloudflare/on-haru-edge-preview.js` is not suitable for this release. **Do not upload a replacement based on that file.** Cloudflare's Version Upload API requires module-syntax Workers; do not rewrite this script to module syntax just to stage a header change.
+
+Before any approved Worker deployment, export/download the **current live Worker source** privately from Cloudflare and back up the active deployment/version ID. For the currently deployed source and matching Pages assets, create an exact one-header-only patch with:
+
+```bash
+node scripts/prepare-worker-release.mjs \
+  --source /private/current-on-haru-worker.js \
+  --out /private/on-haru-header-corrected.js \
+  --old-release safesave20261123b \
+  --pages-url https://530298dd.on-haru-pages.pages.dev
+```
+
+The script compares HTML/SW release markers, the expected current header, the immutable Pages `SOURCE` and bridge identity. It refuses to run when any of these preconditions change, preserves all other bytes, and writes a new private output file without overwriting the backup. It **does not deploy** anything.
+
+**Important:** If PR #94 is merged before the Worker update, its new HTML/SW marker `reviewweekday20261123a` must be paired with the actual new immutable Pages deployment URL. In that situation, **do not** apply the old-source, header-only patch to a different Pages deployment. Follow the coordinated release procedure instead: first verify Pages, then update `SOURCE` and `x-on-haru-release` together in the backed-up live Worker source.
+
+- The Worker production verifier now requires the matching `x-on-haru-release` header for the Workers origin, in addition to SHA-256 content verification and the HTML/SW embedded markers. Direct Pages preview origins may omit this Worker-only header.
+- Before publishing, verify the patched Worker source byte-level diff, review the existing bindings and routes, and save both the active Worker source and deployment version as rollback evidence.
+- A prepared source file or a green unit test is **not** evidence of a corrected production Worker. After approved deployment, rerun the exact live verifier and check the header over the original workers.dev URL.
 
 ## Before touching production
 
