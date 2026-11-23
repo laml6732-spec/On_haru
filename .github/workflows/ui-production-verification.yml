@@ -2,7 +2,7 @@ name: OnHaru Workers production verification
 on:
   push:
     branches: [main]
-    paths: ['public/legacy/**', 'cloudflare/on-haru-edge-preview.js', 'scripts/verify-live-release.mjs', 'scripts/ui-pwa.mjs', 'scripts/test-verify-live-release.mjs', '.github/workflows/ui-production-verification.yml']
+    paths: ['public/legacy/**', 'cloudflare/on-haru-edge-preview.js', 'scripts/verify-live-release.mjs', 'scripts/ui-pwa.mjs', 'scripts/ui-release-acceptance.mjs', 'scripts/test-verify-live-release.mjs', '.github/workflows/ui-production-verification.yml']
   workflow_dispatch:
 permissions:
   contents: write
