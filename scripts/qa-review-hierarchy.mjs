@@ -42,8 +42,8 @@ try{
    await page.locator('.tabs [data-page="records"]').click();
    await page.locator('#rev-reflect').click();
    const inline=page.locator('#new-reflect-page .rv-weekly-inline-details');
-   await inline.locator('summary').waitFor();
-   const range=await inline.locator('summary').innerText();
+   await inline.locator('summary').first().waitFor();
+   const range=await inline.locator('summary').first().innerText();
    if(!range.includes('Weekly reflection')||!range.includes('11/'))throw Error('Inline Weekly reflection not discoverable');
    result.weekly={summary:range};
    await page.locator('#rev-archive').click();
