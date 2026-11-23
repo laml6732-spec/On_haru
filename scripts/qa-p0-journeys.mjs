@@ -141,6 +141,24 @@ try {
    await c.waitForFunction(()=>typeof day==='function');
    need(await c.evaluate(()=>db.days['2026-11-19']?.checkins?.evening?.note)==='QA SELECTED EVENING','Check-in lost after reload');
  });
+ await check('K-02: scheduled class fields persist, no class is created on an empty day',async()=>{
+   await c.evaluate(()=>{
+     db.events.push({id:'qa-noon-lecture',title:'QA Class Session',category:'lecture',since:'2026-11-19',until:'2026-11-19',start:'12:00',end:'13:00',repeat:'none'});
+     save();changeDate('2026-11-19');nav('checkin');
+   });
+   await c.locator('#page-checkin [data-phase="noon"]').click();
+   need(await c.locator('#lectureQuote').isVisible(),'Class note field not visible on scheduled class day');
+   await c.locator('#lectureQuote').fill('QA CLASS QUOTE SAVED');
+   await c.locator('#lectureReflection').fill('QA CLASS REFLECTION SAVED');
+   need(await c.evaluate(()=>db.days['2026-11-19']?.checkins?.noon?.lectureQuote)==='QA CLASS QUOTE SAVED','Class quote absent from scheduled day');
+   await c.evaluate(()=>changeDate('2026-11-20'));
+   await c.locator('#page-checkin [data-phase="noon"]').click();
+   need(!(await c.locator('#lectureNoteCard').isVisible()),'A class form was forced on a day without class');
+   need(!await c.evaluate(()=>Boolean(db.days['2026-11-20']?.checkins?.noon?.lectureQuote)),'Phantom class record created on an empty day');
+   await c.reload({waitUntil:'domcontentloaded'});
+   const saved=await c.evaluate(()=>db.days['2026-11-19']?.checkins?.noon);
+   need(saved?.lectureQuote==='QA CLASS QUOTE SAVED'&&saved?.lectureReflection==='QA CLASS REFLECTION SAVED','Class note was lost on reload');
+ });
  await check('K-11: legacy night and evening records remain independently readable',async()=>{
    await c.evaluate(()=>{
      const v=day('2026-11-18');
