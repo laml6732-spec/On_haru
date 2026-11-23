@@ -1,0 +1,31 @@
+name: On_HARU recurring schedule link migration QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'public/legacy/runtime/legacy-controllers.9a6fbb5e22cc.js'
+      - 'scripts/qa-recurring-schedule-links.mjs'
+      - '.github/workflows/qa-recurring-schedule-links.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  recurring-links:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node --check scripts/qa-recurring-schedule-links.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-recurring.log 2>&1 &
+      - run: node scripts/qa-recurring-schedule-links.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: recurring-links-evidence
+          path: test-results/recurring-links/
+          retention-days: 14

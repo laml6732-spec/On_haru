@@ -1,0 +1,31 @@
+name: On_HARU prayer timer lifecycle P0 QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'public/legacy/runtime/legacy-controllers.9a6fbb5e22cc.js'
+      - 'scripts/qa-p0-prayer-timer.mjs'
+      - '.github/workflows/qa-p0-prayer-timer.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prayer-lifecycle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node --check scripts/qa-p0-prayer-timer.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-prayer-timer.log 2>&1 &
+      - run: node scripts/qa-p0-prayer-timer.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: prayer-timer-lifecycle-evidence
+          path: test-results/p0-prayer-timer/
+          retention-days: 14

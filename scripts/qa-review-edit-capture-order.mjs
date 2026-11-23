@@ -32,7 +32,12 @@ const edit=async(page,clickTarget,field,edited,checkValue)=>{
  await modal.waitFor({state:'visible'});
  const editFields=modal.locator('.sheet > label > textarea');
  const entry=field==='Memorable words'?editFields.first():editFields.last();
+ const initiallyFocused = await entry.evaluate(field => new Promise(resolve => {
+  requestAnimationFrame(() => requestAnimationFrame(() => resolve(document.activeElement === field)));
+ }));
+ ensure(initiallyFocused, 'Review editor focus moved away from the primary input', field);
  await entry.fill(edited);
+ ensure(await entry.inputValue()===edited, 'Edit input did not receive the typed value', field);
  await modal.locator('.rv-edit-actions button.solid').click();
  await modal.waitFor({state:'detached'});
  const value=await page.evaluate(checkValue);
@@ -61,6 +66,9 @@ try {
    const reflect=page.locator('#rev-reflect');if(await reflect.count())await reflect.click({force:true});
    const section=page.locator('#new-reflect-page .rv-timegroup[data-daypart="checkins"]');
    await section.waitFor({state:'visible'});
+   const anchorDate=await page.locator('#new-reflect-page .rv-anchor-date').first().innerText();
+   ensure(anchorDate.includes(cfg.lang==='ko'?'(토)':'(Sat)'),'Daily anchor weekday must follow UI language',anchorDate);
+   row.steps.push('localized-anchor-weekday');
    const phaseOrder=await section.locator('.rv-daily-checkin').evaluateAll(nodes=>nodes.map(x=>[...x.classList].find(z=>z.startsWith('rv-daily-check-')&&z!=='rv-daily-check-header')).filter(Boolean));
    ensure(phaseOrder.join('|')==='rv-daily-check-morning|rv-daily-check-noon|rv-daily-check-evening','Wrong check-in ordering',phaseOrder);
    const firstSection=await page.locator('#new-reflect-page .rv-timeline>.rv-timegroup').first().getAttribute('data-daypart');

@@ -21,6 +21,8 @@ try{
  ensure(firstWrite===true,'First tab failed to save');
  const staleWrite=await second.evaluate(d=>{day(d).headline='TAB_B_MUST_NOT_OVERWRITE';return save()},date);
  ensure(staleWrite===false,'Stale second tab write was not blocked');
+ ensure(/another tab|다른 탭/.test(await second.locator('#toast').innerText()),'Stale tab did not explain the conflict');
+ ensure(/reload|새로고침/.test(await second.locator('#toast').innerText()),'Stale tab did not show a recovery action');
  let blockedExports=0;second.on('download',()=>blockedExports++);
  await second.locator('.app-settings-shortcut').click();
  await second.locator('#backupNow').click();await second.waitForTimeout(250);
@@ -38,15 +40,24 @@ try{
  ensure(/^On_HARU_backup_\d{4}-\d{2}-\d{2}\.json$/.test(backup.suggestedFilename()),'Backup filename is not recognizable');
  const exported=JSON.parse(await readFile(backupPath,'utf8'));
  ensure(exported.days[date]?.headline==='TAB_A_PROTECTED','Export did not contain the latest persisted record');
+ const current=await second.evaluate(k=>JSON.parse(window.localStorage.getItem(k)),key);
+ ensure(JSON.stringify(exported)===JSON.stringify(current),'Downloaded backup differs from current saved data');
  const freshWrite=await second.evaluate(d=>{day(d).headline='TAB_B_AFTER_RELOAD';return save()},date);
  ensure(freshWrite===true,'Fresh tab could not save');
  ensure(await second.evaluate(k=>JSON.parse(window.localStorage.getItem(k)).days['2026-11-22'].headline,key)==='TAB_B_AFTER_RELOAD','Fresh save was not persisted');
+ const beforeCancelledRestore=await second.evaluate(k=>({ disk:window.localStorage.getItem(k), records:JSON.stringify(db), screen:document.querySelector('#page-today').innerText }),key);
  await second.locator('#restoreFile').setInputFiles(backupPath);
  await second.locator('.onharu-native-replacement .onharu-dialog-cancel').click();
+ const afterCancelledRestore=await second.evaluate(k=>({ disk:window.localStorage.getItem(k), records:JSON.stringify(db), screen:document.querySelector('#page-today').innerText }),key);
+ ensure(JSON.stringify(afterCancelledRestore)===JSON.stringify(beforeCancelledRestore),'Cancelled restore changed stored records, loaded records or the screen');
  ensure(await second.evaluate(k=>JSON.parse(window.localStorage.getItem(k)).days['2026-11-22'].headline,key)==='TAB_B_AFTER_RELOAD','Cancelled restore changed persisted records');
  await second.locator('#restoreFile').setInputFiles(backupPath);
  await second.locator('.onharu-native-replacement .onharu-dialog-accept').click();
  ensure(await second.evaluate(k=>JSON.parse(window.localStorage.getItem(k)).days['2026-11-22'].headline,key)==='TAB_A_PROTECTED','Accepted backup restore failed to recover original record');
+ const restored=await second.evaluate(k=>JSON.parse(window.localStorage.getItem(k)),key);
+ for(const field of ['days','events','tasks','checks','skip','overrides','prayers']){
+  ensure(JSON.stringify(restored[field])===JSON.stringify(exported[field]),'Restored '+field+' differ from the backup');
+ }
  // Simulate a full browser quota: UI actions must not pretend a failed write succeeded.
  const failedWrites=await second.evaluate(storageKey=>{
   const before=JSON.stringify(db),raw=window.localStorage.getItem(storageKey),original=Storage.prototype.setItem;

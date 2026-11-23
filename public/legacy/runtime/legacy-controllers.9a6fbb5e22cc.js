@@ -39,6 +39,8 @@ function konaOpenReviewEditor(d,id){
  const fields={};function field(key,label,value){const wrap=node('label',label),input=node('textarea');input.className='field';input.rows=key==='note'?5:3;input.value=value||'';input.setAttribute('aria-label',label);wrap.append(input);sheet.append(wrap);fields[key]=input}
  if(isCapture||isEvent)field('title',KonaI18n.t("Title · optional"),isCapture?source?.title:eventNoteTitle(d,eventId));
  if(isClass){for(const [key,label]of [['lectureQuote',KonaI18n.t("Memorable words")],['lectureReflection',KonaI18n.t("Reflection")],['classResponse',KonaI18n.t("Response")]])field(key,label,source?.[key])}else field('note',KonaI18n.t("Note"),current);
+ const linkedSchedule=isCapture?konaNoteScheduleControl(source,d):null;
+ if(linkedSchedule)sheet.append(linkedSchedule.details);
  const draft={tags:[...(isClass?source?.classTags:source?.tags|| (isAnchor?v.headlineTags:isMeal?v.eventNoteTags?.[id.slice(5)]:isEvent?v.eventNoteTags?.[eventId]:isFree&&typeof oldFree==='object'?oldFree.tags:null))||[]]};sheet.append(konaEventNoteTagEditor(draft));
  let marked=!!source?.important||(v.important||[]).includes(isCapture?source.id:isEvent?eventId:id),later=null;
  if(isCapture||isEvent){const highlight=node('button',marked?KonaI18n.t("Remove highlight"):KonaI18n.t("Highlight · Important"));highlight.type='button';highlight.className='note-highlight-toggle';highlight.setAttribute('aria-pressed',String(marked));highlight.onclick=()=>{marked=!marked;highlight.setAttribute('aria-pressed',String(marked));highlight.textContent=marked?KonaI18n.t("Remove highlight"):KonaI18n.t("Highlight · Important")};sheet.append(highlight);const revisit=node('details'),summary=node('summary',KonaI18n.t("Revisit later"));later=node('textarea');later.className='field';later.setAttribute('aria-label',KonaI18n.t("Later reflection",true));revisit.append(summary,later);sheet.append(revisit)}
@@ -49,14 +51,16 @@ function konaOpenReviewEditor(d,id){
  saveButton.onclick=()=>{
   const ok=guardedMutation(()=>{
    const dayValue=day(d),tags=draft.tags.filter(tag=>marked||tag!=='important');
+   const capture=isCapture?dayValue.quickCaptureEntries?.find(entry=>entry.id===source.id):null;
+   if(isCapture&&!capture)throw Error(KonaI18n.t("Note no longer exists"));
    if(isCapture||isEvent){
-    const key=isCapture?source.id:eventId;
+    const key=isCapture?capture.id:eventId;
     dayValue.important??=[];
     dayValue.important=dayValue.important.filter(k=>k!==key);
     if(marked)dayValue.important.push(key);
     if(later?.value?.trim()){
      const entry={text:later.value.trim(),createdAt:new Date().toISOString()};
-     if(isCapture){source.laterReflections??=[];source.laterReflections.push(entry)}
+     if(isCapture){capture.laterReflections??=[];capture.laterReflections.push(entry)}
      else{dayValue.eventNoteReflections??={};dayValue.eventNoteReflections[eventId]??=[];dayValue.eventNoteReflections[eventId].push(entry)}
     }
    }
@@ -65,7 +69,9 @@ function konaOpenReviewEditor(d,id){
     for(const key of ['lectureQuote','lectureReflection','classResponse'])source[key]=fields[key].value;
     source.classTags=tags;
    }else if(isCapture){
-    source.title=fields.title.value.trim();source.text=fields.note.value;source.tags=tags;source.important=marked;
+    capture.title=fields.title.value.trim();capture.text=fields.note.value;capture.tags=tags;capture.important=marked;
+    const scheduleId=linkedSchedule.select.value;
+    if(scheduleId!==(capture.scheduleId||''))konaSetNoteSchedule(capture,dayEvents(d).find(event=>event.id===scheduleId));
    }else if(isSession||isCheck){
     source.note=fields.note.value;source.tags=tags;
     if(id==='check-night'){dayValue.eventNotes??={};dayValue.eventNotes.__day_wrap=source.note}
@@ -1212,7 +1218,7 @@ function updateRepeatUI(){
 function konaVisibleSheets(){return [...document.querySelectorAll('.modal-under:not([hidden])')].sort((a,b)=>(parseInt(getComputedStyle(a).zIndex)||0)-(parseInt(getComputedStyle(b).zIndex)||0))}
 function konaRaiseSheet(modal){const top=Math.max(100,...konaVisibleSheets().filter(n=>n!==modal).map(n=>parseInt(getComputedStyle(n).zIndex)||0));modal.style.setProperty('z-index',String(top+1),'important')}
 const konaSheetOpeners=new WeakMap();
-const openSheet=id=>{const modal=$(id);konaSheetOpeners.set(modal,document.activeElement);modal.hidden=false;konaRaiseSheet(modal);const dialog=modal.querySelector('[role=dialog]');if(dialog&&!dialog.hasAttribute('aria-label')&&!dialog.hasAttribute('aria-labelledby')){const heading=dialog.querySelector('.top strong');if(heading){heading.id||=id+KonaI18n.t("Heading");dialog.setAttribute('aria-labelledby',heading.id)}}requestAnimationFrame(()=>{if(!modal.hidden)(modal.querySelector('input:not([type=hidden]):not(:disabled),textarea:not(:disabled),select:not(:disabled),button')||dialog)?.focus({preventScroll:true})})};
+const openSheet=id=>{const modal=$(id);konaSheetOpeners.set(modal,document.activeElement);modal.hidden=false;konaRaiseSheet(modal);const dialog=modal.querySelector('[role=dialog]');if(dialog&&!dialog.hasAttribute('aria-label')&&!dialog.hasAttribute('aria-labelledby')){const heading=dialog.querySelector('.top strong');if(heading){heading.id||=id+KonaI18n.t("Heading");dialog.setAttribute('aria-labelledby',heading.id)}}requestAnimationFrame(()=>{if(!modal.hidden&&modal.isConnected&&!modal.contains(document.activeElement))(modal.querySelector('input:not([type=hidden]):not(:disabled),textarea:not(:disabled),select:not(:disabled),button')||dialog)?.focus({preventScroll:true})})};
 const closeSheet=id=>{const modal=$(id);modal.hidden=true;const opener=konaSheetOpeners.get(modal);if(opener?.isConnected)opener.focus({preventScroll:true})};
 document.addEventListener('keydown',event=>{if(event.key!=="Tab"||document.querySelector('dialog[open]'))return;const modal=konaVisibleSheets().at(-1);if(!modal)return;const controls=[...modal.querySelectorAll('button,input,textarea,select,summary,[tabindex="0"]')].filter(n=>!n.disabled&&n.getClientRects().length);const first=controls[0],last=controls.at(-1);if(!first)return;if(event.shiftKey&&(document.activeElement===first||!modal.contains(document.activeElement))){event.preventDefault();last.focus()}else if(!event.shiftKey&&(document.activeElement===last||!modal.contains(document.activeElement))){event.preventDefault();first.focus()}});
 
@@ -1264,14 +1270,40 @@ let pinNewTask=false;
 function clearTaskForm(){editTask=null;pinNewTask=false;$('taskForm').reset();$('taskKind').value='task';$('taskRepeat').value='none';$('taskSince').value=date;$('taskUntil').value='';$('taskDueNone').checked=true;$('taskDue').value='';weekdayMarkup('taskWeekdays','task');$('taskFormHeading').textContent=KonaI18n.t("New task");$('taskCancel').classList.add('hidden');updateRepeatUI()}
 function beginEditTask(t){editTask=t.id;pinNewTask=false;$('taskImportant').checked=isTaskImportant(t);$('taskTitle').value=t.title;$('taskKind').value=t.kind||'task';$('taskSince').value=t.since;$('taskRepeat').value=t.repeat;$('taskDueNone').checked=!t.due;$('taskDue').value=t.due||'';$('taskUntil').value=t.until||'';weekdayMarkup('taskWeekdays','task',t.days||[]);$('taskFormHeading').textContent=KonaI18n.t("Edit task");updateRepeatUI();openSheet('taskFormModal')}
 function splitEvent(prev,obj,from){
-  const nid=uid();
-  db.events=db.events.map(x=>x.id===prev.id?{...x,until:dayAdd(from,-1)}:x);
-  db.events.push({...obj,id:nid,since:from,base:false});
-  for(const map of [db.overrides,db.skip])for(const k of Object.keys(map)){const i=k.lastIndexOf('|'),id=k.slice(0,i),d=k.slice(i+1);if(id===prev.id&&d>=from){map[nid+'|'+d]=map[k];delete map[k]}}
-  for(const [d,v] of Object.entries(db.days)){if(d<from)continue;for(const f of ['eventNotes','eventInfo'])if(v[f]&&v[f][prev.id]!==undefined){v[f][nid]=v[f][prev.id];delete v[f][prev.id]}
-    for(const s of v.sessions||[])if(s.eventId===prev.id)s.eventId=nid}
-}
-// 일정 창: 메모 + 강사·주제 + 이날만 변경 + L1 기도 기록
+   const nid=uid();
+   db.events=db.events.map(x=>x.id===prev.id?{...x,until:dayAdd(from,-1)}:x);
+   db.events.push({...obj,id:nid,since:from,base:false});
+   for(const map of [db.overrides,db.skip])for(const k of Object.keys(map)){
+     const i=k.lastIndexOf('|'),id=k.slice(0,i),d=k.slice(i+1);
+     if(id===prev.id&&d>=from){map[nid+'|'+d]=map[k];delete map[k]}
+   }
+   // Move all future-date links to the new series. Past records retain the old ID.
+   for(const [d,v] of Object.entries(db.days)){
+     if(d<from)continue;
+     for(const field of ['eventNotes','eventNoteTitles','eventMoods','eventNoteTags','eventInfo','meals']){
+       const map=v[field];
+       if(map&&Object.prototype.hasOwnProperty.call(map,prev.id)){
+         map[nid]=map[prev.id];delete map[prev.id];
+       }
+     }
+     for(const slot of Object.values(v.timeNotes||{})){
+       if(slot&&typeof slot==='object'&&Object.prototype.hasOwnProperty.call(slot,prev.id)){
+         slot[nid]=slot[prev.id];delete slot[prev.id];
+       }
+     }
+     for(const field of ['legacyMergedIds','unifiedNotesSaved','important']){
+       if(Array.isArray(v[field]))v[field]=[...new Set(v[field].map(id=>id===prev.id?nid:id))];
+     }
+     for(const entry of v.quickCaptureEntries||[]){
+       if(entry.scheduleId!==prev.id)continue;
+       entry.scheduleId=nid;
+       const current=dayEvents(d).find(e=>e.id===nid);
+       entry.scheduleTitle=current?.title||obj.title;
+       entry.scheduleTime=(current?.start||obj.start)+'–'+(current?.end||obj.end);
+     }
+     for(const session of v.sessions||[])if(session.eventId===prev.id)session.eventId=nid;
+   }
+} // 일정 창: 메모 + 강사·주제 + 이날만 변경 + L1 기도 기록
 function openEventMemo(e){
   selectedEvent=e;const base=db.events.find(x=>x.id===e.id)||e,v=db.days[date];
   $('eventModalTitle').textContent=KonaI18n.t("Edit schedule · ")+e.title;
@@ -2115,16 +2147,45 @@ function konaOpenEventRecords(event,recordDate=date){
  for(const source of sources){const row=document.createElement('button');row.type='button';row.className='kona-related-note';const q=source.kind==='capture'?db.days[recordDate].quickCaptureEntries.find(q=>q.id===source.id):null;row.textContent=konaNoteDisplay(konaSourceNoteText(source),q?.tags||db.days[recordDate]?.eventNoteTags?.[source.id]||[]);konaApplyNoteTagIcon(row,q?.tags||db.days[recordDate]?.eventNoteTags?.[source.id]||[]);row.setAttribute('aria-label',KonaI18n.t("Open related note",true));row.onclick=()=>konaOpenSourceNote(source);body.append(row)}
  if(!sources.length){const empty=document.createElement('p');empty.textContent=KonaI18n.t("No linked notes yet.");body.append(empty)}openSheet('timeNotesModal');
 }
+function konaNoteScheduleLabel(entry,event){
+ if(event)return KonaI18n.eventLabel(event);
+ if(!entry?.scheduleId)return '';
+ const name=entry.scheduleTitle||KonaI18n.t("Previously linked event");
+ return name+KonaI18n.t(" · no longer scheduled");
+}
+function konaSetNoteSchedule(entry,event){
+ entry.scheduleId=event?.id||'';
+ entry.scheduleTitle=event?.title||KonaI18n.t("Personal note");
+ entry.scheduleTime=event?event.start+'–'+event.end:'';
+}
+function konaNoteScheduleControl(entry,recordDate){
+ const events=dayEvents(recordDate),details=document.createElement('details');
+ details.className='kona-note-schedule';
+ const summary=document.createElement('summary');
+ const current=events.find(event=>event.id===entry.scheduleId);
+ summary.textContent=KonaI18n.t("Schedule · ")+(konaNoteScheduleLabel(entry,current)||KonaI18n.t("None"));
+ const select=document.createElement('select');
+ select.className='field';
+ select.setAttribute('aria-label',KonaI18n.t("Link this note to a schedule event",true));
+ select.append(new Option(KonaI18n.t("No linked schedule"),''));
+ for(const event of events)select.append(new Option(event.start+' · '+KonaI18n.eventLabel(event),event.id));
+ if(entry.scheduleId&&!current)select.append(new Option(konaNoteScheduleLabel(entry),entry.scheduleId));
+ select.value=entry.scheduleId||'';
+ details.append(summary,select);
+ return {details,select};
+}
 function konaReviewNoteMetadata(entry,recordDate,onChanged){
  const wrap=document.createElement('section');wrap.className='kona-note-metadata';wrap.setAttribute('aria-label',KonaI18n.t("Note schedule and tags",true));
- const events=dayEvents(recordDate),schedule=document.createElement('details');schedule.className='kona-note-schedule';
- const scheduleLabel=document.createElement('summary');scheduleLabel.textContent=entry.scheduleId?(entry.scheduleTitle||KonaI18n.t("Linked event")):KonaI18n.t("＋ Schedule");scheduleLabel.setAttribute('aria-label',KonaI18n.t("Edit linked schedule: ",true)+(entry.scheduleTitle||KonaI18n.t("None",true)));schedule.append(scheduleLabel);
- const select=document.createElement('select');select.setAttribute('aria-label',KonaI18n.t("Link this note to a schedule event",true));select.append(new Option(KonaI18n.t("No linked schedule"),''));
- events.forEach(e=>select.append(new Option(e.start+' · '+KonaI18n.eventLabel(e),e.id)));
- if(entry.scheduleId&&!events.some(e=>e.id===entry.scheduleId))select.append(new Option((entry.scheduleTitle||KonaI18n.t("Previously linked event"))+KonaI18n.t(" · no longer scheduled"),entry.scheduleId));
- select.value=entry.scheduleId||'';
- select.onchange=()=>{const selected=events.find(e=>e.id===select.value);const ok=guardedMutation(()=>{const q=db.days[recordDate]?.quickCaptureEntries?.find(x=>x.id===entry.id);if(!q)throw Error(KonaI18n.t("Note no longer exists"));q.scheduleId=selected?.id||'';q.scheduleTitle=selected?.title||KonaI18n.t("Personal note");q.scheduleTime=selected?selected.start+'–'+selected.end:''},KonaI18n.t("Schedule link was not saved. Please retry."));if(ok)onChanged();else select.value=entry.scheduleId||''};
- schedule.append(select);wrap.append(schedule);
+ const {details,select}=konaNoteScheduleControl(entry,recordDate);
+ select.onchange=()=>{
+  const ok=guardedMutation(()=>{
+   const q=db.days[recordDate]?.quickCaptureEntries?.find(x=>x.id===entry.id);
+   if(!q)throw Error(KonaI18n.t("Note no longer exists"));
+   konaSetNoteSchedule(q,dayEvents(recordDate).find(event=>event.id===select.value));
+  },KonaI18n.t("Schedule link was not saved. Please retry."));
+  if(ok)onChanged();else select.value=entry.scheduleId||'';
+ };
+ wrap.append(details);
  const tagKey=recordDate+'|'+entry.id;window.konaExpandedTagRecords??=new Set();
  const tags=document.createElement('div');tags.className='kona-note-tag-details';
  const chips=document.createElement('div');chips.className='kona-note-tag-chips';
@@ -2402,7 +2463,7 @@ function reviewRecords(d=date){
   const energy=check?.[phase+'Energy']??check?.mood?.energy??check?.[phase+KonaI18n.t("Energy")]??null,happiness=check?.[phase+'Happiness']??check?.mood?.happiness??check?.[phase+KonaI18n.t("Happiness")]??null;
   const body=kind==='check'?String(check?.note||''):kind==='session'?item.content.split('\n').slice(1).join('\n').trim():item.content;
   const recorded=validReflectHM(String(item.stamp||'').slice(0,5));
-  return {...item,date:d,kind,important:!!capture?.important||!!item.important,sourceId:capture?capture.id:kind==='event'?eventId:kind==='free'?item.id.slice(5):item.id,reviewEvent:event,scheduleId:capture?.scheduleId||(kind==='event'?eventId:''),scheduleLabel:KonaI18n.eventLabel(event)||capture?.scheduleTitle||(kind==='event'?item.title:''),body,recordedTime:recorded,energy:Number.isInteger(energy)?energy:null,happiness:Number.isInteger(happiness)?happiness:null,originalMood:check?.mood??null,feeling:item.mood?konaFeeling(item.mood):(KONA_MOOD_LABELS[happiness-1]||''),phase,pinned:kind==='class'&&!!v.checkins?.noon?.lecturePinned,t:event?mins(event.start):item.t};
+  return {...item,date:d,kind,important:!!capture?.important||!!item.important,sourceId:capture?capture.id:kind==='event'?eventId:kind==='free'?item.id.slice(5):item.id,reviewEvent:event,scheduleId:capture?.scheduleId||(kind==='event'?eventId:''),scheduleLabel:capture?konaNoteScheduleLabel(capture,event):KonaI18n.eventLabel(event)||(kind==='event'?item.title:''),body,recordedTime:recorded,energy:Number.isInteger(energy)?energy:null,happiness:Number.isInteger(happiness)?happiness:null,originalMood:check?.mood??null,feeling:item.mood?konaFeeling(item.mood):(KONA_MOOD_LABELS[happiness-1]||''),phase,pinned:kind==='class'&&!!v.checkins?.noon?.lecturePinned,t:event?mins(event.start):item.t};
  }).sort((a,b)=>(a.t??Infinity)-(b.t??Infinity));
 }
 // Read-only grouping uses existing schedule links; it never infers a link from time.
@@ -3238,7 +3299,7 @@ const list=reviewRecords(date),v=db.days[date]||{};
 const momentCount=el('span',undefined,'rv-moment-count');momentCount.setAttribute('aria-label',list.length+' '+(list.length===1?KonaI18n.t('record'):KonaI18n.t('records')));momentCount.append(el('span',list.length+' '+(list.length===1?KonaI18n.t('record'):KonaI18n.t('records')),'rv-moment-count-long'),el('span',list.length+(KonaI18n.language==='ko'?'개':''),'rv-moment-count-short'));header.append(momentCount);const anchor=el('section',undefined,'review-daily-anchor rv-reference-anchor');
 const [anchorYear,anchorMonth,anchorDay]=date.split('-').map(Number);
 const dayIndex=new Date(Date.UTC(anchorYear,anchorMonth-1,anchorDay)).getUTCDay();
-const weekday=['일','월','화','수','목','금','토'][dayIndex]; // Intentional compact visual date, e.g. 11/9 (월).
+const weekday=(KonaI18n.language==='ko'?['일','월','화','수','목','금','토']:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'])[dayIndex]; // Compact date follows the UI language.
 const anchorLabel=el('h3',anchorMonth+'/'+anchorDay+' ('+weekday+')','rv-anchor-date');
 const anchorCopy=el('div',undefined,'rv-anchor-copy');
 anchorCopy.append(anchorLabel);
