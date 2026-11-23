@@ -1264,14 +1264,40 @@ let pinNewTask=false;
 function clearTaskForm(){editTask=null;pinNewTask=false;$('taskForm').reset();$('taskKind').value='task';$('taskRepeat').value='none';$('taskSince').value=date;$('taskUntil').value='';$('taskDueNone').checked=true;$('taskDue').value='';weekdayMarkup('taskWeekdays','task');$('taskFormHeading').textContent=KonaI18n.t("New task");$('taskCancel').classList.add('hidden');updateRepeatUI()}
 function beginEditTask(t){editTask=t.id;pinNewTask=false;$('taskImportant').checked=isTaskImportant(t);$('taskTitle').value=t.title;$('taskKind').value=t.kind||'task';$('taskSince').value=t.since;$('taskRepeat').value=t.repeat;$('taskDueNone').checked=!t.due;$('taskDue').value=t.due||'';$('taskUntil').value=t.until||'';weekdayMarkup('taskWeekdays','task',t.days||[]);$('taskFormHeading').textContent=KonaI18n.t("Edit task");updateRepeatUI();openSheet('taskFormModal')}
 function splitEvent(prev,obj,from){
-  const nid=uid();
-  db.events=db.events.map(x=>x.id===prev.id?{...x,until:dayAdd(from,-1)}:x);
-  db.events.push({...obj,id:nid,since:from,base:false});
-  for(const map of [db.overrides,db.skip])for(const k of Object.keys(map)){const i=k.lastIndexOf('|'),id=k.slice(0,i),d=k.slice(i+1);if(id===prev.id&&d>=from){map[nid+'|'+d]=map[k];delete map[k]}}
-  for(const [d,v] of Object.entries(db.days)){if(d<from)continue;for(const f of ['eventNotes','eventInfo'])if(v[f]&&v[f][prev.id]!==undefined){v[f][nid]=v[f][prev.id];delete v[f][prev.id]}
-    for(const s of v.sessions||[])if(s.eventId===prev.id)s.eventId=nid}
-}
-// 일정 창: 메모 + 강사·주제 + 이날만 변경 + L1 기도 기록
+   const nid=uid();
+   db.events=db.events.map(x=>x.id===prev.id?{...x,until:dayAdd(from,-1)}:x);
+   db.events.push({...obj,id:nid,since:from,base:false});
+   for(const map of [db.overrides,db.skip])for(const k of Object.keys(map)){
+     const i=k.lastIndexOf('|'),id=k.slice(0,i),d=k.slice(i+1);
+     if(id===prev.id&&d>=from){map[nid+'|'+d]=map[k];delete map[k]}
+   }
+   // Move all future-date links to the new series. Past records retain the old ID.
+   for(const [d,v] of Object.entries(db.days)){
+     if(d<from)continue;
+     for(const field of ['eventNotes','eventNoteTitles','eventMoods','eventNoteTags','eventInfo','meals']){
+       const map=v[field];
+       if(map&&Object.prototype.hasOwnProperty.call(map,prev.id)){
+         map[nid]=map[prev.id];delete map[prev.id];
+       }
+     }
+     for(const slot of Object.values(v.timeNotes||{})){
+       if(slot&&typeof slot==='object'&&Object.prototype.hasOwnProperty.call(slot,prev.id)){
+         slot[nid]=slot[prev.id];delete slot[prev.id];
+       }
+     }
+     for(const field of ['legacyMergedIds','unifiedNotesSaved','important']){
+       if(Array.isArray(v[field]))v[field]=[...new Set(v[field].map(id=>id===prev.id?nid:id))];
+     }
+     for(const entry of v.quickCaptureEntries||[]){
+       if(entry.scheduleId!==prev.id)continue;
+       entry.scheduleId=nid;
+       const current=dayEvents(d).find(e=>e.id===nid);
+       entry.scheduleTitle=current?.title||obj.title;
+       entry.scheduleTime=(current?.start||obj.start)+'–'+(current?.end||obj.end);
+     }
+     for(const session of v.sessions||[])if(session.eventId===prev.id)session.eventId=nid;
+   }
+} // 일정 창: 메모 + 강사·주제 + 이날만 변경 + L1 기도 기록
 function openEventMemo(e){
   selectedEvent=e;const base=db.events.find(x=>x.id===e.id)||e,v=db.days[date];
   $('eventModalTitle').textContent=KonaI18n.t("Edit schedule · ")+e.title;
