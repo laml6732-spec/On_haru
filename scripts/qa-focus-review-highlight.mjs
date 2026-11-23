@@ -46,11 +46,8 @@ for(const {width,theme,lang} of [
   // Text-only pink ink must have an INLINE element for each wrapped line.
   await open('today');
   const longTitle='QA Important Daily '+width+" — Prepare today's reflection notes and review the next action for the week";
-  const createFold=page.locator('#page-today #pinRow .task-fold');
-  const addTask=page.locator('#page-today #pinRow .task-add');
-  if(!await addTask.count())await createFold.click();
-  if(!await addTask.count())throw Error('Plan Add task control missing after collapse: '+JSON.stringify(await page.evaluate(()=>({expanded:taskExpanded,pinRow:document.querySelector('#pinRow')?.outerHTML.slice(0,800),parent:document.querySelector('#pinRow')?.parentElement?.id}))));
-  await addTask.click();
+  // The first Plan task-overview action creates a task in both languages.
+  await page.locator('#page-today #pinRow .task-overview-actions .task-overview-action').first().click();
   await page.locator('#taskTitle').fill(longTitle);
   await page.locator('#taskImportant').check();
   await page.locator('#taskRepeatChips button').filter({hasText:lang==='ko'?'매일':'Daily'}).click();

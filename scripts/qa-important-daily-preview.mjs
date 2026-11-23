@@ -32,10 +32,8 @@ for(const {width,theme} of configs){
  };
  const make=async(title,repeat,important=true)=>{
   await open('today');
-  const fold=page.locator('#page-today #pinRow .task-fold');
-  const add=page.locator('#page-today #pinRow .task-add');
-  if(!await add.count())await fold.click();
-  if(!await add.count())throw Error('Plan Add task control missing after collapse: '+JSON.stringify(await page.evaluate(()=>({expanded:taskExpanded,pinRow:document.querySelector('#pinRow')?.outerHTML.slice(0,800),parent:document.querySelector('#pinRow')?.parentElement?.id}))));
+  // The current Plan has an always-available Add action beside the task count.
+  const add=page.locator('#page-today #pinRow .task-overview-actions .task-overview-action').first();
   await add.click();
   await page.locator('#taskTitle').fill(title);
   if(await page.locator('#taskTitle').inputValue()!==title)throw new Error('Task form truncated a QA title: '+title);

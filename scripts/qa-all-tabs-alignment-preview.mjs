@@ -134,10 +134,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   await state('plan-closed','#page-today');
   if(await visible(page.locator('#page-today #pinRow .task-fold'))){
    await attempt(row,'create isolated task',async()=>{
-    const add=page.locator('#page-today #pinRow .task-add');
-    if(!await add.count())await page.locator('#page-today #pinRow .task-fold').click();
-    if(!await add.count())throw Error('Plan Add task missing after collapsing');
-    await add.click();
+    await page.locator('#page-today #pinRow .task-overview-actions .task-overview-action').first().click();
     await page.locator('#taskTitle').fill('QA task with a longer description to examine alignment');
     await page.locator('#taskImportant').check();
     await page.locator('#taskSave').click();
