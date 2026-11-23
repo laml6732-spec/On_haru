@@ -36,7 +36,8 @@ export function verifyAsset({ path, local, actual, release, status, finalURL, ba
   const variant = base.origin === new URL(DEFAULT_URL).origin ? workerStartupVariant(path,local) : null;
   const startupVariantHashMatch = !!actual && !!variant && hash(variant) === hash(actual);
   const hashMatch = sourceHashMatch || startupVariantHashMatch;
-  const headerMatch = !workerRelease || workerRelease === release;
+  const isWorkerOrigin = base.origin === new URL(DEFAULT_URL).origin;
+  const headerMatch = isWorkerOrigin ? workerRelease === release : !workerRelease || workerRelease === release;
   const body = actual ? actual.toString('utf8') : '';
   const bodyReleaseMatch = path === ''
     ? body.includes('name="kona-release" content="' + release + '"')
@@ -50,7 +51,7 @@ export function verifyAsset({ path, local, actual, release, status, finalURL, ba
     expectedSha256: hash(startupVariantHashMatch ? variant : local), sourceSha256: hash(local), actualSha256: actual ? hash(actual) : null,
     hashMatch, sourceHashMatch, contentVariant: startupVariantHashMatch ? 'worker-startup-20261109' : 'source', urlMatch: sameURL, bodyReleaseMatch,
     workerRelease: workerRelease || null, releaseHeaderPresent: !!workerRelease,
-    releaseEvidence: 'sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present',
+    releaseEvidence: 'sha256 of exact source or documented startup rewrite + same-origin path + HTML/SW marker; production Worker must send the matching x-on-haru-release header',
   };
 }
 export async function verifyLiveRelease({ base = DEFAULT_URL, attempts = 4, delayMs = 5000 } = {}) {
