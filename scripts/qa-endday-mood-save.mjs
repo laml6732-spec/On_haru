@@ -41,10 +41,11 @@ for(const {width,theme,lang} of configs){
   await page.locator('.tabs [data-page="checkin"]').click();
   await page.locator('#page-checkin [data-phase="evening"]').click();
   const scope='#page-checkin #moodGrid';
-  await page.locator(scope+' .kona-slim-scale[data-dimension="energy"] .kona-scale-stops button').nth(3).click();
+  const energy=page.locator(scope+' .kona-slim-scale[data-dimension="energy"] input.kona-slim-rail');
+  await energy.press('End');await energy.press('ArrowLeft');
   const afterEnergy=await page.evaluate(()=>({...db.days['2026-11-12'].checkins.evening}));
   assert(key,'Evening energy uses canonical eveningEnergy field',afterEnergy.eveningEnergy===4,afterEnergy);
-  await page.locator(scope+' .kona-slim-scale[data-dimension="happiness"] .kona-scale-stops button').nth(4).click();
+  await page.locator(scope+' .kona-slim-scale[data-dimension="happiness"] input.kona-slim-rail').press('End');
   const both=await page.evaluate(()=>{
     const v=db.days['2026-11-12'].checkins.evening;
     const stored=JSON.parse(localStorage.getItem('kona.legacy.v1.dayframe')).days['2026-11-12'].checkins.evening;
