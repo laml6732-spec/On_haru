@@ -61,6 +61,9 @@ try {
    const reflect=page.locator('#rev-reflect');if(await reflect.count())await reflect.click({force:true});
    const section=page.locator('#new-reflect-page .rv-timegroup[data-daypart="checkins"]');
    await section.waitFor({state:'visible'});
+   const anchorDate=await page.locator('#new-reflect-page .rv-anchor-date').first().innerText();
+   ensure(anchorDate.includes(cfg.lang==='ko'?'(토)':'(Sat)'),'Daily anchor weekday must follow UI language',anchorDate);
+   row.steps.push('localized-anchor-weekday');
    const phaseOrder=await section.locator('.rv-daily-checkin').evaluateAll(nodes=>nodes.map(x=>[...x.classList].find(z=>z.startsWith('rv-daily-check-')&&z!=='rv-daily-check-header')).filter(Boolean));
    ensure(phaseOrder.join('|')==='rv-daily-check-morning|rv-daily-check-noon|rv-daily-check-evening','Wrong check-in ordering',phaseOrder);
    const firstSection=await page.locator('#new-reflect-page .rv-timeline>.rv-timegroup').first().getAttribute('data-daypart');
