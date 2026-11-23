@@ -47,7 +47,7 @@ try{
  await setup().catch(e=>{throw new Error('Setup failed: '+e)});
  try{
   await page.locator('#eventManageList .record-item').filter({hasText:'QA RECURRING'}).click();
-  await page.locator('#choiceList button').filter({has:page.getByText('Edit',{exact:true})}).click();
+  await page.locator('#choiceList button').filter({hasText:'Edit recurring event'}).click();
   await page.locator('#eventTitle').fill('QA UPDATED SERIES');
   await page.locator('#eventStart').fill('10:00');
   await page.locator('#eventEnd').fill('11:30');
