@@ -29,6 +29,8 @@
     return true;
   };
   let filter='all',search='',selectedId='',addOpen=false;
+  // Display-only preferences. Persisted prayer requests, responses and timer notes stay untouched.
+  const recordTypes={response:true,memo:true};
   const saveLabel=()=>local('저장','Save');
 
   function refreshLinkOptions(selected){
@@ -108,7 +110,6 @@
   function rowsForFilter(){
     let list=db.prayers.filter(p=>{
       if(filter==='active'&&p.answered)return false;
-      if(filter==='response'&&!hasResponse(p))return false;
       return !search||prayerTitle(p).toLocaleLowerCase().includes(search.toLocaleLowerCase());
     });
     list.sort((a,b)=>Number(Boolean(a.answered))-Number(Boolean(b.answered))
@@ -174,33 +175,129 @@
   function heading(label){
     return node('div','prayer-list-caption',label);
   }
+  function allPrayerRecords(){
+    const records=[],prayersById=new Map(db.prayers.map(p=>[p.id,p]));
+    // Include current response/gratitude entries AND legacy answer text, without duplicating
+    // records that are already represented by responseLogs.
+    for(const prayer of db.prayers){
+      responseEntries(prayer).forEach((entry,index)=>records.push({
+        type:'response',date:entry.date||prayer.since||'',time:'',
+        title:prayerTitle(prayer),text:String(entry.text||''),prayer,
+        identity:'response:'+prayer.id+':'+(entry.id||index)
+      }));
+    }
+    // Prayer-session notes are saved in day.sessions, including personal / morning
+    // prayers with no prayerId. Never show unrelated Focus or Devotion memos here.
+    for(const [date,value] of Object.entries(db.days||{})){
+      (value.sessions||[]).forEach((session,index)=>{
+        if(session?.kind!=='prayer'||!String(session.note||'').trim())return;
+        const prayer=prayersById.get(session.prayerId);
+        records.push({
+          type:'memo',date,time:session.start||session.at||'',
+          title:prayer?prayerTitle(prayer):(session.task||local('개인 기도','Personal prayer')),
+          text:String(session.note),session,
+          identity:'memo:'+date+':'+(session.id||index)
+        });
+      });
+    }
+    return records.sort((a,b)=>
+      String(b.date).localeCompare(String(a.date))||
+      String(b.time).localeCompare(String(a.time))||
+      a.identity.localeCompare(b.identity));
+  }
+  function recordRow(item){
+    const row=action('','prayer-record-feed-item',()=>{
+      if(item.type==='response'){
+        selectedId=item.prayer.id;addOpen=false;renderPrayerBox();
+      }else{
+        // The existing session note editor saves edits back into the original record.
+        closeSheet('focusLibraryModal');
+        openSessionNote(item.date,item.session);
+      }
+    });
+    const meta=node('div','prayer-record-feed-meta');
+    meta.append(
+      node('span','prayer-record-feed-kind',item.type==='response'?
+        local('응답·감사','Response / gratitude'):local('기도 메모','Prayer note')),
+      node('span','prayer-record-feed-date',(item.date?when(item.date):'')+(item.time?' · '+item.time:''))
+    );
+    const title=node('span','prayer-record-feed-title',item.title);
+    const body=node('span','prayer-record-feed-text',item.text.trim()||
+      local('기도를 마무리했어요.','Prayer closed.'));
+    row.append(meta,title,body);
+    row.setAttribute('aria-label',[
+      item.type==='response'?local('응답·감사','Response / gratitude'):local('기도 메모','Prayer note'),
+      item.title,item.text.trim()
+    ].filter(Boolean).join(' · '));
+    return row;
+  }
   function renderList(root){
     const ctl=node('div','prayer-library-controls');
     const input=node('input','field prayer-search');
-    input.type='search';input.placeholder=local('기도제목 검색','Search prayer requests');
-    input.setAttribute('aria-label',local('기도제목 검색','Search prayer requests'));
+    input.type='search';
+    input.placeholder=filter==='records'?
+      local('기도제목이나 기록 검색','Search topics and notes'):
+      local('기도제목 검색','Search prayer requests');
+    input.setAttribute('aria-label',input.placeholder);
     input.value=search;
     const filters=node('div','prayer-filters');
-    for(const [id,ko,en] of [['all','전체','All'],['active','기도 중','Praying'],['response','응답 기록','Responses']]){
+    for(const [id,ko,en] of [['all','전체','All'],['active','기도 중','Praying'],['records','기록 모아보기','Records']]){
       const b=action(local(ko,en),'prayer-filter'+(filter===id?' is-active':''),()=>{
-        filter=id;renderPrayerBox();
+        filter=id;addOpen=false;renderPrayerBox();
       });
       b.setAttribute('aria-pressed',String(filter===id));filters.append(b);
     }
     ctl.append(input,filters);
     const list=node('div','prayer-link-list');
-    input.addEventListener('input',()=>{
-      search=input.value;fillRows(list);
-    });
+    if(filter==='records'){
+      const kinds=node('fieldset','prayer-record-types');
+      kinds.append(node('legend','prayer-record-types-label',local('표시할 기록','Show records')));
+      const all=allPrayerRecords();
+      for(const [type,ko,en] of [['response','응답·감사','Response / gratitude'],['memo','기도 메모','Prayer notes']]){
+        const count=all.filter(x=>x.type===type).length;
+        const label=node('label','prayer-record-type'+(recordTypes[type]?' is-selected':''));
+        const check=node('input');check.type='checkbox';check.checked=recordTypes[type];
+        check.setAttribute('aria-label',local(ko,en));
+        check.addEventListener('change',()=>{
+          recordTypes[type]=check.checked;
+          label.classList.toggle('is-selected',check.checked);
+          fillRows(list);
+        });
+        label.append(check,node('span','prayer-record-type-name',local(ko,en)),
+          node('span','prayer-record-type-count',String(count)));
+        kinds.append(label);
+      }
+      ctl.append(kinds);
+    }
     root.append(ctl);
-    if(addOpen){
+    if(addOpen&&filter!=='records'){
       const f=addForm();root.append(f.form);requestAnimationFrame(()=>f.input.focus());
     }
     root.append(list);
+    input.addEventListener('input',()=>{
+      search=input.value;fillRows(list);
+    });
     fillRows(list);
   }
   function fillRows(list){
-    list.replaceChildren();const rows=rowsForFilter();
+    list.replaceChildren();
+    if(filter==='records'){
+      if(!recordTypes.response&&!recordTypes.memo){
+        list.append(node('p','prayer-empty',local('표시할 기록을 선택해 주세요.','Select at least one record type.')));
+        return;
+      }
+      const query=search.trim().toLocaleLowerCase();
+      const rows=allPrayerRecords().filter(item=>
+        recordTypes[item.type]&&(!query||
+        (item.title+' '+item.text).toLocaleLowerCase().includes(query)));
+      if(!rows.length){
+        list.append(node('p','prayer-empty',query?
+          local('검색 결과가 없어요.','No matching records.'):
+          local('아직 기록된 기도응답이나 메모가 없어요.','No prayer responses or notes yet.')));
+      }else rows.forEach(item=>list.append(recordRow(item)));
+      return;
+    }
+    const rows=rowsForFilter();
     if(!rows.length)list.append(node('p','prayer-empty',search?
       local('검색 결과가 없어요.','No matching requests.'):
       local('표시할 기도제목이 없어요.','No prayer requests here.')));
@@ -383,7 +480,7 @@
     root.replaceChildren();
     const p=db.prayers.find(x=>x.id===selectedId);
     const add=$('togglePrayerAdd');
-    add.hidden=Boolean(p);
+    add.hidden=Boolean(p)||filter==='records';
     if(p)renderDetail(root,p);
     else renderList(root);
     add.onclick=()=>{
