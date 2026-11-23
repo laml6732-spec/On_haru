@@ -1,0 +1,25 @@
+name: On_HARU Worker header safety QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/prepare-worker-release.mjs'
+      - 'scripts/test-prepare-worker-release.mjs'
+      - 'scripts/verify-live-release.mjs'
+      - 'scripts/test-verify-live-release.mjs'
+      - '.github/workflows/qa-worker-release-fix.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  safe-header-patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/prepare-worker-release.mjs
+      - run: node --check scripts/verify-live-release.mjs
+      - run: node --test scripts/test-prepare-worker-release.mjs scripts/test-verify-live-release.mjs
