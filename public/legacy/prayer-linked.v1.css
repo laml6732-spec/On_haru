@@ -67,3 +67,147 @@ body #page-today #todayTaskCard>.sectionhead{display:none!important}
 :root[data-appearance=dark] #focusLibraryModal .prayer-add-response,:root[data-appearance=dark] #focusLibraryModal .prayer-quick-mark.is-done{color:#B8DBC7}
 
 :root[data-appearance=dark] #focusLibraryModal .prayer-go-task{color:#B8DBC7}
+
+
+/* Prayer library: two independent record-type checkboxes, one chronological feed.
+   Match existing soft surfaces, avoid nested cards and preserve 44px touch areas. */
+#focusLibraryModal .prayer-record-types{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+  min-width:0;
+  margin:10px 0 5px;
+  padding:0;
+  border:0;
+}
+#focusLibraryModal .prayer-record-types-label{
+  width:100%;
+  margin:0 0 1px;
+  padding:0;
+  color:var(--sub);
+  font:500 calc(11px * var(--kona-ui-scale,1))/1.3 var(--font-ui);
+}
+#focusLibraryModal .prayer-record-type{
+  box-sizing:border-box;
+  display:inline-flex;
+  flex:1 1 125px;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:44px;
+  min-width:0;
+  margin:0;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:transparent;
+  color:var(--ink);
+  cursor:pointer;
+  font:550 calc(12px * var(--kona-ui-scale,1))/1.3 var(--font-ui);
+}
+#focusLibraryModal .prayer-record-type.is-selected{
+  background:var(--soft);
+  border-color:var(--hero-ink,var(--line));
+}
+#focusLibraryModal .prayer-record-type input[type="checkbox"]{
+  flex:0 0 18px;
+  width:18px;
+  height:18px;
+  margin:0;
+  accent-color:var(--hero-ink);
+  cursor:pointer;
+}
+#focusLibraryModal .prayer-record-type:focus-within{
+  outline:2px solid var(--hero-ink);
+  outline-offset:2px;
+}
+#focusLibraryModal .prayer-record-type-name{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#focusLibraryModal .prayer-record-type-count{
+  color:var(--sub);
+  font-size:calc(11px * var(--kona-ui-scale,1));
+  font-weight:450;
+}
+#focusLibraryModal .prayer-record-feed-item{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  width:100%;
+  min-width:0;
+  min-height:72px;
+  margin:0;
+  padding:12px 2px 13px;
+  border:0;
+  border-bottom:1px solid var(--line);
+  border-radius:0;
+  background:transparent;
+  color:var(--ink);
+  box-shadow:none;
+  text-align:left;
+  font-family:var(--font-ui);
+  cursor:pointer;
+}
+#focusLibraryModal .prayer-record-feed-item:last-child{
+  border-bottom:0;
+}
+#focusLibraryModal .prayer-record-feed-item:focus-visible{
+  outline:2px solid var(--hero-ink);
+  outline-offset:-2px;
+}
+#focusLibraryModal .prayer-record-feed-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  min-width:0;
+  margin-bottom:5px;
+  color:var(--sub);
+  font:450 calc(11px * var(--kona-ui-scale,1))/1.35 var(--font-ui);
+}
+#focusLibraryModal .prayer-record-feed-kind{
+  color:var(--hero-ink);
+  font-weight:650;
+}
+#focusLibraryModal .prayer-record-feed-date{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--sub);
+}
+#focusLibraryModal .prayer-record-feed-title{
+  display:block;
+  max-width:100%;
+  margin-bottom:3px;
+  color:var(--ink);
+  font:650 calc(13px * var(--kona-ui-scale,1))/1.45 var(--font-ui);
+  overflow-wrap:anywhere;
+}
+#focusLibraryModal .prayer-record-feed-text{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:3;
+  overflow:hidden;
+  max-width:100%;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  color:var(--sub);
+  font:400 calc(12px * var(--kona-ui-scale,1))/1.5 var(--font-ui);
+}
+:root[data-appearance=dark] #focusLibraryModal .prayer-record-type.is-selected{
+  background:#2D4A3E;
+  border-color:#86B49A;
+}
+:root[data-appearance=dark] #focusLibraryModal .prayer-record-feed-kind{
+  color:#B8DBC7;
+}
+:root[data-appearance=dark] #focusLibraryModal .prayer-record-feed-title{
+  color:#E9F1EA;
+}
+:root[data-appearance=dark] #focusLibraryModal .prayer-record-feed-text{
+  color:#C1D5C6;
+}
