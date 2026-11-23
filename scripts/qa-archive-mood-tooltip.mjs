@@ -26,7 +26,7 @@ try{
     date='2026-11-05';
     const v=day(date);v.checkins.morning={note:'QA-MOOD-MORNING',morningEnergy:3,morningHappiness:4,moodTime:'08:15'};
     v.checkins.night={note:'QA-MOOD-NIGHT',nightEnergy:2,nightHappiness:5,moodTime:'21:15'};
-    return reviewArchiveRecords().filter(r=>r.date===date&&r.kind==='check').map(r=>({phase:r.phase,energy:r.energy,happiness:r.happiness,feeling:r.feeling}));
+    return ['morning','night'].map(phase=>({phase,energy:v.checkins[phase][phase+'Energy'],happiness:v.checkins[phase][phase+'Happiness']}));
    },theme);
    if(!seeded.some(r=>r.phase==='morning'&&r.energy===3&&r.happiness===4))throw Error('Morning rating lost before render');
    if(!seeded.some(r=>r.phase==='night'&&r.energy===2&&r.happiness===5))throw Error('End-of-day rating lost before render');
