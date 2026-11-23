@@ -53,6 +53,9 @@ for(const {width,theme} of configs){
   await page.locator('#taskFormModal').waitFor({state:'hidden'});
  };
  try{
+  // Weekly tasks default to Monday–Friday; a fixed Thursday makes the scheduled
+  // occurrence deterministic instead of depending on the CI run's day of week.
+  await page.clock.setFixedTime(new Date('2026-11-12T09:00:00-10:00'));
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.locator('.tabs [data-page="capture"]').waitFor();
   const choose=page.locator('#tutorialChooseEn');
