@@ -54,7 +54,11 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   },selector);
   await photo(page,width+'-'+theme+'-daily');
   item.views.daily=await inspect('#new-reflect-page');
-  await page.locator('#rev-weekly').click();await photo(page,width+'-'+theme+'-weekly');
+  const weekly=page.locator('#new-reflect-page .rv-weekly-inline-details').first();
+  await weekly.waitFor({state:'attached'});
+  if(!await weekly.evaluate(el=>el.open))await weekly.locator(':scope > summary').click();
+  await weekly.locator('.rv-weekly-inline-content').waitFor({state:'visible'});
+  await photo(page,width+'-'+theme+'-weekly');
   item.views.weekly=await inspect('#new-reflect-page');
   await page.locator('#rev-archive').click();await photo(page,width+'-'+theme+'-archive');
   item.views.archive=await inspect('#archive-search');

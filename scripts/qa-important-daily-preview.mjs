@@ -32,14 +32,20 @@ for(const {width,theme} of configs){
  };
  const make=async(title,repeat,important=true)=>{
   await open('today');
-  const fold=page.locator('#page-today #pinRow .task-fold');
-  if(await fold.getAttribute('aria-expanded')==='true')await fold.click();
-  await page.locator('#page-today #pinRow .task-add').click();
+  // The current Plan has an always-available Add action beside the task count.
+  const add=page.locator('#page-today #pinRow .task-overview-actions .task-overview-action').first();
+  await add.click();
   await page.locator('#taskTitle').fill(title);
   if(await page.locator('#taskTitle').inputValue()!==title)throw new Error('Task form truncated a QA title: '+title);
   if(important)await page.locator('#taskImportant').check();
   if(repeat!=='none'){
    await page.locator('#taskRepeatChips button').filter({hasText:repeat==='daily'?'Daily':'Weekly'}).click();
+   if(repeat==='weekly'){
+    // The real default repeat days are Mon–Fri. Include the selected day so
+    // this regression tests a due weekly task even when CI runs on weekends.
+    const weekday=await page.evaluate(()=>new Date(date+'T12:00:00Z').getUTCDay());
+    await page.locator('#taskWeekdays input[type="checkbox"][value="'+weekday+'"]').check();
+   }
   }
   const selected=await page.locator('#taskRepeat').inputValue();
   check(row,title+' repeat type selected',selected===repeat,{expected:repeat,selected});
@@ -47,6 +53,9 @@ for(const {width,theme} of configs){
   await page.locator('#taskFormModal').waitFor({state:'hidden'});
  };
  try{
+  // Weekly tasks default to Monday–Friday; a fixed Thursday makes the scheduled
+  // occurrence deterministic instead of depending on the CI run's day of week.
+  await page.clock.setFixedTime(new Date('2026-11-12T09:00:00-10:00'));
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.locator('.tabs [data-page="capture"]').waitFor();
   const choose=page.locator('#tutorialChooseEn');

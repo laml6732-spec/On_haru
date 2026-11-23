@@ -46,9 +46,8 @@ for(const {width,theme,lang} of [
   // Text-only pink ink must have an INLINE element for each wrapped line.
   await open('today');
   const longTitle='QA Important Daily '+width+" — Prepare today's reflection notes and review the next action for the week";
-  const createFold=page.locator('#page-today #pinRow .task-fold');
-  if(await createFold.getAttribute('aria-expanded')==='true')await createFold.click();
-  await page.locator('#page-today #pinRow .task-add').click();
+  // The first Plan task-overview action creates a task in both languages.
+  await page.locator('#page-today #pinRow .task-overview-actions .task-overview-action').first().click();
   await page.locator('#taskTitle').fill(longTitle);
   await page.locator('#taskImportant').check();
   await page.locator('#taskRepeatChips button').filter({hasText:lang==='ko'?'매일':'Daily'}).click();

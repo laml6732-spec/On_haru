@@ -99,7 +99,14 @@ for(const width of [320,390,1024]) for(const theme of ['light','dark']){
    assert(await page.locator('#focusDurations [data-time="5"]').getAttribute('aria-pressed')==='true','Selected duration was not applied');
    await page.locator('#focusStart').click();
    assert(await page.locator('#morningPrayerListeningMessage').isVisible(),'Listening message should appear after prayer starts');
-   assert((await page.locator('#morningPrayerListeningMessage').innerText()).trim()==='하나님이 선물하신 오늘 하루를 기대하는 마음으로 하나님의 음성을 들어보세요','Listening message wording mismatch');
+   const prayerCopy=await page.locator('#morningPrayerListeningMessage').evaluate(el=>{
+     const id=el.dataset.morningPrayerAssetId;
+     const entry=window.OnHaruMorningPrayer?.copy?.find(p=>String(p.id).padStart(2,'0')===id);
+     const actual=el.querySelector('.morning-prayer-fallback')?.textContent.replace(/\\s+/g,' ').trim();
+     return {id,expected:entry?.lines.join(' '),actual,img:el.querySelector('img.morning-prayer-handwriting')?.getAttribute('src'),count:window.OnHaruMorningPrayer?.copy?.length};
+   });
+   assert(prayerCopy.count===8&&prayerCopy.expected===prayerCopy.actual,'Rotating prayer text not in approved 8-item deck: '+JSON.stringify(prayerCopy));
+   assert(prayerCopy.img?.endsWith('morning-prayer-'+prayerCopy.id+'.png'),'Rotating prayer image missing: '+JSON.stringify(prayerCopy));
    assert(await page.locator('body').evaluate(el=>el.classList.contains('morning-prayer-running')),'Morning-running context missing');
    await page.screenshot({path:`${out}/${width}-${theme}-prayer-running.png`,animations:'disabled'});
    await page.waitForTimeout(1400);
