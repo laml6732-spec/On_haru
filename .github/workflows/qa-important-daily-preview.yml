@@ -15,7 +15,7 @@ on:
       - '.github/workflows/qa-important-daily-preview.yml'
 jobs:
   important-daily:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
