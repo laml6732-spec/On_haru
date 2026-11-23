@@ -2021,7 +2021,8 @@ function refreshGuidedStep(){
  $('tourNext').hidden=false;$('tourNext').disabled=!!(needsAction&&step.canRun&&!step.canRun()&&target);
  guidedText('tourNext',!inPlace?tourCopy('이 장면으로 돌아가기','Return to this scene'):
   needsAction?step.action:step.next|| (guidedIndex===guidedSteps.length-1?tourCopy('둘러보기 완료','Finish practice'):KonaI18n.t("Continue")));
- const hint=needsAction&&step.canRun&&!step.canRun()?tourCopy('🐑 양 이모지를 눌러 보세요.','Tap the sheep tag.'):tourCopy('예시 기록 · 내 기록에 저장되지 않아요.','Practice data stays out of your records.');
+ const hint=guidedIndex===0?tourCopy('예시에서는 타이머를 기다리지 않고 다음 장면으로 이어져요.','Practice continues without waiting for the timer.'):
+  needsAction&&step.canRun&&!step.canRun()?tourCopy('🐑 양 이모지를 눌러 보세요.','Tap the sheep tag.'):tourCopy('예시 기록 · 내 기록에 저장되지 않아요.','Practice data stays out of your records.');
  guidedText('tourFeedback',inPlace?(done?step.feedback:hint):'');
  $('tourFeedback').classList.toggle('is-ready',!!done);
  positionGuidedCard();
@@ -2090,7 +2091,11 @@ $('tourNext').onclick=()=>{
 };
 document.addEventListener('click',e=>{
  if(!guidedTourActive)return;
- if(e.target.closest('#focusStart,#backupNow,#restoreNow,#exportTxt,#sm-write-cue,#sm-focus-entry,#sm-library-entry')){e.preventDefault();e.stopImmediatePropagation();toast(tourCopy('예시 둘러보기 후 내 하루에서 사용할 수 있어요.','You can use this after exploring the sample day.'));return}
+ if(e.target.closest('#focusStart,#backupNow,#restoreNow,#exportTxt,#sm-write-cue,#sm-focus-entry,#sm-library-entry')){
+  e.preventDefault();e.stopImmediatePropagation();
+  if(guidedIndex===0&&e.target.closest('#focusStart')&&date===tutorialPractice.storyDate&&morningCheckinPrayerLaunchDate===date)$('tourNext').click();
+  else toast(tourCopy('예시 둘러보기 후 내 하루에서 사용할 수 있어요.','You can use this after exploring the sample day.'));
+ }
 },true);
 ['input','change','click','submit','focusin','focusout'].forEach(name=>document.addEventListener(name,()=>{clearTimeout(guidedRefreshTimer);guidedRefreshTimer=setTimeout(refreshGuidedStep,80)},true));
 window.visualViewport?.addEventListener('resize',()=>{if(guidedTourActive)positionGuidedCard()});

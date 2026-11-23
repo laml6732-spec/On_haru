@@ -11,7 +11,7 @@ try{for(const width of [320,390,1024])for(const theme of ['light','dark']){
   const guide=page.locator('#guidedTour'),next=page.locator('#tourNext');
   await page.locator('#startGuidedTour').click();
   expect(await page.locator('#morningPrayerDurationHeading').isVisible(),'Morning prayer must be first');
-  await next.click();
+  await page.locator('#focusStart').click();
   const mood=page.getByRole('slider',{name:'Mood',exact:true});await mood.press('ArrowRight');
   await next.click();
   expect((await page.locator('#dayHeadline').inputValue()).includes('One thing'),'Morning anchor missing');
