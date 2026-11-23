@@ -15,6 +15,12 @@ try{
   await page.goto(URL,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>typeof save==='function'&&typeof day==='function');
  }
+ const before=await first.evaluate(k=>{
+  const actual=window.localStorage.getItem(k),original=lastKnownSavedRaw;
+  const a=actual?JSON.parse(actual):{},b=original?JSON.parse(original):{};
+  return {conflict:storageConflict,equal:actual===original,inMemoryEqual:JSON.stringify(db)===original,differentTopLevel:Object.keys(a).filter(k=>JSON.stringify(a[k])!==JSON.stringify(b[k]))};
+ },key);
+ console.log('TWO_TAB_BASELINE',JSON.stringify(before));
  const firstWrite=await first.evaluate(d=>{day(d).headline='TAB_A_PROTECTED';return save()},date);
  ensure(firstWrite===true,'First tab failed to save');
  const staleWrite=await second.evaluate(d=>{day(d).headline='TAB_B_MUST_NOT_OVERWRITE';return save()},date);

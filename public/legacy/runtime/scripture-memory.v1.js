@@ -4,6 +4,8 @@
   const VERSION=1, KEY='kona.scripture-memory.v1';
   const DATA_URL='./data/scripture-memory-100.json';
   const NKRV_DATA_URL='./data/scripture-memory-100.ko-nkrv.json';
+  // Default off until licensed public redistribution has been verified AND the asset is deployed.
+  const LICENSED_NKRV_DATA_ENABLED=false;
   const DIRECT_DATA_URL='./data/scripture-direct-reading.ko.json';
   const API_BASE='https://api.nlt.to/api/passages';
   const RELAY_PATH='./nlt';
@@ -449,6 +451,7 @@
     }
     // Korean text is an optional, separately licensed static asset. Never invent it.
     // Reject all partial, duplicate, out-of-range, or mismatched collections.
+    if(LICENSED_NKRV_DATA_ENABLED){
     try{
       const response=await fetch(NKRV_DATA_URL,{cache:'default'});
       if(response.ok){
@@ -468,6 +471,7 @@
         koreanVerses=loaded;
       }
     }catch(error){console.warn('NKRV data unavailable; using NLT',error);}
+    }
     // The optional Korean reading aid is NOT the NKRV translation.
     // Show only passages with source text; never manufacture translations.
     try{

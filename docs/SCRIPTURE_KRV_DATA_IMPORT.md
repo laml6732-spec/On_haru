@@ -46,3 +46,9 @@ node scripts/build-scripture-krv-data.mjs /path/to/bible_data.json public/legacy
 **주의:** 공개 저장소의 원문 파일이 곧 재배포 허가를 의미하지 않습니다. 웹앱의 정적 리소스는 누구나 내려받을 수 있으므로, 실제로 계약에 웹 배포·다운로드 및 원문 파일 제공이 허용되는지 확인한 경우에만 생성 파일을 배포하세요. 단순한 개인 열람 허가와 공개 JSON 저장 권한은 구별됩니다.
 
 이 브랜치에는 변환 코드와 합성 테스트만 포함하며, 외부에서 발견한 저작권 본문은 커밋하지 않습니다.
+
+## 미허가 파일의 요청 방지 (2026-11-22)
+
+공개 배포본은 개역개정 원문 파일의 공개 재배포 권한이 확인되지 않아 `public/legacy/data/scripture-memory-100.ko-nkrv.json`을 요청하지 않습니다. 이로써 의도적인 파일 미배포가 정상 실행 중 404 네트워크 오류로 기록되지 않도록 했습니다.
+
+정식 웹 배포·JSON 제공 허가를 받고 파일을 배치한 경우에만 `public/legacy/runtime/scripture-memory.v1.js`의 `LICENSED_NKRV_DATA_ENABLED`를 `true`로 변경하고, HTML과 Service Worker의 릴리스 및 Scripture 스크립트 캐시 버전을 함께 올린 후 QA를 진행하세요. 허가 전에는 원문을 추가하지 마세요.
