@@ -47,7 +47,10 @@ try{
  await setup().catch(e=>{throw new Error('Setup failed: '+e)});
  try{
   await page.locator('#eventManageList .record-item').filter({hasText:'QA RECURRING'}).click();
-  await page.locator('#choiceList button').filter({hasText:'Edit recurring event'}).click();
+  const editOptions=await page.locator('#choiceList button').allTextContents();
+  console.log('RECURRING_MENU',JSON.stringify(editOptions));
+  check(editOptions.length===4,'Recurring schedule edit menu must offer day, series, note and deletion: '+JSON.stringify(editOptions));
+  await page.locator('#choiceList button').nth(1).click();
   await page.locator('#eventTitle').fill('QA UPDATED SERIES');
   await page.locator('#eventStart').fill('10:00');
   await page.locator('#eventEnd').fill('11:30');
