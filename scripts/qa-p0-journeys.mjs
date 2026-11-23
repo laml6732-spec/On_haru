@@ -106,6 +106,7 @@ try {
    const matches=await p.evaluate(id=>day('2026-11-21').quickCaptureEntries.filter(x=>x.id===id),memoId);
    need(matches.length===1&&matches[0].text==='QA UPDATED FROM REVIEW','Review edit generated a copy or failed to save');
    await p.locator('#rev-archive').click();
+   await p.locator('#archive-search .archive-records-search-button').click();
    await p.locator('#archive-search-input').fill('QA UPDATED FROM REVIEW');
    need((await p.locator('#archive-search-results').innerText()).includes('QA UPDATED FROM REVIEW'),'Archive index did not reflect latest edited memo');
  });
