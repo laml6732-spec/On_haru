@@ -3,6 +3,8 @@ on:
   push:
     branches: [main, 'fix/review-schedule-tags-consistent-2026-11-05', 'fix/review-hierarchy-qa-compat-2026-11-05']
     paths: ['public/legacy/**', 'scripts/qa-review-labels.mjs', '.github/workflows/qa-review-labels.yml']
+  pull_request:
+    paths: ['public/legacy/**', 'scripts/qa-review-labels.mjs', '.github/workflows/qa-review-labels.yml']
   workflow_dispatch:
 jobs:
   review-labels:
