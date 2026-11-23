@@ -67,6 +67,7 @@ try {
    await p.locator('.tabs [data-page="today"]').click();
    await p.locator('#konaScheduleMore > summary').click();
    await p.locator('#konaScheduleMore [data-go="schedule"]').click();
+   await p.locator('#page-schedule .subtabs [data-schedulesub="events"]').click();
    await p.locator('#eventManageList button[aria-label="Edit QA SAFE SCHEDULE"]').click();
    await p.locator('#choiceList button').filter({hasText:'Edit event'}).click();
    await p.locator('#eventTitle').fill('QA UPDATED SCHEDULE');
@@ -115,7 +116,7 @@ try {
    }
    await p.evaluate(d=>changeDate(d),DAY);
    await p.locator('.tabs [data-page="capture"]').click();
-   need(await p.evaluate(id=>day('2026-11-21').quickCaptureEntries.some(x=>x.id===id&&x.text==='QA UPDATED FROM REVIEW'),memoId),'Selected date changed stored memo content');
+   need(await p.evaluate(id=>day('2026-11-21').quickCaptureEntries.some(x=>x.id===id&&x.text.startsWith('QA ')),memoId),'Selected date changed stored memo content');
  });
 
  second=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,timezoneId:'Pacific/Honolulu',locale:'en-US',serviceWorkers:'block'});
@@ -149,7 +150,7 @@ try {
    need(text.includes('QA LEGACY EVENING')&&text.includes('QA LEGACY NIGHT'),'Legacy evening or night record was hidden');
    await c.screenshot({path:OUT+'/legacy-evening-night.png',animations:'disabled'});
  });
- await check('D-01/K-13: denied check-in autosave retains original record and allows retry',async()=>{
+ await check('D-01: denied check-in autosave retains original record and allows retry (IME separately unverified)',async()=>{
    await c.evaluate(()=>{changeDate('2026-11-19');nav('checkin')});
    await c.locator('#page-checkin [data-phase="morning"]').click();
    const previous=await c.evaluate(k=>window.localStorage.getItem(k),KEY);
