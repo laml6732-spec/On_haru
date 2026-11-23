@@ -109,6 +109,8 @@ for(const width of [320,390,1024]) for(const theme of ['light','dark']){
    assert(prayerCopy.img?.endsWith('morning-prayer-'+prayerCopy.id+'.png'),'Rotating prayer image missing: '+JSON.stringify(prayerCopy));
    assert(await page.locator('body').evaluate(el=>el.classList.contains('morning-prayer-running')),'Morning-running context missing');
    await page.screenshot({path:`${out}/${width}-${theme}-prayer-running.png`,animations:'disabled'});
+   await page.locator('#focusNoteToggle').click();
+   await page.locator('#timerNote').fill('QA MORNING PRAYER NOTE');
    await page.waitForTimeout(1400);
    await page.locator('#focusEnd').click();
    await page.locator('#choiceModal').waitFor({state:'visible'});
@@ -125,6 +127,14 @@ for(const width of [320,390,1024]) for(const theme of ['light','dark']){
    await page.screenshot({path:`${out}/${width}-${theme}-prayer-completed-flower.png`,animations:'disabled'});
    await page.locator('.tabs [data-page="capture"]').click();
    assert((await field.inputValue())===saved,'Morning prayer overwrote an existing anchor');
+   const updatedAnchor='QA ANCHOR AFTER MORNING PRAYER';
+   await field.fill(updatedAnchor);
+   await field.blur();
+   await page.locator('.tabs [data-page="records"]').click();
+   await page.locator('#rev-reflect').click();
+   const review=page.locator('#new-reflect-page');
+   assert((await review.locator('.rv-reference-anchor').innerText()).includes(updatedAnchor),'Daily Review did not show the updated anchor');
+   assert(await review.locator('.review-session-record').filter({hasText:'QA MORNING PRAYER NOTE'}).count()===1,'Daily Review lost or duplicated the completed morning prayer');
    await page.locator('.tabs [data-page="focus"]').click();
    assert(!(await page.locator('#morningPrayerListeningMessage').isVisible()),'Morning text must not leak into ordinary Focus prayer setup');
    await page.locator('#focusStart').click();

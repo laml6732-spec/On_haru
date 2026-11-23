@@ -171,6 +171,53 @@ try {
     assert.equal(saved.days[future].checkins.morning.note, 'QA selected ' + future);
   });
 
+  await run('E-02 task completion and its focus memo survive in Archive', async page => {
+    const title = 'QA Stage Seven Task';
+    const memo = 'QA task work summary';
+    const updated = 'QA task work summary revised';
+    const go = name => page.locator('.tabs [data-page="' + name + '"]').click();
+    await go('capture');
+    await page.locator('#captureTasks').getByRole('button', { name: 'Add task', exact: true }).click();
+    await page.locator('#taskTitle').fill(title);
+    await page.locator('#taskSave').click();
+    const task = (await state(page)).tasks.find(entry => entry.title === title);
+    assert.ok(task, 'Task was not saved');
+    await page.locator('#captureTasks .capture-task-row').filter({ hasText: title }).locator('.task-start-btn').click();
+    await page.locator('#focusStart').click();
+    await page.locator('#focusNoteToggle').click();
+    await page.locator('#timerNote').fill(memo);
+    await page.clock.setFixedTime(new Date('2026-11-21T10:15:05-10:00'));
+    await page.locator('#focusEnd').click();
+    await page.locator('#choiceList button').first().click();
+    const taskKey = task.id + '|single';
+    const completed = await state(page);
+    const session = completed.days[later].sessions.find(entry => entry.taskKey === taskKey);
+    assert.ok(completed.checks[taskKey]);
+    assert.equal(session?.note, memo);
+    assert.equal(session.task, title);
+    await go('records');
+    await page.locator('#rev-reflect').click();
+    const record = page.locator('#new-reflect-page .review-session-record').filter({ hasText: memo });
+    assert.ok((await record.innerText()).includes(title));
+    await record.locator('.rv-note-preview').click();
+    const editor = page.locator('#konaReviewEditor');
+    await editor.getByRole('textbox', { name: 'Note', exact: true }).fill(updated);
+    await editor.getByRole('button', { name: 'Save', exact: true }).click();
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => document.getElementById('launchScreen')?.remove());
+    await go('records');
+    await page.locator('#rev-archive').click();
+    await page.locator('#archive-search .archive-records-search-button').click();
+    await page.locator('#archive-search-input').fill(title);
+    const archive = page.locator('#archive-search-results .archive-search-result').filter({ hasText: updated });
+    assert.equal(await archive.count(), 1);
+    assert.equal(await archive.getAttribute('data-record-id'), 's-' + session.id);
+    assert.equal(await archive.getAttribute('data-record-date'), later);
+    const persisted = await state(page);
+    assert.ok(persisted.checks[taskKey]);
+    assert.equal(persisted.days[later].sessions.find(entry => entry.id === session.id)?.taskKey, taskKey);
+  });
+
   await run('D-03 memo, schedule, check-in, prayer session and anchor survive reload', async page => {
     await page.evaluate(({ later }) => {
       const v = day(later);

@@ -39,6 +39,8 @@ function konaOpenReviewEditor(d,id){
  const fields={};function field(key,label,value){const wrap=node('label',label),input=node('textarea');input.className='field';input.rows=key==='note'?5:3;input.value=value||'';input.setAttribute('aria-label',label);wrap.append(input);sheet.append(wrap);fields[key]=input}
  if(isCapture||isEvent)field('title',KonaI18n.t("Title · optional"),isCapture?source?.title:eventNoteTitle(d,eventId));
  if(isClass){for(const [key,label]of [['lectureQuote',KonaI18n.t("Memorable words")],['lectureReflection',KonaI18n.t("Reflection")],['classResponse',KonaI18n.t("Response")]])field(key,label,source?.[key])}else field('note',KonaI18n.t("Note"),current);
+ const linkedSchedule=isCapture?konaNoteScheduleControl(source,d):null;
+ if(linkedSchedule)sheet.append(linkedSchedule.details);
  const draft={tags:[...(isClass?source?.classTags:source?.tags|| (isAnchor?v.headlineTags:isMeal?v.eventNoteTags?.[id.slice(5)]:isEvent?v.eventNoteTags?.[eventId]:isFree&&typeof oldFree==='object'?oldFree.tags:null))||[]]};sheet.append(konaEventNoteTagEditor(draft));
  let marked=!!source?.important||(v.important||[]).includes(isCapture?source.id:isEvent?eventId:id),later=null;
  if(isCapture||isEvent){const highlight=node('button',marked?KonaI18n.t("Remove highlight"):KonaI18n.t("Highlight · Important"));highlight.type='button';highlight.className='note-highlight-toggle';highlight.setAttribute('aria-pressed',String(marked));highlight.onclick=()=>{marked=!marked;highlight.setAttribute('aria-pressed',String(marked));highlight.textContent=marked?KonaI18n.t("Remove highlight"):KonaI18n.t("Highlight · Important")};sheet.append(highlight);const revisit=node('details'),summary=node('summary',KonaI18n.t("Revisit later"));later=node('textarea');later.className='field';later.setAttribute('aria-label',KonaI18n.t("Later reflection",true));revisit.append(summary,later);sheet.append(revisit)}
@@ -49,14 +51,16 @@ function konaOpenReviewEditor(d,id){
  saveButton.onclick=()=>{
   const ok=guardedMutation(()=>{
    const dayValue=day(d),tags=draft.tags.filter(tag=>marked||tag!=='important');
+   const capture=isCapture?dayValue.quickCaptureEntries?.find(entry=>entry.id===source.id):null;
+   if(isCapture&&!capture)throw Error(KonaI18n.t("Note no longer exists"));
    if(isCapture||isEvent){
-    const key=isCapture?source.id:eventId;
+    const key=isCapture?capture.id:eventId;
     dayValue.important??=[];
     dayValue.important=dayValue.important.filter(k=>k!==key);
     if(marked)dayValue.important.push(key);
     if(later?.value?.trim()){
      const entry={text:later.value.trim(),createdAt:new Date().toISOString()};
-     if(isCapture){source.laterReflections??=[];source.laterReflections.push(entry)}
+     if(isCapture){capture.laterReflections??=[];capture.laterReflections.push(entry)}
      else{dayValue.eventNoteReflections??={};dayValue.eventNoteReflections[eventId]??=[];dayValue.eventNoteReflections[eventId].push(entry)}
     }
    }
@@ -65,7 +69,9 @@ function konaOpenReviewEditor(d,id){
     for(const key of ['lectureQuote','lectureReflection','classResponse'])source[key]=fields[key].value;
     source.classTags=tags;
    }else if(isCapture){
-    source.title=fields.title.value.trim();source.text=fields.note.value;source.tags=tags;source.important=marked;
+    capture.title=fields.title.value.trim();capture.text=fields.note.value;capture.tags=tags;capture.important=marked;
+    const scheduleId=linkedSchedule.select.value;
+    if(scheduleId!==(capture.scheduleId||''))konaSetNoteSchedule(capture,dayEvents(d).find(event=>event.id===scheduleId));
    }else if(isSession||isCheck){
     source.note=fields.note.value;source.tags=tags;
     if(id==='check-night'){dayValue.eventNotes??={};dayValue.eventNotes.__day_wrap=source.note}
@@ -2141,16 +2147,45 @@ function konaOpenEventRecords(event,recordDate=date){
  for(const source of sources){const row=document.createElement('button');row.type='button';row.className='kona-related-note';const q=source.kind==='capture'?db.days[recordDate].quickCaptureEntries.find(q=>q.id===source.id):null;row.textContent=konaNoteDisplay(konaSourceNoteText(source),q?.tags||db.days[recordDate]?.eventNoteTags?.[source.id]||[]);konaApplyNoteTagIcon(row,q?.tags||db.days[recordDate]?.eventNoteTags?.[source.id]||[]);row.setAttribute('aria-label',KonaI18n.t("Open related note",true));row.onclick=()=>konaOpenSourceNote(source);body.append(row)}
  if(!sources.length){const empty=document.createElement('p');empty.textContent=KonaI18n.t("No linked notes yet.");body.append(empty)}openSheet('timeNotesModal');
 }
+function konaNoteScheduleLabel(entry,event){
+ if(event)return KonaI18n.eventLabel(event);
+ if(!entry?.scheduleId)return '';
+ const name=entry.scheduleTitle||KonaI18n.t("Previously linked event");
+ return name+KonaI18n.t(" · no longer scheduled");
+}
+function konaSetNoteSchedule(entry,event){
+ entry.scheduleId=event?.id||'';
+ entry.scheduleTitle=event?.title||KonaI18n.t("Personal note");
+ entry.scheduleTime=event?event.start+'–'+event.end:'';
+}
+function konaNoteScheduleControl(entry,recordDate){
+ const events=dayEvents(recordDate),details=document.createElement('details');
+ details.className='kona-note-schedule';
+ const summary=document.createElement('summary');
+ const current=events.find(event=>event.id===entry.scheduleId);
+ summary.textContent=KonaI18n.t("Schedule · ")+(konaNoteScheduleLabel(entry,current)||KonaI18n.t("None"));
+ const select=document.createElement('select');
+ select.className='field';
+ select.setAttribute('aria-label',KonaI18n.t("Link this note to a schedule event",true));
+ select.append(new Option(KonaI18n.t("No linked schedule"),''));
+ for(const event of events)select.append(new Option(event.start+' · '+KonaI18n.eventLabel(event),event.id));
+ if(entry.scheduleId&&!current)select.append(new Option(konaNoteScheduleLabel(entry),entry.scheduleId));
+ select.value=entry.scheduleId||'';
+ details.append(summary,select);
+ return {details,select};
+}
 function konaReviewNoteMetadata(entry,recordDate,onChanged){
  const wrap=document.createElement('section');wrap.className='kona-note-metadata';wrap.setAttribute('aria-label',KonaI18n.t("Note schedule and tags",true));
- const events=dayEvents(recordDate),schedule=document.createElement('details');schedule.className='kona-note-schedule';
- const scheduleLabel=document.createElement('summary');scheduleLabel.textContent=entry.scheduleId?(entry.scheduleTitle||KonaI18n.t("Linked event")):KonaI18n.t("＋ Schedule");scheduleLabel.setAttribute('aria-label',KonaI18n.t("Edit linked schedule: ",true)+(entry.scheduleTitle||KonaI18n.t("None",true)));schedule.append(scheduleLabel);
- const select=document.createElement('select');select.setAttribute('aria-label',KonaI18n.t("Link this note to a schedule event",true));select.append(new Option(KonaI18n.t("No linked schedule"),''));
- events.forEach(e=>select.append(new Option(e.start+' · '+KonaI18n.eventLabel(e),e.id)));
- if(entry.scheduleId&&!events.some(e=>e.id===entry.scheduleId))select.append(new Option((entry.scheduleTitle||KonaI18n.t("Previously linked event"))+KonaI18n.t(" · no longer scheduled"),entry.scheduleId));
- select.value=entry.scheduleId||'';
- select.onchange=()=>{const selected=events.find(e=>e.id===select.value);const ok=guardedMutation(()=>{const q=db.days[recordDate]?.quickCaptureEntries?.find(x=>x.id===entry.id);if(!q)throw Error(KonaI18n.t("Note no longer exists"));q.scheduleId=selected?.id||'';q.scheduleTitle=selected?.title||KonaI18n.t("Personal note");q.scheduleTime=selected?selected.start+'–'+selected.end:''},KonaI18n.t("Schedule link was not saved. Please retry."));if(ok)onChanged();else select.value=entry.scheduleId||''};
- schedule.append(select);wrap.append(schedule);
+ const {details,select}=konaNoteScheduleControl(entry,recordDate);
+ select.onchange=()=>{
+  const ok=guardedMutation(()=>{
+   const q=db.days[recordDate]?.quickCaptureEntries?.find(x=>x.id===entry.id);
+   if(!q)throw Error(KonaI18n.t("Note no longer exists"));
+   konaSetNoteSchedule(q,dayEvents(recordDate).find(event=>event.id===select.value));
+  },KonaI18n.t("Schedule link was not saved. Please retry."));
+  if(ok)onChanged();else select.value=entry.scheduleId||'';
+ };
+ wrap.append(details);
  const tagKey=recordDate+'|'+entry.id;window.konaExpandedTagRecords??=new Set();
  const tags=document.createElement('div');tags.className='kona-note-tag-details';
  const chips=document.createElement('div');chips.className='kona-note-tag-chips';
@@ -2428,7 +2463,7 @@ function reviewRecords(d=date){
   const energy=check?.[phase+'Energy']??check?.mood?.energy??check?.[phase+KonaI18n.t("Energy")]??null,happiness=check?.[phase+'Happiness']??check?.mood?.happiness??check?.[phase+KonaI18n.t("Happiness")]??null;
   const body=kind==='check'?String(check?.note||''):kind==='session'?item.content.split('\n').slice(1).join('\n').trim():item.content;
   const recorded=validReflectHM(String(item.stamp||'').slice(0,5));
-  return {...item,date:d,kind,important:!!capture?.important||!!item.important,sourceId:capture?capture.id:kind==='event'?eventId:kind==='free'?item.id.slice(5):item.id,reviewEvent:event,scheduleId:capture?.scheduleId||(kind==='event'?eventId:''),scheduleLabel:KonaI18n.eventLabel(event)||capture?.scheduleTitle||(kind==='event'?item.title:''),body,recordedTime:recorded,energy:Number.isInteger(energy)?energy:null,happiness:Number.isInteger(happiness)?happiness:null,originalMood:check?.mood??null,feeling:item.mood?konaFeeling(item.mood):(KONA_MOOD_LABELS[happiness-1]||''),phase,pinned:kind==='class'&&!!v.checkins?.noon?.lecturePinned,t:event?mins(event.start):item.t};
+  return {...item,date:d,kind,important:!!capture?.important||!!item.important,sourceId:capture?capture.id:kind==='event'?eventId:kind==='free'?item.id.slice(5):item.id,reviewEvent:event,scheduleId:capture?.scheduleId||(kind==='event'?eventId:''),scheduleLabel:capture?konaNoteScheduleLabel(capture,event):KonaI18n.eventLabel(event)||(kind==='event'?item.title:''),body,recordedTime:recorded,energy:Number.isInteger(energy)?energy:null,happiness:Number.isInteger(happiness)?happiness:null,originalMood:check?.mood??null,feeling:item.mood?konaFeeling(item.mood):(KONA_MOOD_LABELS[happiness-1]||''),phase,pinned:kind==='class'&&!!v.checkins?.noon?.lecturePinned,t:event?mins(event.start):item.t};
  }).sort((a,b)=>(a.t??Infinity)-(b.t??Infinity));
 }
 // Read-only grouping uses existing schedule links; it never infers a link from time.

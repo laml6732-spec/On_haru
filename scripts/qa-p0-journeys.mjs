@@ -63,6 +63,23 @@ try {
    need(memo?.scheduleId===eventId&&memo.text==='QA SCHEDULE NOTE CONTENT','Memo saved against wrong schedule');
    memoId=memo.id;
  });
+ await check('E-01: Plan and linked Capture note agree with Daily and Archive',async()=>{
+   const records=p.locator('.tabs [data-page="records"]');
+   await records.click();
+   await p.locator('#rev-reflect').click();
+   const daily=p.locator('#new-reflect-page .review-record').filter({hasText:'QA SCHEDULE NOTE CONTENT'});
+   need(await daily.count()===1,'Linked note missing or duplicated in Daily');
+   need((await p.locator('#new-reflect-page').innerText()).includes('QA SAFE SCHEDULE'),'Daily did not show the linked schedule');
+   need(await p.locator('#datePicker').inputValue()===DAY,'Daily changed the target date');
+   await p.locator('#rev-archive').click();
+   if(!await p.locator('#archive-search-input').isVisible())await p.locator('#archive-search .archive-records-search-button').click();
+   await p.locator('#archive-search-input').fill('QA SCHEDULE NOTE CONTENT');
+   const entry=p.locator('#archive-search-results .archive-search-result').filter({hasText:'QA SCHEDULE NOTE CONTENT'});
+   need(await entry.count()===1,'Archive missing or duplicated the Capture note');
+   need(await entry.getAttribute('data-record-id')==='q-'+memoId,'Archive record ID did not match Capture');
+   need(await entry.getAttribute('data-record-date')===DAY,'Archive record date did not match Capture');
+   need((await entry.locator('.review-schedule-label').innerText()).includes('QA SAFE SCHEDULE'),'Archive did not show the linked schedule');
+ });
  await check('P-02: modifying the schedule keeps its ID and all linked memo content',async()=>{
    await p.locator('.tabs [data-page="today"]').click();
    await p.locator('#konaScheduleMore > summary').click();
@@ -84,17 +101,50 @@ try {
    await p.keyboard.press('Escape');
    need(await p.evaluate(id=>db.events.some(e=>e.id===id),eventId),'Escape deleted schedule unexpectedly');
  });
- await check('P-15/E-05: removing a schedule does not delete its linked Capture memo',async()=>{
-   await p.locator('#eventManageList .record-item').filter({hasText:'QA UPDATED SCHEDULE'}).click();
+ await check('P-15/E-05: moving and deleting a schedule preserves the original dated note',async()=>{
+   const next='2026-11-22';
+   const schedule=p.locator('#eventManageList .record-item').filter({hasText:'QA UPDATED SCHEDULE'});
+   await schedule.click();
+   await p.locator('#choiceList button').filter({has:p.getByText('Edit',{exact:true})}).click();
+   await p.locator('#eventSince').fill(next);
+   await p.locator('#eventSave').click();
+   const moved=await p.evaluate(({eventId,day,next})=>({
+     prior:dayEvents(day).some(e=>e.id===eventId),
+     next:dayEvents(next).some(e=>e.id===eventId)
+   }),{eventId,day:DAY,next});
+   need(!moved.prior&&moved.next,'Schedule was not moved to the new date');
+   await p.locator('#datePicker').fill(next);
+   await schedule.click();
    await p.locator('#choiceList button').filter({has:p.getByText('Delete scope',{exact:true})}).click();
    await p.locator('#choiceList button').getByText('Delete',{exact:true}).click();
    need(!(await p.evaluate(id=>db.events.some(e=>e.id===id),eventId)),'Delete did not remove selected schedule');
-   const after=await p.evaluate(id=>day('2026-11-21').quickCaptureEntries.filter(x=>x.id===id),memoId);
-   need(after.length===1&&after[0].text==='QA SCHEDULE NOTE CONTENT','Schedule deletion also erased or duplicated its memo');
+   const notes=await p.evaluate(id=>Object.entries(db.days).flatMap(([d,v])=>(v.quickCaptureEntries||[]).filter(x=>x.id===id).map(x=>({date:d,text:x.text}))),memoId);
+   need(notes.length===1&&notes[0].date===DAY&&notes[0].text==='QA SCHEDULE NOTE CONTENT','Schedule move or deletion erased, moved or duplicated its memo');
    await p.locator('.tabs [data-page="records"]').click();
    await p.locator('#rev-reflect').click();
-   need((await p.locator('#page-records').innerText()).includes('QA SCHEDULE NOTE CONTENT'),'Orphaned memo became invisible in Daily Review');
+   need(!(await p.locator('#new-reflect-page').innerText()).includes('QA SCHEDULE NOTE CONTENT'),'Memo appeared under the new schedule date');
+   await p.locator('#datePicker').fill(DAY);
+   const note=p.locator('#new-reflect-page .review-record').filter({hasText:'QA SCHEDULE NOTE CONTENT'});
+   need(await note.count()===1,'Orphaned memo became invisible in Daily Review');
+   need((await note.innerText()).includes('no longer scheduled'),'Daily presented an unavailable schedule as active');
+   await note.locator('.rv-note-preview').click();
+   const editor=p.locator('#konaReviewEditor');
+   await editor.locator('.kona-note-schedule > summary').click();
+   const missing=editor.locator('.kona-note-schedule select');
+   need(await missing.inputValue()===eventId,'Editor lost the historical link');
+   need((await missing.locator('option:checked').innerText()).includes('no longer scheduled'),'Schedule selector did not identify the saved historical link');
+   await missing.selectOption('');
+   await editor.getByRole('button',{name:'Cancel',exact:true}).click();
+   need(await p.evaluate(id=>day(date).quickCaptureEntries.find(q=>q.id===id).scheduleId,memoId)===eventId,'Cancel changed the stored schedule link');
    await p.screenshot({path:OUT+'/orphan-memo-review.png',animations:'disabled'});
+   await p.locator('#rev-archive').click();
+   if(!await p.locator('#archive-search-input').isVisible())await p.locator('#archive-search .archive-records-search-button').click();
+   await p.locator('#archive-search-input').fill('QA SCHEDULE NOTE CONTENT');
+   const archive=p.locator('#archive-search-results .archive-search-result').filter({hasText:'QA SCHEDULE NOTE CONTENT'});
+   need(await archive.count()===1&&await archive.getAttribute('data-record-date')===DAY,'Archive lost the original memo date');
+   need(await archive.getAttribute('data-record-id')==='q-'+memoId,'Archive created a new memo after schedule deletion');
+   need((await archive.locator('.review-schedule-label').innerText()).includes('no longer scheduled'),'Archive presented an unavailable schedule as active');
+   await p.locator('#rev-reflect').click();
  });
  await check('C-02/R-02: Review edit updates the same Capture ID without duplication',async()=>{
    const record=p.locator('#new-reflect-page .review-record').filter({hasText:'QA SCHEDULE NOTE CONTENT'}).first();
@@ -106,9 +156,38 @@ try {
    const matches=await p.evaluate(id=>day('2026-11-21').quickCaptureEntries.filter(x=>x.id===id),memoId);
    need(matches.length===1&&matches[0].text==='QA UPDATED FROM REVIEW','Review edit generated a copy or failed to save');
    await p.locator('#rev-archive').click();
-   await p.locator('#archive-search .archive-records-search-button').click();
+   if(!await p.locator('#archive-search-input').isVisible())await p.locator('#archive-search .archive-records-search-button').click();
    await p.locator('#archive-search-input').fill('QA UPDATED FROM REVIEW');
    need((await p.locator('#archive-search-results').innerText()).includes('QA UPDATED FROM REVIEW'),'Archive index did not reflect latest edited memo');
+ });
+ await check('P-15: relink the same note to a replacement or switch to a personal note',async()=>{
+   const go=name=>p.locator('.tabs [data-page="'+name+'"]').click();
+   await go('today');
+   await p.locator('#quickAddEvent').click();
+   await p.locator('#eventTitle').fill('QA REPLACEMENT SCHEDULE');
+   await p.locator('#eventStart').fill('09:00');
+   await p.locator('#eventEnd').fill('11:00');
+   await p.locator('#eventSince').fill(DAY);
+   await p.locator('#eventSave').click();
+   const replacement=await p.evaluate(()=>db.events.find(e=>e.title==='QA REPLACEMENT SCHEDULE').id);
+   const card=p.locator('#new-reflect-page .review-record').filter({hasText:'QA UPDATED FROM REVIEW'});
+   const capture=()=>p.evaluate(id=>day(date).quickCaptureEntries.find(q=>q.id===id),memoId);
+   await go('records');
+   await p.locator('#rev-reflect').click();
+   for(const link of [replacement,'']){
+     await card.locator('.rv-note-preview').click();
+     const editor=p.locator('#konaReviewEditor');
+     await editor.locator('.kona-note-schedule > summary').click();
+     await editor.locator('.kona-note-schedule select').selectOption(link);
+     await editor.getByRole('button',{name:'Save',exact:true}).click();
+     const memo=await capture();
+     need(memo.id===memoId&&memo.text==='QA UPDATED FROM REVIEW'&&memo.scheduleId===link,'Relink changed the note body or ID');
+   }
+   await p.locator('#rev-archive').click();
+   if(!await p.locator('#archive-search-input').isVisible())await p.locator('#archive-search .archive-records-search-button').click();
+   await p.locator('#archive-search-input').fill('QA UPDATED FROM REVIEW');
+   const entry=p.locator('#archive-search-results .archive-search-result').filter({hasText:'QA UPDATED FROM REVIEW'});
+   need(await entry.count()===1&&await entry.locator('.review-schedule-label').count()===0,'Personal note retained the removed schedule in Archive');
  });
  await check('N-01/N-02/N-13: selected date remains consistent across Plan, Capture, Check-in and Daily',async()=>{
    await p.evaluate(d=>changeDate(d),OTHER);
@@ -159,7 +238,7 @@ try {
    const saved=await c.evaluate(()=>db.days['2026-11-19']?.checkins?.noon);
    need(saved?.lectureQuote==='QA CLASS QUOTE SAVED'&&saved?.lectureReflection==='QA CLASS REFLECTION SAVED','Class note was lost on reload');
  });
- await check('K-11: legacy night and evening records remain independently readable',async()=>{
+ await check('K-11: legacy night and evening records can be read and edited independently',async()=>{
    await c.evaluate(()=>{
      const v=day('2026-11-18');
      v.checkins.evening={note:'QA LEGACY EVENING'};
@@ -169,6 +248,24 @@ try {
    await c.locator('#rev-reflect').click();
    const text=await c.locator('#page-records').innerText();
    need(text.includes('QA LEGACY EVENING')&&text.includes('QA LEGACY NIGHT'),'Legacy evening or night record was hidden');
+   const edits=[['evening','QA LEGACY EVENING EDITED'],['night','QA LEGACY NIGHT EDITED']];
+   for(const [phase,body] of edits){
+     const card=c.locator('#new-reflect-page .rv-daily-check-'+phase);
+     need(await card.count()===1,'Legacy '+phase+' card missing or duplicated');
+     await card.locator('.rv-daily-check-name').click();
+     const editor=c.locator('#konaReviewEditor');
+     await editor.getByRole('textbox',{name:'Note',exact:true}).fill(body);
+     await editor.getByRole('button',{name:'Save',exact:true}).click();
+     need((await card.innerText()).includes(body),'Legacy '+phase+' edit not reflected in Daily');
+   }
+   await c.reload({waitUntil:'domcontentloaded'});
+   await c.evaluate(()=>{document.getElementById('launchScreen')?.remove();changeDate('2026-11-18')});
+   await c.locator('.tabs [data-page="records"]').click();
+   await c.locator('#rev-reflect').click();
+   for(const [phase,body] of edits){
+     const card=c.locator('#new-reflect-page .rv-daily-check-'+phase);
+     need(await card.count()===1&&(await card.innerText()).includes(body),'Legacy '+phase+' did not survive reload as one record');
+   }
    await c.screenshot({path:OUT+'/legacy-evening-night.png',animations:'disabled'});
  });
  await check('D-01: denied check-in autosave retains original record and allows retry (IME separately unverified)',async()=>{
@@ -195,20 +292,53 @@ try {
    const d=await c.evaluate(()=>db.days['2026-11-19']?.checkins);
    need(d?.morning?.note==='QA UNSAVED DRAFT'&&d?.noon?.note==='QA SELECTED NOON'&&d?.evening?.note==='QA SELECTED EVENING','Saved check-in disappeared on reload');
  });
+ await check('E-04: edit a check-in in Review and reopen it with mood and phase order intact',async()=>{
+   const d='2026-11-19';
+   await c.evaluate(()=>document.getElementById('launchScreen')?.remove());
+   await c.locator('#datePicker').fill(d);
+   await c.locator('.tabs [data-page="checkin"]').click();
+   await c.locator('#page-checkin [data-phase="morning"]').click();
+   await c.locator('#checkNote').fill('QA CHECK-IN JOURNEY');
+   await c.locator('#moodGrid [data-dimension=energy] input.kona-slim-rail').press('End');
+   await c.locator('#moodGrid [data-dimension=happiness] input.kona-slim-rail').press('End');
+   await c.locator('.tabs [data-page="records"]').click();
+   await c.locator('#rev-reflect').click();
+   const daily=c.locator('#new-reflect-page');
+   const morning=daily.locator('.rv-daily-check-morning');
+   const feeling=await morning.locator('.review-feeling-value').innerText();
+   need(feeling!=='Choose mood','Test mood did not appear in Daily');
+   await morning.locator('.rv-daily-check-name').click();
+   const editor=c.locator('#konaReviewEditor');
+   await editor.getByRole('textbox',{name:'Note',exact:true}).fill('QA CHECK-IN EDITED IN DAILY');
+   await editor.getByRole('button',{name:'Save',exact:true}).click();
+   need(await morning.locator('.review-feeling-value').innerText()===feeling,'Editing the body changed its mood');
+   await c.reload({waitUntil:'domcontentloaded'});
+   await c.evaluate(()=>document.getElementById('launchScreen')?.remove());
+   await c.locator('#datePicker').fill(d);
+   await c.locator('.tabs [data-page="checkin"]').click();
+   await c.locator('#page-checkin [data-phase="morning"]').click();
+   need(await c.locator('#checkNote').inputValue()==='QA CHECK-IN EDITED IN DAILY','Check-in source did not reflect Daily edit after reload');
+   await c.locator('.tabs [data-page="records"]').click();
+   await c.locator('#rev-reflect').click();
+   const order=await daily.locator('.rv-daily-checkin').evaluateAll(cards=>cards.map(card=>['morning','noon','evening'].find(phase=>card.classList.contains('rv-daily-check-'+phase))));
+   need(order.join(',')==='morning,noon,evening','Daily check-in phase order changed');
+   need(await morning.locator('.review-feeling-value').innerText()===feeling,'Reopened Daily did not preserve mood');
+   need((await morning.innerText()).includes('QA CHECK-IN EDITED IN DAILY'),'Reopened Daily did not preserve edited body');
+ });
  await check('D-13: browser origin storage is isolated between 127.0.0.1 and localhost',async()=>{
    const other=await second.newPage();other.on('pageerror',e=>result.errors.push(String(e)));
    const alternate=BASE.replace('127.0.0.1','localhost');
    await other.goto(alternate,{waitUntil:'domcontentloaded'});
    const source=await c.evaluate(k=>window.localStorage.getItem(k),KEY);
    const otherValue=await other.evaluate(k=>window.localStorage.getItem(k),KEY);
-   need(typeof source==='string'&&source.includes('QA UNSAVED DRAFT'),'Source records missing');
-   need(!otherValue?.includes('QA UNSAVED DRAFT'),'Other origin automatically received private records');
+   need(typeof source==='string'&&source.includes('QA SELECTED NOON'),'Source records missing');
+   need(!otherValue?.includes('QA SELECTED NOON'),'Other origin automatically received private records');
    await other.close();
  });
 
  offline=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,timezoneId:'Pacific/Honolulu',serviceWorkers:'allow'});
  const o=await init(offline);
- await check('D-16/E-10: new memo saved offline persists through reconnection',async()=>{
+ await check('D-16/E-10: new memo and edit survive offline reload and reconnection',async()=>{
    await o.waitForFunction(()=>!!navigator.serviceWorker.controller,{timeout:15000});
    await o.locator('.tabs [data-page="capture"]').click();
    await offline.setOffline(true);
@@ -219,10 +349,21 @@ try {
      await o.locator('#qc-text').fill('QA CREATED WHILE OFFLINE');
      await o.locator('#qc-submit').click();
      need((await o.locator('.capture-recent-body').first().innerText()).includes('QA CREATED WHILE OFFLINE'),'Offline local save failed');
+     const before=await o.evaluate(()=>day(date).quickCaptureEntries.at(-1).id);
+     await o.locator('.tabs [data-page="records"]').click();
+     await o.locator('#rev-reflect').click();
+     const record=o.locator('#new-reflect-page .review-record').filter({hasText:'QA CREATED WHILE OFFLINE'});
+     await record.getByRole('button',{name:/Change note/}).first().click();
+     const editor=o.locator('#konaReviewEditor');
+     await editor.getByRole('textbox',{name:'Note',exact:true}).fill('QA EDITED WHILE OFFLINE');
+     await editor.getByRole('button',{name:'Save',exact:true}).click();
+     await o.reload({waitUntil:'domcontentloaded'});
+     const memo=await o.evaluate(()=>day(date).quickCaptureEntries.at(-1));
+     need(memo.id===before&&memo.text==='QA EDITED WHILE OFFLINE','Offline reload lost edited body or original memo ID');
    }finally{await offline.setOffline(false)}
    await o.reload({waitUntil:'domcontentloaded'});
    await o.locator('.tabs [data-page="capture"]').click();
-   need((await o.locator('.capture-recent-body').first().innerText()).includes('QA CREATED WHILE OFFLINE'),'Offline memo did not survive reconnection');
+   need((await o.locator('.capture-recent-body').first().innerText()).includes('QA EDITED WHILE OFFLINE'),'Edited offline memo did not survive reconnection');
    await o.screenshot({path:OUT+'/offline-reconnected.png',animations:'disabled'});
  });
  await check('A-12: no unhandled browser errors in P0 journeys',async()=>{
