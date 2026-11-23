@@ -3,6 +3,8 @@ on:
   push:
     branches: [main, 'fix/write-toggle-grid-aligned-on-main-2026-11-05']
     paths: ['public/legacy/**', 'scripts/qa-capture-pin-grid.mjs', '.github/workflows/qa-capture-pin-grid.yml']
+  pull_request:
+    paths: ['public/legacy/**', 'scripts/qa-capture-pin-grid.mjs', '.github/workflows/qa-capture-pin-grid.yml']
   workflow_dispatch:
 jobs:
   verify-pin-grid:

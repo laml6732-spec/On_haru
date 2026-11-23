@@ -3,6 +3,8 @@ on:
   push:
     branches: [main, 'fix/checkin-archive-touch-2026-11-05', 'fix/review-hierarchy-qa-compat-2026-11-05', 'fix/mood-checkin-touch-qa-2026-11-06']
     paths: ['public/legacy/**', 'scripts/qa-checkin-archive-touch.mjs', '.github/workflows/qa-checkin-archive-touch.yml']
+  pull_request:
+    paths: ['public/legacy/**', 'scripts/qa-checkin-archive-touch.mjs', '.github/workflows/qa-checkin-archive-touch.yml']
   workflow_dispatch:
 jobs:
   checkin-archive-touch:

@@ -43,48 +43,35 @@ try{
      if(await details.evaluate(el=>el.open))throw Error('Time disclosure did not collapse');
      await page.locator('.tabs [data-page="records"]').click();
      await page.locator('#rev-archive').click();
-     const moodToggle=page.locator('.archive-mood-view-switch button').filter({hasText:'Mood'}).first();
-     await moodToggle.click();
-     // Mood starts with a 7-day End-of-day dual-series chart before full-month interactions.
-     const compactDays=page.locator('#archive-search .archive-mood-trend-date');
-     if(await compactDays.count()!==7)throw Error('Initial End-of-day graph must show seven date targets');
-     const calendarToggle=page.locator('#archive-search .archive-mood-calendar-toggle');
-     if(await calendarToggle.getAttribute('aria-expanded')!=='false')throw Error('Mood calendar should start collapsed');
-     await calendarToggle.click();
-     if(await calendarToggle.getAttribute('aria-expanded')!=='true')throw Error('Cannot expand Mood month');
-     const measures=await page.evaluate(()=>{
-       const el=s=>document.querySelector(s);
-       const rect=e=>{const r=e.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height}};
-       const days=[...document.querySelectorAll('#archive-search .archive-mood-day')];
-       const widths=days.map(e=>rect(e).w),heights=days.map(e=>rect(e).h);
-       const weekday=el('#archive-search .archive-mood-weekdays'),grid=el('#archive-search .archive-mood-grid');
-       const navs=[...document.querySelectorAll('#archive-search .archive-mood-arrow')];
-       return{days:days.length,minHeight:Math.min(...heights),minWidth:Math.min(...widths),
-         weekdaySize:parseFloat(getComputedStyle(weekday).fontSize),
-         legendSize:parseFloat(getComputedStyle(el('#archive-search .archive-mood-visible-legend')).fontSize),
-         legendVisible:!!el('#archive-search .archive-mood-visible-legend'),
-         legendItems:document.querySelectorAll('#archive-search .archive-mood-legend-item').length,
-         infoCount:document.querySelectorAll('#archive-search .archive-mood-info').length,
-         gridColumns:getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length,
-         navHeights:navs.map(e=>rect(e).h),navWidths:navs.map(e=>rect(e).w),
-         overflow:document.documentElement.scrollWidth-window.innerWidth,
-         offscreen:days.filter(e=>{const r=rect(e);return r.x<0||r.x+r.w>innerWidth+1}).length
-       };
+     // Archive is record-first. A synthetic Check-in must remain readable and
+     // keep its emotion and time without any hidden Mood switch.
+     const injected=await page.evaluate(()=>{
+       const v=day('2026-11-05');
+       v.checkins.morning={...(v.checkins.morning||{}),note:'QA-TOUCH-CHECKIN',moodTime:'08:37',morningEnergy:4,morningHappiness:3};
+       return save();
      });
-     if(measures.days<28||measures.days>31)throw Error('Expected full month of days: '+JSON.stringify(measures));
-     if(measures.minHeight<47.9)throw Error('Mood day height <48px: '+JSON.stringify(measures));
-     if(measures.weekdaySize<11.4||measures.legendSize<10||!measures.legendVisible||measures.legendItems!==4||measures.infoCount!==0)throw Error('Visible phase legend is incomplete or unreadable: '+JSON.stringify(measures));
-     if(measures.gridColumns!==7)throw Error('Mood 7-column grid changed');
-     if(measures.navHeights.some(h=>h<43.9)||measures.navWidths.some(w=>w<43.9))throw Error('Mood month arrows too small');
-     if(measures.overflow>1||measures.offscreen)throw Error('Mood calendar overflows the viewport');
-     const date=page.locator('#archive-search .archive-mood-day').nth(4),dateValue=await date.getAttribute('data-mood-date');
-     await date.click();
-     if(await page.locator('#archive-search .archive-mood-day[data-mood-date="'+dateValue+'"]').getAttribute('aria-pressed')!=='true')throw Error('Selecting a Mood date failed');
-     const prev=page.locator('#archive-search .archive-mood-arrow').first();
-     await prev.click();
-     if(await page.locator('#archive-search .archive-mood-day').count()<28)throw Error('Month navigation lost day buttons');
-     results.archive={...measures,dateClickPassed:true,monthClickPassed:true};
-     await page.screenshot({path:artifacts+'/'+label+'-archive-mood.png',animations:'disabled'});
+     if(!injected)throw Error('Could not save synthetic Check-in fixture');
+     const storedBefore=await page.evaluate(()=>localStorage.getItem('kona.legacy.v1.dayframe'));
+     await page.locator('#rev-archive').click();
+     const row=page.locator('#archive-search-results .archive-checkin-class-group .archive-search-result').filter({hasText:'QA-TOUCH-CHECKIN'});
+     if(await row.count()!==1)throw Error('Check-in record missing from Archive');
+     if(!await row.locator('.archive-checkin-label').count())throw Error('Check-in context label missing');
+     if(!await row.locator('.archive-checkin-emoji').count())throw Error('Check-in emotion indicator missing');
+     const box=await row.boundingBox();
+     if(!box||box.width<100||box.height<35.9)throw Error('Archive record has unusable touch target: '+JSON.stringify(box));
+     if(box.x<0||box.x+box.width>width+1)throw Error('Archive record outside viewport');
+     await row.click();
+     if(await row.getAttribute('aria-expanded')!=='true')throw Error('Archive record cannot expand');
+     if(!await page.locator('#archive-search-results .archive-record-expanded .archive-record-extra').isVisible())throw Error('Expanded check-in has no actions');
+     await row.click();
+     if(await row.getAttribute('aria-expanded')!=='false')throw Error('Archive record cannot collapse');
+     const storedAfter=await page.evaluate(()=>localStorage.getItem('kona.legacy.v1.dayframe'));
+     if(storedAfter!==storedBefore)throw Error('Read-only Archive browsing modified persisted records');
+     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+     if(overflow>1)throw Error('Archive horizontal overflow '+overflow);
+     results.archive={recordVisible:true,emotion:true,expandCollapse:true,storageUnchanged:true,overflow};
+
+     await page.screenshot({path:artifacts+'/'+label+'-archive-records.png',animations:'disabled'});
      await page.locator('.tabs [data-page="focus"]').click();
      results.focus=await page.evaluate(()=>{
        const root=document.querySelector('#page-focus');
@@ -106,7 +93,7 @@ try{
      await page.screenshot({path:artifacts+'/'+label+'-focus-presets.png',animations:'disabled'});
      if(errors.length)throw Error('JS page exceptions: '+errors.join('; '));
      cases.push({...results,passed:true});
-     console.log('PASS '+label+' Check-in / Archive Mood interactions + layout');
+     console.log('PASS '+label+' Check-in / Archive records / Focus interactions + layout');
    }catch(e){
      const err={label,error:String(e),errors};failures.push(err);cases.push({...results,passed:false,error:String(e)});
      console.error('FAIL '+label+' '+String(e));
