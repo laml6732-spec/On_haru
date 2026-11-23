@@ -1239,3 +1239,48 @@ html[data-appearance="dark"] body .app #page-capture #qc-v2 #captureScheduleLink
   grid-row:1!important;
  }
 }
+
+/* Actions for a saved morning prayer and the contextual entry beside the anchor. */
+#choiceList .morning-prayer-primary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-block: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-align: left;
+  background: #274e47;
+  border-color: #274e47;
+  color: #fff;
+}
+
+#choiceList .morning-prayer-primary :is(b, small) {
+  color: #fff;
+  text-align: left;
+  white-space: normal;
+}
+
+#choiceList .morning-prayer-note-link,
+body .app #page-capture #morningPrayerReadAfterAnchor {
+  min-height: 44px;
+  width: 100%;
+  text-align: center;
+  white-space: normal;
+}
+
+#choiceList .morning-prayer-note-link {
+  background: transparent;
+  border-color: transparent;
+}
+
+body .app #page-capture #morningPrayerReadAfterAnchor[hidden] { display: none !important; }
+
+#choiceModal #choiceList .morning-prayer-primary small { max-width: 100%; }
+
+#tutorialWelcome :is(#tutorialHeading, #tutorialBody) {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+#tutorialWelcome #tutorialHeading:focus { outline: none; }

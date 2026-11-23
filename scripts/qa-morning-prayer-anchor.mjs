@@ -112,7 +112,8 @@ for(const width of [320,390,1024]) for(const theme of ['light','dark']){
    await page.waitForTimeout(1400);
    await page.locator('#focusEnd').click();
    await page.locator('#choiceModal').waitFor({state:'visible'});
-   assert((await page.locator('#choiceTitle').innerText()).includes('앵커'),'Morning prayer should propose anchor');
+   assert((await page.locator('#choiceTitle').innerText())==='아침기도를 마쳤어요','Morning prayer should show a completion heading');
+   assert((await page.locator('#choiceModal .choice').first().innerText()).includes('오늘의 한 줄'),'Morning prayer should offer the one-line note');
    await page.screenshot({path:`${out}/${width}-${theme}-prayer-complete.png`,animations:'disabled'});
    await page.locator('#choiceModal .choice').first().click();
    assert(await page.locator('#page-capture').isVisible(),'Anchor action did not navigate to Capture');
