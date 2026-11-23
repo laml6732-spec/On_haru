@@ -33,7 +33,7 @@ try{
  const backupReady=second.waitForEvent('download',{timeout:5000});
  await second.locator('#backupNow').click();
  const backup=await backupReady,backupPath=await backup.path();
- ensure(/^On_HARU_backup_\\d{4}-\\d{2}-\\d{2}\\.json$/.test(backup.suggestedFilename()),'Backup filename is not recognizable');
+ ensure(/^On_HARU_backup_\d{4}-\d{2}-\d{2}\.json$/.test(backup.suggestedFilename()),'Backup filename is not recognizable');
  const exported=JSON.parse(await readFile(backupPath,'utf8'));
  ensure(exported.days[date]?.headline==='TAB_A_PROTECTED','Export did not contain the latest persisted record');
  const freshWrite=await second.evaluate(d=>{day(d).headline='TAB_B_AFTER_RELOAD';return save()},date);
