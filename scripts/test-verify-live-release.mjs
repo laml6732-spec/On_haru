@@ -8,15 +8,22 @@ const html = Buffer.from('<meta name="kona-release" content="' + release + '">')
 const sw = Buffer.from("const RELEASE='" + release + "';");
 const check = (changes = {}) => verifyAsset({
   path: '', local: html, actual: html, release, status: 200,
-  finalURL: baseURL, baseURL, workerRelease: null, ...changes,
+  finalURL: baseURL, baseURL, workerRelease: release, ...changes,
 });
 
-test('exact deployed HTML hash and embedded release succeed without optional Worker header', () => {
+test('production Worker requires a matching release header even with exact matching bytes', () => {
   const result = check();
   assert.equal(result.ok, true);
   assert.equal(result.hashMatch, true);
-  assert.equal(result.releaseHeaderPresent, false);
+  assert.equal(result.releaseHeaderPresent, true);
   assert.equal(result.bodyReleaseMatch, true);
+  assert.equal(check({ workerRelease: null }).ok, false);
+  assert.equal(check({ workerRelease: 'stale' }).ok, false);
+});
+test('direct Pages Preview can verify content without Worker-specific headers', () => {
+  const preview = 'https://77e5a9a1.on-haru-pages.pages.dev/legacy/';
+  const result = check({baseURL: preview, finalURL: preview, workerRelease: null});
+  assert.equal(result.ok, true);
 });
 test('when a Worker release header exists, it must match expected release', () => {
   assert.equal(check({ workerRelease: release }).ok, true);
@@ -37,7 +44,7 @@ test('HTML marker must be present even when matching local bytes', () => {
 test('service-worker embedded release marker is verified in addition to hash', () => {
   const url = baseURL + 'sw.js?rev=' + release;
   const args = { path: 'sw.js', local: sw, actual: sw, release,
-    status: 200, finalURL: url, baseURL, workerRelease: null };
+    status: 200, finalURL: url, baseURL, workerRelease: release };
   assert.equal(verifyAsset(args).ok, true);
   const stale = Buffer.from("const RELEASE='stale';");
   assert.equal(verifyAsset({ ...args, local: stale, actual: stale }).ok, false);
@@ -45,7 +52,7 @@ test('service-worker embedded release marker is verified in addition to hash', (
 test('matching CSS content verifies with same-origin rev query but without header', () => {
   const css=Buffer.from('body{color:red}');
   const r=verifyAsset({path:'app.7cb1b71d4eb6.css',local:css,actual:css,release,status:200,
-    finalURL:baseURL+'app.7cb1b71d4eb6.css?rev='+release,baseURL,workerRelease:null});
+    finalURL:baseURL+'app.7cb1b71d4eb6.css?rev='+release,baseURL,workerRelease:release});
   assert.equal(r.ok,true);
 });
 
