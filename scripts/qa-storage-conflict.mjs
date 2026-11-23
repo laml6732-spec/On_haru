@@ -1,37 +1,57 @@
 // Browser storage safety regression. Only isolated, synthetic records are used.
 import {chromium} from 'playwright-core';
 import {existsSync} from 'node:fs';
+import {readFile} from 'node:fs/promises';
 const bin=[process.env.CHROME_PATH,chromium.executablePath(),'/usr/bin/chromium','/usr/bin/google-chrome'].find(p=>p&&existsSync(p));
 if(!bin)throw Error('Chromium is required');
 const browser=await chromium.launch({executablePath:bin,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const URL=process.env.ONHARU_URL||'http://127.0.0.1:8080/legacy/';
 const key='kona.legacy.v1.dayframe',date='2026-11-22';
 const ensure=(ok,message)=>{if(!ok)throw Error(message)};
-const ctx=await browser.newContext({serviceWorkers:'block',timezoneId:'Pacific/Honolulu'});
+const ctx=await browser.newContext({serviceWorkers:'block',timezoneId:'Pacific/Honolulu',acceptDownloads:true});
 try{
  const first=await ctx.newPage(),second=await ctx.newPage(),errors=[];
  for(const page of [first,second]){
   page.on('pageerror',e=>errors.push(String(e)));
   await page.goto(URL,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>typeof save==='function'&&typeof day==='function');
+  await page.evaluate(()=>{document.getElementById('launchScreen')?.remove();const t=document.getElementById('tutorialModal');if(t){t.hidden=true;t.style.display='none'}const w=document.getElementById('welcomeModal');if(w){w.hidden=true;w.style.display='none'}});
  }
  const firstWrite=await first.evaluate(d=>{day(d).headline='TAB_A_PROTECTED';return save()},date);
  ensure(firstWrite===true,'First tab failed to save');
  const staleWrite=await second.evaluate(d=>{day(d).headline='TAB_B_MUST_NOT_OVERWRITE';return save()},date);
  ensure(staleWrite===false,'Stale second tab write was not blocked');
+ let blockedExports=0;second.on('download',()=>blockedExports++);
+ await second.locator('.app-settings-shortcut').click();
+ await second.locator('#backupNow').click();await second.waitForTimeout(250);
+ ensure(blockedExports===0,'Stale tab was allowed to download an outdated backup');
  const diskAfterConflict=await first.evaluate(k=>JSON.parse(window.localStorage.getItem(k)).days['2026-11-22'].headline,key);
  ensure(diskAfterConflict==='TAB_A_PROTECTED','Conflicting save overwrote the original record');
  await second.reload({waitUntil:'domcontentloaded'});
  await second.waitForFunction(()=>typeof save==='function');
+ await second.evaluate(()=>{document.getElementById('launchScreen')?.remove();const t=document.getElementById('tutorialModal');if(t){t.hidden=true;t.style.display='none'}const w=document.getElementById('welcomeModal');if(w){w.hidden=true;w.style.display='none'}});
  ensure(await second.evaluate(d=>day(d).headline,date)==='TAB_A_PROTECTED','Reload failed to recover latest data');
+ await second.locator('.app-settings-shortcut').click();
+ const backupReady=second.waitForEvent('download',{timeout:5000});
+ await second.locator('#backupNow').click();
+ const backup=await backupReady,backupPath=await backup.path();
+ ensure(/^On_HARU_backup_\d{4}-\d{2}-\d{2}\.json$/.test(backup.suggestedFilename()),'Backup filename is not recognizable');
+ const exported=JSON.parse(await readFile(backupPath,'utf8'));
+ ensure(exported.days[date]?.headline==='TAB_A_PROTECTED','Export did not contain the latest persisted record');
  const freshWrite=await second.evaluate(d=>{day(d).headline='TAB_B_AFTER_RELOAD';return save()},date);
  ensure(freshWrite===true,'Fresh tab could not save');
  ensure(await second.evaluate(k=>JSON.parse(window.localStorage.getItem(k)).days['2026-11-22'].headline,key)==='TAB_B_AFTER_RELOAD','Fresh save was not persisted');
+ await second.locator('#restoreFile').setInputFiles(backupPath);
+ await second.locator('.onharu-native-replacement .onharu-dialog-cancel').click();
+ ensure(await second.evaluate(k=>JSON.parse(window.localStorage.getItem(k)).days['2026-11-22'].headline,key)==='TAB_B_AFTER_RELOAD','Cancelled restore changed persisted records');
+ await second.locator('#restoreFile').setInputFiles(backupPath);
+ await second.locator('.onharu-native-replacement .onharu-dialog-accept').click();
+ ensure(await second.evaluate(k=>JSON.parse(window.localStorage.getItem(k)).days['2026-11-22'].headline,key)==='TAB_A_PROTECTED','Accepted backup restore failed to recover original record');
  await second.evaluate(k=>{const data=JSON.parse(window.localStorage.getItem(k));data.version=9999;window.localStorage.setItem(k,JSON.stringify(data))},key);
  await second.reload({waitUntil:'domcontentloaded'});
  await second.waitForFunction(()=>typeof storageRecovery!=='undefined');
  const forward=await second.evaluate(k=>({protected:storageRecovery.active,version:JSON.parse(window.localStorage.getItem(k)).version}),key);
  ensure(forward.protected&&forward.version===9999,'Future-version records were overwritten or accepted');
  ensure(!errors.length,'Unexpected page JavaScript errors: '+errors.join(' | '));
- console.log('PASS: cross-tab collision, reload recovery, future-schema preservation');
+ console.log('PASS: cross-tab collision, stale export blocked, fresh backup verified, cancelled/accepted restore, future-schema preservation');
 }finally{await ctx.close();await browser.close()}

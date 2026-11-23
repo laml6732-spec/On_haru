@@ -1558,10 +1558,21 @@ function konaExportDeviceSettings(){if(tutorialPractice)return;try{download('Kon
 function konaRestoreDeviceSettings(file){if(tutorialPractice||!file)return;const reader=new FileReader();reader.onload=async()=>{let data;try{data=JSON.parse(reader.result)}catch{}if(!konaValidDeviceSettings(data)){toast(KonaI18n.t("This is not a valid device settings file. Records are unchanged."));return}if(!await onHaruConfirm(KonaI18n.t("Restore language and display settings? Records and schedules will stay unchanged.")))return;const store=window.localStorage,langKey=KonaI18n.key,displayKey='kona.legacy.v1.kona.display.v1';let oldLanguage,oldDisplay;try{oldLanguage=store.getItem(langKey);oldDisplay=store.getItem(displayKey);store.setItem(langKey,data.language);store.setItem(displayKey,JSON.stringify({theme:data.display.theme,size:data.display.size,spacing:data.display.spacing,motion:data.display.motion}))}catch{try{if(oldLanguage===null)store.removeItem(langKey);else if(oldLanguage!==undefined)store.setItem(langKey,oldLanguage);if(oldDisplay===null)store.removeItem(displayKey);else if(oldDisplay!==undefined)store.setItem(displayKey,oldDisplay)}catch{}toast(KonaI18n.t("Settings could not be restored. Please retry."));return}window.location.reload()};reader.onerror=()=>toast(KonaI18n.t("Could not read the file."));reader.readAsText(file)}
 function backupJson(){
  if(storageRecovery.active){toast(KonaI18n.t("Saved data needs recovery. Use Download damaged data above or restore a valid backup."));return}
+ // A stale tab must not export an older in-memory snapshot as a current backup.
+ try{
+  if(storageConflict||localStorage.getItem(KEY)!==lastKnownSavedRaw){
+   storageConflict=true;
+   toast(KonaI18n.language==='ko'?'다른 탭에서 기록이 변경됐어요. 최신 기록이 있는 탭에서 백업하거나 이 탭을 새로고침하세요.':'Records changed in another tab. Back up there or reload this tab first.');
+   return;
+  }
+ }catch{
+  toast(KonaI18n.language==='ko'?'저장된 기록을 확인할 수 없어 백업을 시작하지 않았어요.':'Could not verify saved records. Backup was not started.');
+  return;
+ }
  const stamp=nowLocal(),previous=db.settings.lastBackup;
  db.settings.lastBackup=stamp;
  const payload=JSON.stringify(db,null,1);
- try{download(`KonaDTS_backup_${stamp}.json`,payload,'application/json')}
+ try{download(`On_HARU_backup_${stamp}.json`,payload,'application/json')}
  catch(e){db.settings.lastBackup=previous;toast(KonaI18n.t("Backup download failed. Please try again."));return}
  if(!save()&&!tutorialPractice){db.settings.lastBackup=previous;toast(KonaI18n.t("Backup download requested, but its date could not be saved in this browser."))}
  renderFooter();toast(KonaI18n.t("Backup download requested · check your Downloads folder"));
