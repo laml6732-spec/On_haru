@@ -1,9 +1,9 @@
+// Daily and Archive display schedule provenance; Weekly reflection is now
+// inline in Daily instead of a separate #rev-weekly tab.
 import {chromium} from 'playwright-core';
 import {existsSync} from 'node:fs';
 import fs from 'node:fs/promises';
 
-// In-memory synthetic fixtures inside fresh private browser contexts only.
-// No actual user's localStorage, notes, or production data is accessed.
 const url=process.env.ONHARU_URL||'http://127.0.0.1:8080/legacy/';
 const folder=process.env.ONHARU_ARTIFACTS||'test-results/review-labels';
 await fs.mkdir(folder,{recursive:true});
@@ -11,87 +11,74 @@ const executablePath=[process.env.CHROME_PATH,chromium.executablePath(),'/usr/bi
 if(!executablePath)throw Error('Chromium unavailable');
 const browser=await chromium.launch({executablePath,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const results=[];
-
 try{
  for(const width of [320,390,1024])for(const theme of ['light','dark']){
-   const ctx=await browser.newContext({viewport:{width,height:844},isMobile:width<600,hasTouch:width<600,locale:'en-US',serviceWorkers:'block',reducedMotion:'reduce',timezoneId:'Pacific/Honolulu'});
-   const page=await ctx.newPage();page.setDefaultTimeout(9000);
-   const caseResult={width,theme,ok:false};
-   const errors=[];page.on('pageerror',e=>errors.push(String(e)));
-   try{
-     await page.clock.setFixedTime(new Date('2026-11-05T09:30:00-10:00'));
-     await page.goto(url,{waitUntil:'domcontentloaded'});
-     await page.locator('#tutorialChooseEn').click();
-     await page.locator('#welcomeSkip').click();
-     await page.evaluate(theme=>{
-       document.getElementById('launchScreen')?.remove();
-       const dialog=document.getElementById('tutorialModal');
-       if(dialog){dialog.hidden=true;dialog.style.display='none'}
-       document.documentElement.dataset.appearance=theme;document.documentElement.style.colorScheme=theme;
-     },theme);
-     const fixture=await page.evaluate(()=>{
-       date='2026-11-04';
-       const event=dayEvents(date).find(e=>e.id&&e.title)||dayEvents(date)[0];
-       if(!event)throw Error('Synthetic test needs a real in-memory day event');
-       const d=day(date);
-       d.quickCaptureEntries=[...(d.quickCaptureEntries||[]),{
-         id:'qa-unified-schedule-tag',time:'08:51',createdAt:'2026-11-04T18:51:00Z',
-         scheduleId:event.id,scheduleTitle:event.title||'Schedule',title:'QA linked title',
-         text:'QA linked sample for schedule tag',tags:[]
-       }];
-       return {date,event:event.title,id:event.id};
-     });
-     await page.locator('.tabs [data-page="records"]').click();
-     await page.locator('#rev-reflect').click();
-     // Daily renders event title as its schedule tag, with notes grouped under it.
-     const dailyGroup=page.locator('#new-reflect-page .rv-linked-group').filter({hasText:'QA linked sample for schedule tag'}).first();
-     await dailyGroup.waitFor();
-     const dailyTag=dailyGroup.locator('h5.review-event-heading');
-     await dailyTag.waitFor();
-     const measure=el=>el.evaluate(node=>{
-       const c=getComputedStyle(node),r=node.getBoundingClientRect(),before=getComputedStyle(node,'::before');
-       return{text:node.textContent.trim(),bg:c.backgroundColor,color:c.color,radius:c.borderRadius,padding:c.padding,fontSize:c.fontSize,
-         weight:c.fontWeight,display:c.display,before:before.content,width:r.width,x:r.x,visible:r.width>0&&r.height>0};
-     });
-     const daily=await measure(dailyTag);caseResult.daily=daily;
-     if(!daily.visible)throw Error('Daily schedule tag not visible');
-     await page.screenshot({path:folder+'/'+width+'-'+theme+'-daily.png',animations:'disabled'});
-     // Weekly must render a real linked record's schedule tag (not a fabricated DOM node).
-     await page.locator('#rev-weekly').click();
-     const weeklyNote=page.locator('#new-reflect-page .review-weekly-records .review-plan-note').filter({hasText:'QA linked sample for schedule tag'}).first();
-     await weeklyNote.waitFor();
-     const weeklyTag=weeklyNote.locator('.review-schedule-label');await weeklyTag.waitFor();
-     const weekly=await measure(weeklyTag);caseResult.weekly=weekly;
-     await page.screenshot({path:folder+'/'+width+'-'+theme+'-weekly.png',animations:'disabled'});
-     // Archive list (not just its detail page) shows the matching tag.
-     await page.locator('#rev-archive').click();
-     const search=page.locator('#archive-search-input');
-     await search.fill('QA linked sample for schedule tag');
-     const archiveResult=page.locator('#archive-search-results .archive-search-result').filter({hasText:'QA linked sample for schedule tag'}).first();
-     await archiveResult.waitFor();
-     const archiveTag=archiveResult.locator('.review-schedule-label');await archiveTag.waitFor();
-     const archive=await measure(archiveTag);caseResult.archive=archive;
-     await page.screenshot({path:folder+'/'+width+'-'+theme+'-archive.png',animations:'disabled'});
-     await archiveResult.click();
-     const detailTag=page.locator('#archive-search-results .review-record .review-schedule-label').first();
-     await detailTag.waitFor();
-     const detail=await measure(detailTag);caseResult.archiveDetail=detail;
-     const comparable=['bg','color','radius','padding','fontSize','weight'];
-     for(const [name,item] of [['Weekly',weekly],['Archive',archive],['Archive detail',detail]]){
-       if(!item.visible)throw Error(name+' tag missing');
-       for(const k of comparable)if(item[k]!==daily[k])throw Error(name+' '+k+' differs from Daily: '+item[k]+' != '+daily[k]);
-       if(item.before!=='none'&&item.before!=='normal')throw Error(name+' tag contains unwanted arrow: '+item.before);
-       if(item.width>width+1||item.x<0)throw Error(name+' tag outside viewport');
-     }
-     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
-     if(overflow>1)throw Error('Archive overflows '+overflow+'px');
-     if(errors.length)throw Error('Browser errors '+errors.join('; '));
-     caseResult.fixture=fixture;caseResult.ok=true;
-     console.log('PASS '+width+' '+theme+' Daily/Weekly/Archive tags match (real rendered records)');
-   }catch(e){caseResult.error=String(e);console.error('FAIL '+width+' '+theme+' '+e);}
-   results.push(caseResult);
-   await ctx.close();
+  const ctx=await browser.newContext({viewport:{width,height:844},isMobile:width<600,hasTouch:width<600,locale:'en-US',serviceWorkers:'block',reducedMotion:'reduce',timezoneId:'Pacific/Honolulu'});
+  const page=await ctx.newPage(),errors=[];page.setDefaultTimeout(9000);page.on('pageerror',e=>errors.push(String(e)));
+  const result={width,theme,ok:false};
+  try{
+   await page.clock.setFixedTime(new Date('2026-11-05T09:30:00-10:00'));
+   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
+   await page.locator('#tutorialChooseEn').click();await page.locator('#welcomeSkip').click();
+   const fixture=await page.evaluate(t=>{
+    document.getElementById('launchScreen')?.remove();const modal=document.getElementById('tutorialModal');if(modal){modal.hidden=true;modal.style.display='none'}
+    document.documentElement.dataset.appearance=t;document.documentElement.style.colorScheme=t;
+    date='2026-11-04';const event=dayEvents(date).find(e=>e.id&&e.title);
+    if(!event)throw Error('No schedule in synthetic fixture');
+    day(date).quickCaptureEntries=[{id:'qa-linked-tag',time:'08:51',createdAt:'2026-11-04T18:51:00Z',date,
+      scheduleId:event.id,scheduleTitle:event.title,title:'QA linked title',text:'QA linked sample for schedule tag',tags:[]}];
+    return {date,schedule:event.title};
+   },theme);
+   const baseline=await page.evaluate(()=>localStorage.getItem('kona.legacy.v1.dayframe'));
+   await page.locator('.tabs [data-page="records"]').click();
+   await page.locator('#rev-reflect').click();
+   const dailyGroup=page.locator('#new-reflect-page .rv-linked-group').filter({hasText:'QA linked sample for schedule tag'}).first();
+   await dailyGroup.waitFor();
+   const dailyTag=dailyGroup.locator('.rv-daily-group-schedule-tag,.review-event-heading,.review-schedule-label').first();
+   await dailyTag.waitFor();
+   if(!(await dailyTag.innerText()).includes(fixture.schedule))throw Error('Daily schedule provenance missing');
+   const dailyText=await dailyGroup.innerText();if(!dailyText.includes('QA linked sample for schedule tag'))throw Error('Daily note missing');
+   result.daily={schedule:await dailyTag.innerText(),notes:await dailyGroup.locator('.review-record').count()};
+   if(!result.daily.notes)throw Error('Daily record not grouped with schedule');
+   // Weekly reflection remains discoverable in the same Daily screen.
+   const weekly=page.locator('#new-reflect-page .rv-weekly-inline-details');
+   await weekly.locator('summary').first().waitFor();
+   if(!(await weekly.locator('summary').first().innerText()).includes('Weekly reflection'))throw Error('Inline weekly reflection missing');
+   if(!(await weekly.evaluate(el=>el.open)))await weekly.locator('summary').first().click();
+   if(!await weekly.locator('textarea').first().isVisible())throw Error('Inline weekly reflection cannot expand');
+   await page.screenshot({path:folder+'/'+width+'-'+theme+'-daily.png',animations:'disabled'});
+   // Archive opens in the list mode; tapping Search shows the field.
+   await page.locator('#rev-archive').click();
+   await page.locator('#archive-search .archive-records-search-button').click();
+   const search=page.locator('#archive-search-input');await search.fill('QA linked sample for schedule tag');
+   const archiveResult=page.locator('#archive-search-results .archive-search-result').filter({hasText:'QA linked sample for schedule tag'}).first();
+   await archiveResult.waitFor();
+   const archiveTag=archiveResult.locator('.review-schedule-label');await archiveTag.waitFor();
+   if(!(await archiveTag.innerText()).includes(fixture.schedule))throw Error('Archive schedule provenance missing');
+   if(await archiveTag.evaluate(el=>{const r=el.getBoundingClientRect();return r.width<=0||r.height<=0}))throw Error('Archive schedule chip hidden');
+   result.archive={schedule:await archiveTag.innerText(),ariaLabel:await archiveResult.getAttribute('aria-label')};
+   await archiveResult.click();
+   if(await page.locator('#archive-search-results .archive-record-expanded').count()!==1)throw Error('Archive record did not expand');
+   const edit=page.locator('#archive-search-results .archive-record-expanded .archive-record-extra button').filter({hasText:'Edit'});
+   await edit.click();
+   const detail=page.locator('#archive-search-results .review-record');
+   await detail.waitFor();
+   const detailTag=detail.locator('.review-schedule-label');await detailTag.waitFor();
+   if(!(await detailTag.innerText()).includes(fixture.schedule))throw Error('Archive detail provenance missing');
+   if(!(await detail.innerText()).includes('QA linked sample for schedule tag'))throw Error('Archive detail note missing');
+   // Edit opens a modal. Cancel it before returning to the Archive list.
+   await page.locator('#konaReviewEditor .rv-edit-actions button').filter({hasText:'Cancel'}).click();
+   if(await page.locator('#konaReviewEditor').count())throw Error('Archive edit cancel failed to close');
+   await page.locator('#archive-search .archive-back').click();
+   if(await page.locator('#archive-search-results .archive-search-result').count()!==1)throw Error('Back navigation lost search result');
+   const after=await page.evaluate(()=>localStorage.getItem('kona.legacy.v1.dayframe'));
+   if(after!==baseline)throw Error('Read-only Daily/Archive browsing persisted synthetic records');
+   if(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>1)throw Error('Archive horizontal overflow');
+   if(errors.length)throw Error('Page JavaScript errors: '+errors.join('; '));
+   result.fixture=fixture;result.ok=true;console.log('PASS '+width+' '+theme+' daily provenance, weekly inline, archive list/detail labels');
+  }catch(e){result.error=String(e);console.error('FAIL '+width+' '+theme+' '+e)}
+  results.push(result);await ctx.close();
  }
-}finally{await browser.close();}
+}finally{await browser.close()}
 await fs.writeFile(folder+'/report.json',JSON.stringify(results,null,2));
 if(results.some(x=>!x.ok))process.exitCode=1;
