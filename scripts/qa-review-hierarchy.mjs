@@ -78,6 +78,8 @@ try{
    const picked=page.locator('#archive-search .review-archive-context input[type=date]');
    await picked.fill('2026-11-04');await picked.dispatchEvent('change');
    if(await rows.count()!==1)throw Error('Date + schedule + search intersection failed');
+   if(await disclosure.evaluate(el=>el.open))await disclosure.locator('summary').click();
+   if(await disclosure.evaluate(el=>el.open))throw Error('Filter popover failed to close before opening a record');
    if(await page.locator('#archive-search .archive-records-condition-strip').count()!==1)throw Error('Active filter status missing');
    await page.screenshot({path:out+'/'+width+'-'+theme+'-filtered.png',animations:'disabled'});
    const archiveRow=rows.first();
