@@ -66,6 +66,9 @@ try{
    const detailTag=detail.locator('.review-schedule-label');await detailTag.waitFor();
    if(!(await detailTag.innerText()).includes(fixture.schedule))throw Error('Archive detail provenance missing');
    if(!(await detail.innerText()).includes('QA linked sample for schedule tag'))throw Error('Archive detail note missing');
+   // Edit opens a modal. Cancel it before returning to the Archive list.
+   await page.locator('#konaReviewEditor .rv-edit-actions button').filter({hasText:'Cancel'}).click();
+   if(await page.locator('#konaReviewEditor').count())throw Error('Archive edit cancel failed to close');
    await page.locator('#archive-search .archive-back').click();
    if(await page.locator('#archive-search-results .archive-search-result').count()!==1)throw Error('Back navigation lost search result');
    const after=await page.evaluate(()=>localStorage.getItem('kona.legacy.v1.dayframe'));
