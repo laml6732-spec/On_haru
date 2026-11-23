@@ -48,7 +48,7 @@ for(const {width,theme,lang} of configs){
   await page.locator(scope+' .kona-slim-scale[data-dimension="happiness"] input.kona-slim-rail').press('End');
   const both=await page.evaluate(()=>{
     const v=db.days['2026-11-12'].checkins.evening;
-    const stored=JSON.parse(localStorage.getItem('kona.legacy.v1.dayframe')).days['2026-11-12'].checkins.evening;
+    const stored=JSON.parse(window.localStorage.getItem('kona.legacy.v1.dayframe')).days['2026-11-12'].checkins.evening;
     return {live:{...v},saved:stored};
   });
   assert(key,'Evening mood uses canonical numeric fields',both.live.eveningEnergy===4&&both.live.eveningHappiness===5,both.live);
