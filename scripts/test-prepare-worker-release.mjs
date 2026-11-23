@@ -20,7 +20,7 @@ const worker = [
   '}',
 ].join('\n');
 const input = (overrides = {}) => ({
-  worker, html, serviceWorker,
+  worker, html, serviceWorker, pinnedHtml: html, pinnedServiceWorker: serviceWorker,
   expectedOldRelease: currentHeader, expectedPagesUrl: currentSource,
   ...overrides,
 });
@@ -51,4 +51,13 @@ test('abort if duplicate header, header missing or unknown bridge', () => {
 test('abort for already matching header or missing required pinned version', () => {
   assert.throws(() => prepareWorkerRelease(input({ worker: worker.replace(currentHeader, appRelease), expectedOldRelease: appRelease })), /already matches/);
   assert.throws(() => prepareWorkerRelease(input({ expectedPagesUrl: null })), /required/);
+});
+
+test('rejects branch release newer than the immutable Pages source', () => {
+  const oldPage='<meta name="kona-release" content="prayerrecords20261123a">';
+  const oldSW="const RELEASE='prayerrecords20261123a';";
+  assert.throws(() => prepareWorkerRelease(input({
+    pinnedHtml:oldPage,pinnedServiceWorker:oldSW
+  })),/Pinned Pages release does not match local/);
+  assert.throws(() => prepareWorkerRelease(input({pinnedHtml:null})),/snapshots are required/);
 });

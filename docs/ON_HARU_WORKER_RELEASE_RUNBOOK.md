@@ -22,8 +22,12 @@ node scripts/prepare-worker-release.mjs \
   --source /private/current-on-haru-worker.js \
   --out /private/on-haru-header-corrected.js \
   --old-release safesave20261123b \
-  --pages-url https://530298dd.on-haru-pages.pages.dev
+  --pages-url https://530298dd.on-haru-pages.pages.dev \\
+  --pinned-html /private/actual-pages-index.html \\
+  --pinned-sw /private/actual-pages-sw.js
 ```
+
+The pinned Pages HTML/SW files must be separately downloaded from the immutable `--pages-url` **before running**. This protects against a newer Preview branch being mistaken for the older still-pinned production Pages release. If those files do not match local HTML/SW, the header-only tool aborts; use a coordinated Pages+Worker release instead.
 
 The script compares HTML/SW release markers, the expected current header, the immutable Pages `SOURCE` and bridge identity. It refuses to run when any of these preconditions change, preserves all other bytes, and writes a new private output file without overwriting the backup. It **does not deploy** anything.
 
