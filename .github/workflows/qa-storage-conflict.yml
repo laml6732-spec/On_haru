@@ -1,0 +1,28 @@
+name: On_HARU storage safety regression
+on:
+  pull_request:
+    branches: [main]
+    paths: ['public/legacy/**', 'scripts/qa-storage-conflict.mjs', '.github/workflows/qa-storage-conflict.yml']
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['public/legacy/runtime/legacy-controllers.9a6fbb5e22cc.js', 'scripts/qa-storage-conflict.mjs']
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node --check public/legacy/runtime/legacy-controllers.9a6fbb5e22cc.js
+      - run: node --check scripts/qa-review-overall.mjs
+      - run: node --check scripts/qa-storage-conflict.mjs
+      - run: node scripts/verify-metrics.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-storage-qa.log 2>&1 &
+      - run: node scripts/qa-storage-conflict.mjs
