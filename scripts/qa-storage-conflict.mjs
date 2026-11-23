@@ -29,6 +29,7 @@ try{
  ensure(diskAfterConflict==='TAB_A_PROTECTED','Conflicting save overwrote the original record');
  await second.reload({waitUntil:'domcontentloaded'});
  await second.waitForFunction(()=>typeof save==='function');
+ await second.evaluate(()=>{document.getElementById('launchScreen')?.remove();const t=document.getElementById('tutorialModal');if(t){t.hidden=true;t.style.display='none'}const w=document.getElementById('welcomeModal');if(w){w.hidden=true;w.style.display='none'}});
  ensure(await second.evaluate(d=>day(d).headline,date)==='TAB_A_PROTECTED','Reload failed to recover latest data');
  await second.locator('.app-settings-shortcut').click();
  const backupReady=second.waitForEvent('download',{timeout:5000});
