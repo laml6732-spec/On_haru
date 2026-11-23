@@ -1,0 +1,34 @@
+name: On_HARU Prayer Record Filters QA
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'public/legacy/runtime/prayer-linked.v1.js'
+      - 'public/legacy/prayer-linked.v1.css'
+      - 'public/legacy/index.html'
+      - 'public/legacy/sw.js'
+      - 'scripts/qa-prayer-records-checkboxes.mjs'
+      - '.github/workflows/qa-prayer-records-checkboxes.yml'
+jobs:
+  prayer-records:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - run: npx playwright-core install --with-deps chromium
+      - run: node --check public/legacy/runtime/prayer-linked.v1.js
+      - run: node --check scripts/qa-prayer-records-checkboxes.mjs
+      - run: node scripts/verify-ui-static.mjs
+      - run: python3 -m http.server 8080 --directory public > /tmp/onharu-prayer-records.log 2>&1 &
+      - run: node scripts/qa-prayer-records-checkboxes.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onharu-prayer-records-screenshots
+          path: test-results/prayer-records-checkboxes/
+          retention-days: 10
