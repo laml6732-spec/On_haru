@@ -57,8 +57,8 @@ try{
      const archiveRows=page.locator('#archive-search-results .archive-search-result');
      if(await archiveRows.count()!==1)throw Error('Archived morning check-in not found');
      const archiveRow=archiveRows.first();
-     const label=archiveRow.locator('.archive-checkin-label');
-     if(!(await label.innerText()).includes('Morning'))throw Error('Check-in phase missing from Archive');
+     const phaseLabel=archiveRow.locator('.archive-checkin-label');
+     if(!(await phaseLabel.innerText()).includes('Morning'))throw Error('Check-in phase missing from Archive');
      const feeling=archiveRow.locator('.archive-checkin-feeling');
      if(!await feeling.isVisible())throw Error('Saved mood not visible in Archive');
      const expandedBefore=await archiveRow.getAttribute('aria-expanded');
