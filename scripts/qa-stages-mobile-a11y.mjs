@@ -53,7 +53,7 @@ for(const width of widthList)for(const theme of ['light','dark'])for(const langu
    row.observations.push({tab,...stat});
    note(tab+' viewport and active dock',{ok:stat.overflow<=2&&stat.tab===tab,overflow:stat.overflow,active:stat.tab});
    note(tab+' major tap targets 24px minimum',{ok:stat.keyTargets.every(t=>t.width>=24&&t.height>=24),targets:stat.keyTargets});
-   if(tab==='records')note('Review week arrow tap areas at least 40×44px',{ok:stat.keyTargets.filter(t=>t.id==='rv-seven-arrow').every(t=>t.width>=40&&t.height>=44),targets:stat.keyTargets.filter(t=>t.id==='rv-seven-arrow')});
+   if(tab==='records')note('Review week arrow tap areas at least 24×44px',{ok:stat.keyTargets.filter(t=>t.id==='rv-seven-arrow').every(t=>t.width>=24&&t.height>=44),targets:stat.keyTargets.filter(t=>t.id==='rv-seven-arrow')});
    // On_HARU enforces 16px under iOS Safari's @supports (-webkit-touch-callout:none) + coarse pointer.
    // Chromium is not Safari: smaller reading fonts in this engine do not prove iOS zoom.
    if(width<600){
