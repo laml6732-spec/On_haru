@@ -369,7 +369,7 @@ function load(){
   raw=localStorage.getItem(KEY);lastKnownSavedRaw=raw;
   if(!raw)for(const k of OLD_KEYS){const old=localStorage.getItem(k);if(old){raw=old;sourceKey=k;break}}
  }catch(_){}
- const empty=()=>{const n=blank();n.events=defaultEvents();return n};
+ const empty=()=>{const n=blank();n.events=defaultEvents();n.settings.morningUnified=true;return n};
  if(!raw)return empty();
  let parsed;
  try{parsed=JSON.parse(raw)}catch(e){protectDamagedStorage(raw,sourceKey,KonaI18n.t("Saved data could not be parsed."));return empty()}
@@ -1566,7 +1566,7 @@ function backupJson(){
  if(!save()&&!tutorialPractice){db.settings.lastBackup=previous;toast(KonaI18n.t("Backup download requested, but its date could not be saved in this browser."))}
  renderFooter();toast(KonaI18n.t("Backup download requested · check your Downloads folder"));
 }
-function freshAppData(){const fresh=blank();fresh.events=defaultEvents();return fresh}
+function freshAppData(){const fresh=blank();fresh.events=defaultEvents();fresh.settings.morningUnified=true;return fresh}
 function resetApp(){
   if(tutorialPractice||$('appResetConfirm').value.trim()!=='RESET')return;
   const fresh=freshAppData();
