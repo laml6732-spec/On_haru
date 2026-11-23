@@ -1,4 +1,4 @@
-// End-of-day mood persistence regression: isolated QA browser storage only.
+// Evening Reflection persistence and legacy Night-data migration regression; isolated QA browser storage.
 import {chromium} from 'playwright-core';
 import {existsSync} from 'node:fs';
 import fs from 'node:fs/promises';
@@ -33,41 +33,32 @@ for(const {width,theme,lang} of configs){
    document.getElementById('launchScreen')?.remove();
    const tutorial=document.getElementById('tutorialModal');if(tutorial){tutorial.hidden=true;tutorial.style.display='none'}
    document.documentElement.dataset.appearance=t;document.documentElement.style.colorScheme=t;
-   date='2026-11-12';const v=day(date);v.checkins.night={};save();
+   date='2026-11-12';const v=day(date);v.checkins.evening={};save();
    return KonaI18n.language;
   },theme);
   assert(key,'User-facing language selected',language===lang,language);
-  await page.locator('.tabs [data-page="records"]').click();
-  await page.locator('#rev-reflect').click();
-  await page.locator('#page-records .review-write-reflection').click();
-  await page.locator('#dailyReflectionEditor').waitFor({state:'visible'});
-  const finalButton=page.locator('#page-records .review-final-feeling-button');
-  assert(key,'Unrated day offers End-of-day mood entry',await finalButton.isVisible(),await finalButton.count());
-  await finalButton.click();
-  const scope='.review-final-feeling .review-feeling-editor';
-  assert(key,'Mood editor opens',await page.locator(scope).isVisible(),'editor');
+  // The old standalone Night editor was removed; Evening Reflection now owns entry.
+  await page.locator('.tabs [data-page="checkin"]').click();
+  await page.locator('#page-checkin [data-phase="evening"]').click();
+  const scope='#page-checkin #moodGrid';
   await page.locator(scope+' .kona-slim-scale[data-dimension="energy"] .kona-scale-stops button').nth(3).click();
-  const afterEnergy=await page.evaluate(()=>({...db.days['2026-11-12'].checkins.night}));
-  assert(key,'Energy written to stable nightEnergy field',afterEnergy.nightEnergy===4,afterEnergy);
-  assert(key,'Editor remains open after first value',await page.locator(scope).isVisible(),'editor');
+  const afterEnergy=await page.evaluate(()=>({...db.days['2026-11-12'].checkins.evening}));
+  assert(key,'Evening energy uses canonical eveningEnergy field',afterEnergy.eveningEnergy===4,afterEnergy);
   await page.locator(scope+' .kona-slim-scale[data-dimension="happiness"] .kona-scale-stops button').nth(4).click();
   const both=await page.evaluate(()=>{
-   const v=db.days['2026-11-12'].checkins.night,stored=JSON.parse(window.localStorage.getItem('kona.legacy.v1.dayframe')).days['2026-11-12'].checkins.night;
-   return {live:{...v},saved:stored};
+    const v=db.days['2026-11-12'].checkins.evening;
+    const stored=JSON.parse(localStorage.getItem('kona.legacy.v1.dayframe')).days['2026-11-12'].checkins.evening;
+    return {live:{...v},saved:stored};
   });
-  assert(key,'Mood and energy use stable numeric fields',both.live.nightEnergy===4&&both.live.nightHappiness===5,both.live);
-  assert(key,'No new translated data keys',!Object.prototype.hasOwnProperty.call(both.live,'night에너지')&&!Object.prototype.hasOwnProperty.call(both.live,'night기분'),both.live);
-  assert(key,'Mood and energy persisted to localStorage',both.saved.nightEnergy===4&&both.saved.nightHappiness===5,both.saved);
-  assert(key,'Combined mood object created',both.saved.mood?.energy===4&&both.saved.mood?.happiness===5,both.saved.mood);
-  await page.screenshot({path:out+'/'+key+'-saved.png',animations:'disabled'});
-  await page.reload({waitUntil:'domcontentloaded'});
+  assert(key,'Evening mood uses canonical numeric fields',both.live.eveningEnergy===4&&both.live.eveningHappiness===5,both.live);
+  assert(key,'No translated keys introduced',!Object.keys(both.live).some(k=>/^evening[가-힣]/.test(k)),both.live);
+  assert(key,'Evening mood and energy saved to localStorage',both.saved.eveningEnergy===4&&both.saved.eveningHappiness===5,both.saved);
+  await page.screenshot({path:out+'/'+key+'-evening-saved.png',animations:'disabled'});
   await page.locator('.tabs [data-page="records"]').click();
-  await page.locator('#rev-reflect').click();
-  const edit=page.locator('#page-records .review-write-reflection');
-  if(await page.locator('#dailyReflectionEditor').isHidden())await edit.click();
-  const afterReload=await page.evaluate(()=>db.days['2026-11-12']?.checkins?.night);
-  assert(key,'End-of-day values retained after reload',afterReload?.nightEnergy===4&&afterReload?.nightHappiness===5,afterReload);
-  assert(key,'Saved mood is visible in Review',await page.locator('#page-records .review-final-feeling-button').isVisible(),await page.locator('#page-records .review-final-feeling-button').count());
+  assert(key,'Evening checkpoint appears in Daily Review',await page.locator('#new-reflect-page .review-check-record').count()>0,'review records');
+  await page.reload({waitUntil:'domcontentloaded'});
+  const afterReload=await page.evaluate(()=>db.days['2026-11-12']?.checkins?.evening);
+  assert(key,'Evening scores retained after reload',afterReload?.eveningEnergy===4&&afterReload?.eveningHappiness===5,afterReload);
 
   // Recover data created by the previous Korean-language bug, preserving any valid canonical score.
   await page.evaluate(()=>{
