@@ -1,6 +1,6 @@
 {
-  "runId": "45109902408",
-  "sourceCommit": "1481f7ff2b9c8a9b6bea99091f3ebccc3e102a4b",
+  "runId": "45110294032",
+  "sourceCommit": "961d0fc4618d22c023d1b9b9d08f71679e7f3b77",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
@@ -9,18 +9,18 @@
     "cases": [
       {
         "path": "/",
-        "ok": false,
+        "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
-        "expectedSha256": "ed5d256ab313a934106fe2685ba93af8e86998507b801377ff35b705e800f33b",
+        "expectedSha256": "b1aa0a692f8ba9fede51430c9340c107d192e160457510a38b65cc1c5a08d121",
         "sourceSha256": "ed5d256ab313a934106fe2685ba93af8e86998507b801377ff35b705e800f33b",
-        "actualSha256": "fcdc8445daa59d3ad1fdb6756632bec04d07d35adcfb59357af31cef7e1e57f1",
-        "hashMatch": false,
+        "actualSha256": "b1aa0a692f8ba9fede51430c9340c107d192e160457510a38b65cc1c5a08d121",
+        "hashMatch": true,
         "sourceHashMatch": false,
-        "contentVariant": "source",
+        "contentVariant": "worker-startup-20261109",
         "urlMatch": true,
-        "bodyReleaseMatch": false,
-        "workerRelease": "captureios20261122a",
+        "bodyReleaseMatch": true,
+        "workerRelease": "safestor20261122d",
         "releaseHeaderPresent": true,
         "releaseEvidence": "sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present"
       },
@@ -171,8 +171,7 @@
         },
         {
           "name": "Review tab contrast",
-          "ok": false,
-          "details": "TimeoutError: locator.evaluate: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('#rev-weekly').first()\n"
+          "ok": true
         },
         {
           "name": "Event title contrast and English keyboard",
@@ -214,6 +213,12 @@
           "fg": "rgb(38, 93, 73)",
           "bg": "rgb(250, 248, 244)",
           "ratio": 7.214095788024234
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 5.021495640455905
         },
         {
           "label": "Event title",
@@ -237,8 +242,7 @@
         },
         {
           "name": "Review tab contrast",
-          "ok": false,
-          "details": "TimeoutError: locator.evaluate: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('#rev-weekly').first()\n"
+          "ok": true
         },
         {
           "name": "Event title contrast and English keyboard",
@@ -282,6 +286,12 @@
           "ratio": 14.832233281769465
         },
         {
+          "label": "rev-archive",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
           "label": "Event title",
           "fg": "rgb(240, 247, 240)",
           "bg": "rgb(41, 61, 51)",
@@ -303,8 +313,7 @@
         },
         {
           "name": "Review tab contrast",
-          "ok": false,
-          "details": "TimeoutError: locator.evaluate: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('#rev-weekly').first()\n"
+          "ok": true
         },
         {
           "name": "Event title contrast and English keyboard",
@@ -348,6 +357,12 @@
           "ratio": 7.214095788024234
         },
         {
+          "label": "rev-archive",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 248, 244)",
+          "ratio": 5.021495640455905
+        },
+        {
           "label": "Event title",
           "fg": "rgb(41, 70, 81)",
           "bg": "rgb(255, 254, 252)",
@@ -369,8 +384,7 @@
         },
         {
           "name": "Review tab contrast",
-          "ok": false,
-          "details": "TimeoutError: locator.evaluate: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('#rev-weekly').first()\n"
+          "ok": true
         },
         {
           "name": "Event title contrast and English keyboard",
@@ -414,6 +428,12 @@
           "ratio": 14.832233281769465
         },
         {
+          "label": "rev-archive",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
+        },
+        {
           "label": "Event title",
           "fg": "rgb(240, 247, 240)",
           "bg": "rgb(41, 61, 51)",
@@ -435,8 +455,7 @@
         },
         {
           "name": "Review tab contrast",
-          "ok": false,
-          "details": "TimeoutError: locator.evaluate: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('#rev-weekly').first()\n"
+          "ok": true
         },
         {
           "name": "Event title contrast and English keyboard",
@@ -480,6 +499,12 @@
           "ratio": 7.160595303349614
         },
         {
+          "label": "rev-archive",
+          "fg": "rgb(91, 112, 99)",
+          "bg": "rgb(250, 247, 242)",
+          "ratio": 4.984255706519644
+        },
+        {
           "label": "Event title",
           "fg": "rgb(41, 70, 81)",
           "bg": "rgb(255, 254, 252)",
@@ -501,8 +526,7 @@
         },
         {
           "name": "Review tab contrast",
-          "ok": false,
-          "details": "TimeoutError: locator.evaluate: Timeout 8000ms exceeded.\nCall log:\n  - waiting for locator('#rev-weekly').first()\n"
+          "ok": true
         },
         {
           "name": "Event title contrast and English keyboard",
@@ -544,6 +568,12 @@
           "fg": "rgb(240, 247, 240)",
           "bg": "rgb(24, 35, 31)",
           "ratio": 14.832233281769465
+        },
+        {
+          "label": "rev-archive",
+          "fg": "rgb(200, 221, 206)",
+          "bg": "rgb(24, 35, 31)",
+          "ratio": 11.308149195974853
         },
         {
           "label": "Event title",
@@ -651,6 +681,13 @@
   },
   "runs": [
     {
+      "id": 45110294032,
+      "sha": "961d0fc4618d22c023d1b9b9d08f71679e7f3b77",
+      "name": "OnHaru Workers production verification",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
       "id": 45109902423,
       "sha": "1481f7ff2b9c8a9b6bea99091f3ebccc3e102a4b",
       "name": "On_HARU storage safety regression",
@@ -668,8 +705,8 @@
       "id": 45109902408,
       "sha": "1481f7ff2b9c8a9b6bea99091f3ebccc3e102a4b",
       "name": "OnHaru Workers production verification",
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "id": 45109902396,
@@ -698,14 +735,7 @@
       "name": "On_HARU Check-in and Archive Mood touch regression",
       "status": "completed",
       "conclusion": "failure"
-    },
-    {
-      "id": 45109902318,
-      "sha": "1481f7ff2b9c8a9b6bea99091f3ebccc3e102a4b",
-      "name": "On_HARU Review schedule tags in Daily Weekly Archive",
-      "status": "completed",
-      "conclusion": "failure"
     }
   ],
-  "allPassed": false
+  "allPassed": true
 }
