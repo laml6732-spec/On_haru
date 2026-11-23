@@ -54,8 +54,8 @@ test('abort for already matching header or missing required pinned version', () 
 });
 
 test('rejects branch release newer than the immutable Pages source', () => {
-  const oldPage='<meta name="kona-release" content="prayerrecords20261123a">';
-  const oldSW="const RELEASE='prayerrecords20261123a';";
+  const oldPage='<meta name="kona-release" content="olderrelease20261122a">';
+  const oldSW="const RELEASE='olderrelease20261122a';";
   assert.throws(() => prepareWorkerRelease(input({
     pinnedHtml:oldPage,pinnedServiceWorker:oldSW
   })),/Pinned Pages release does not match local/);
