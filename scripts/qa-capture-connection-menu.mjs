@@ -43,6 +43,7 @@ for(const width of [320,390,1024])for(const appearance of ['light','dark']){
     check((await text.innerText()).trim()==='Personal note','No matching event must show Personal note');
     check((await summary.locator('img').getAttribute('src'))?.endsWith('/calendar-note-personal.v1.svg')|| (await summary.locator('img').getAttribute('src'))?.endsWith('calendar-note-personal.v1.svg'),'Personal note must have the plain calendar icon');
     check(await page.locator('#qc-view').count()===0,'The redundant Open control must not exist');
+    check(await summary.locator('img').evaluate(el=>el.complete&&el.naturalWidth>0),'Personal calendar SVG asset must load');
     check(await page.locator('#qc-select').inputValue()==='__auto__','No matching event should preserve default automatic mode');
 
     await page.evaluate(()=>{
@@ -54,6 +55,7 @@ for(const width of [320,390,1024])for(const appearance of ['light','dark']){
     });
     check((await text.innerText()).trim()==='QA Morning prayer','Automatic match must display actual event title');
     check((await summary.locator('img').getAttribute('src'))?.endsWith('calendar-note-linked.v1.svg'),'Linked event must show the checked calendar icon');
+    check(await summary.locator('img').evaluate(el=>el.complete&&el.naturalWidth>0),'Checked calendar SVG asset must load');
     check(await page.locator('#qc-select').inputValue()==='__auto__','Auto-picked event must not be marked manual');
     await summary.click();
     check(await menu.isVisible(),'Menu must open on one click');
