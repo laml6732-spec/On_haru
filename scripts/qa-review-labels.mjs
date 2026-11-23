@@ -18,7 +18,7 @@ try{
   const result={width,theme,ok:false};
   try{
    await page.clock.setFixedTime(new Date('2026-11-05T09:30:00-10:00'));
-   await page.goto(url,{waitUntil:'domcontentloaded'});
+   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
    await page.locator('#tutorialChooseEn').click();await page.locator('#welcomeSkip').click();
    const fixture=await page.evaluate(t=>{
     document.getElementById('launchScreen')?.remove();const modal=document.getElementById('tutorialModal');if(modal){modal.hidden=true;modal.style.display='none'}
