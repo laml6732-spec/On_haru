@@ -56,7 +56,7 @@ for(const width of [320,390,1024])for(const theme of ['light','dark']){
   item.views.daily=await inspect('#new-reflect-page');
   const weekly=page.locator('#new-reflect-page .rv-weekly-inline-details').first();
   await weekly.waitFor({state:'attached'});
-  if(!await weekly.evaluate(el=>el.open))await weekly.locator('summary').click();
+  if(!await weekly.evaluate(el=>el.open))await weekly.locator(':scope > summary').click();
   await weekly.locator('.rv-weekly-inline-content').waitFor({state:'visible'});
   await photo(page,width+'-'+theme+'-weekly');
   item.views.weekly=await inspect('#new-reflect-page');
