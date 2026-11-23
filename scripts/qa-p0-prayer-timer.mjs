@@ -49,11 +49,17 @@ try{
   need((await p.evaluate(()=>db.days['2026-11-21']?.sessions?.length||0))===0,'Unfinished timer was logged as completed');
  });
  await run('F-15: cancelling confirmation keeps timer; confirming discards without log',async()=>{
-  await p.locator('#focusCancel').click();
+  need(!(await p.locator('#focusCancel').isVisible()),'Immersive focus should not expose the legacy cancel control');
+  await p.locator('#focusMore').click();
+  need(await p.locator('#choiceList button').count()===1,'Session More menu must offer cancel');
+  await p.locator('#choiceList button').first().click();
   const dialog=p.locator('.onharu-native-replacement');
   await dialog.locator('.onharu-dialog-cancel').click();
   need(await p.evaluate(()=>sess.started),'Cancel confirmation dismissal discarded active session');
-  await p.locator('#focusCancel').click();
+  need(!(await p.locator('#focusCancel').isVisible()),'Immersive focus should not expose the legacy cancel control');
+  await p.locator('#focusMore').click();
+  need(await p.locator('#choiceList button').count()===1,'Session More menu must offer cancel');
+  await p.locator('#choiceList button').first().click();
   await dialog.locator('.onharu-dialog-accept').click();
   need(await p.evaluate(()=>!sess.started),'Confirmed cancellation left timer running');
   need((await p.evaluate(()=>db.days['2026-11-21']?.sessions?.length||0))===0,'Cancelled timer created a completed session');
