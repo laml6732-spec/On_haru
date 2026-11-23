@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/qa-p0-boundaries.mjs'
+      - 'scripts/qa-p0-journeys.mjs'
       - '.github/workflows/qa-p0-boundaries.yml'
       - 'public/legacy/**'
   workflow_dispatch:
@@ -21,11 +22,15 @@ jobs:
       - run: npm install --no-save --no-package-lock playwright-core@1.56.1
       - run: npx playwright-core install --with-deps chromium
       - run: node --check scripts/qa-p0-boundaries.mjs
+      - run: node --check scripts/qa-p0-journeys.mjs
       - run: python3 -m http.server 8080 --directory public > /tmp/onharu-p0.log 2>&1 &
       - run: node scripts/qa-p0-boundaries.mjs
+      - run: node scripts/qa-p0-journeys.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: onharu-p0-boundary-evidence
-          path: test-results/p0-boundaries/
+          path: |
+            test-results/p0-boundaries/
+            test-results/p0-journeys/
           retention-days: 14
