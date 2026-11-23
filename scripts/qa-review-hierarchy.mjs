@@ -91,6 +91,9 @@ try{
    const detail=page.locator('#archive-search-results .review-record');
    await detail.waitFor();
    if(!(await detail.innerText()).includes('QA-ARCHIVE-HIERARCHY'))throw Error('Expanded record has no full text');
+   // Editing a record opens a modal; cancel before Archive back navigation.
+   const editor=page.locator('#konaReviewEditor');
+   if(await editor.count())await editor.locator('.rv-edit-actions button').filter({hasText:'Cancel'}).click();
    await page.locator('#archive-search .archive-back').click();
    if(await rows.count()!==1)throw Error('Back navigation lost combined filters');
    // Saved filter and star must remain functional, without any permanent test data.
