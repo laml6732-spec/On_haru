@@ -11,6 +11,7 @@ try{for(const width of [320,390,1024])for(const theme of ['light','dark']){
   const guide=page.locator('#guidedTour'),next=page.locator('#tourNext');
   await page.locator('#startGuidedTour').click();
   expect(await page.locator('#morningPrayerDurationHeading').isVisible(),'Morning prayer must be first');
+  await page.locator('#morningPrayerPrompt button').click();
   await page.locator('#focusStart').click();
   await page.locator('#focusEnd').waitFor();await page.waitForTimeout(1050);await page.locator('#focusEnd').click();
   await page.locator('#choiceList .morning-prayer-primary').click();

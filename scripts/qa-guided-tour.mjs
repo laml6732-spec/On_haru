@@ -10,6 +10,18 @@ const destination = process.env.ONHARU_URL || 'http://127.0.0.1:8080/legacy/';
 const output = 'test-results/guided-tour';
 await fs.mkdir(output, { recursive: true });
 
+async function assertEditorClear(page, selector) {
+  await page.locator(selector).focus();
+  const clear = await page.evaluate(id => {
+    const guide = document.querySelector('#guidedTour');
+    const editor = document.querySelector(id);
+    const card = guide.getBoundingClientRect();
+    const field = editor.getBoundingClientRect();
+    return guide.dataset.position === 'inline' && card.bottom <= field.top;
+  }, selector);
+  assert.equal(clear, true, `${selector} is below the tutorial card while focused`);
+}
+
 try {
   for (const [width, lang, colorScheme] of [
     [320, 'ko', 'light'], [390, 'ko', 'dark'], [1024, 'en', 'light'],
@@ -36,6 +48,7 @@ try {
       await page.locator(lang === 'ko' ? '#tutorialChooseKo' : '#tutorialChooseEn').click();
       await page.locator('#startGuidedTour').click();
       const next = page.locator('#tourNext');
+      await page.locator('#morningPrayerPrompt button.guided-target').click();
       await page.locator('#focusDurations [data-time="2"]').click();
       await page.locator('#focusStart').click();
       await page.locator('#focusEnd').waitFor();
@@ -47,16 +60,22 @@ try {
       assert.match(await page.locator('#choiceTitle').innerText(), lang === 'ko' ? /아침기도/ : /Morning prayer/);
       await page.screenshot({ path: output + '/' + width + '-prayer-complete.png' });
       await page.locator('#choiceList .morning-prayer-primary').click();
-      const anchor = lang === 'ko' ? '지금 할 수 있는 것 하나만.' : 'One thing I can do right now.';
+      const anchor = lang === 'ko'
+        ? '마음이 급해질 때, 잠깐 멈추고 하나님을 떠올리자.'
+        : 'When I feel rushed, I’ll pause and turn my thoughts back to God.';
       assert.equal(await page.locator('#dayHeadline').inputValue(), '');
+      if (width < 500) await page.setViewportSize({ width, height: 480 });
+      await assertEditorClear(page, '#dayHeadline');
       await page.locator('#dayHeadline').fill(anchor);
       assert.equal(await page.evaluate(() => day(date).headline), anchor);
       await page.screenshot({ path: output + '/' + width + '-anchor.png' });
       await page.locator('#morningPrayerReadAfterAnchor').click();
       await page.locator('#sm-overlay .sm-verse').waitFor();
       await page.locator('#sm-content .sm-primary').click();
+      await assertEditorClear(page, '#qc-text');
       await page.locator('#qc-text').fill('Practice scripture reflection');
       await page.locator('#qc-submit').click();
+      if (width < 500) await page.setViewportSize({ width, height: 844 });
       assert.equal(await page.evaluate(() => localStorage.getItem('kona.scripture-memory.v1')), null);
       await next.click();
       await page.getByRole('slider', { name: lang === 'ko' ? '기분' : 'Mood', exact: true }).press('ArrowRight');
@@ -68,6 +87,8 @@ try {
       await page.locator('#taskSave').click();
       assert.equal(await page.evaluate(() => db.tasks.length), 1);
       await next.click();
+      await assertEditorClear(page, '#qc-text');
+      await page.locator('#qc-text').fill('Practice note from the walk');
       await page.locator('#qc-v2 [data-tag="meaning_listening"]').click();
       await page.locator('#qc-submit').click();
       assert(await page.evaluate(() => day(date).quickCaptureEntries.some(
@@ -84,9 +105,10 @@ try {
       await next.click();
       await next.click();
       assert.equal(await page.locator('#guidedTour').isVisible(), false);
-      assert.equal(await page.evaluate(() => Object.keys(localStorage).some(
-        key => /tour-appointment|tour-prayer-session|Practice scripture reflection|지금 할 수 있는 것 하나만\.|One thing I can do right now\./.test(String(localStorage.getItem(key))),
-      )), false);
+      assert.equal(await page.evaluate(anchorText => Object.keys(localStorage).some(key => {
+        const value = String(localStorage.getItem(key));
+        return value.includes(anchorText) || /tour-appointment|tour-prayer-session|Practice scripture reflection|Practice note from the walk/.test(value);
+      }), anchor), false);
       assert.deepEqual(errors, []);
       console.log('PASS', width, lang, colorScheme);
     } finally {
