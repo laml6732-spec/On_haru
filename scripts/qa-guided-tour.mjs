@@ -36,6 +36,12 @@ try {
       await page.locator(lang === 'ko' ? '#tutorialChooseKo' : '#tutorialChooseEn').click();
       await page.locator('#startGuidedTour').click();
       const next = page.locator('#tourNext');
+      const entry = page.locator('#page-checkin #morningPrayerPrompt button');
+      await entry.waitFor();
+      assert.equal(await page.locator('#focusStart').isVisible(), false);
+      assert.equal(await entry.evaluate(button => button.classList.contains('guided-target')), true);
+      await page.screenshot({ path: output + '/' + width + '-morning-checkin.png' });
+      await entry.click();
       await page.locator('#focusDurations [data-time="2"]').click();
       await page.locator('#focusStart').click();
       await page.locator('#focusEnd').waitFor();
