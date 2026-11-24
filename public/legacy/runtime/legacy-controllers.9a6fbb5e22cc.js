@@ -1971,42 +1971,42 @@ const tourKo=KonaI18n.language==='ko';
 const tourCopy=(ko,en)=>tourKo?ko:en;
 const tourStory={
  anchor:tourCopy('마음이 급해질 때, 잠깐 멈추고 하나님을 떠올리자.','When I feel rushed, I’ll pause and turn my thoughts back to God.'),
- walk:tourCopy('점심 뒤 10분 걷기','Walk for ten minutes after lunch'),
+ walk:tourCopy('10분 걷기','Take a 10-minute walk'),
  listening:tourCopy('모든 일을 한꺼번에 해결하려고 하지 말자. 잠깐 멈추고 하나님께 맡겨보자.','I don’t have to solve everything at once. I can pause and bring it to God.'),
- topic:tourCopy('마음이 분주할 때','When my mind feels restless'),
+ topic:tourCopy('마음이 분주할 때','When my mind feels busy'),
 };
 const guidedSteps=[
  {tab:tourCopy('아침기도','Morning prayer'),page:'checkin',selector:'#morningPrayerPrompt button',runningSelector:'#focusEnd',
   title:tourCopy('눈을 뜨면, 기도부터','Wake up and start with prayer'),
-  copy:tourCopy('아직 이불 속인데 오후 약속이 떠올라요. 아침 체크인에서 ‘기도로 아침 시작하기’를 눌러보세요.','You’re still under the covers, and your afternoon appointment is already on your mind. In Morning Check-in, tap “Begin the day with prayer.”'),
+  copy:tourCopy('눈을 뜨자마자 오후 약속이 떠올랐어요. 아직 이불 속인데 마음은 벌써 바쁘네요. 온하루에서 아침 체크인을 열고 ‘기도로 아침 시작하기’를 눌러 보세요. 기도를 마치면 ‘종료’를 눌러요.',`Your afternoon appointment comes to mind as soon as you open your eyes. You're still under the covers, and your mind is already busy. Open Morning Check-in in On_HARU and start your morning prayer. Take a moment with God, and when you finish praying, tap Finish.`),
   setupCopy:tourCopy('기도할 시간을 고르고 시작해 보세요.','Choose how long you’d like to pray, then tap Start.'),
-  runningCopy:tourCopy('잠시 하나님 앞에 머물러 보세요. 기도를 마쳤다면 종료를 눌러요.','Take a moment with God. Tap Finish when you’re ready.'),useApp:true,done:()=>guidedVisited.has(0),feedback:tourCopy('기도를 마쳤어요.','Prayer complete.'),next:tourCopy('오늘의 한 줄 남기기','Write today’s one-line note')},
+  runningCopy:tourCopy('기도를 마치면 ‘종료’를 눌러요.','Take a moment with God, and when you finish praying, tap Finish.'),useApp:true,done:()=>guidedVisited.has(0),feedback:tourCopy('기도를 마쳤어요.','Prayer complete.'),next:tourCopy('오늘의 한 줄 남기기','Write today’s one-line note')},
  {tab:tourCopy('쓰기','Write'),page:'capture',selector:'#dayHeadline',inlineBefore:'.day-signature',
   title:tourCopy('오늘 품고 갈 한 줄','Carry one line into your day'),
-  copy:tourCopy('하나님이 기도 중 마음에 주신 말씀이나 생각을 한 줄로 적고, 오늘 하루 그 마음을 품고 가요. ‘오늘의 말씀 읽기’를 눌러 한 구절을 읽고 묵상도 남겨보세요.','Write a verse or thought God brought to mind as you prayed. Carry it with you today. Open today’s Scripture to read a verse and save a reflection.'),
+  copy:tourCopy('‘오늘의 한 줄 남기기’를 눌러, 하나님이 기도하는 중에 마음에 주신 말씀이나 생각을 적어 보세요. “마음이 급해질 때, 잠깐 멈추고 하나님을 떠올리자.” 오늘은 이 마음을 품고 하루를 살아가요. ‘오늘의 말씀 읽기’를 누르면 성경 한 구절이 열려요. 읽다가 마음에 남은 생각은 ‘묵상 남기기’로 적어 보세요.',`When you finish praying, write down a verse or thought God brought to mind. "When I feel rushed, I'll pause and turn my thoughts back to God." Carry that thought with you today. Then open Today's Scripture to read a verse and save a reflection if something stays with you.`),
   next:tourCopy('아침 체크인','Morning check-in')},
  {tab:tourCopy('체크인','Check-in'),page:'checkin',selector:'#moodGrid',
-  title:tourCopy('지금 내 마음은 어떤가요?','How am I feeling now?'),
-  copy:tourCopy('기도를 마친 지금, 기분과 에너지를 골라보세요. 아직 마음이 분주하다면 그 상태 그대로 남겨도 좋아요.','Choose your mood and energy after prayer. If your mind is still busy, record how you feel as you are.'),
+  title:tourCopy('지금 내 마음은 어떤가요?','How are you feeling now?'),
+  copy:tourCopy('기도를 마친 지금, 아침 체크인에서 기분과 에너지를 골라 보세요. 마음이 조금 차분해졌을 수도, 아직 분주할 수도 있어요. 지금 느끼는 그대로 남겨요.',`Back in Morning Check-in, choose how you're feeling and how much energy you have. You might feel a little calmer, or your mind might still be busy. Check in as you are.`),
   next:tourCopy('계획 열기','Open Plan')},
  {tab:tourCopy('계획','Plan'),page:'today',selector:'#pinRow .task-overview-actions button:first-child',formSelector:'#taskSave',
   title:tourCopy('오늘 할 수 있는 것 하나','Make room for one small thing'),
-  copy:tourCopy('오후 약속 전까지 할 일이 여러 가지네요. 점심 뒤 잠깐 바람을 쐴 수 있게 ‘10분 걷기’를 할 일에 추가해 보세요.','You have a few things to do before your afternoon appointment. Add a 10-minute walk to make time for some fresh air after lunch.'),
+  copy:tourCopy('오후 약속 전까지 할 일이 여러 가지네요. ‘계획’에서 오늘 일정을 살펴보고, 점심 뒤 잠깐 바람을 쐴 수 있게 ‘10분 걷기’를 할 일에 추가해 보세요.',`You have a few things to get done before your afternoon appointment. Open Plan to see what's ahead, then add "Take a 10-minute walk" to make time for some fresh air after lunch.`),
   formCopy:tourCopy('산책을 할 일로 저장해 보세요. 반복이나 날짜도 여기서 정할 수 있어요.','Save the walk as a task. You can set a date or make it repeat here.'),
   useApp:true,done:()=>db.tasks.length>0,
   feedback:tourCopy('할 일에 산책을 추가했어요.','The walk is on your task list.'),next:tourCopy('점심 뒤로','After lunch')},
  {tab:tourCopy('쓰기 · 낮','Write · Midday'),page:'capture',selector:'#qc-v2 [data-tag="meaning_listening"]',captureTime:'12:40',inlineBefore:'#qc-v2',
   title:tourCopy('걷다가 아침의 한 줄이 떠올라요','Remember your morning line on your walk'),
-  copy:tourCopy('점심 뒤 걷다 보니 아침에 적었던 한 줄이 떠올라요. 잠깐 멈춰 하나님께 마음을 털어놓고 그분의 음성에 귀 기울여요. 마음에 남은 생각은 🐑 태그를 붙여 저장해 보세요.','On your walk after lunch, you remember what you wrote this morning. Pause, tell God what’s on your mind, and listen for His voice. Save a thought that stays with you using the 🐑 tag.'),
+  copy:tourCopy('점심을 먹고 밖으로 나왔어요. 걷는 중에도 자꾸 오후 생각이 나는데, 문득 아침에 적었던 한 줄이 떠올라요. 잠깐 멈춰 하나님께 마음을 털어놓고 그분의 음성에 귀 기울여 보세요. 마음에 남은 생각이 있다면 ‘쓰기’에서 🐑 태그를 붙여 남겨요.',`You step outside after lunch. Your mind keeps jumping ahead to the afternoon, and then you remember the line you wrote this morning. Pause, tell God what's on your mind, and listen for His voice. If a thought stays with you, save it in Write with the 🐑 tag.`),
   useApp:true,done:()=>day(date).quickCaptureEntries?.some(entry=>entry.tags?.includes('meaning_listening')),
   feedback:tourCopy('저녁에 돌아보기에서 다시 읽을 수 있어요.','You can find this note in Review tonight.'),next:tourCopy('기도제목 보러 가기','Go to prayer requests')},
  {tab:tourCopy('집중','Focus'),page:'focus',selector:'#focusLibraryOpen',
   title:tourCopy('전에 남긴 기도제목을 다시 열어요','Return to a prayer request you saved'),
-  copy:tourCopy('지난번에도 마음이 분주한 날이 있었어요. 그때 저장한 ‘마음이 분주할 때’를 집중에서 열어보세요. 기도 중 떠오른 생각과 나중에 알아차린 응답이나 감사를 같은 기도제목에 남길 수 있어요.','You’ve had a day like this before. In Focus, open “When my mind feels restless,” the request you saved that day. Keep notes from prayer and add any answers or gratitude you notice later.'),
+  copy:tourCopy('지난번에도 마음이 분주한 날이 있었어요. 그때 저장해 둔 기도제목 ‘마음이 분주할 때’를 ‘집중’에서 열어 보세요. 오늘 다시 기도하다 떠오른 생각은 기도 메모로 남겨요. 나중에 응답을 알아차리거나 감사한 일이 생기면 같은 기도제목에 이어서 적을 수 있어요.',`You've had a day like this before. In Focus, open "When my mind feels busy," the prayer request you saved that day. If a thought comes to mind as you pray today, save it as a prayer note. Later, if you notice an answer or something you're grateful for, add it to the same request.`),
   next:tourCopy('저녁 기록 보기','Look back on the day')},
  {tab:tourCopy('돌아보기','Review'),page:'records',selector:'.rv-timeline .kona-sheep-icon',fallbackSelector:'.rv-anchor-text',
-  title:tourCopy('오늘 하루를 다시 읽어요','Read your day again'),
-  copy:tourCopy('집에 돌아온 저녁이에요. 아침에 품고 가기로 한 한 줄과 걸으면서 남긴 🐑 메모를 다시 읽어보세요. 오늘 그 한 줄이 떠오른 순간이 있었나요?','You’re home for the evening. Reread your morning line and the 🐑 note from your walk. When did that line come back to you today?'),
+  title:tourCopy('저녁에 오늘을 다시 읽어요','Look back on your day'),
+  copy:tourCopy('집에 와서 ‘돌아보기’를 열어요. 아침에 품고 가기로 한 한 줄과 걸으면서 남긴 🐑 메모를 나란히 읽어 보세요. 오늘 그 한 줄이 떠오른 순간이 있었나요? 저녁 기록에 그 순간을 짧게 남겨 보세요.',`You're home for the evening. Open Review and reread the line you wrote this morning and the 🐑 note from your walk. When did that morning line come back to you today? Write a short reflection about that moment in your evening entry.`),
   next:tourCopy('둘러보기 마치기','Finish practice')}
 ];
 let guidedIndex=0,guidedTourActive=false,guidedFinished=false,guidedRefreshTimer;
@@ -2088,7 +2088,7 @@ function startGuidedTour(){
  const settings={...JSON.parse(JSON.stringify(db.settings)),brandName:'On_HARU'};
  db=blank();db.settings=settings;window.OnHaruScripture?.beginPractice();date=storyDate;calendarMonth=date.slice(0,7);reviewWeek=monday(date);phase='morning';moodExpanded=true;
  db.events=[{id:'tour-appointment',title:tourCopy('오후 약속','Afternoon appointment'),start:'14:00',end:'15:00',category:'personal',repeat:'none',days:[],since:date,until:''}];
- db.prayers=[{id:'tour-prayer',title:tourStory.topic,since:dayAdd(date,-2),count:1,lastPrayed:date,responseLogs:[{id:'tour-gratitude',date, text:tourCopy('마음이 여전히 분주했지만, 잠깐 멈출 수 있어서 감사했다.','My mind was still restless, but I was grateful I could pause.')}]}];
+ db.prayers=[{id:'tour-prayer',title:tourStory.topic,since:dayAdd(date,-2),count:1,lastPrayed:date,responseLogs:[{id:'tour-gratitude',date, text:tourCopy('마음이 여전히 분주했지만, 잠깐 멈출 수 있어서 감사했다.','My mind was still busy, but I was grateful I could pause.')}]}];
  const example=day(date);example.headline='';
  example.sessions=[{id:'tour-prayer-session',kind:'prayer',prayerId:'tour-prayer',task:tourStory.topic,start:'15:10',seconds:120,note:tourCopy('조급해질 때 잠깐 멈추고 싶다.','I want to pause when I feel rushed.')}];
  example.quickCaptureEntries=[{id:'tour-walk-note',title:'',text:tourCopy('점심 뒤 잠깐 걸었더니 마음이 조금 가벼워졌다.','I felt a little lighter after stepping outside at lunch.'),time:'12:30',date,tags:[]}];
@@ -2098,7 +2098,7 @@ function completeGuidedTour(){
  clearGuidedTarget();guidedTourActive=false;restorePractice();guidedFinished=true;
  db.settings.guidedTourSeen=true;db.settings.guidedTourComplete=guidedVisited.size===guidedSteps.length;db.settings.guidedTourRevision=5;save();
  guidedText('tourCount',KonaI18n.t("Practice finished"));guidedText('tourHeading',tourCopy('내 하루 시작하기','Start my own day'));
- guidedText('tourCopy',tourCopy('내일 아침, 눈을 뜨면 아침 체크인부터 열어보세요. 기도하고 하나님이 마음에 주시는 한 줄을 품고 하루를 시작해요.','Tomorrow, open Morning Check-in when you wake up. Start with prayer and carry into the day what God brings to mind.'));
+ guidedText('tourCopy',tourCopy('내일 아침, 눈을 뜨면 아침 체크인부터 눌러 보세요. 하나님이 마음에 주시는 한 줄을 품고 하루를 시작해요.','Tomorrow, open Morning Check-in when you wake up. Start with prayer and carry into the day what God brings to mind.'));
  $('tourFeedback').hidden=false;
  guidedText('tourFeedback',tourCopy('설정 → 도움말과 앱 소개에서 다시 볼 수 있어요.','Reopen this guide in Settings → Help & About.'));
  $('guidedTour').hidden=false;$('guidedTour').dataset.position='bottom';$('tourNext').hidden=false;$('tourNext').disabled=false;guidedText('tourNext',tourCopy('내 하루 시작하기','Start my own day'));['tourSkip','tourBack','tourExit'].forEach(id=>$(id).hidden=true);

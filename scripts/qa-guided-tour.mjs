@@ -83,7 +83,7 @@ try {
       await next.click();
       await page.locator('#pinRow .task-overview-actions button:first-child').click();
       assert.equal(await page.locator('#guidedTour').isVisible(), false);
-      assert.match(await page.locator('#taskTitle').inputValue(), lang === 'ko' ? /걷기/ : /Walk/);
+      assert.equal(await page.locator('#taskTitle').inputValue(), lang === 'ko' ? '10분 걷기' : 'Take a 10-minute walk');
       await page.screenshot({ path: output + '/' + width + '-plan.png' });
       await page.locator('#taskSave').click();
       assert.equal(await page.evaluate(() => db.tasks.length), 1);
@@ -97,7 +97,9 @@ try {
       )));
       await next.click();
       await page.locator('#focusLibraryOpen').click();
-      await page.locator('.prayer-row-main').first().click();
+      const prayerName = lang === 'ko' ? '마음이 분주할 때' : 'When my mind feels busy';
+      assert.ok((await page.locator('#tourCopy').innerText()).includes(prayerName));
+      await page.locator('.prayer-row-main').filter({hasText: prayerName}).click();
       assert(await page.locator('.prayer-record-text').count() >= 2);
       await next.click();
       await page.locator('.rv-timeline img.kona-sheep-icon').first().waitFor();

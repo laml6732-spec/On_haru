@@ -21,9 +21,9 @@ try{for(const width of [320,390,1024])for(const theme of ['light','dark']){
   const mood=page.getByRole('slider',{name:'Mood',exact:true});await mood.press('ArrowRight');
   await next.click();
   await page.locator('#pinRow .task-overview-actions button:first-child').click();
-  expect((await page.locator('#taskTitle').inputValue()).includes('Walk'),'Walk sample missing from the form');
+  expect((await page.locator('#taskTitle').inputValue())==='Take a 10-minute walk','Walk sample missing from the form');
   await page.locator('#taskSave').click();
-  expect(await page.evaluate(()=>db.tasks.some(t=>t.title==='Walk for ten minutes after lunch')),'Walk not added');
+  expect(await page.evaluate(()=>db.tasks.some(t=>t.title==='Take a 10-minute walk')),'Walk not added');
   await next.click();
   const sheep=page.locator('#qc-v2 [data-tag="meaning_listening"]');
   expect(await next.isHidden(),'The guide should let the app handle saving');
@@ -33,7 +33,7 @@ try{for(const width of [320,390,1024])for(const theme of ['light','dark']){
   expect(await page.locator('.rv-anchor-text').isVisible(),'Morning anchor missing in Review');
   await next.click();await next.click();
   expect(await guide.isHidden(),'Guide still open');
-  expect(!await page.evaluate(()=>Object.keys(localStorage).some(k=>String(localStorage.getItem(k)).includes('Walk for ten minutes after lunch'))),'Practice leaked to storage');
+  expect(!await page.evaluate(()=>Object.keys(localStorage).some(k=>String(localStorage.getItem(k)).includes('Take a 10-minute walk'))),'Practice leaked to storage');
  });
  // Independent recovery via the UI so a guided failure doesn't imply prayer failure.
  if(await page.locator('#tourExit').isVisible())await page.locator('#tourExit').click();if(await page.locator('#welcomeSkip').isVisible())await page.locator('#welcomeSkip').click();
