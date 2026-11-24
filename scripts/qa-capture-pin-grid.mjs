@@ -25,6 +25,20 @@ try{
    if(await page.locator('#konaCaptureTagTray .kona-tag-chip:visible').count()!==7)throw Error('Seven note tags must be visible by default');
    if(await more.getAttribute('aria-expanded')!=='false')throw Error('Tag tray starts expanded');
    if(!(await more.getAttribute('aria-controls'))?.includes('konaCaptureTagTray'))throw Error('Disclosure is not connected to its tags');
+   const sheep=page.locator('#konaCaptureTagTray .kona-tag-chip[data-tag="meaning_listening"]');
+   const reference=chips.filter({hasNot:page.locator('.kona-sheep-icon')}).first();
+   const appearance=chip=>chip.locator('.kona-tag-symbol').evaluate(el=>{
+    const s=getComputedStyle(el);return {background:s.backgroundColor,borderColor:s.borderTopColor,borderWidth:s.borderTopWidth,borderStyle:s.borderTopStyle};
+   });
+   const resting=await appearance(sheep);
+   await sheep.click();
+   await reference.click();
+   const selected=await appearance(sheep),expected=await appearance(reference);
+   if(await sheep.getAttribute('aria-pressed')!=='true'||JSON.stringify(selected)===JSON.stringify(resting)||JSON.stringify(selected)!==JSON.stringify(expected)||selected.borderWidth!=='2px')throw Error('Listening sheep must show the same visible selected ring and background as the other tags: '+JSON.stringify({resting,selected,expected}));
+   await page.screenshot({path:dir+'/'+width+'-'+theme+'-sheep-selected.png',animations:'disabled'});
+   await sheep.click();
+   await reference.click();
+   if(await sheep.getAttribute('aria-pressed')!=='false'||JSON.stringify(await appearance(sheep))!==JSON.stringify(resting))throw Error('Listening sheep did not restore its resting appearance');
    const closed=await more.evaluate(el=>({text:el.textContent,rect:el.getBoundingClientRect().toJSON(),label:el.getAttribute('aria-label')}));
    if(!closed.label)throw Error('Disclosure has no accessible name');
    if(closed.rect.height<43.9||closed.rect.width<24)throw Error('Disclosure hit target is too small');
