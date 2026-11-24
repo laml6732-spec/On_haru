@@ -415,7 +415,7 @@
     root.append(add);
     const responseForm=node('form','prayer-response-form');responseForm.hidden=true;
     const responseText=node('textarea','field');responseText.maxLength=3000;responseText.rows=3;
-    responseText.placeholder=local('응답이나 감사한 내용을 남겨 주세요.','Record a response or gratitude.');
+    responseText.placeholder=local('이 기도제목을 두고 기도한 뒤, 감사하거나 응답으로 느낀 일을 적어보세요.','What happened as you prayed for this request? Write down a response or something you’re grateful for.');
     responseText.setAttribute('aria-label',local('응답·감사 기록','Response or gratitude note'));
     responseText.required=true;
     const responseSubmit=node('button','mini-btn solid',saveLabel());responseSubmit.type='submit';

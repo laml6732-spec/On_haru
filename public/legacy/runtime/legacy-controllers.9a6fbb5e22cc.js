@@ -440,11 +440,12 @@ function restoreActiveSession(){
   return idleSess();
 }
 function storeActiveSession(){
+  if(tutorialPractice)return;
   try{if(sess.started)localStorage.setItem(ACTIVE_SESSION_KEY,JSON.stringify(sess));else localStorage.removeItem(ACTIVE_SESSION_KEY)}catch(e){toast(KonaI18n.t("Could not save the timer state. Check browser storage."))}
 }
 let sess=restoreActiveSession();
 // Only the Morning check-in shortcut may mark the next prayer session.
-let morningCheckinPrayerLaunchDate='';
+let morningCheckinPrayerLaunchDate='',morningPrayerAnchorDate='';
 let persistState=KonaI18n.t("Checking storage…");
 
 /* ===== 데이터 접근 ===== */
@@ -573,6 +574,7 @@ function openChoices(title,items){
 }
 const PAGE_TITLE={capture:KonaI18n.t("Capture"),today:KonaI18n.t("Plan"),schedule:KonaI18n.t("Manage plan"),checkin:KonaI18n.t("Today’s check-in"),focus:KonaI18n.t("Focus"),records:KonaI18n.t("Review")};
 function nav(p,opt={}){
+  if(p!=='capture')morningPrayerAnchorDate='';
   if(p!=='focus'&&!sess.started)morningCheckinPrayerLaunchDate='';
   if(page!==p&&!opt.skipHistory&&!tutorialPractice)history.pushState({yeramingDts:true,page:p,phase:opt.phase||phase,scheduleSub:opt.sub||scheduleSub,recView:opt.view||recView},'',location.href);
   closeRecordPreview();$('jumpTimelineNow').classList.add('hidden');page=p;if(opt.phase)phase=opt.phase==='night'?'evening':opt.phase;else if(p==='checkin'&&date===nowLocal())phase=mins(timeLocal())<720?'morning':mins(timeLocal())<1020?'noon':'evening';if(opt.sub)scheduleSub=opt.sub;if(opt.view)recView=opt.view;
@@ -583,7 +585,7 @@ function nav(p,opt={}){
 }
 window.history.replaceState({yeramingDts:true,page,phase,scheduleSub,recView},'',location.href);
 window.addEventListener('popstate',e=>{const s=e.state;if(s?.yeramingDts)nav(s.page,{phase:s.phase,sub:s.scheduleSub,view:s.recView,skipHistory:true});else if(page!=='capture')nav('capture',{skipHistory:true})});
-function changeDate(d){closeRecordPreview();if(!/^\d{4}-\d{2}-\d{2}$/.test(d))return;date=d;reviewWeek=monday(d);calendarMonth=d.slice(0,7);if(!editEvent)$('eventSince').value=d;if(!editTask)$('taskSince').value=d;render()}
+function changeDate(d){closeRecordPreview();if(!/^\d{4}-\d{2}-\d{2}$/.test(d))return;if(d!==date)morningPrayerAnchorDate='';date=d;reviewWeek=monday(d);calendarMonth=d.slice(0,7);if(!editEvent)$('eventSince').value=d;if(!editTask)$('taskSince').value=d;render()}
 function render(){
   renderHeader();
   ({capture:renderCapture,today:renderToday,schedule:renderSchedule,checkin:renderCheck,focus:renderFocus,records:renderRecords})[page]();
@@ -613,13 +615,16 @@ function renderFooter(){
 
 /* ===== 오늘 ===== */
 function normalizeDailyHeadline(value){return String(value||'').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim().slice(0,144)}
-function renderCapture(){renderToday();}
+function renderCapture(){
+  renderToday();
+  $('morningPrayerReadAfterAnchor').hidden=morningPrayerAnchorDate!==date;
+}
 function renderToday(){
   const v=day(date),sug=headlineSuggest(date),h=$('dayHeadline');
   $('dayEmoji').textContent=v.emoji||'🌺';
   const editing=document.activeElement===h,headline=editing?String(v.headline||''):normalizeDailyHeadline(v.headline);if(!editing&&headline!==v.headline){v.headline=headline;save()}
   if(!editing)h.value=headline;
-  h.placeholder=normalizeDailyHeadline(sug)||KonaI18n.t("One-line note for today",true);h.classList.toggle('suggest',!!sug);
+  h.placeholder=tutorialPractice&&guidedTourActive&&guidedIndex===1?tourStory.anchor:normalizeDailyHeadline(sug)||KonaI18n.t("One-line note for today",true);h.classList.toggle('suggest',!!sug);
   $('useSuggest').classList.toggle('hidden',!sug||!!h.value);
   $('todayTasksHeading').textContent=date===nowLocal()?KonaI18n.t("Today's tasks"):KonaI18n.t("Selected day's tasks");
   $('todayScheduleHeading').textContent=date===nowLocal()?KonaI18n.t("Today's schedule"):KonaI18n.t("Selected day's schedule");
@@ -1077,6 +1082,9 @@ function syncFocusLayout(){
  if(sess.started&&focusUiSession!==sess.sessionId){focusUiSession=sess.sessionId;focusNoteOpen=false}if(!sess.started){focusUiSession='';focusNoteOpen=false}
  document.body.classList.toggle('focus-note-open',active&&focusNoteOpen);document.body.classList.toggle('focus-awaiting-save',active&&!!sess.awaitingSave);
  $('focusNoteToggle').setAttribute('aria-expanded',String(active&&focusNoteOpen));$('focusNoteToggle').textContent=focusNoteOpen?KonaI18n.t("Hide note"):(sess.note||'').trim()?KonaI18n.t("Edit thought"):KonaI18n.t("Add a thought");
+ $('timerNote').placeholder=morningRunning
+  ?(KonaI18n.language==='ko'?'기도 중 기억하고 싶은 생각을 남겨보세요.':'Write down a thought you want to remember from prayer.')
+  :KonaI18n.t("Optional note · you can continue writing after finishing.",true);
  const badge=$('focusModeBadge');badge.hidden=!active;badge.textContent=({prayer:KonaI18n.t("Pray"),devotion:KonaI18n.t("Devotion"),focus:KonaI18n.t("Focus")})[kind];
  if($('focusSetupMore')&&active)$('focusSetupMore').open=true;
  $('focusSessionTitle').textContent=sess.started&&kind!=='devotion'&&![KonaI18n.t("Focus"),KonaI18n.t("Personal prayer"),KonaI18n.t("Prayer")].includes(sess.title)?sess.title:'';
@@ -1140,27 +1148,50 @@ function finishSession(){
   openChoices(KonaI18n.t("Save focus session"),[{label:KonaI18n.t("Save & mark task done"),sub:KonaI18n.t("Save time and complete only this task instance"),fn:()=>commitTimerSession(true)},{label:KonaI18n.t("Save time only"),sub:KonaI18n.t("Leave task completion unchanged"),fn:()=>commitTimerSession(false)},{label:KonaI18n.t("Keep working"),sub:KonaI18n.t("Return to this session"),fn:()=>renderFocus()}]);
  }else commitTimerSession(false);
 }
-function offerMorningPrayerAnchor(d){
+function launchMorningPrayer(){
+ if(sess.started){nav('focus');return}
+ morningCheckinPrayerLaunchDate=date;
+ nav('focus',{kind:'prayer',prayerId:''});
+}
+function readMorningScripture(d){
+ const ko=KonaI18n.language==='ko';
+ if(date!==d)changeDate(d);
+ if(!window.OnHaruScripture?.openDaily(d)){
+  toast(ko?'말씀 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.':'Could not open Scripture. Please try again in a moment.');
+  return false;
+ }
+ return true;
+}
+function offerMorningPrayerCompletion(d,id){
  const ko=KonaI18n.language==='ko',today=d===nowLocal();
  const saved=normalizeDailyHeadline(db.days[d]?.headline);
- const when=ko?(today?'오늘':'선택한 날'):(today?'today':'that day');
- const title=ko
-  ?'아침기도를 마쳤어요. '+when+'의 앵커를 '+(saved?'확인하거나 수정하시겠습니까?':'적으시겠습니까?')
-  :'Morning prayer is complete. Would you like to '+(saved?'review or edit':'write')+' your anchor for '+when+'?';
- openChoices(title,[
-  {label:ko?(saved?'앵커 확인·수정':'앵커 적기'):(saved?'Review / edit anchor':'Write anchor'),
-   sub:ko?'기도 중 마음에 남은 말씀이나 방향을 기록해 보세요.':'Capture a verse, phrase, or direction from prayer.',
+ const record=db.days[d]?.sessions?.find(session=>session.id===id);
+ const anchorLabel=ko?(today?'오늘의 한 줄':'이날의 한 줄'):(today?'Today’s one-line note':'One-line note for this day');
+ const scriptureLabel=ko?(today?'오늘의 말씀 읽기':'이날의 말씀 읽기'):(today?'Read today’s Scripture':'Read Scripture for this day');
+ const choices=[
+  {label:ko?anchorLabel+(saved?' 보기·수정':' 남기기'):(saved?'View or edit: ':'Write: ')+anchorLabel,
+   sub:ko?'기도하며 마음에 남은 말씀이나 방향을 적어보세요.':'Keep a verse or thought from prayer to return to during the day.',
    fn:()=>{
     if(date!==d)changeDate(d);
+    morningPrayerAnchorDate=d;
+    $('morningPrayerReadAfterAnchor').textContent=scriptureLabel;
     nav('capture');
-    requestAnimationFrame(()=>{
-     const field=$('dayHeadline');
-     field?.scrollIntoView({block:'center',behavior:'smooth'});
-     field?.focus({preventScroll:true});
-    });
+    if(tutorialPractice&&guidedTourActive&&guidedIndex===0){guidedIndex=1;showGuidedStep()}
+    requestAnimationFrame(()=>$('dayHeadline').scrollIntoView({block:'nearest'}));
    }},
-  {label:ko?'나중에':'Not now',fn:()=>{}}
- ]);
+  {label:scriptureLabel,fn:()=>{if(tutorialPractice&&guidedTourActive&&guidedIndex===0){guidedIndex=1;showGuidedStep()}if(!readMorningScripture(d))offerMorningPrayerCompletion(d,id)}}
+ ];
+ if(record?.note?.trim())choices.push({
+  label:ko?'기도 메모 보기':'View prayer note',
+  fn:()=>{
+   const original=db.days[d]?.sessions?.find(session=>session.id===id);
+   if(original)openSessionNote(d,original);
+  }
+ });
+ openChoices(ko?'아침기도를 마쳤어요':'Morning prayer is complete',choices);
+ const list=$('choiceList');
+ list.firstElementChild.classList.add('morning-prayer-primary');
+ if(choices.length===3)list.lastElementChild.classList.add('morning-prayer-note-link');
 }
 function commitTimerSession(markDone=false){
  if(!sess.started)return;const seconds=Math.floor(elapsed()/1000);if(seconds<1){toast(KonaI18n.t("Record at least one second before saving."));return}
@@ -1172,7 +1203,7 @@ function commitTimerSession(markDone=false){
   if(sess.kind==='prayer'&&sess.prayerId){const p=db.prayers.find(p=>p.id===sess.prayerId);if(p)markPrayed(p,d)}
  }
  if(!tutorialPractice&&!save()){db=JSON.parse(before);toast('Could not save. Your timer and note are kept; try again or back up.');return false}
- const kind=sess.kind,fromMorningCheckin=kind==='prayer'&&sess.origin==='morning-checkin';sessKind=kind;sessDurMin=sess.dur/60;timerDraft(kind).note='';rememberTimer();sess=idleSess();storeActiveSession();afterTaskKey=null;if(date!==d)changeDate(d);else render();toast(KonaI18n.t("Session saved"));if(fromMorningCheckin&&!tutorialPractice)offerMorningPrayerAnchor(d);return true;
+ const kind=sess.kind,fromMorningCheckin=kind==='prayer'&&sess.origin==='morning-checkin';sessKind=kind;sessDurMin=sess.dur/60;timerDraft(kind).note='';rememberTimer();sess=idleSess();storeActiveSession();afterTaskKey=null;if(date!==d)changeDate(d);else render();toast(KonaI18n.t("Session saved"));if(fromMorningCheckin){if(tutorialPractice&&guidedTourActive&&guidedIndex===0){guidedVisited.add(0);offerMorningPrayerCompletion(d,id);refreshGuidedStep()}else if(!tutorialPractice)offerMorningPrayerCompletion(d,id);}return true;
 }
 async function cancelTimer(){if(!sess.started)return;if((elapsed()>0||(sess.note||'').trim())&&!await onHaruConfirm(KonaI18n.t("Discard this session without saving its time or note?")))return;timerDraft(sess.kind).note='';save();sess=idleSess();storeActiveSession();renderFocus()}
 function tick(){if(sess.started&&page==='focus')updateClock();else if(sess.started)expireTimer()}
@@ -1656,6 +1687,13 @@ $('quickAddEvent').onclick=()=>{clearEventForm();openSheet('eventFormModal')};
 $('backFromManage').onclick=()=>nav('today');
 $('addEventBtn').onclick=()=>{clearEventForm();openSheet('eventFormModal')};
 $('addTaskBtn').onclick=()=>{clearTaskForm();openSheet('taskFormModal')};
+$('morningPrayerReadAfterAnchor').onclick=()=>{
+ if(morningPrayerAnchorDate!==date)return;
+ if(readMorningScripture(date)){
+  morningPrayerAnchorDate='';
+  $('morningPrayerReadAfterAnchor').hidden=true;
+ }
+};
 $('dayHeadline').oninput=e=>{const value=e.target.value;day(date).headline=value;save();$('useSuggest').classList.toggle('hidden',!!value.trim()||!headlineSuggest(date))};
 $('dayHeadline').onblur=e=>{const value=normalizeDailyHeadline(e.target.value);if(e.target.value!==value)e.target.value=value;if(day(date).headline!==value){day(date).headline=value;save()}renderToday()};
 $('useSuggest').onclick=()=>{const s=headlineSuggest(date);if(!s)return;if(!guardedMutation(()=>{day(date).headline=s}))return;render();toast(KonaI18n.t("Saved"))};
@@ -1912,87 +1950,172 @@ function chooseTutorialLanguage(language){try{window.localStorage.setItem(KonaI1
 $('tutorialChooseKo').onclick=()=>chooseTutorialLanguage('ko');$('tutorialChooseEn').onclick=()=>chooseTutorialLanguage('en');
 
 function closeTutorial(){try{window.localStorage.removeItem('kona.legacy.v1.kona.welcome.pending')}catch{}db.settings.tutorialSeen=true;db.settings.guidedTourSeen=true;save();$('tutorialModal').hidden=true;const target=tutorialReturnFocus?.isConnected?tutorialReturnFocus:document.querySelector('.dock button.active');target?.focus()}
+const welcomeHasKorean=KonaI18n.language==='ko';
+$('tutorialHeading').textContent=welcomeHasKorean?'하나님과 함께, 오늘을 시작해요':'Begin your day with God';
+$('tutorialBody').textContent=welcomeHasKorean
+ ?'아침에 기도하고, 마음에 남은 한 줄을 적거나 오늘의 말씀을 읽어보세요.'
+ :'Pray, keep a thought for your day, or read today’s Scripture.';
+$('startMorningPrayerGuide').textContent=welcomeHasKorean?'기도로 시작하기':'Begin with prayer';
+$('startMorningPrayerGuide').onclick=()=>{
+ closeTutorial();
+ if(!sess.started&&date!==nowLocal())changeDate(nowLocal());
+ launchMorningPrayer();
+};
+$('startGuidedTour').textContent=welcomeHasKorean?'예시 하루 시작하기 · 1~2분':'Explore a day · 1–2 min';
+$('welcomeSkip').textContent=welcomeHasKorean?'앱 둘러보기':'Explore the app';
 $('welcomeSkip').onclick=closeTutorial;$('welcomeContinue').onclick=()=>{db.settings.guidedTourSeen=true;db.settings.tutorialSeen=true;save();startGuidedTour()};$('openAppHelp').onclick=()=>openSheet('appHelpModal');$('revisitWelcome').onclick=()=>{closeSheet('appHelpModal');openTutorial()};
 $('tutorialClose').onclick=closeTutorial;$('showFeatureGuides').onclick=()=>{$('tutorialWelcome').hidden=true;$('tutorialGuidePanel').hidden=false;paintTutorial();$('tutorialGuideHeading').focus()};$('backToTourWelcome').onclick=()=>{$('tutorialModal').querySelector('[role="dialog"]').setAttribute('aria-labelledby','tutorialHeading');$('tutorialGuidePanel').hidden=true;$('tutorialWelcome').hidden=false;$('tutorialHeading').focus()};$('tutorialBack').onclick=()=>{tutorialIndex=Math.max(0,tutorialIndex-1);paintTutorial()};topicSelect.onchange=()=>{tutorialIndex=Number(topicSelect.value);paintTutorial()};$('tutorialNext').onclick=()=>{if(tutorialIndex<tutorialSteps.length-1){tutorialIndex++;paintTutorial()}else closeTutorial()};
-// A temporary database makes the lesson safe to complete with real input.
+// Practice uses the real tabs with an isolated, temporary example day.
+const tourKo=KonaI18n.language==='ko';
+const tourCopy=(ko,en)=>tourKo?ko:en;
+const tourStory={
+ anchor:tourCopy('지금 할 수 있는 것 하나만.','One thing I can do right now.'),
+ walk:tourCopy('점심 뒤 10분 걷기','Walk for ten minutes after lunch'),
+ listening:tourCopy('모든 일을 한꺼번에 해결하려고 하지 말자. 잠깐 멈추고 하나님께 맡겨보자.','I don’t have to solve everything at once. I can pause and bring it to God.'),
+ topic:tourCopy('마음이 분주할 때','When my mind feels restless'),
+};
 const guidedSteps=[
-{skill:KonaI18n.t("1 / 5 · Capture"),selector:"#qc-text",page:"capture",title:KonaI18n.t("Save your first note"),copy:KonaI18n.t("Write a short note and tap Save note. More opens all tags; the sheep tag is for Hearing God’s Voice. Tags are optional."),ready:()=>!!day(date).quickCaptureEntries?.length,success:KonaI18n.t("Your practice note is saved.")},
-{skill:KonaI18n.t("2 / 5 · Check-in"),selector:"#checkNote",page:"checkin",title:KonaI18n.t("Write a morning check-in"),copy:KonaI18n.t("Write a sentence in the note field. It saves automatically. You can also adjust your mood and energy."),ready:()=>!!check(date,'morning').note.trim(),success:KonaI18n.t("Your morning note is saved.")},
-{skill:KonaI18n.t("2 / 5 · Check-in"),selector:"#moodGrid",page:"checkin",title:KonaI18n.t("Choose your mood & energy"),copy:KonaI18n.t("Select an Energy level and a Mood level using the two sliders. Both selections are needed to continue; they save automatically in practice."),ready:()=>{const entry=check(date,"morning");return Number.isInteger(entry.morningEnergy)&&Number.isInteger(entry.morningHappiness)&&!!entry.mood},success:KonaI18n.t("Your practice mood check is complete.")},
-{skill:KonaI18n.t("3 / 5 · Plan"),selector:"#pinRow .task-add",page:"today",title:KonaI18n.t("Add a task"),copy:KonaI18n.t("Tap Add task to open the form."),ready:()=>!$('taskFormModal').hidden||db.tasks.length>0,success:KonaI18n.t("The task form is ready.")},
-{skill:KonaI18n.t("3 / 5 · Plan"),selector:"#taskTitle",page:"today",title:KonaI18n.t("Save a small action"),copy:KonaI18n.t("Enter an action, such as Take a short walk, then tap Save."),ready:()=>db.tasks.some(t=>t.title.trim())&&$('taskFormModal').hidden,success:KonaI18n.t("Your task is saved."),recover:()=>{clearTaskForm();openSheet('taskFormModal')},recoveryLabel:KonaI18n.t("Reopen task form")},
-{skill:KonaI18n.t("4 / 5 · Review"),selector:"#page-records",page:"records",title:KonaI18n.t("Find your saved notes"),copy:KonaI18n.t("Your note and morning check-in appear here. Tap a record to edit it, or continue to the timer."),ready:()=>true,success:KonaI18n.t("You can return to these records from Review.")},
-{skill:KonaI18n.t("5 / 5 · Focus"),selector:"#kindSeg",page:"focus",title:KonaI18n.t("Choose time to focus"),copy:KonaI18n.t("Choose Focus, Devotion or Prayer and a duration. Start a real session after leaving practice."),ready:()=>true,success:KonaI18n.t("Finish practice to return to your own records.")}
+ {tab:tourCopy('아침기도','Morning prayer'),page:'focus',selector:'#focusStart',runningSelector:'#focusEnd',
+  title:tourCopy('마음이 분주한 아침','A restless morning'),
+  copy:tourCopy('별일도 없는데 마음이 자꾸 급해요. 오늘은 기도로 하루를 시작해 봐요.','Nothing in particular happened, but my mind is racing. Let’s start the day with prayer.'),
+  runningCopy:tourCopy('잠시 하나님 앞에 머물러 보세요. 기도를 마쳤다면 종료를 눌러요.','Take a moment with God. Tap Finish when you’re ready.'),useApp:true,done:()=>guidedVisited.has(0),feedback:tourCopy('기도를 마쳤어요.','Prayer complete.'),next:tourCopy('오늘의 한 줄 남기기','Write today’s one-line note')},
+ {tab:tourCopy('쓰기','Write'),page:'capture',selector:'#dayHeadline',
+  title:tourCopy('오늘 마음에 품을 한 줄','One thought for today'),
+  copy:tourCopy('기도하며 마음에 남은 한 줄을 적어보세요. 마음이 분주해질 때 다시 꺼내 볼 수 있어요. 오늘의 말씀을 열어 묵상도 남겨 보세요.','Write a thought from your prayer to return to when life feels busy. Open today’s Scripture and leave a reflection.'),
+  next:tourCopy('아침 체크인','Morning check-in')},
+ {tab:tourCopy('체크인','Check-in'),page:'checkin',selector:'#moodGrid',
+  title:tourCopy('지금 내 마음은 어떤가요?','How am I feeling now?'),
+  copy:tourCopy('기도를 마친 지금, 내 마음과 에너지는 어떤가요? 점심과 저녁에도 기록하며 하루의 변화를 살펴보세요.','Notice your mood and energy after prayer. Check in again at midday and in the evening to see how your day changes.'),
+  next:tourCopy('계획 열기','Open Plan')},
+ {tab:tourCopy('계획','Plan'),page:'today',selector:'#pinRow .task-overview-actions button:first-child',formSelector:'#taskSave',
+  title:tourCopy('점심 뒤에 잠깐 걷기','Take a short walk'),
+  copy:tourCopy('오후에 약속이 하나 있어요. 점심 뒤 잠깐 걸어볼까요? 할 일에 추가해 보세요.','There’s an appointment this afternoon. How about a short walk after lunch? Add it to your tasks.'),
+  formCopy:tourCopy('산책을 할 일로 저장해 보세요. 반복이나 날짜도 여기서 정할 수 있어요.','Save the walk as a task. You can set a date or make it repeat here.'),
+  useApp:true,done:()=>db.tasks.length>0,
+  feedback:tourCopy('할 일에 산책을 추가했어요.','The walk is on your task list.'),next:tourCopy('점심 뒤로','After lunch')},
+ {tab:tourCopy('쓰기 · 낮','Write · Midday'),page:'capture',selector:'#qc-v2 [data-tag="meaning_listening"]',captureTime:'12:40',
+  title:tourCopy('잠깐 멈춰 귀 기울이기','Pause and listen'),
+  copy:tourCopy('점심이 지나도 마음이 분주하다면 잠깐 멈춰 하나님의 음성에 귀 기울여 보세요. 마음에 남은 생각은 🐑를 붙여 저장해요.','If your mind is still racing after lunch, pause to listen for God’s voice. Mark the thought you want to remember with 🐑 and save it.'),
+  useApp:true,done:()=>day(date).quickCaptureEntries?.some(entry=>entry.tags?.includes('meaning_listening')),
+  feedback:tourCopy('저녁에 돌아보기에서 다시 읽을 수 있어요.','You can find this note in Review tonight.'),next:tourCopy('기도제목 보러 가기','Go to prayer requests')},
+ {tab:tourCopy('집중','Focus'),page:'focus',selector:'#focusLibraryOpen',
+  title:tourCopy('기도에 시간을 내기','Make time for prayer'),
+  copy:tourCopy('분주한 마음을 두고 또 기도하고 싶을 때, 기도제목을 열어보세요. 기도 중 적은 생각과 나중에 남긴 감사·응답을 함께 볼 수 있어요.','When you want to pray about feeling restless again, open the prayer request. See your prayer notes and later responses or gratitude together.'),
+  next:tourCopy('저녁 기록 보기','Look back on the day')},
+ {tab:tourCopy('돌아보기','Review'),page:'records',selector:'.rv-timeline .kona-sheep-icon',fallbackSelector:'.rv-anchor-text',
+  title:tourCopy('오늘 하루를 다시 읽어요','Read your day again'),
+  copy:tourCopy('어느새 저녁이에요. 아침에 적은 한 줄을 떠올리며 낮에 남긴 🐑 메모를 다시 읽어보세요.','It’s evening now. Remember your morning thought and revisit the 🐑 note from midday.'),
+  next:tourCopy('둘러보기 마치기','Finish practice')}
 ];
-let guidedIndex=0,guidedTourActive=false,guidedFinished=false,guidedEvidence=new Set(),guidedCompleted=new Set(),guidedRefreshTimer;
+let guidedIndex=0,guidedTourActive=false,guidedFinished=false,guidedRefreshTimer;
+const guidedVisited=new Set();
 function clearGuidedTarget(){document.querySelectorAll('.guided-target').forEach(n=>n.classList.remove('guided-target'))}
 function guidedText(id,value){if($(id).textContent!==value)$(id).textContent=value}
-function visibleGuidedTarget(step){const n=document.querySelector(step.selector);return n&&n.getClientRects().length?n:null}
-function positionGuidedCard(){const taskFormOpen=!$('taskFormModal').hidden;const modal=[...document.querySelectorAll('.modal-under')].some(n=>!n.hidden);const keyboard=window.visualViewport&&window.innerHeight-window.visualViewport.height>120;const guide=$('guidedTour');guide.classList.toggle('tour-task-entry',taskFormOpen);guide.dataset.position=taskFormOpen?'bottom':(modal||keyboard?'top':'bottom')}
+function visibleGuidedTarget(step){return [step.selector,step.fallbackSelector].filter(Boolean).map(selector=>document.querySelector(selector)).find(n=>n&&n.getClientRects().length)||null}
+function positionGuidedCard(){const modal=[...document.querySelectorAll('.modal-under')].some(n=>!n.hidden);const keyboard=window.visualViewport&&window.innerHeight-window.visualViewport.height>120;$('guidedTour').dataset.position=modal||keyboard||sess.started?'top':'bottom'}
 function refreshGuidedStep(){
  if(!guidedTourActive)return;
- // Opening the task sheet completes the preceding 'Add task' step automatically.
- // The next instruction and focus now follow the visible title input.
- if(guidedIndex===3&&!$('taskFormModal').hidden){
-  guidedCompleted.add(guidedIndex);guidedIndex=4;showGuidedStep();
-  requestAnimationFrame(()=>{const input=$('taskTitle');if(input&&!input.disabled&&document.activeElement!==input)input.focus({preventScroll:true})});
-  return;
- }
- const step=guidedSteps[guidedIndex],ready=step.ready();const target=visibleGuidedTarget(step),recover=!ready&&!target;
+ const step=guidedSteps[guidedIndex],inPlace=page===step.page&&date===tutorialPractice.storyDate;
+ const running=guidedIndex===0&&sess.started,formOpen=guidedIndex===3&&!$('taskFormModal').hidden;
+ const done=!!step.done?.();
+ const selector=running?step.runningSelector:formOpen?step.formSelector:step.selector;
+ const target=inPlace&&!(done&&step.useApp)?visibleGuidedTarget({selector,fallbackSelector:step.fallbackSelector}):null;
  document.querySelectorAll('.guided-target').forEach(n=>{if(n!==target)n.classList.remove('guided-target')});
- if(target&&!target.classList.contains('guided-target'))target.classList.add('guided-target');
- $('tourNext').hidden=false;$('tourNext').disabled=!ready&&!recover;
- guidedText('tourNext',recover?(step.recoveryLabel||KonaI18n.t("Return to this step")):guidedIndex===guidedSteps.length-1?KonaI18n.t("Finish practice"):KonaI18n.t("Continue"));
- guidedText('tourFeedback',ready?(typeof step.success==='function'?step.success():step.success):recover?(step.recover?KonaI18n.t("The form was closed before saving. Reopen it to try again."):KonaI18n.t("You moved to another screen. Return to this step to continue.")):KonaI18n.t("Complete the highlighted action to continue, or skip this step."));
- $('tourFeedback').classList.toggle('is-ready',ready);
+ target?.classList.add('guided-target');
+ $('tourNext').hidden=inPlace&&!!step.useApp&&!done;
+ $('tourNext').disabled=false;
+ guidedText('tourNext',!inPlace?tourCopy('이 화면으로 돌아가기','Return to this screen'):step.next||KonaI18n.t("Continue"));
+ guidedText('tourCopy',running?step.runningCopy:formOpen?step.formCopy:step.copy);
+ guidedText('tourFeedback',!inPlace?'':done?step.feedback:guidedIndex===0&&!running?tourCopy('연습 기도 · 실제 기록에는 남지 않아요.','Practice prayer stays out of your records.'):'');
+ $('tourFeedback').hidden=!$('tourFeedback').textContent;
+ $('tourFeedback').classList.toggle('is-ready',done);
  positionGuidedCard();
 }
 function showGuidedStep(){
- clearGuidedTarget();const step=guidedSteps[guidedIndex];
- if(page!==step.page)nav(step.page,{skipHistory:true,phase:step.page==='checkin'?'morning':undefined});
+ clearGuidedTarget();
+ const step=guidedSteps[guidedIndex];
+ if(date!==tutorialPractice.storyDate)changeDate(tutorialPractice.storyDate);
+ if(guidedIndex===0)launchMorningPrayer();
+ else nav(step.page,{skipHistory:true,phase:step.page==='checkin'?'morning':undefined,kind:step.page==='focus'?'prayer':undefined,view:step.page==='records'?'log':undefined});
+ if(guidedIndex===1){morningPrayerAnchorDate=date;$('morningPrayerReadAfterAnchor').textContent=tourCopy('오늘의 말씀 읽기','Read today’s Scripture');$('morningPrayerReadAfterAnchor').hidden=false;$('dayHeadline').placeholder=tourStory.anchor;}
+ if(step.page==='records'&&$('rev-reflect').getAttribute('aria-pressed')!=='true')$('rev-reflect').click();
+ if(step.captureTime&&!step.done()&&!$('qc-text').value.trim()){
+  $('qc-select').value='';$('qc-select').dispatchEvent(new Event('change',{bubbles:true}));
+  $('qc-text').value=tourStory.listening;$('qc-text').dispatchEvent(new Event('input',{bubbles:true}));
+ }
  $('guidedTour').hidden=false;$('tourExit').hidden=false;$('tourSkip').hidden=false;$('tourBack').hidden=false;$('tourBack').disabled=guidedIndex===0;
- guidedText('tourCount',step.skill);
- guidedText('tourHeading',step.title);guidedText('tourCopy',step.copy);
- refreshGuidedStep();requestAnimationFrame(()=>visibleGuidedTarget(step)?.scrollIntoView({behavior:'smooth',block:'start',inline:'nearest'}));
+ guidedText('tourCount',(guidedIndex+1)+' / '+guidedSteps.length+' · '+step.tab);
+ guidedText('tourHeading',step.title);
+ guidedText('tourCopy',step.copy);
+ refreshGuidedStep();
+ requestAnimationFrame(()=>visibleGuidedTarget(step)?.scrollIntoView({block:step.page==='records'?'center':'start',inline:'nearest'}));
 }
 function restorePractice(){
  if(!tutorialPractice)return;
- const original=tutorialPractice;tutorialPractice=null;db=original.db;date=original.date;phase=original.phase;calendarMonth=original.calendarMonth;reviewWeek=original.reviewWeek;taskExpanded=original.taskExpanded;
+ const original=tutorialPractice;window.OnHaruScripture?.endPractice();sess=idleSess();quietTimer=original.quietTimer;tutorialPractice=null;db=original.db;date=original.date;phase=original.phase;calendarMonth=original.calendarMonth;reviewWeek=original.reviewWeek;taskExpanded=original.taskExpanded;
+ sessKind=original.sessKind;sessDurMin=original.sessDurMin;focusPrayerId=original.focusPrayerId;morningCheckinPrayerLaunchDate=original.morningLaunch;morningPrayerAnchorDate=original.morningAnchor;moodExpanded=original.moodExpanded;recView=original.recView;
  document.activeElement?.blur();document.querySelectorAll('.modal-under').forEach(n=>n.hidden=true);document.body.classList.remove('practice-mode');nav(original.page,{phase:original.phase,skipHistory:true});if($('qc-state'))$('qc-state').textContent='';
 }
 function startGuidedTour(){
  if(sess.started){toast(KonaI18n.t("End your active focus session before starting practice."));return}
- closeTutorial();guidedFinished=false;guidedIndex=0;guidedCompleted.clear();guidedEvidence.clear();
- tutorialPractice={db,date,page,phase,calendarMonth,reviewWeek,taskExpanded};taskExpanded=false;
- const settings={...JSON.parse(JSON.stringify(db.settings)),brandName:'On_HARU'};db=blank();db.settings=settings;db.events=defaultEvents();date=nowLocal();calendarMonth=date.slice(0,7);reviewWeek=monday(date);phase='morning';moodExpanded=true;
- document.body.classList.add('practice-mode');guidedTourActive=true;nav('capture',{skipHistory:true});showGuidedStep();
+ closeTutorial();guidedFinished=false;guidedIndex=0;guidedVisited.clear();
+ const storyDate=nowLocal();
+ tutorialPractice={db,date,page,phase,calendarMonth,reviewWeek,taskExpanded,sessKind,sessDurMin,focusPrayerId,moodExpanded,recView,quietTimer,morningLaunch:morningCheckinPrayerLaunchDate,morningAnchor:morningPrayerAnchorDate,storyDate};taskExpanded=false;
+ const settings={...JSON.parse(JSON.stringify(db.settings)),brandName:'On_HARU'};
+ db=blank();db.settings=settings;window.OnHaruScripture?.beginPractice();date=storyDate;calendarMonth=date.slice(0,7);reviewWeek=monday(date);phase='morning';moodExpanded=true;
+ db.events=[{id:'tour-appointment',title:tourCopy('오후 약속','Afternoon appointment'),start:'14:00',end:'15:00',category:'personal',repeat:'none',days:[],since:date,until:''}];
+ db.prayers=[{id:'tour-prayer',title:tourStory.topic,since:date,count:1,lastPrayed:date,responseLogs:[{id:'tour-gratitude',date:dayAdd(date,1),text:tourCopy('마음이 여전히 분주했지만, 잠깐 멈출 수 있어서 감사했다.','My mind was still restless, but I was grateful I could pause.')}]}];
+ const example=day(date);example.headline='';
+ example.sessions=[{id:'tour-prayer-session',kind:'prayer',prayerId:'tour-prayer',task:tourStory.topic,start:'15:10',seconds:120,note:tourCopy('조급해질 때 잠깐 멈추고 싶다.','I want to pause when I feel rushed.')}];
+ example.quickCaptureEntries=[{id:'tour-walk-note',title:'',text:tourCopy('점심 뒤 잠깐 걸었더니 마음이 조금 가벼워졌다.','I felt a little lighter after stepping outside at lunch.'),time:'12:30',date,tags:[]}];
+ document.body.classList.add('practice-mode');guidedTourActive=true;showGuidedStep();
 }
 function completeGuidedTour(){
- const practiced=guidedCompleted.size;clearGuidedTarget();guidedTourActive=false;restorePractice();guidedFinished=true;
- db.settings.guidedTourSeen=true;db.settings.guidedTourComplete=practiced===guidedSteps.length;db.settings.guidedTourRevision=3;save();
- guidedText('tourCount',KonaI18n.t("Practice finished"));guidedText('tourHeading',practiced===guidedSteps.length?KonaI18n.t("Ready for your own day"):KonaI18n.t("Continue at your own pace"));
- guidedText('tourCopy',KonaI18n.t("Your records are back. Practice entries were temporary and have not been saved."));guidedText('tourFeedback',KonaI18n.t("You can reopen this guide in Settings → Help & About."));
- $('guidedTour').hidden=false;$('guidedTour').dataset.position='bottom';$('tourNext').hidden=false;$('tourNext').disabled=false;guidedText('tourNext',KonaI18n.t("Start my own day"));['tourSkip','tourBack','tourExit'].forEach(id=>$(id).hidden=true);
+ clearGuidedTarget();guidedTourActive=false;restorePractice();guidedFinished=true;
+ db.settings.guidedTourSeen=true;db.settings.guidedTourComplete=guidedVisited.size===guidedSteps.length;db.settings.guidedTourRevision=5;save();
+ guidedText('tourCount',KonaI18n.t("Practice finished"));guidedText('tourHeading',tourCopy('내 하루 시작하기','Start my own day'));
+ guidedText('tourCopy',tourCopy('매일·주간 회고·모아보기에서 기록을 다시 볼 수 있어요. 화면이나 백업은 설정에서 바꿔요.','Find your notes in Daily, Weekly Reflection, or All Records. Display and backup are in Settings.'));
+ $('tourFeedback').hidden=false;
+ guidedText('tourFeedback',tourCopy('설정 → 도움말과 앱 소개에서 다시 볼 수 있어요.','Reopen this guide in Settings → Help & About.'));
+ $('guidedTour').hidden=false;$('guidedTour').dataset.position='bottom';$('tourNext').hidden=false;$('tourNext').disabled=false;guidedText('tourNext',tourCopy('내 하루 시작하기','Start my own day'));['tourSkip','tourBack','tourExit'].forEach(id=>$(id).hidden=true);
 }
 function endGuidedTour(markSeen=true){clearGuidedTarget();guidedTourActive=false;restorePractice();guidedFinished=false;$('guidedTour').hidden=true;if(markSeen){db.settings.guidedTourSeen=true;save()}}
-function advanceGuidedTour(){if(guidedIndex===guidedSteps.length-1)completeGuidedTour();else{guidedIndex++;showGuidedStep()}}
+function advanceGuidedTour(){
+ if(sess.started){sess=idleSess();renderFocus()}
+ document.querySelectorAll('.modal-under').forEach(n=>n.hidden=true);
+ if(guidedIndex===guidedSteps.length-1)completeGuidedTour();else{guidedIndex++;showGuidedStep()}
+}
 $('startGuidedTour').onclick=startGuidedTour;
 $('tourExit').onclick=()=>endGuidedTour(true);
 $('tourBack').onclick=()=>{if(guidedIndex>0){document.querySelectorAll('.modal-under').forEach(n=>n.hidden=true);guidedIndex--;showGuidedStep()}};
-$('tourSkip').onclick=()=>{document.querySelectorAll('.modal-under').forEach(n=>n.hidden=true);advanceGuidedTour()};
+$('tourSkip').onclick=advanceGuidedTour;
 $('tourNext').onclick=()=>{
- if(guidedFinished){endGuidedTour();date=nowLocal();nav('capture');return}
- const step=guidedSteps[guidedIndex];if(!step.ready()){if(!visibleGuidedTarget(step)){if(step.recover)step.recover();else showGuidedStep();refreshGuidedStep()}return}
- guidedCompleted.add(guidedIndex);advanceGuidedTour();
+ if(guidedFinished){endGuidedTour();if(date!==nowLocal())changeDate(nowLocal());nav('capture');return}
+ const step=guidedSteps[guidedIndex];
+ if(page!==step.page||date!==tutorialPractice.storyDate){showGuidedStep();return}
+ if(step.useApp&&!step.done?.())return;
+ guidedVisited.add(guidedIndex);advanceGuidedTour();
 };
 document.addEventListener('click',e=>{
  if(!guidedTourActive)return;
- if(e.target.closest('#focusStart,#backupNow,#restoreNow,#exportTxt')){e.preventDefault();e.stopImmediatePropagation();toast(KonaI18n.t("Finish or exit practice before using the timer or backup."));return}
- if(e.target.closest('.review-nav [data-review-tab="log"]'))guidedEvidence.add('daily-log');
+ if(e.target.closest('#backupNow,#restoreNow,#exportTxt')||
+    (e.target.closest('#focusStart')&&(guidedIndex!==0||date!==tutorialPractice.storyDate||(!sess.started&&morningCheckinPrayerLaunchDate!==date)))){
+  e.preventDefault();e.stopImmediatePropagation();toast(tourCopy('둘러보기를 마치고 내 하루에서 사용할 수 있어요.','You can use this after the sample day.'));
+ }
 },true);
-['input','change','click','submit','focusin','focusout'].forEach(name=>document.addEventListener(name,()=>{clearTimeout(guidedRefreshTimer);guidedRefreshTimer=setTimeout(refreshGuidedStep,80)},true));
+document.addEventListener('click',e=>{
+ if(guidedTourActive&&guidedIndex===3&&page==='today'&&!$('taskFormModal').hidden&&e.target.closest('#pinRow .task-overview-actions button:first-child')){
+  $('taskTitle').value=tourStory.walk;
+ }
+ if(guidedTourActive)refreshGuidedStep();
+});
+function scheduleGuidedRefresh(){
+ if(!guidedTourActive||guidedRefreshTimer)return;
+ guidedRefreshTimer=setTimeout(()=>{guidedRefreshTimer=null;refreshGuidedStep()},80);
+}
+['input','change','submit','focusin','focusout'].forEach(name=>document.addEventListener(name,scheduleGuidedRefresh,true));
 window.visualViewport?.addEventListener('resize',()=>{if(guidedTourActive)positionGuidedCard()});
-new MutationObserver(()=>{if(guidedTourActive){clearTimeout(guidedRefreshTimer);guidedRefreshTimer=setTimeout(refreshGuidedStep,100)}}).observe(document.body,{childList:true,subtree:true});
+new MutationObserver(scheduleGuidedRefresh).observe(document.body,{childList:true,subtree:true});
 $('tutorialTryFeature').onclick=()=>{const step=tutorialSteps[tutorialIndex];closeTutorial();if(step.page==='settings'){const settings=$('kx-settings');settings.open=true;settings.scrollIntoView({block:'start'})}else nav(step.page)};
 // Keep first-visit onboarding and the guide in Settings; remove only Plan's shortcut.
 let needsWelcome=!db.settings.guidedTourSeen;try{needsWelcome=needsWelcome||!window.localStorage.getItem(KonaI18n.key)||!!window.localStorage.getItem('kona.legacy.v1.kona.welcome.pending')}catch{}if(needsWelcome)setTimeout(openTutorial,0);
@@ -2181,7 +2304,7 @@ const markerLabel=()=>KonaI18n.language==='ko'?(captureImportant?'중요 표시 
 function paintCaptureMarker(){captureMarker.classList.toggle('is-important',captureImportant);captureMarker.setAttribute('aria-pressed',String(captureImportant));captureMarker.setAttribute('aria-label',markerLabel());captureMarker.title=markerLabel()}
 c.append(captureMarker);paintCaptureMarker();
 submit.setAttribute('aria-label',KonaI18n.t("Save note",true));submit.title=KonaI18n.t("Save note",true);
-let captureTags=[],last='',chosen='',manual=false,signature='',saving=false;
+let captureTags=[],last='',lastDatabase=null,chosen='',manual=false,signature='',saving=false;
 const tagBox=document.createElement('section');tagBox.className='kona-capture-tags';tagBox.setAttribute('aria-label','Note tags; choose any');
 const tagHeading=document.createElement('div');tagHeading.className='kona-capture-tag-heading';tagHeading.hidden=true;
 // Emoji-only tags: meanings remain in each button's accessible label.
@@ -2304,8 +2427,8 @@ queueMicrotask(()=>{if(ensureCaptureScheduleMenu())paintCaptureLink()});
 function updateSubmit(){submit.disabled=saving||(!input.value.trim()&&!captureTitle.value.trim()&&!captureTags.length);const label=document.getElementById('qc-submit-label');if(label)label.textContent=saving?KonaI18n.t("Saving…"):KonaI18n.t("Save")}
 function draft(){if(!manual)chosen=current();paintCaptureLink();day(date).qcDraft={title:captureTitle.value,text:input.value,eventId:chosen,manual,tags:[...captureTags],important:captureImportant};const ok=save()||!!tutorialPractice;state.textContent=ok?(input.value.trim()||captureTitle.value.trim()||captureTags.length?KonaI18n.t("Draft saved"):''):KonaI18n.t("Draft not saved · please retry");updateSubmit()}
 function refresh(){
-if(page!=='today'&&page!=='capture')return;const es=events(date),sig=es.map(e=>[e.id,e.start,e.end,e.title].join('/')).join('|'),newday=last!==date;
-if(newday){last=date;const d=db.days[date]?.qcDraft;chosen=d?.eventId||'';manual=d?!!d.manual:false;input.value=d?.text||'';captureTitle.value=d?.title||'';captureTags=Array.isArray(d?.tags)?d.tags.filter(tag=>KONA_NOTE_TAGS.some(([id])=>id===tag)):[];captureImportant=!!d?.important;paintCaptureTags();paintCaptureMarker();signature=''}
+if(page!=='today'&&page!=='capture')return;const es=events(date),sig=es.map(e=>[e.id,e.start,e.end,e.title].join('/')).join('|'),newday=last!==date||lastDatabase!==db;
+if(newday){last=date;lastDatabase=db;const d=db.days[date]?.qcDraft;chosen=d?.eventId||'';manual=d?!!d.manual:false;input.value=d?.text||'';captureTitle.value=d?.title||'';captureTags=Array.isArray(d?.tags)?d.tags.filter(tag=>KONA_NOTE_TAGS.some(([id])=>id===tag)):[];captureImportant=!!d?.important;paintCaptureTags();paintCaptureMarker();signature=''}
 if(newday||signature!==sig){signature=sig;select.replaceChildren(new Option(KonaI18n.language==='ko'?'자동으로 연결 · 일정 종료 후 15분까지':'Auto-link · Event end + 15 min','__auto__'),new Option(KonaI18n.language==='ko'?'연결하지 않음 · 개인 메모':'No schedule · Personal note',''));for(const e of es)select.add(new Option((KonaI18n.language==='ko'?'직접 선택 · ':'Choose · ')+e.start+'–'+e.end+' · '+KonaI18n.eventLabel(e),e.id));if(!manual||(chosen&&!es.some(e=>e.id===chosen))){manual=false;chosen=current()}select.value=manual?chosen:'__auto__'}
 else if(!manual){chosen=current()}
 paintCaptureLink();updateSubmit();
@@ -2315,7 +2438,7 @@ input.addEventListener('input',draft);captureTitle.addEventListener('input',draf
 submit.addEventListener('click',()=>{
 const text=input.value.trim();if(saving)return;if(!text&&!captureTitle.value.trim()&&!captureTags.length){state.textContent=KonaI18n.t("Write a note or choose an emoji first");input.focus();updateSubmit();return}
 saving=true;updateSubmit();state.textContent=KonaI18n.t("Saving…");
-const id=manual?chosen:current(),e=events(date).find(e=>e.id===id),savedId=uid(),savedDate=date,now=timeLocal(),stamp=new Date().toISOString();
+const id=manual?chosen:current(),e=events(date).find(e=>e.id===id),savedId=uid(),savedDate=date,now=(tutorialPractice&&guidedSteps[guidedIndex]?.captureTime)||timeLocal(),stamp=new Date().toISOString();
 try{const d=day(savedDate),previous=d.quickCaptureEntries,previousDraft=d.qcDraft;d.quickCaptureEntries=[...(previous||[]),{id:savedId,title:captureTitle.value.trim(),text,createdAt:stamp,time:now,date:savedDate,scheduleId:e?.id||'',scheduleTitle:e?.title||KonaI18n.t("Personal note"),scheduleTime:e?e.start+'–'+e.end:'',tags:[...captureTags],important:captureImportant}];delete d.qcDraft;if(!save()&&!tutorialPractice){if(previous===undefined)delete d.quickCaptureEntries;else d.quickCaptureEntries=previous;if(previousDraft!==undefined)d.qcDraft=previousDraft;saving=false;state.textContent=KonaI18n.t("Not saved · your text is still here. Please retry.");updateSubmit();return}input.value='';captureTitle.value='';manual=false;chosen='';captureTags=[];captureImportant=false;paintCaptureTags();paintCaptureMarker();last='';saving=false;render();state.textContent=tutorialPractice?KonaI18n.t("Practice only · not saved"):KonaI18n.t("Saved");if(!tutorialPractice)toast(KonaI18n.t("Saved"));updateSubmit()}
 catch(error){saving=false;state.textContent=KonaI18n.t("Could not save; try again");updateSubmit()}
 });
@@ -3891,7 +4014,7 @@ function checkLayout(){if(page!=='checkin')return;const cls=phase==='noon'&&clas
  byId('lectureNoteCard').querySelector('label[for="lectureReflection"]').textContent=KonaI18n.t("What stood out to you?");classNotesLink.hidden=!cls;byId('lectureQuote').placeholder=KonaI18n.t("A quote or phrase to remember",true);byId('lectureReflection').placeholder=KonaI18n.t("What did you notice, learn, or want to explore?",true);byId('addLectureTask').textContent=KonaI18n.t("Add task");
  const hasSaved=phase==='noon'?noonCheckinRecorded(c):hasCheck(c);byId('checkState').textContent=status||(tutorialPractice?KonaI18n.t("Practice only · not saved"):hasSaved?KonaI18n.t("Saved"):KonaI18n.t("Autosave"));retry.hidden=!byId('checkState').textContent.startsWith(KonaI18n.t("Not saved"));time.hidden=cls;ts.textContent=c.moodTime?KonaI18n.t("Recorded at ")+c.moodTime+KonaI18n.t(" · Edit time"):KonaI18n.t("Edit recorded time · optional");if(!cls)byId('generalNoteCard').after(time);
 }
-const morningPrayer=document.createElement('section');morningPrayer.id='morningPrayerPrompt';morningPrayer.hidden=true;const flower=document.createElement('img');flower.src='./assets/hibiscus-task-off.png';flower.alt='';const copy=document.createElement('div');const pt=document.createElement('h3');pt.textContent=KonaI18n.t("Begin with prayer");const pp=document.createElement('p');pp.textContent=KonaI18n.t("Take a moment to be with God.");copy.append(pt,pp);const pray=document.createElement('button');pray.type='button';pray.textContent=KonaI18n.language==='ko'?'기도로 아침 시작하기':'Begin the day with prayer';pray.prepend(flower);pray.onclick=()=>{if(sess.started){nav('focus');return}morningCheckinPrayerLaunchDate=date;nav('focus',{kind:'prayer',prayerId:''})};morningPrayer.append(pray);heading.after(morningPrayer);
+const morningPrayer=document.createElement('section');morningPrayer.id='morningPrayerPrompt';morningPrayer.hidden=true;const flower=document.createElement('img');flower.src='./assets/hibiscus-task-off.png';flower.alt='';const copy=document.createElement('div');const pt=document.createElement('h3');pt.textContent=KonaI18n.t("Begin with prayer");const pp=document.createElement('p');pp.textContent=KonaI18n.t("Take a moment to be with God.");copy.append(pt,pp);const pray=document.createElement('button');pray.type='button';pray.textContent=KonaI18n.language==='ko'?'기도로 아침 시작하기':'Begin the day with prayer';pray.prepend(flower);pray.onclick=launchMorningPrayer;morningPrayer.append(pray);heading.after(morningPrayer);
 const previousCheck=renderCheck;renderCheck=function(){const result=previousCheck.apply(this,arguments);checkLayout();return result};
 const qc=byId('qc-v2'),composeTitle=document.createElement('h2');composeTitle.id='captureComposerHeading';composeTitle.textContent=KonaI18n.t("Write a note");const desc=document.createElement('p');desc.id='captureComposerDescription';desc.textContent=KonaI18n.t("Write what’s on your mind, a quote, a prayer, or something you want to remember.");(byId('qc-note-title')||byId('qc-text')).before(composeTitle,desc);
 const helper=document.createElement('p');helper.id='captureMicHelp';const mic=document.createElement('img');mic.src=COMPACT_UI_ICONS.mic;mic.alt='';helper.append(mic,document.createTextNode(KonaI18n.t("Use your keyboard mic to speak.")));byId('qc-text').after(helper);const noteTags=qc.querySelector('.kona-capture-tags');if(noteTags)helper.after(noteTags);qc.querySelector('.qc-bottom').insertBefore(byId('captureScheduleLink'),qc.querySelector('#qc-state-group'));
@@ -4087,7 +4210,7 @@ const prevRender=render;render=function(){const value=prevRender.apply(this,argu
  const oldRender=render;render=function(){const result=oldRender.apply(this,arguments);arrangePlan();return result};arrangePlan();
 })();
 
-;(function(){const capture=document.getElementById('page-capture'),composer=document.getElementById('qc-v2'),carry=capture?.querySelector('.day-signature');if(!capture||!composer||!carry)return;carry.id='konaCarryToday';carry.setAttribute('role','region');carry.setAttribute('aria-label',KonaI18n.t("Today’s anchor",true));composer.before(carry);let label=carry.querySelector('.carry-label');if(!label){label=document.createElement('span');label.className='carry-label';label.textContent=KonaI18n.t("Today’s anchor");carry.querySelector('.headline-wrap').prepend(label)}})();
+;(function(){const capture=document.getElementById('page-capture'),composer=document.getElementById('qc-v2'),carry=capture?.querySelector('.day-signature');if(!capture||!composer||!carry)return;carry.id='konaCarryToday';carry.setAttribute('role','region');carry.setAttribute('aria-label',KonaI18n.t("Today’s anchor",true));composer.before(carry);carry.after($('morningPrayerReadAfterAnchor'));let label=carry.querySelector('.carry-label');if(!label){label=document.createElement('span');label.className='carry-label';label.textContent=KonaI18n.t("Today’s anchor");carry.querySelector('.headline-wrap').prepend(label)}})();
 
 ;(function(){const previousNav=nav;nav=function(p,opt={}){const from=page,result=previousNav.apply(this,arguments);if(p==='today'&&from!=='today'&&date===nowLocal())requestAnimationFrame(()=>{const current=document.querySelector('#kx-summary .kona-rich-event.is-current')?.closest('.kona-rich-row');if(!current||document.querySelector('#kx-summary').hidden)return;const r=current.getBoundingClientRect(),dock=document.getElementById('dock').offsetHeight;if(r.top<70||r.bottom>window.innerHeight-dock)current.scrollIntoView({block:'center',behavior:'instant'})});return result}})();
 

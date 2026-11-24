@@ -7,12 +7,32 @@ try{for(const width of [320,390,1024])for(const theme of ['light','dark']){
  const test=async(name,fn)=>{try{await fn();row.checks.push({name,ok:true});console.log('PASS',width,theme,name)}catch(e){row.checks.push({name,ok:false,details:String(e)});console.log('FAIL',width,theme,name,String(e));await page.screenshot({path:`${dir}/${width}-${theme}-failure-${row.checks.length}.png`});for(const close of (await page.locator('.modal-under:not([hidden]) .close').all()).reverse())await close.click({timeout:1000}).catch(()=>{});}};
  const expect=(ok,message)=>{if(!ok)throw Error(message)};const tap=t=>page.locator(`.tabs [data-page="${t}"]`).click();
  await page.goto(process.env.ONHARU_URL||'http://127.0.0.1:8080/legacy/');await page.waitForSelector('#tutorialChooseEn');await page.locator('#tutorialChooseEn').click();
- await test('Guided practice Capture, Check-in, sliders, Task, Review and finish',async()=>{
-  await page.locator('#startGuidedTour').click();await page.locator('#qc-text').fill('PRACTICE_ONLY_NOTE');await page.locator('#qc-submit').click();await page.locator('#tourNext').click();
-  await page.locator('#checkNote').fill('PRACTICE_ONLY_MORNING');await page.locator('#tourNext').click();
-  for(const label of ['Energy','Mood']){const slider=page.getByRole('slider',{name:label,exact:true});await slider.focus();await slider.press('ArrowRight');await slider.press('Tab')}
-  await page.locator('#tourNext').click();await page.locator('#pinRow .task-add').click();await page.locator('#taskTitle').fill('PRACTICE_ONLY_TASK');await page.locator('#taskSave').click();await page.locator('#tourNext').click();await page.locator('#tourNext').click();await page.locator('#tourNext').click();await page.locator('#tourNext').click();
-  expect(await page.locator('#guidedTour').isHidden(),'guide still open');expect(!await page.evaluate(()=>Object.keys(window.localStorage).some(k=>String(window.localStorage.getItem(k)).includes('PRACTICE_ONLY_'))),'practice leaked to storage');
+ await test('Complete the sample day from morning prayer through Review',async()=>{
+  const guide=page.locator('#guidedTour'),next=page.locator('#tourNext');
+  await page.locator('#startGuidedTour').click();
+  expect(await page.locator('#morningPrayerDurationHeading').isVisible(),'Morning prayer must be first');
+  await page.locator('#focusStart').click();
+  await page.locator('#focusEnd').waitFor();await page.waitForTimeout(1050);await page.locator('#focusEnd').click();
+  await page.locator('#choiceList .morning-prayer-primary').click();
+  await page.locator('#dayHeadline').fill('One thing I can do right now.');
+  expect(await page.evaluate(()=>day(date).headline==='One thing I can do right now.'),'Morning anchor missing');
+  await next.click();
+  const mood=page.getByRole('slider',{name:'Mood',exact:true});await mood.press('ArrowRight');
+  await next.click();
+  await page.locator('#pinRow .task-overview-actions button:first-child').click();
+  expect((await page.locator('#taskTitle').inputValue()).includes('Walk'),'Walk sample missing from the form');
+  await page.locator('#taskSave').click();
+  expect(await page.evaluate(()=>db.tasks.some(t=>t.title==='Walk for ten minutes after lunch')),'Walk not added');
+  await next.click();
+  const sheep=page.locator('#qc-v2 [data-tag="meaning_listening"]');
+  expect(await next.isHidden(),'The guide should let the app handle saving');
+  await sheep.click();await page.locator('#qc-submit').click();
+  expect(await page.evaluate(()=>day(date).quickCaptureEntries.some(n=>n.tags?.includes('meaning_listening')&&n.time==='12:40')),'Sheep-tagged note missing');
+  await next.click();await next.click();
+  expect(await page.locator('.rv-anchor-text').isVisible(),'Morning anchor missing in Review');
+  await next.click();await next.click();
+  expect(await guide.isHidden(),'Guide still open');
+  expect(!await page.evaluate(()=>Object.keys(localStorage).some(k=>String(localStorage.getItem(k)).includes('Walk for ten minutes after lunch'))),'Practice leaked to storage');
  });
  // Independent recovery via the UI so a guided failure doesn't imply prayer failure.
  if(await page.locator('#tourExit').isVisible())await page.locator('#tourExit').click();if(await page.locator('#welcomeSkip').isVisible())await page.locator('#welcomeSkip').click();

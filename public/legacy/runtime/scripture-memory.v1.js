@@ -37,6 +37,9 @@
         saved_for_later:record.saved_for_later===true
       };
     }
+    const picks=Object.entries(source.daily_passages||{}).filter(([day,id])=>
+      /^\d{4}-\d{2}-\d{2}$/.test(day)&&typeof id==='string'&&/^[a-z0-9-]{3,96}$/.test(id));
+    if(picks.length)result.daily_passages=Object.fromEntries(picks.sort().slice(-60));
     return result;
   }
   let state;let storageWarning=false;
@@ -45,11 +48,40 @@
   let lastFocused=null,previousBodyOverflow='',requestNumber=0,ignoreNextPop=false;
   let filter='all',searchText='',pendingImport=null;
   function recordFor(id){return state.passages[id]||{status:'not_started',memorized_at:null,last_practiced_at:null,last_practiced_on:null,next_review_on:null,review_stage:0,attempts:[],read_at:null,last_read_on:null,saved_for_later:false};}
+  let beforePractice=null;
   function persist(next){
+    if(beforePractice){state=next;return true;}
     try{localStorage.setItem(KEY,JSON.stringify(next));state=next;storageWarning=false;return true;}
     catch{storageWarning=true;return false;}
   }
   function byId(id){return catalog.find(v=>v.id===id);}
+  const pendingDailyPassages=new Map();
+  function dailyPassage(day){
+    return byId(state.daily_passages?.[day]||(!beforePractice&&pendingDailyPassages.get(day)));
+  }
+  function pickDaily(day){
+    if(!catalog.length||!/^\d{4}-\d{2}-\d{2}$/.test(day))return null;
+    let item=dailyPassage(day);
+    if(!item){
+      item=catalog[Math.floor(Math.random()*catalog.length)];
+      const next=safeState({...state,daily_passages:{...state.daily_passages,[day]:item.id}});
+      if(!persist(next))pendingDailyPassages.set(day,item.id);
+    }
+    return item;
+  }
+  function openDaily(day){
+    const item=pickDaily(day);
+    if(!item)return false;
+    openPractice(item,'daily');
+    updateEntries();
+    return true;
+  }
+  window.OnHaruScripture={
+    openDaily,
+    beginPractice(){beforePractice=state;state=empty();updateEntries();},
+    endPractice(){if(beforePractice){state=beforePractice;beforePractice=null;updateEntries();}}
+  };
+
   function nextEntry(){
     // Reflection is not a task queue: keep the user's selected passage until changed.
     const selected=byId(state.active_passage_id);
@@ -71,7 +103,7 @@
     cue=button('','sm-cue');cue.id='sm-write-cue';
     cue.innerHTML='<span class="sm-cue-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5c-3.2-1.7-6.3-1.9-9-1v14c2.7-.9 5.8-.7 9 1 3.2-1.7 6.3-1.9 9-1v-14c-2.7-.9-5.8-.7-9 1z"/><path d="M12 5.5v14"/></svg></span><span class="sm-cue-copy"><strong class="sm-cue-label"></strong><small class="sm-cue-detail"></small></span><span class="sm-cue-arrow" aria-hidden="true">›</span>';
     composer.insertAdjacentElement('afterend',cue);
-    cue.addEventListener('click',()=>{const item=nextEntry().item;if(item)openPractice(item,'write');else openLibrary('write');});
+    cue.addEventListener('click',()=>{const daily=dailyPassage(today());const item=daily||nextEntry().item;if(item)openPractice(item,daily?'daily':'write');else openLibrary('write');});
   }
   const focusRoot=q('#page-focus'),focusExtras=q('#focusSetupMore');
   let focusEntry=null;
@@ -93,13 +125,13 @@
   }
   function updateEntries(){
     if(cue){
-      let chosen=nextEntry(),item=chosen.item;
+      const daily=beforePractice?pickDaily(today()):dailyPassage(today()),item=daily||nextEntry().item;
       let dateIsToday=true;
       try{if(typeof date==='string'&&typeof nowLocal==='function')dateIsToday=date===nowLocal();}catch{}
       cue.hidden=!dateIsToday||!item;
       if(item){
         const st=recordFor(item.id);
-        const label=st.last_read_on===today()?tr('오늘 읽은 말씀','Scripture read today'):st.read_at?tr('말씀 이어 읽기','Continue reading'):tr('오늘의 말씀','Scripture for today');
+        const label=st.last_read_on===today()?tr('오늘 읽은 말씀','Scripture read today'):!daily&&st.read_at?tr('말씀 이어 읽기','Continue reading'):tr('오늘의 말씀','Scripture for today');
         q('.sm-cue-label',cue).textContent=label;
         q('.sm-cue-detail',cue).textContent=item.reference+' · '+tr('읽기와 묵상','Read & reflect');
         cue.setAttribute('aria-label',label+' · '+item.reference);
@@ -127,7 +159,14 @@
   document.addEventListener('change',e=>{if(e.target.closest('#datePicker, #konaLanguage'))setTimeout(updateEntries,0);});
   window.addEventListener('focus',updateEntries);
   window.addEventListener('storage',e=>{
-    if(e.key===KEY){try{state=e.newValue?safeState(JSON.parse(e.newValue)):empty();}catch{storageWarning=true;}updateEntries();if(!overlay.hidden)render();}
+    if(e.key!==KEY)return;
+    try{
+      const incoming=e.newValue?safeState(JSON.parse(e.newValue)):empty();
+      if(beforePractice){beforePractice=incoming;return;}
+      state=incoming;
+    }catch{storageWarning=true;}
+    updateEntries();
+    if(!overlay.hidden)render();
   });
   q('.sm-back',overlay).addEventListener('click',back);
   function open(){
@@ -138,8 +177,10 @@
   }
   function close(fromPopstate=false){
     overlay.hidden=true;overlay.classList.remove('sm-visible');document.body.style.overflow=previousBodyOverflow;
-    if(lastFocused&&lastFocused.isConnected&&typeof lastFocused.focus==='function')lastFocused.focus();
     updateEntries();
+    const returnFocus=lastFocused?.getClientRects().length?lastFocused:
+      [q('#sm-write-cue'),q('#focusStart')].find(element=>element?.getClientRects().length);
+    returnFocus?.focus({preventScroll:true});
     if(!fromPopstate&&history.state?.smOverlay){
       ignoreNextPop=true;history.back();
     }
@@ -268,6 +309,7 @@
         content.append(details);
       }
       const reflectBtn=button(tr('묵상 남기기','Write a reflection'),'sm-primary');
+      if(origin==='daily')content.append(el('p','sm-meta',tr('이 말씀을 읽으며 마음에 남은 게 있나요?','What stayed with you as you read?')));
       reflectBtn.onclick=writeReflection;content.append(reflectBtn);
       const actions=el('div','sm-soft-actions');
       const read=recordFor(active.id).last_read_on===today();
