@@ -1962,12 +1962,6 @@ $('tutorialHeading').textContent=welcomeHasKorean?'하나님과 함께, 오늘�
 $('tutorialBody').textContent=welcomeHasKorean
  ?'아침에 기도하고, 마음에 남은 한 줄을 적거나 오늘의 말씀을 읽어보세요.'
  :'Pray, keep a thought for your day, or read today’s Scripture.';
-$('startMorningPrayerGuide').textContent=welcomeHasKorean?'기도로 시작하기':'Begin with prayer';
-$('startMorningPrayerGuide').onclick=()=>{
- closeTutorial();
- if(!sess.started&&date!==nowLocal())changeDate(nowLocal());
- launchMorningPrayer();
-};
 $('startGuidedTour').textContent=welcomeHasKorean?'예시 하루 시작하기 · 1~2분':'Explore a day · 1–2 min';
 $('welcomeSkip').textContent=welcomeHasKorean?'앱 둘러보기':'Explore the app';
 $('welcomeSkip').onclick=closeTutorial;$('welcomeContinue').onclick=()=>{db.settings.guidedTourSeen=true;db.settings.tutorialSeen=true;save();startGuidedTour()};$('openAppHelp').onclick=()=>openSheet('appHelpModal');$('revisitWelcome').onclick=()=>{closeSheet('appHelpModal');openTutorial()};
@@ -1982,9 +1976,10 @@ const tourStory={
  topic:tourCopy('마음이 분주할 때','When my mind feels restless'),
 };
 const guidedSteps=[
- {tab:tourCopy('아침기도','Morning prayer'),page:'focus',selector:'#focusStart',runningSelector:'#focusEnd',
+ {tab:tourCopy('아침기도','Morning prayer'),page:'checkin',selector:'#morningPrayerPrompt button',setupSelector:'#focusStart',runningSelector:'#focusEnd',
   title:tourCopy('마음이 분주한 아침','A restless morning'),
-  copy:tourCopy('별일도 없는데 마음이 자꾸 급해요. 오늘은 기도로 하루를 시작해 봐요.','Nothing in particular happened, but my mind is racing. Let’s start the day with prayer.'),
+  copy:tourCopy('별일도 없는데 마음이 자꾸 급해요. 아침 체크인에서 ‘기도로 아침 시작하기’를 눌러봐요.','My mind is racing this morning. Tap “Begin the day with prayer” in Morning Check-in.'),
+  setupCopy:tourCopy('기도할 시간을 고르고 시작을 눌러요.','Choose how long you’d like to pray, then tap Start.'),
   runningCopy:tourCopy('잠시 하나님 앞에 머물러 보세요. 기도를 마쳤다면 종료를 눌러요.','Take a moment with God. Tap Finish when you’re ready.'),useApp:true,done:()=>guidedVisited.has(0),feedback:tourCopy('기도를 마쳤어요.','Prayer complete.'),next:tourCopy('오늘의 한 줄 남기기','Write today’s one-line note')},
  {tab:tourCopy('쓰기','Write'),page:'capture',selector:'#dayHeadline',
   title:tourCopy('오늘 마음에 품을 한 줄','One thought for today'),
@@ -2020,19 +2015,28 @@ function clearGuidedTarget(){document.querySelectorAll('.guided-target').forEach
 function guidedText(id,value){if($(id).textContent!==value)$(id).textContent=value}
 function visibleGuidedTarget(step){return [step.selector,step.fallbackSelector].filter(Boolean).map(selector=>document.querySelector(selector)).find(n=>n&&n.getClientRects().length)||null}
 function positionGuidedCard(){const modal=[...document.querySelectorAll('.modal-under')].some(n=>!n.hidden);const keyboard=window.visualViewport&&window.innerHeight-window.visualViewport.height>120;$('guidedTour').dataset.position=modal||keyboard||sess.started?'top':'bottom'}
+function guidedMorningFocus(){
+ return guidedIndex===0&&page==='focus'&&
+  (morningCheckinPrayerLaunchDate===date||sess.origin==='morning-checkin'||guidedVisited.has(0));
+}
+function guidedStepInPlace(step){
+ return date===tutorialPractice.storyDate&&(guidedMorningFocus()||
+  (page===step.page&&(guidedIndex!==0||phase==='morning')));
+}
 function refreshGuidedStep(){
  if(!guidedTourActive)return;
- const step=guidedSteps[guidedIndex],inPlace=page===step.page&&date===tutorialPractice.storyDate;
+ const step=guidedSteps[guidedIndex],inPlace=guidedStepInPlace(step);
  const running=guidedIndex===0&&sess.started,formOpen=guidedIndex===3&&!$('taskFormModal').hidden;
  const done=!!step.done?.();
- const selector=running?step.runningSelector:formOpen?step.formSelector:step.selector;
+ const setup=inPlace&&guidedMorningFocus();
+ const selector=running?step.runningSelector:setup?step.setupSelector:formOpen?step.formSelector:step.selector;
  const target=inPlace&&!(done&&step.useApp)?visibleGuidedTarget({selector,fallbackSelector:step.fallbackSelector}):null;
  document.querySelectorAll('.guided-target').forEach(n=>{if(n!==target)n.classList.remove('guided-target')});
  target?.classList.add('guided-target');
  $('tourNext').hidden=inPlace&&!!step.useApp&&!done;
  $('tourNext').disabled=false;
  guidedText('tourNext',!inPlace?tourCopy('이 화면으로 돌아가기','Return to this screen'):step.next||KonaI18n.t("Continue"));
- guidedText('tourCopy',running?step.runningCopy:formOpen?step.formCopy:step.copy);
+ guidedText('tourCopy',running?step.runningCopy:setup?step.setupCopy:formOpen?step.formCopy:step.copy);
  guidedText('tourFeedback',!inPlace?'':done?step.feedback:guidedIndex===0&&!running?tourCopy('연습 기도 · 실제 기록에는 남지 않아요.','Practice prayer stays out of your records.'):'');
  $('tourFeedback').hidden=!$('tourFeedback').textContent;
  $('tourFeedback').classList.toggle('is-ready',done);
@@ -2042,8 +2046,7 @@ function showGuidedStep(){
  clearGuidedTarget();
  const step=guidedSteps[guidedIndex];
  if(date!==tutorialPractice.storyDate)changeDate(tutorialPractice.storyDate);
- if(guidedIndex===0)launchMorningPrayer();
- else nav(step.page,{skipHistory:true,phase:step.page==='checkin'?'morning':undefined,kind:step.page==='focus'?'prayer':undefined,view:step.page==='records'?'log':undefined});
+ nav(step.page,{skipHistory:true,phase:step.page==='checkin'?'morning':undefined,kind:step.page==='focus'?'prayer':undefined,view:step.page==='records'?'log':undefined});
  if(guidedIndex===1){morningPrayerAnchorDate=date;$('morningPrayerReadAfterAnchor').textContent=tourCopy('오늘의 말씀 읽기','Read today’s Scripture');$('morningPrayerReadAfterAnchor').hidden=false;$('dayHeadline').placeholder=tourStory.anchor;}
  if(step.page==='records'&&$('rev-reflect').getAttribute('aria-pressed')!=='true')$('rev-reflect').click();
  if(step.captureTime&&!step.done()&&!$('qc-text').value.trim()){
@@ -2099,7 +2102,7 @@ $('tourSkip').onclick=advanceGuidedTour;
 $('tourNext').onclick=()=>{
  if(guidedFinished){endGuidedTour();if(date!==nowLocal())changeDate(nowLocal());nav('capture');return}
  const step=guidedSteps[guidedIndex];
- if(page!==step.page||date!==tutorialPractice.storyDate){showGuidedStep();return}
+ if(!guidedStepInPlace(step)){showGuidedStep();return}
  if(step.useApp&&!step.done?.())return;
  guidedVisited.add(guidedIndex);advanceGuidedTour();
 };
