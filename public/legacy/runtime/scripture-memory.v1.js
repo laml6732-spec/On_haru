@@ -48,28 +48,39 @@
   let lastFocused=null,previousBodyOverflow='',requestNumber=0,ignoreNextPop=false;
   let filter='all',searchText='',pendingImport=null;
   function recordFor(id){return state.passages[id]||{status:'not_started',memorized_at:null,last_practiced_at:null,last_practiced_on:null,next_review_on:null,review_stage:0,attempts:[],read_at:null,last_read_on:null,saved_for_later:false};}
+  let beforePractice=null;
   function persist(next){
+    if(beforePractice){state=next;return true;}
     try{localStorage.setItem(KEY,JSON.stringify(next));state=next;storageWarning=false;return true;}
     catch{storageWarning=true;return false;}
   }
   function byId(id){return catalog.find(v=>v.id===id);}
   const pendingDailyPassages=new Map();
   function dailyPassage(day){
-    return byId(state.daily_passages?.[day]||pendingDailyPassages.get(day));
+    return byId(state.daily_passages?.[day]||(!beforePractice&&pendingDailyPassages.get(day)));
   }
-  function openDaily(day){
-    if(!catalog.length||!/^\d{4}-\d{2}-\d{2}$/.test(day))return false;
+  function pickDaily(day){
+    if(!catalog.length||!/^\d{4}-\d{2}-\d{2}$/.test(day))return null;
     let item=dailyPassage(day);
     if(!item){
       item=catalog[Math.floor(Math.random()*catalog.length)];
       const next=safeState({...state,daily_passages:{...state.daily_passages,[day]:item.id}});
       if(!persist(next))pendingDailyPassages.set(day,item.id);
     }
+    return item;
+  }
+  function openDaily(day){
+    const item=pickDaily(day);
+    if(!item)return false;
     openPractice(item,'daily');
     updateEntries();
     return true;
   }
-  window.OnHaruScripture={openDaily};
+  window.OnHaruScripture={
+    openDaily,
+    beginPractice(){beforePractice=state;state=empty();updateEntries();},
+    endPractice(){if(beforePractice){state=beforePractice;beforePractice=null;updateEntries();}}
+  };
 
   function nextEntry(){
     // Reflection is not a task queue: keep the user's selected passage until changed.
@@ -114,7 +125,7 @@
   }
   function updateEntries(){
     if(cue){
-      const daily=dailyPassage(today()),item=daily||nextEntry().item;
+      const daily=beforePractice?pickDaily(today()):dailyPassage(today()),item=daily||nextEntry().item;
       let dateIsToday=true;
       try{if(typeof date==='string'&&typeof nowLocal==='function')dateIsToday=date===nowLocal();}catch{}
       cue.hidden=!dateIsToday||!item;
@@ -148,7 +159,14 @@
   document.addEventListener('change',e=>{if(e.target.closest('#datePicker, #konaLanguage'))setTimeout(updateEntries,0);});
   window.addEventListener('focus',updateEntries);
   window.addEventListener('storage',e=>{
-    if(e.key===KEY){try{state=e.newValue?safeState(JSON.parse(e.newValue)):empty();}catch{storageWarning=true;}updateEntries();if(!overlay.hidden)render();}
+    if(e.key!==KEY)return;
+    try{
+      const incoming=e.newValue?safeState(JSON.parse(e.newValue)):empty();
+      if(beforePractice){beforePractice=incoming;return;}
+      state=incoming;
+    }catch{storageWarning=true;}
+    updateEntries();
+    if(!overlay.hidden)render();
   });
   q('.sm-back',overlay).addEventListener('click',back);
   function open(){

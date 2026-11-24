@@ -1284,3 +1284,18 @@ body .app #page-capture #morningPrayerReadAfterAnchor[hidden] { display: none !i
 }
 
 #tutorialWelcome #tutorialHeading:focus { outline: none; }
+
+/* Let the native form handle editing without a second card on top. */
+body.practice-mode:has(#taskFormModal:not([hidden])) #guidedTour {
+  display: none !important;
+}
+
+body.practice-mode #guidedTour:has(#tourNext[hidden]) .tour-actions {
+  display: flex !important;
+  justify-content: space-between;
+}
+
+body.practice-mode #guidedTour :is(#tourHeading,#tourCopy,#tourFeedback) {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
