@@ -13,9 +13,11 @@ try{for(const width of [320,390,1024])for(const theme of ['light','dark']){
   expect(await page.locator('#morningPrayerDurationHeading').isVisible(),'Morning prayer must be first');
   await page.locator('#focusStart').click();
   await page.locator('#focusEnd').waitFor();await page.waitForTimeout(1050);await page.locator('#focusEnd').click();
-  const mood=page.getByRole('slider',{name:'Mood',exact:true});await mood.press('ArrowRight');
+  await page.locator('#choiceList .morning-prayer-primary').click();
+  await page.locator('#dayHeadline').fill('One thing I can do right now.');
+  expect(await page.evaluate(()=>day(date).headline==='One thing I can do right now.'),'Morning anchor missing');
   await next.click();
-  expect((await page.locator('#dayHeadline').inputValue()).includes('One thing'),'Morning anchor missing');
+  const mood=page.getByRole('slider',{name:'Mood',exact:true});await mood.press('ArrowRight');
   await next.click();
   await page.locator('#pinRow .task-overview-actions button:first-child').click();
   expect((await page.locator('#taskTitle').inputValue()).includes('Walk'),'Walk sample missing from the form');

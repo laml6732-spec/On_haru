@@ -2,10 +2,10 @@ name: On_HARU Morning prayer and anchor QA
 on:
   push:
     branches: ['feat/morning-checkin-prayer-anchor-20261121']
-    paths: ['public/legacy/**', 'scripts/qa-morning-prayer-anchor.mjs', '.github/workflows/qa-morning-prayer-anchor.yml']
+    paths: ['public/legacy/**', 'scripts/qa-morning-prayer-anchor.mjs', 'scripts/qa-guided-tour.mjs', '.github/workflows/qa-morning-prayer-anchor.yml']
   pull_request:
     branches: ['main']
-    paths: ['public/legacy/**', 'scripts/qa-morning-prayer-anchor.mjs', '.github/workflows/qa-morning-prayer-anchor.yml']
+    paths: ['public/legacy/**', 'scripts/qa-morning-prayer-anchor.mjs', 'scripts/qa-guided-tour.mjs', '.github/workflows/qa-morning-prayer-anchor.yml']
 jobs:
   morning-prayer-anchor:
     runs-on: ubuntu-24.04
@@ -22,9 +22,12 @@ jobs:
       - run: node scripts/verify-ui-static.mjs
       - run: python3 -m http.server 8080 --directory public > /tmp/onharu-morning-anchor.log 2>&1 &
       - run: node scripts/qa-morning-prayer-anchor.mjs
+      - run: node scripts/qa-guided-tour.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: morning-prayer-anchor-visuals
-          path: test-results/morning-prayer-anchor/
+          path: |
+            test-results/morning-prayer-anchor/
+            test-results/guided-tour/
           retention-days: 14

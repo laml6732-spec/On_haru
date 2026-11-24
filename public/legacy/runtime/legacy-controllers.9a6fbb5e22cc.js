@@ -624,7 +624,7 @@ function renderToday(){
   $('dayEmoji').textContent=v.emoji||'🌺';
   const editing=document.activeElement===h,headline=editing?String(v.headline||''):normalizeDailyHeadline(v.headline);if(!editing&&headline!==v.headline){v.headline=headline;save()}
   if(!editing)h.value=headline;
-  h.placeholder=normalizeDailyHeadline(sug)||KonaI18n.t("One-line note for today",true);h.classList.toggle('suggest',!!sug);
+  h.placeholder=tutorialPractice&&guidedTourActive&&guidedIndex===1?tourStory.anchor:normalizeDailyHeadline(sug)||KonaI18n.t("One-line note for today",true);h.classList.toggle('suggest',!!sug);
   $('useSuggest').classList.toggle('hidden',!sug||!!h.value);
   $('todayTasksHeading').textContent=date===nowLocal()?KonaI18n.t("Today's tasks"):KonaI18n.t("Selected day's tasks");
   $('todayScheduleHeading').textContent=date===nowLocal()?KonaI18n.t("Today's schedule"):KonaI18n.t("Selected day's schedule");
@@ -1176,9 +1176,10 @@ function offerMorningPrayerCompletion(d,id){
     morningPrayerAnchorDate=d;
     $('morningPrayerReadAfterAnchor').textContent=scriptureLabel;
     nav('capture');
+    if(tutorialPractice&&guidedTourActive&&guidedIndex===0){guidedIndex=1;showGuidedStep()}
     requestAnimationFrame(()=>$('dayHeadline').scrollIntoView({block:'nearest'}));
    }},
-  {label:scriptureLabel,fn:()=>{if(!readMorningScripture(d))offerMorningPrayerCompletion(d,id)}}
+  {label:scriptureLabel,fn:()=>{if(tutorialPractice&&guidedTourActive&&guidedIndex===0){guidedIndex=1;showGuidedStep()}if(!readMorningScripture(d))offerMorningPrayerCompletion(d,id)}}
  ];
  if(record?.note?.trim())choices.push({
   label:ko?'기도 메모 보기':'View prayer note',
@@ -1202,8 +1203,7 @@ function commitTimerSession(markDone=false){
   if(sess.kind==='prayer'&&sess.prayerId){const p=db.prayers.find(p=>p.id===sess.prayerId);if(p)markPrayed(p,d)}
  }
  if(!tutorialPractice&&!save()){db=JSON.parse(before);toast('Could not save. Your timer and note are kept; try again or back up.');return false}
- if(tutorialPractice&&guidedIndex===0&&sess.origin==='morning-checkin'){sess=idleSess();guidedVisited.add(0);advanceGuidedTour();return true}
- const kind=sess.kind,fromMorningCheckin=kind==='prayer'&&sess.origin==='morning-checkin';sessKind=kind;sessDurMin=sess.dur/60;timerDraft(kind).note='';rememberTimer();sess=idleSess();storeActiveSession();afterTaskKey=null;if(date!==d)changeDate(d);else render();toast(KonaI18n.t("Session saved"));if(fromMorningCheckin&&!tutorialPractice)offerMorningPrayerCompletion(d,id);return true;
+ const kind=sess.kind,fromMorningCheckin=kind==='prayer'&&sess.origin==='morning-checkin';sessKind=kind;sessDurMin=sess.dur/60;timerDraft(kind).note='';rememberTimer();sess=idleSess();storeActiveSession();afterTaskKey=null;if(date!==d)changeDate(d);else render();toast(KonaI18n.t("Session saved"));if(fromMorningCheckin){if(tutorialPractice&&guidedTourActive&&guidedIndex===0){guidedVisited.add(0);offerMorningPrayerCompletion(d,id);refreshGuidedStep()}else if(!tutorialPractice)offerMorningPrayerCompletion(d,id);}return true;
 }
 async function cancelTimer(){if(!sess.started)return;if((elapsed()>0||(sess.note||'').trim())&&!await onHaruConfirm(KonaI18n.t("Discard this session without saving its time or note?")))return;timerDraft(sess.kind).note='';save();sess=idleSess();storeActiveSession();renderFocus()}
 function tick(){if(sess.started&&page==='focus')updateClock();else if(sess.started)expireTimer()}
@@ -1978,14 +1978,14 @@ const guidedSteps=[
  {tab:tourCopy('아침기도','Morning prayer'),page:'focus',selector:'#focusStart',runningSelector:'#focusEnd',
   title:tourCopy('마음이 분주한 아침','A restless morning'),
   copy:tourCopy('별일도 없는데 마음이 자꾸 급해요. 오늘은 기도로 하루를 시작해 봐요.','Nothing in particular happened, but my mind is racing. Let’s start the day with prayer.'),
-  runningCopy:tourCopy('잠시 하나님 앞에 머물러 보세요. 기도를 마쳤다면 종료를 눌러요.','Take a moment with God. Tap Finish when you’re ready.'),useApp:true},
- {tab:tourCopy('체크인','Check-in'),page:'checkin',selector:'#moodGrid',
-  title:tourCopy('지금 어떤 기분이에요?','How are you feeling?'),
-  copy:tourCopy('기도하고 나니 지금 마음이 어떤지 궁금해졌어요. 기분과 에너지를 골라보세요. 점심과 저녁에도 기록할 수 있어요.','After praying, notice how you feel. Choose your mood and energy. You can check in again at midday or in the evening.'),
-  next:tourCopy('한 줄 적으러 가기','Go to today’s note')},
+  runningCopy:tourCopy('잠시 하나님 앞에 머물러 보세요. 기도를 마쳤다면 종료를 눌러요.','Take a moment with God. Tap Finish when you’re ready.'),useApp:true,done:()=>guidedVisited.has(0),feedback:tourCopy('기도를 마쳤어요.','Prayer complete.'),next:tourCopy('오늘의 한 줄 남기기','Write today’s one-line note')},
  {tab:tourCopy('쓰기','Write'),page:'capture',selector:'#dayHeadline',
   title:tourCopy('오늘 마음에 품을 한 줄','One thought for today'),
-  copy:tourCopy('기도하며 마음에 남은 한 줄을 적어보세요. 오늘의 말씀을 열면 묵상도 남길 수 있어요.','Keep a thought from your prayer. Open today’s Scripture to read and leave a reflection.'),
+  copy:tourCopy('기도하며 마음에 남은 한 줄을 적어보세요. 마음이 분주해질 때 다시 꺼내 볼 수 있어요. 오늘의 말씀을 열어 묵상도 남겨 보세요.','Write a thought from your prayer to return to when life feels busy. Open today’s Scripture and leave a reflection.'),
+  next:tourCopy('아침 체크인','Morning check-in')},
+ {tab:tourCopy('체크인','Check-in'),page:'checkin',selector:'#moodGrid',
+  title:tourCopy('지금 내 마음은 어떤가요?','How am I feeling now?'),
+  copy:tourCopy('기도를 마친 지금, 내 마음과 에너지는 어떤가요? 점심과 저녁에도 기록하며 하루의 변화를 살펴보세요.','Notice your mood and energy after prayer. Check in again at midday and in the evening to see how your day changes.'),
   next:tourCopy('계획 열기','Open Plan')},
  {tab:tourCopy('계획','Plan'),page:'today',selector:'#pinRow .task-overview-actions button:first-child',formSelector:'#taskSave',
   title:tourCopy('점심 뒤에 잠깐 걷기','Take a short walk'),
@@ -2037,6 +2037,7 @@ function showGuidedStep(){
  if(date!==tutorialPractice.storyDate)changeDate(tutorialPractice.storyDate);
  if(guidedIndex===0)launchMorningPrayer();
  else nav(step.page,{skipHistory:true,phase:step.page==='checkin'?'morning':undefined,kind:step.page==='focus'?'prayer':undefined,view:step.page==='records'?'log':undefined});
+ if(guidedIndex===1){morningPrayerAnchorDate=date;$('morningPrayerReadAfterAnchor').textContent=tourCopy('오늘의 말씀 읽기','Read today’s Scripture');$('morningPrayerReadAfterAnchor').hidden=false;$('dayHeadline').placeholder=tourStory.anchor;}
  if(step.page==='records'&&$('rev-reflect').getAttribute('aria-pressed')!=='true')$('rev-reflect').click();
  if(step.captureTime&&!step.done()&&!$('qc-text').value.trim()){
   $('qc-select').value='';$('qc-select').dispatchEvent(new Event('change',{bubbles:true}));
@@ -2052,26 +2053,26 @@ function showGuidedStep(){
 function restorePractice(){
  if(!tutorialPractice)return;
  const original=tutorialPractice;window.OnHaruScripture?.endPractice();sess=idleSess();quietTimer=original.quietTimer;tutorialPractice=null;db=original.db;date=original.date;phase=original.phase;calendarMonth=original.calendarMonth;reviewWeek=original.reviewWeek;taskExpanded=original.taskExpanded;
- sessKind=original.sessKind;sessDurMin=original.sessDurMin;focusPrayerId=original.focusPrayerId;morningCheckinPrayerLaunchDate=original.morningLaunch;moodExpanded=original.moodExpanded;recView=original.recView;
+ sessKind=original.sessKind;sessDurMin=original.sessDurMin;focusPrayerId=original.focusPrayerId;morningCheckinPrayerLaunchDate=original.morningLaunch;morningPrayerAnchorDate=original.morningAnchor;moodExpanded=original.moodExpanded;recView=original.recView;
  document.activeElement?.blur();document.querySelectorAll('.modal-under').forEach(n=>n.hidden=true);document.body.classList.remove('practice-mode');nav(original.page,{phase:original.phase,skipHistory:true});if($('qc-state'))$('qc-state').textContent='';
 }
 function startGuidedTour(){
  if(sess.started){toast(KonaI18n.t("End your active focus session before starting practice."));return}
  closeTutorial();guidedFinished=false;guidedIndex=0;guidedVisited.clear();
  const storyDate=nowLocal();
- tutorialPractice={db,date,page,phase,calendarMonth,reviewWeek,taskExpanded,sessKind,sessDurMin,focusPrayerId,moodExpanded,recView,quietTimer,morningLaunch:morningCheckinPrayerLaunchDate,storyDate};taskExpanded=false;
+ tutorialPractice={db,date,page,phase,calendarMonth,reviewWeek,taskExpanded,sessKind,sessDurMin,focusPrayerId,moodExpanded,recView,quietTimer,morningLaunch:morningCheckinPrayerLaunchDate,morningAnchor:morningPrayerAnchorDate,storyDate};taskExpanded=false;
  const settings={...JSON.parse(JSON.stringify(db.settings)),brandName:'On_HARU'};
  db=blank();db.settings=settings;window.OnHaruScripture?.beginPractice();date=storyDate;calendarMonth=date.slice(0,7);reviewWeek=monday(date);phase='morning';moodExpanded=true;
  db.events=[{id:'tour-appointment',title:tourCopy('오후 약속','Afternoon appointment'),start:'14:00',end:'15:00',category:'personal',repeat:'none',days:[],since:date,until:''}];
  db.prayers=[{id:'tour-prayer',title:tourStory.topic,since:date,count:1,lastPrayed:date,responseLogs:[{id:'tour-gratitude',date:dayAdd(date,1),text:tourCopy('마음이 여전히 분주했지만, 잠깐 멈출 수 있어서 감사했다.','My mind was still restless, but I was grateful I could pause.')}]}];
- const example=day(date);example.headline=tourStory.anchor;
+ const example=day(date);example.headline='';
  example.sessions=[{id:'tour-prayer-session',kind:'prayer',prayerId:'tour-prayer',task:tourStory.topic,start:'15:10',seconds:120,note:tourCopy('조급해질 때 잠깐 멈추고 싶다.','I want to pause when I feel rushed.')}];
  example.quickCaptureEntries=[{id:'tour-walk-note',title:'',text:tourCopy('점심 뒤 잠깐 걸었더니 마음이 조금 가벼워졌다.','I felt a little lighter after stepping outside at lunch.'),time:'12:30',date,tags:[]}];
  document.body.classList.add('practice-mode');guidedTourActive=true;showGuidedStep();
 }
 function completeGuidedTour(){
  clearGuidedTarget();guidedTourActive=false;restorePractice();guidedFinished=true;
- db.settings.guidedTourSeen=true;db.settings.guidedTourComplete=guidedVisited.size===guidedSteps.length;db.settings.guidedTourRevision=4;save();
+ db.settings.guidedTourSeen=true;db.settings.guidedTourComplete=guidedVisited.size===guidedSteps.length;db.settings.guidedTourRevision=5;save();
  guidedText('tourCount',KonaI18n.t("Practice finished"));guidedText('tourHeading',tourCopy('내 하루 시작하기','Start my own day'));
  guidedText('tourCopy',tourCopy('매일·주간 회고·모아보기에서 기록을 다시 볼 수 있어요. 화면이나 백업은 설정에서 바꿔요.','Find your notes in Daily, Weekly Reflection, or All Records. Display and backup are in Settings.'));
  $('tourFeedback').hidden=false;

@@ -43,14 +43,23 @@ try {
       await page.screenshot({ path: output + '/' + width + '-prayer.png' });
       await page.waitForTimeout(1150);
       await page.locator('#focusEnd').click();
-      await page.getByRole('slider', { name: lang === 'ko' ? '기분' : 'Mood', exact: true }).press('ArrowRight');
-      await next.click();
-      await page.locator('#sm-write-cue').click();
+      await page.locator('#choiceModal').waitFor();
+      assert.match(await page.locator('#choiceTitle').innerText(), lang === 'ko' ? /아침기도/ : /Morning prayer/);
+      await page.screenshot({ path: output + '/' + width + '-prayer-complete.png' });
+      await page.locator('#choiceList .morning-prayer-primary').click();
+      const anchor = lang === 'ko' ? '지금 할 수 있는 것 하나만.' : 'One thing I can do right now.';
+      assert.equal(await page.locator('#dayHeadline').inputValue(), '');
+      await page.locator('#dayHeadline').fill(anchor);
+      assert.equal(await page.evaluate(() => day(date).headline), anchor);
+      await page.screenshot({ path: output + '/' + width + '-anchor.png' });
+      await page.locator('#morningPrayerReadAfterAnchor').click();
       await page.locator('#sm-overlay .sm-verse').waitFor();
       await page.locator('#sm-content .sm-primary').click();
       await page.locator('#qc-text').fill('Practice scripture reflection');
       await page.locator('#qc-submit').click();
       assert.equal(await page.evaluate(() => localStorage.getItem('kona.scripture-memory.v1')), null);
+      await next.click();
+      await page.getByRole('slider', { name: lang === 'ko' ? '기분' : 'Mood', exact: true }).press('ArrowRight');
       await next.click();
       await page.locator('#pinRow .task-overview-actions button:first-child').click();
       assert.equal(await page.locator('#guidedTour').isVisible(), false);
@@ -70,12 +79,13 @@ try {
       assert(await page.locator('.prayer-record-text').count() >= 2);
       await next.click();
       await page.locator('.rv-timeline img.kona-sheep-icon').first().waitFor();
+      assert.equal(await page.locator('.rv-anchor-text').first().innerText(), anchor);
       await page.screenshot({ path: output + '/' + width + '-review.png' });
       await next.click();
       await next.click();
       assert.equal(await page.locator('#guidedTour').isVisible(), false);
       assert.equal(await page.evaluate(() => Object.keys(localStorage).some(
-        key => /tour-appointment|tour-prayer-session|Practice scripture reflection/.test(String(localStorage.getItem(key))),
+        key => /tour-appointment|tour-prayer-session|Practice scripture reflection|지금 할 수 있는 것 하나만\.|One thing I can do right now\./.test(String(localStorage.getItem(key))),
       )), false);
       assert.deepEqual(errors, []);
       console.log('PASS', width, lang, colorScheme);
