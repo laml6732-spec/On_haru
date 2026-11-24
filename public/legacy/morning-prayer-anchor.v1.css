@@ -845,6 +845,9 @@ html body .app #page-capture #qc-v2 #konaCaptureTagTray>button.kona-tag-chip .ko
 }
 html body .app #page-capture #qc-v2 #konaCaptureTagTray>button[data-tag="meaning_listening"] .kona-tag-symbol {
   overflow:hidden!important;
+}
+/* The resting artwork backing must not override the shared selected-tag ring. */
+html body .app #page-capture #qc-v2 #konaCaptureTagTray>button[data-tag="meaning_listening"]:not([aria-pressed="true"]) .kona-tag-symbol {
   border:1px solid #D5DFD8!important;
   background:#EEE0C7!important;
 }
