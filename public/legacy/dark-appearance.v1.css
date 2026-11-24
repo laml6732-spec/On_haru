@@ -150,12 +150,23 @@ html[data-appearance="dark"] body .app #page-capture #qc-v2 #konaCaptureTagTray 
 }
 :root[data-appearance="dark"] body .app #page-capture .capture-tasks .capture-task-row .capture-focus-action {
   color: var(--dark-accent) !important;
+  font-size: 0 !important;
+}
+:root[data-appearance="dark"] body .app #page-capture .capture-tasks .capture-task-row .capture-focus-action::before {
+  content: "";
+  border: 7px solid transparent;
+  border-left: 12px solid currentColor;
+  border-right: 0;
 }
 :root[data-appearance="dark"] body .app #page-capture .capture-tasks .capture-task-row .capture-focus-action:focus-visible {
   outline-color: var(--dark-accent);
 }
 
 /* The row is the schedule surface. Only the category marker carries a hue. */
+:root[data-appearance="dark"] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-intro,
+:root[data-appearance="dark"] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-intro > * {
+  border-color: var(--line) !important;
+}
 :root[data-appearance="dark"] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row {
   background: var(--surface) !important;
   border-bottom-color: var(--line) !important;
