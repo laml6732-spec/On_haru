@@ -32,11 +32,24 @@ try {
       await page.goto(process.env.ONHARU_URL || 'http://127.0.0.1:8080/legacy/');
       const choose = page.locator(lang === 'ko' ? '#tutorialChooseKo' : '#tutorialChooseEn');
       await choose.click();
-      const primary = page.locator('#startMorningPrayerGuide');
-      await primary.waitFor();
+      const welcome = page.locator('#tutorialWelcome');
+      const shortcut = page.locator('#startMorningPrayerGuide');
+      await welcome.waitFor();
       await page.locator('#launchScreen').waitFor({state: 'hidden'});
+      assert.equal(await shortcut.count(), 0);
       await page.screenshot({path: output + '/' + width + '-welcome.png'});
-      await primary.click();
+      await page.locator('#welcomeSkip').click();
+
+      await page.locator('#openAppHelp').evaluate(button => button.click());
+      await page.locator('#revisitWelcome').click();
+      await welcome.waitFor();
+      assert.equal(await shortcut.count(), 0);
+      await page.locator('#welcomeSkip').click();
+
+      const checkin = page.locator('.tabs [data-page="checkin"]');
+      await checkin.click();
+      await page.locator('#page-checkin [data-phase="morning"]').click();
+      await page.locator('#morningPrayerPrompt button').click();
       await page.locator('#morningPrayerDurationHeading').waitFor();
       assert.equal(await page.locator('#focusTarget').isVisible(), false);
 
@@ -59,7 +72,6 @@ try {
       assert.equal(await page.locator('#sessionMemo').inputValue(), note);
       await page.locator('#sessionNoteModal .close').click();
 
-      const checkin = page.locator('.tabs [data-page="checkin"]');
       async function finishMorningPrayer() {
         await checkin.click();
         await page.locator('#page-checkin [data-phase="morning"]').click();
