@@ -46,6 +46,7 @@ try {
       }));
       await page.goto(destination);
       await page.locator(lang === 'ko' ? '#tutorialChooseKo' : '#tutorialChooseEn').click();
+      assert.equal(await page.locator('#startMorningPrayerGuide').count(), 0);
       await page.locator('#startGuidedTour').click();
       const next = page.locator('#tourNext');
       await page.locator('#morningPrayerPrompt button.guided-target').click();

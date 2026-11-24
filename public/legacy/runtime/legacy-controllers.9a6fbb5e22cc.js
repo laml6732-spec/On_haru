@@ -1962,12 +1962,6 @@ $('tutorialHeading').textContent=welcomeHasKorean?'하나님과 함께, 오늘�
 $('tutorialBody').textContent=welcomeHasKorean
  ?'아침에 기도하고, 마음에 남은 한 줄을 적거나 오늘의 말씀을 읽어보세요.'
  :'Pray, keep a thought for your day, or read today’s Scripture.';
-$('startMorningPrayerGuide').textContent=welcomeHasKorean?'기도로 시작하기':'Begin with prayer';
-$('startMorningPrayerGuide').onclick=()=>{
- closeTutorial();
- if(!sess.started&&date!==nowLocal())changeDate(nowLocal());
- launchMorningPrayer();
-};
 $('startGuidedTour').textContent=welcomeHasKorean?'예시 하루 시작하기 · 1~2분':'Explore a day · 1–2 min';
 $('welcomeSkip').textContent=welcomeHasKorean?'앱 둘러보기':'Explore the app';
 $('welcomeSkip').onclick=closeTutorial;$('welcomeContinue').onclick=()=>{db.settings.guidedTourSeen=true;db.settings.tutorialSeen=true;save();startGuidedTour()};$('openAppHelp').onclick=()=>openSheet('appHelpModal');$('revisitWelcome').onclick=()=>{closeSheet('appHelpModal');openTutorial()};
