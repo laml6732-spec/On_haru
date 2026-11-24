@@ -1,5 +1,5 @@
 // Current compact tag tray: seven default emojis, accessible disclosure, and
-// an expanded set of 15. Do not assert retired chevron artwork/pseudo-element px.
+// an expanded set of 23. Do not assert retired chevron artwork/pseudo-element px.
 import {chromium} from 'playwright-core';
 import {existsSync} from 'node:fs';
 import fs from 'node:fs/promises';
@@ -21,7 +21,7 @@ try{
    await page.locator('.tabs [data-page="capture"]').click({force:true});
    const more=page.locator('#page-capture #qc-v2 .kona-tag-tray-toggle');
    const chips=page.locator('#konaCaptureTagTray .kona-tag-chip');
-   if(await chips.count()!==15)throw Error('Expected 15 available note tags');
+   if(await chips.count()!==23)throw Error('Expected 23 available note tags');
    if(await page.locator('#konaCaptureTagTray .kona-tag-chip:visible').count()!==7)throw Error('Seven note tags must be visible by default');
    if(await more.getAttribute('aria-expanded')!=='false')throw Error('Tag tray starts expanded');
    if(!(await more.getAttribute('aria-controls'))?.includes('konaCaptureTagTray'))throw Error('Disclosure is not connected to its tags');
@@ -44,22 +44,22 @@ try{
    if(closed.rect.height<43.9||closed.rect.width<24)throw Error('Disclosure hit target is too small');
    await more.click();
    if(await more.getAttribute('aria-expanded')!=='true')throw Error('Disclosure did not expand');
-   if(await page.locator('#konaCaptureTagTray .kona-tag-chip:visible').count()!==15)throw Error('Expanded tray does not show all 15 tags');
+   if(await page.locator('#konaCaptureTagTray .kona-tag-chip:visible').count()!==23)throw Error('Expanded tray does not show all 23 tags');
    const geom=await page.evaluate(()=>{
     const items=[...document.querySelectorAll('#konaCaptureTagTray .kona-tag-chip')].filter(e=>{const r=e.getBoundingClientRect();return getComputedStyle(e).display!=='none'&&r.width>0&&r.height>0});
     const toggle=document.querySelector('#page-capture #qc-v2 .kona-tag-tray-toggle');
     const rect=e=>e.getBoundingClientRect(),hit=e=>{const r=rect(e),mid=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return mid===e||e.contains(mid)};
     const overlaps=[];for(let i=0;i<items.length;i++)for(let j=i+1;j<items.length;j++){const a=rect(items[i]),b=rect(items[j]);if(Math.min(a.right,b.right)-Math.max(a.left,b.left)>.4&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>.4)overlaps.push([items[i].dataset.tag,items[j].dataset.tag])}
-    const pin=items.find(e=>e.dataset.tag==='meaning_remember');
+    const pin=items.find(e=>e.dataset.tag==='face_confused');
     const t=rect(toggle);
-    return {visible:items.length,overlaps,pinVisible:!!pin&&hit(pin),toggleHit:hit(toggle),touchHeight:t.height,touchWidth:t.width,toggleOffscreen:t.left<0||t.right>innerWidth+1,overflow:document.documentElement.scrollWidth>innerWidth+1};
+    return {visible:items.length,overlaps,thirdRowTagVisible:!!pin&&hit(pin),toggleHit:hit(toggle),touchHeight:t.height,touchWidth:t.width,toggleOffscreen:t.left<0||t.right>innerWidth+1,overflow:document.documentElement.scrollWidth>innerWidth+1};
    });
-   if(geom.visible!==15||geom.overlaps.length)throw Error('Expanded tag layout overlaps: '+JSON.stringify(geom));
-   if(!geom.pinVisible||!geom.toggleHit)throw Error('Tag or disclosure cannot be tapped: '+JSON.stringify(geom));
+   if(geom.visible!==23||geom.overlaps.length)throw Error('Expanded tag layout overlaps: '+JSON.stringify(geom));
+   if(!geom.thirdRowTagVisible||!geom.toggleHit)throw Error('Tag or disclosure cannot be tapped: '+JSON.stringify(geom));
    if(geom.touchHeight<43.9||geom.touchWidth<24||geom.toggleOffscreen||geom.overflow)throw Error('Disclosure or page overflows: '+JSON.stringify(geom));
-   const pin=page.locator('#konaCaptureTagTray .kona-tag-chip[data-tag="meaning_remember"]');
+   const pin=page.locator('#konaCaptureTagTray .kona-tag-chip[data-tag="face_confused"]');
    await pin.click();
-   if(await pin.getAttribute('aria-pressed')!=='true')throw Error('Pin tag cannot be selected');
+   if(await pin.getAttribute('aria-pressed')!=='true')throw Error('Third-row tag cannot be selected');
    await page.screenshot({path:dir+'/'+width+'-'+theme+'-expanded.png',animations:'disabled'});
    await more.click();
    if(await more.getAttribute('aria-expanded')!=='false'||await page.locator('#konaCaptureTagTray .kona-tag-chip:visible').count()!==7)throw Error('Disclosure did not return to seven tags');
