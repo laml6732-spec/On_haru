@@ -133,3 +133,57 @@ html[data-appearance="dark"] body .app #page-capture #qc-v2 #konaCaptureTagTray 
   outline: 2px solid var(--dark-accent) !important;
   outline-offset: 2px;
 }
+
+/* Keep populated lists visually continuous with their surrounding surface. */
+:root[data-appearance="dark"] body .app #page-capture .capture-recent .capture-recent-note {
+  background: transparent !important;
+  border-bottom-color: var(--line) !important;
+}
+:root[data-appearance="dark"] body .app #page-capture .capture-recent .capture-recent-label {
+  color: var(--sub) !important;
+}
+:root[data-appearance="dark"] body .app #page-capture .capture-recent .capture-recent-note:focus-visible {
+  outline-color: var(--dark-accent);
+}
+:root[data-appearance="dark"] body .app #page-capture .capture-tasks .capture-task-row {
+  border-bottom-color: var(--line) !important;
+}
+:root[data-appearance="dark"] body .app #page-capture .capture-tasks .capture-task-row .capture-focus-action {
+  color: var(--dark-accent) !important;
+  font-size: 0 !important;
+}
+:root[data-appearance="dark"] body .app #page-capture .capture-tasks .capture-task-row .capture-focus-action::before {
+  content: "";
+  border: 7px solid transparent;
+  border-left: 12px solid currentColor;
+  border-right: 0;
+}
+:root[data-appearance="dark"] body .app #page-capture .capture-tasks .capture-task-row .capture-focus-action:focus-visible {
+  outline-color: var(--dark-accent);
+}
+
+/* The row is the schedule surface. Only the category marker carries a hue. */
+:root[data-appearance="dark"] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-intro,
+:root[data-appearance="dark"] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-intro > * {
+  border-color: var(--line) !important;
+}
+:root[data-appearance="dark"] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row {
+  background: var(--surface) !important;
+  border-bottom-color: var(--line) !important;
+}
+:root[data-appearance="dark"] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row:has(.kona-rich-event.is-current) {
+  background: var(--dark-raised) !important;
+}
+:root[data-appearance="dark"] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row :is(.kona-rich-event, .kona-rich-note, .plan-event-cell, .plan-note-cell) {
+  background: transparent !important;
+}
+:root[data-appearance="dark"] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row .kona-rich-note {
+  border-left-color: var(--line) !important;
+}
+:root[data-appearance="dark"] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row :is(.kona-row-time, .kona-note-empty) {
+  color: var(--sub) !important;
+}
+:root[data-appearance="dark"] body .app #page-today.kona-plan-schedule-first #kx-summary .kona-rich-row :is(.kona-rich-event, .kona-rich-note):focus-visible {
+  outline: 2px solid var(--dark-accent);
+  outline-offset: -2px;
+}
