@@ -1,34 +1,34 @@
 {
-  "runId": "45346269519",
-  "sourceCommit": "dccc7f6c59faf538d3cc04bc4381e8389d6590e5",
+  "runId": "45348932167",
+  "sourceCommit": "0a8e22a68d2e7e2a443990525363343c5d53c60e",
   "url": "https://on-haru.laml6732.workers.dev/",
   "static": {
     "url": "https://on-haru.laml6732.workers.dev/",
-    "release": "darksage20261124a",
+    "release": "darklists20261124a",
     "verifier": "hash-content-v2",
     "cases": [
       {
         "path": "/",
-        "ok": false,
+        "ok": true,
         "status": 200,
         "finalURL": "https://on-haru.laml6732.workers.dev/",
-        "expectedSha256": "06d69679fe0a9e69a390c0d4ecc1ebbe2f87f124ea5b24dddbd2a25aed8bcffa",
-        "sourceSha256": "06d69679fe0a9e69a390c0d4ecc1ebbe2f87f124ea5b24dddbd2a25aed8bcffa",
-        "actualSha256": "1f8a81b7b76a4b97e1fe75181aca3a06e912204043a06db0e28ca751d1f4cab5",
-        "hashMatch": false,
+        "expectedSha256": "9e7a370ef4106cfbc1bafef8999fb6187ca7364cb33d0381502e64bf3e4521f7",
+        "sourceSha256": "c8ffe29b04eb8375adb736f3f5fa06bba60d41ce44fd48cc9a729b34e66d6a4d",
+        "actualSha256": "9e7a370ef4106cfbc1bafef8999fb6187ca7364cb33d0381502e64bf3e4521f7",
+        "hashMatch": true,
         "sourceHashMatch": false,
-        "contentVariant": "source",
+        "contentVariant": "worker-startup-20261109",
         "urlMatch": true,
-        "bodyReleaseMatch": false,
-        "workerRelease": "storyguide20261124d",
+        "bodyReleaseMatch": true,
+        "workerRelease": "darklists20261124a",
         "releaseHeaderPresent": true,
         "releaseEvidence": "sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present"
       },
       {
         "path": "app.7cb1b71d4eb6.css",
-        "ok": false,
+        "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=darksage20261124a",
+        "finalURL": "https://on-haru.laml6732.workers.dev/app.7cb1b71d4eb6.css?rev=darklists20261124a",
         "expectedSha256": "c539b5b0aed1f9331ec22573caf592944ea7b5dcac629109ceedf99766a2774d",
         "sourceSha256": "c539b5b0aed1f9331ec22573caf592944ea7b5dcac629109ceedf99766a2774d",
         "actualSha256": "c539b5b0aed1f9331ec22573caf592944ea7b5dcac629109ceedf99766a2774d",
@@ -37,7 +37,7 @@
         "contentVariant": "source",
         "urlMatch": true,
         "bodyReleaseMatch": true,
-        "workerRelease": "storyguide20261124d",
+        "workerRelease": "darklists20261124a",
         "releaseHeaderPresent": true,
         "releaseEvidence": "sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present"
       },
@@ -45,7 +45,7 @@
         "path": "runtime/legacy-controllers.9a6fbb5e22cc.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=darksage20261124a",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/legacy-controllers.9a6fbb5e22cc.js?rev=darklists20261124a",
         "expectedSha256": "643d8a464ec7ec0fbc642f87b9c275f1984c6be8c460fd69e3a76f499f277e20",
         "sourceSha256": "643d8a464ec7ec0fbc642f87b9c275f1984c6be8c460fd69e3a76f499f277e20",
         "actualSha256": "643d8a464ec7ec0fbc642f87b9c275f1984c6be8c460fd69e3a76f499f277e20",
@@ -54,7 +54,7 @@
         "contentVariant": "source",
         "urlMatch": true,
         "bodyReleaseMatch": true,
-        "workerRelease": "darksage20261124a",
+        "workerRelease": "darklists20261124a",
         "releaseHeaderPresent": true,
         "releaseEvidence": "sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present"
       },
@@ -62,7 +62,7 @@
         "path": "runtime/settings.58b48f87b05a.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=darksage20261124a",
+        "finalURL": "https://on-haru.laml6732.workers.dev/runtime/settings.58b48f87b05a.js?rev=darklists20261124a",
         "expectedSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "sourceSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
         "actualSha256": "e5bc5a783ff8249ae52204249b43a8b3ab3213de435eefbba0d0619dda16409a",
@@ -71,7 +71,7 @@
         "contentVariant": "source",
         "urlMatch": true,
         "bodyReleaseMatch": true,
-        "workerRelease": "darksage20261124a",
+        "workerRelease": "darklists20261124a",
         "releaseHeaderPresent": true,
         "releaseEvidence": "sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present"
       },
@@ -79,16 +79,16 @@
         "path": "sw.js",
         "ok": true,
         "status": 200,
-        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=darksage20261124a",
-        "expectedSha256": "f2be1ab53363db83897d0bd87506484958546e37820f88c074942f1011a5e31f",
-        "sourceSha256": "45053cfb3dcd4a735859518f03760b4b88d8610e6ef78bbaa13a2d4f3dcb9ece",
-        "actualSha256": "f2be1ab53363db83897d0bd87506484958546e37820f88c074942f1011a5e31f",
+        "finalURL": "https://on-haru.laml6732.workers.dev/sw.js?rev=darklists20261124a",
+        "expectedSha256": "7651f2eca07c8e339e9f9503e02f62293e1ae9028b84db772d1a2d09a19f4a70",
+        "sourceSha256": "76dad8c0aefa80c2f10c54bcceef8f915a66c515420926320e34db7d9701002f",
+        "actualSha256": "7651f2eca07c8e339e9f9503e02f62293e1ae9028b84db772d1a2d09a19f4a70",
         "hashMatch": true,
         "sourceHashMatch": false,
         "contentVariant": "worker-startup-20261109",
         "urlMatch": true,
         "bodyReleaseMatch": true,
-        "workerRelease": "darksage20261124a",
+        "workerRelease": "darklists20261124a",
         "releaseHeaderPresent": true,
         "releaseEvidence": "sha256 of exact source or versioned production startup rewrite + same-origin path + HTML/SW embedded release; header optional but checked when present"
       }
@@ -125,7 +125,7 @@
       {
         "name": "Dark capture note contrast ≥ 4.5:1",
         "ok": true,
-        "details": "10.67:1"
+        "details": "19.31:1"
       },
       {
         "name": "Saved note visible in Review",
@@ -270,14 +270,14 @@
         {
           "label": "Plan name",
           "fg": "rgb(240, 247, 240)",
-          "bg": "rgb(41, 61, 51)",
-          "ratio": 10.647536917601089
+          "bg": "rgb(43, 51, 46)",
+          "ratio": 11.92524009624676
         },
         {
           "label": "Plan time",
-          "fg": "rgb(200, 221, 206)",
-          "bg": "rgb(34, 48, 42)",
-          "ratio": 9.63745137722458
+          "fg": "rgb(176, 185, 174)",
+          "bg": "rgb(43, 51, 46)",
+          "ratio": 6.434859949833986
         },
         {
           "label": "rev-reflect",
@@ -412,14 +412,14 @@
         {
           "label": "Plan name",
           "fg": "rgb(240, 247, 240)",
-          "bg": "rgb(41, 61, 51)",
-          "ratio": 10.647536917601089
+          "bg": "rgb(43, 51, 46)",
+          "ratio": 11.92524009624676
         },
         {
           "label": "Plan time",
-          "fg": "rgb(200, 221, 206)",
-          "bg": "rgb(34, 48, 42)",
-          "ratio": 9.63745137722458
+          "fg": "rgb(176, 185, 174)",
+          "bg": "rgb(43, 51, 46)",
+          "ratio": 6.434859949833986
         },
         {
           "label": "rev-reflect",
@@ -554,14 +554,14 @@
         {
           "label": "Plan name",
           "fg": "rgb(240, 247, 240)",
-          "bg": "rgb(41, 61, 51)",
-          "ratio": 10.647536917601089
+          "bg": "rgb(43, 51, 46)",
+          "ratio": 11.92524009624676
         },
         {
           "label": "Plan time",
-          "fg": "rgb(200, 221, 206)",
-          "bg": "rgb(34, 48, 42)",
-          "ratio": 9.63745137722458
+          "fg": "rgb(176, 185, 174)",
+          "bg": "rgb(43, 51, 46)",
+          "ratio": 6.434859949833986
         },
         {
           "label": "rev-reflect",
@@ -677,65 +677,65 @@
         "ok": true
       }
     ],
-    "release": "darksage20261124a"
+    "release": "darklists20261124a"
   },
   "runs": [
     {
-      "id": 45346269519,
-      "sha": "dccc7f6c59faf538d3cc04bc4381e8389d6590e5",
-      "name": "OnHaru Workers production verification",
-      "status": "in_progress",
-      "conclusion": null
-    },
-    {
-      "id": 45346269441,
-      "sha": "dccc7f6c59faf538d3cc04bc4381e8389d6590e5",
-      "name": "OnHaru metrics privacy and regression checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 45346269430,
-      "sha": "dccc7f6c59faf538d3cc04bc4381e8389d6590e5",
+      "id": 45348932340,
+      "sha": "0a8e22a68d2e7e2a443990525363343c5d53c60e",
       "name": "On_HARU Review schedule tags in Daily Weekly Archive",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 45346269416,
-      "sha": "dccc7f6c59faf538d3cc04bc4381e8389d6590e5",
-      "name": "On_HARU Archive Mood tooltip QA",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 45346269378,
-      "sha": "dccc7f6c59faf538d3cc04bc4381e8389d6590e5",
-      "name": "On_HARU Review Weekly Archive hierarchy QA",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 45346269340,
-      "sha": "dccc7f6c59faf538d3cc04bc4381e8389d6590e5",
-      "name": "OnHaru static UI checks",
-      "status": "completed",
-      "conclusion": "success"
-    },
-    {
-      "id": 45346269336,
-      "sha": "dccc7f6c59faf538d3cc04bc4381e8389d6590e5",
+      "id": 45348932295,
+      "sha": "0a8e22a68d2e7e2a443990525363343c5d53c60e",
       "name": "QA On_HARU time-of-day appearance",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "id": 45346269327,
-      "sha": "dccc7f6c59faf538d3cc04bc4381e8389d6590e5",
-      "name": "On_HARU Check-in and Archive Mood touch regression",
+      "id": 45348932283,
+      "sha": "0a8e22a68d2e7e2a443990525363343c5d53c60e",
+      "name": "On_HARU Capture emoji grid visual regression",
       "status": "completed",
       "conclusion": "success"
+    },
+    {
+      "id": 45348932274,
+      "sha": "0a8e22a68d2e7e2a443990525363343c5d53c60e",
+      "name": "On_HARU Archive Mood tooltip QA",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 45348932218,
+      "sha": "0a8e22a68d2e7e2a443990525363343c5d53c60e",
+      "name": "On_HARU Review Weekly Archive hierarchy QA",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 45348932212,
+      "sha": "0a8e22a68d2e7e2a443990525363343c5d53c60e",
+      "name": "OnHaru metrics privacy and regression checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 45348932203,
+      "sha": "0a8e22a68d2e7e2a443990525363343c5d53c60e",
+      "name": "OnHaru static UI checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 45348932167,
+      "sha": "0a8e22a68d2e7e2a443990525363343c5d53c60e",
+      "name": "OnHaru Workers production verification",
+      "status": "in_progress",
+      "conclusion": null
     }
   ],
-  "allPassed": false
+  "allPassed": true
 }
