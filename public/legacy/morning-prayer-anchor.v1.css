@@ -950,7 +950,7 @@ html body .app #page-capture #qc-v2 .kona-tag-tray-toggle::before {
   max-height:var(--capture-tag-circle)!important;
 }
 html body .app #page-capture #qc-v2 .kona-tag-tray-toggle::after {
-  content:"+8"!important;
+  content:attr(data-more-count)!important;
   width:auto!important;
   height:auto!important;
   border:0!important;
