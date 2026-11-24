@@ -15,7 +15,9 @@ html[data-appearance="dark"] {
 
 html[data-appearance="dark"] body,
 html[data-appearance="dark"] body .app,
-html[data-appearance="dark"] body .app :is(.pagehead, #dock, #dock .tabs) {
+html[data-appearance="dark"] body .app .pagehead,
+:root[data-appearance="dark"] body #dock,
+:root[data-appearance="dark"] body #dock .tabs {
   background: var(--bg) !important;
   color: var(--ink) !important;
 }
@@ -27,16 +29,19 @@ html[data-appearance="dark"] body .app > header.pagehead .app-settings-shortcut 
   stroke: var(--sub) !important;
 }
 
-html[data-appearance="dark"] body .app #dock .tabs button {
+:root[data-appearance="dark"] body #dock .tabs button {
   border-color: transparent !important;
   color: var(--sub) !important;
 }
-html[data-appearance="dark"] body .app #dock .tabs button.active {
+:root[data-appearance="dark"] body #dock .tabs button.active {
   background: var(--dark-selected) !important;
   color: var(--dark-accent) !important;
 }
-html[data-appearance="dark"] body .app #dock .tabs button * {
+:root[data-appearance="dark"] body #dock .tabs button * {
   color: inherit !important;
+}
+:root[data-appearance="dark"] body #dock .shore-art {
+  opacity: .45;
 }
 
 html[data-appearance="dark"] body :is(.sheet, #kx-settings[open] .settings-panel-body),
@@ -64,13 +69,13 @@ html[data-appearance="dark"] body .app #page-capture #qc-v2 :is(#qc-text, #qc-no
   background: transparent !important;
   color: var(--ink) !important;
 }
-html[data-appearance="dark"] body .app #page-capture #qc-v2,
+:root[data-appearance="dark"] body .app #page-capture #qc-v2,
 html[data-appearance="dark"] body .app #page-capture #captureTasks {
   background: var(--surface) !important;
   border-color: var(--line) !important;
   box-shadow: none !important;
 }
-html[data-appearance="dark"] body .app #page-capture #qc-v2 :is(.qc-bottom, #qc-note-title) {
+html[data-appearance="dark"] body .app #page-capture #qc-v2 :is(.qc-bottom, .kona-capture-tag-row, #qc-note-title) {
   border-color: var(--line) !important;
 }
 html[data-appearance="dark"] body .app #page-capture #konaCarryToday .carry-label,
@@ -122,7 +127,7 @@ html[data-appearance="dark"] body .app #page-capture #qc-v2 .kona-tag-tray-toggl
   white-space: nowrap;
 }
 
-html[data-appearance="dark"] body .app #dock .tabs button:focus-visible,
+:root[data-appearance="dark"] body #dock .tabs button:focus-visible,
 html[data-appearance="dark"] body .app #page-capture #qc-v2 :is(#qc-submit, .kona-tag-tray-toggle, #captureScheduleLink > summary):focus-visible,
 html[data-appearance="dark"] body .app #page-capture #qc-v2 #konaCaptureTagTray button.kona-tag-chip:focus-visible {
   outline: 2px solid var(--dark-accent) !important;
