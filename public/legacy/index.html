@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="capturesheep20261124b"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
+<!DOCTYPE html><html lang="en" style="--dock-h: 76px; --review-header-height: 50px;"><head><meta name="kona-release" content="capturetags23v1"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{const p=JSON.parse(localStorage.getItem('kona.legacy.v1.kona.display.v1')||'{}'),d=p.theme==='dark'||p.theme!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.style.setProperty('--kona-ui-scale',String((['13.5','15','17','19'].includes(p.size)?Number(p.size):13.5)/13.5));document.documentElement.dataset.uiEnlarged=String(!!p.size&&p.size!=='13.5');document.documentElement.dataset.appearance=d?'dark':'light';document.documentElement.style.colorScheme=d?'dark':'light'}catch{}</script><meta name="theme-color" content="#F9FAF7">
 <style id="onharu-launch-edge-fix">
 /* True-alpha watercolor launch image; do not blend or mask its transparent edges. */
 #launchScreen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;isolation:isolate;background:var(--onharu-launch-bg,#FDFDFB)!important;overflow:hidden}
@@ -369,9 +369,7 @@ body .app #page-capture #qc-v2 #konaCaptureTagTray > button.kona-tag-chip{
   width:100%!important;min-width:0!important;max-width:40px!important;
   justify-self:center!important;
 }
-/* Keep the More/Less control in row 1, column 8. All remaining 8 tags,
-   including the ninth 📌 Remember tag, belong in row 2 and cannot fill
-   the free cell underneath the More control. Does not change note data. */
+/* Keep More/Less in the last cell of row 1. */
 body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(8){grid-row:2!important;grid-column:1!important;}
 body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(9){grid-row:2!important;grid-column:2!important;}
 body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(10){grid-row:2!important;grid-column:3!important;}
@@ -380,6 +378,15 @@ body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTra
 body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(13){grid-row:2!important;grid-column:6!important;}
 body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(14){grid-row:2!important;grid-column:7!important;}
 body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(15){grid-row:2!important;grid-column:8!important;}
+body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(16){grid-row:3!important;grid-column:1!important;}
+body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(17){grid-row:3!important;grid-column:2!important;}
+body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(18){grid-row:3!important;grid-column:3!important;}
+body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(19){grid-row:3!important;grid-column:4!important;}
+body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(20){grid-row:3!important;grid-column:5!important;}
+body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(21){grid-row:3!important;grid-column:6!important;}
+body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(22){grid-row:3!important;grid-column:7!important;}
+body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(23){grid-row:3!important;grid-column:8!important;}
+body .app #page-capture #qc-v2 .kona-capture-tags.is-expanded #konaCaptureTagTray > button.kona-tag-chip:nth-child(n+24){grid-row:4!important;grid-column:auto!important;}
 /* Match the 😤 tag's diameter and horizontal column, not an arbitrary offset.
    The open and closed chevrons share one identical centered button. */
 body .app #page-capture #qc-v2 .kona-capture-tag-row{
@@ -974,7 +981,7 @@ body .app #page-records #archive-search-results .archive-record-schedule-title +
 
 
 
-<link rel="stylesheet" href="./scripture-memory.v1.css?rev=scripturelicensed20261122b"><link rel="stylesheet" href="./prayer-linked.v1.css?rev=prayerrecords20261123a"><link rel="stylesheet" href="./plan-manage-compact.v1.css?rev=reflection-ko-nav-clean20261115a"><link rel="stylesheet" href="./checkin-auto-midday.v1.css?rev=autoclassmidday20261115b"><link rel="stylesheet" href="./morning-prayer-anchor.v1.css?rev=capturesheep20261124b"><link rel="stylesheet" href="./ios-keyboard.v1.css?rev=captureios20261122a"><script src="./runtime/morning-prayer-rotation.v1.js?rev=inkAssetsEye20261122b"></script><script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=storyguide20261124d"></script><script src="./runtime/prayer-linked.v1.js?rev=morningguide20261123a"></script><script src="./runtime/plan-manage-compact.v1.js?rev=reflection-ko-plan-only20261115b"></script><script src="./runtime/settings.58b48f87b05a.js?rev=moodtrendv120261106"></script><script src="./runtime/scripture-memory.v1.js?rev=storyguide20261124d"></script><script src="./runtime/ios-keyboard.v1.js?rev=captureios20261122a" defer></script>
+<link rel="stylesheet" href="./scripture-memory.v1.css?rev=scripturelicensed20261122b"><link rel="stylesheet" href="./prayer-linked.v1.css?rev=prayerrecords20261123a"><link rel="stylesheet" href="./plan-manage-compact.v1.css?rev=reflection-ko-nav-clean20261115a"><link rel="stylesheet" href="./checkin-auto-midday.v1.css?rev=autoclassmidday20261115b"><link rel="stylesheet" href="./morning-prayer-anchor.v1.css?rev=capturetags23v1"><link rel="stylesheet" href="./ios-keyboard.v1.css?rev=captureios20261122a"><script src="./runtime/morning-prayer-rotation.v1.js?rev=inkAssetsEye20261122b"></script><script src="./runtime/legacy-controllers.9a6fbb5e22cc.js?rev=capturetags23v1"></script><script src="./runtime/prayer-linked.v1.js?rev=morningguide20261123a"></script><script src="./runtime/plan-manage-compact.v1.js?rev=reflection-ko-plan-only20261115b"></script><script src="./runtime/settings.58b48f87b05a.js?rev=moodtrendv120261106"></script><script src="./runtime/scripture-memory.v1.js?rev=storyguide20261124d"></script><script src="./runtime/ios-keyboard.v1.js?rev=captureios20261122a" defer></script>
 <!-- Cloudflare Web Analytics: On_HARU workers.dev -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"f9b29e261a624202a5e611671cd6e2b9"}'></script>
 </body></html>

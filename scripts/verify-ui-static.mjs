@@ -31,7 +31,7 @@ check('Capture expandable tags exist',source.js.includes('kona-tag-tray-toggle')
 
 const pinGrid=source.html.match(/<style id="onharu-capture-pin-grid-fix">([\s\S]*?)<\/style>/)?.[1]||'';
 const captureIds=source.js.match(/const KONA_CAPTURE_TAG_IDS=\[([^\]]+)\]/)?.[1]||'';
-check('Capture contains the Remember pin tag',captureIds.includes('"meaning_remember"'));
+check('Capture has 23 choices and retains the old pin definition',JSON.parse('['+captureIds+']').length===23&&source.js.includes('meaning_remember'));
 check('Expanded Capture second row has explicit non-overlapping slots',
   Array.from({length:8},(_,i)=>pinGrid.includes('nth-child('+(i+8)+'){grid-row:2!important;grid-column:'+(i+1)+'!important;}')).every(Boolean));
 
