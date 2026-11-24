@@ -187,3 +187,22 @@ html[data-appearance="dark"] body .app #page-capture #qc-v2 #konaCaptureTagTray 
   outline: 2px solid var(--dark-accent);
   outline-offset: -2px;
 }
+
+/* Secondary date and section labels stay readable on the dark shell. */
+:root[data-appearance="dark"] body .app .pagehead #relativeDay:not(.is-empty) {
+  color: var(--dark-accent) !important;
+}
+:root[data-appearance="dark"] body .app .pagehead #relativeDay::before,
+:root[data-appearance="dark"] body .app #page-today #weekLecture .summary small::after {
+  content: none;
+}
+:root[data-appearance="dark"] body .app #page-today #weekLecture {
+  border-top-color: var(--line) !important;
+}
+:root[data-appearance="dark"] body .app #page-today #weekLecture .summary small {
+  background: none !important;
+  color: var(--sub) !important;
+}
+:root[data-appearance="dark"] body .app #page-today #weekLecture .week-edit {
+  color: var(--dark-accent) !important;
+}
