@@ -1293,6 +1293,30 @@ body.practice-mode:has(#taskFormModal:not([hidden])) #guidedTour {
   display: none !important;
 }
 
+/* Keep writing guidance in the page layout so it cannot cover the editor. */
+body.practice-mode #guidedTour[data-position="inline"] {
+  position: relative;
+  inset: auto;
+  transform: none;
+  z-index: auto;
+  width: 100%;
+  max-height: none;
+  overflow: visible;
+  box-sizing: border-box;
+  margin: 0 0 12px;
+  scroll-margin-top: 88px;
+  box-shadow: none;
+}
+
+body.practice-mode #guidedTour[data-position="inline"] .tour-actions {
+  position: static;
+}
+
+body.practice-mode:has(:is(textarea, input:not([type]), input[type="text"], [contenteditable="true"]):focus)
+  #guidedTour:not([data-position="inline"]) {
+  display: none !important;
+}
+
 body.practice-mode #guidedTour:has(#tourNext[hidden]) .tour-actions {
   display: flex !important;
   justify-content: space-between;

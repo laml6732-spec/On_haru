@@ -32,11 +32,19 @@ try {
       await page.goto(process.env.ONHARU_URL || 'http://127.0.0.1:8080/legacy/');
       const choose = page.locator(lang === 'ko' ? '#tutorialChooseKo' : '#tutorialChooseEn');
       await choose.click();
-      const primary = page.locator('#startMorningPrayerGuide');
+      const primary = page.locator('#startGuidedTour');
       await primary.waitFor();
+      assert.equal(await page.locator('#startMorningPrayerGuide').count(), 0);
       await page.locator('#launchScreen').waitFor({state: 'hidden'});
       await page.screenshot({path: output + '/' + width + '-welcome.png'});
-      await primary.click();
+      await page.locator('#welcomeSkip').click();
+      const checkin = page.locator('.tabs [data-page="checkin"]');
+      const openMorningPrayer = async () => {
+        await checkin.click();
+        await page.locator('#page-checkin [data-phase="morning"]').click();
+        await page.locator('#morningPrayerPrompt button').click();
+      };
+      await openMorningPrayer();
       await page.locator('#morningPrayerDurationHeading').waitFor();
       assert.equal(await page.locator('#focusTarget').isVisible(), false);
 
@@ -59,11 +67,8 @@ try {
       assert.equal(await page.locator('#sessionMemo').inputValue(), note);
       await page.locator('#sessionNoteModal .close').click();
 
-      const checkin = page.locator('.tabs [data-page="checkin"]');
       async function finishMorningPrayer() {
-        await checkin.click();
-        await page.locator('#page-checkin [data-phase="morning"]').click();
-        await page.locator('#morningPrayerPrompt button').click();
+        await openMorningPrayer();
         await timer.click();
         await page.waitForTimeout(1150);
         await finish.click();
