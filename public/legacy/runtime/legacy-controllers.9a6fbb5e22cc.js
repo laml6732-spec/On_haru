@@ -3431,9 +3431,10 @@ document.getElementById('saveWeeklyReflectionSettings').onclick=()=>{const old=d
 const appSettings=document.getElementById('kx-settings');if(appSettings){const button=el('button',KonaI18n.t("Reflection settings"),'mini-btn reflection-settings-open');button.type='button';button.onclick=openReflectionSettings;appSettings.append(button)}
 window.konaOpenArchiveTab=tab=>{if(!['log','week','mood','class'].includes(tab))return;reviewTab=tab;const picker=document.getElementById('kx-archive');if(picker){picker.value=tab;picker.dataset.searchScope=tab}nav('records');document.getElementById('rev-archive')?.click()};
 // Capture uses the same deduplicated record sources as Review; no copied notes.
+// Morning lecture review belongs to the noon check-in, not Recent notes.
 window.konaCaptureRecentRecords=d=>{
  const v=db.days[d]||{};
- const notes=reviewRecords(d).filter(r=>r.kind!=='check'&&r.kind!=='anchor'&&(String(r.body||'').trim()||String(r.noteTitle||'').trim()||r.tags?.length)).map(r=>({
+ const notes=reviewRecords(d).filter(r=>r.kind!=='check'&&r.kind!=='class'&&r.kind!=='anchor'&&(String(r.body||'').trim()||String(r.noteTitle||'').trim()||r.tags?.length)).map(r=>({
   id:r.id,label:r.scheduleLabel||r.title,title:r.noteTitle||'',text:r.body||'',tags:r.tags||[],important:reviewImportant(r),
   time:r.recordedTime?mins(r.recordedTime):null,
   open:()=>r.kind==='capture'?window.konaOpenArchiveRecord(d,r.sourceId,true):konaOpenReviewEditor(d,r.id)
