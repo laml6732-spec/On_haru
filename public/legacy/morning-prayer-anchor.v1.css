@@ -40,7 +40,7 @@ body .app #page-checkin #morningPrayerPrompt {
   grid-column: 1 / -1!important;
   grid-row: auto!important;
   justify-self: stretch!important;
-  margin: 2px 0 14px!important;
+  margin: 2px 0 8px!important;
   padding: 0!important;
   background: transparent!important;
   border: 0!important;
@@ -1326,3 +1326,17 @@ body.practice-mode #guidedTour :is(#tourHeading,#tourCopy,#tourFeedback) {
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
+
+/* Morning Scripture is a secondary action, not a competing primary CTA. */
+body .app #page-checkin #morningScriptureRead {
+  display:flex!important; align-items:center; justify-content:center; gap:9px;
+  box-sizing:border-box; position:relative; width:100%; min-height:46px;
+  padding:10px 30px; margin:0 0 14px; border:1px solid #a9baae;
+  border-radius:10px; background:transparent; color:#274e47;
+  font:650 calc(14px * var(--kona-ui-scale,1))/1.4 var(--font-ui);
+  text-align:center; white-space:normal; cursor:pointer; box-shadow:none;
+}
+body .app #page-checkin #morningScriptureRead[hidden] {display:none!important}
+body .app #page-checkin #morningScriptureRead svg {width:20px;height:20px;flex:0 0 20px}
+body .app #page-checkin #morningScriptureRead:focus-visible {outline:2px solid #8b793e;outline-offset:3px}
+html[data-appearance="dark"] body .app #page-checkin #morningScriptureRead {color:#d7ebdb;border-color:#597a66;background:transparent}
