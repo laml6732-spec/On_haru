@@ -13,7 +13,7 @@ function fixture() {
  const handlers={};
  const interval=[];
  const root={dataset:{}};
- const icon={href:'./icons/onharu-face-wave-512.png'};
+ const icon={href:'./icons/onharu-brand-48.png'};
  const canvasCalls=[];
  const document={
   documentElement:root,hidden:false,
@@ -47,16 +47,14 @@ test('four device-local time windows and exact boundaries',()=>{
  const cases=[[0,'night'],[4,'night'],[5,'morning'],[10,'morning'],[11,'day'],[16,'day'],[17,'evening'],[19,'evening'],[20,'night'],[23,'night']];
  for(const [hour,expected] of cases){f.setHour(hour);assert.equal(f.win.OnHaruDaypart.refresh(),expected,'hour '+hour);assert.equal(f.root.dataset.onharuDaypart,expected);}
 });
-test('dynamic tab favicon changes, but fixed install manifest remains original',()=>{
- const f=fixture();assert.match(f.icon.href,/^data:image\/png;base64,/);
- f.setHour(11);f.win.OnHaruDaypart.refresh();
- assert.equal(f.icon.href,'./icons/onharu-face-wave-512.png');
- f.setHour(17);f.win.OnHaruDaypart.refresh();
- assert.match(f.icon.href,/^data:image\/png;base64,/);
- assert.equal(manifest.icons.length,2);
- assert.ok(manifest.icons.every(i=>i.src.includes('onharu-face-wave-')));
- assert.ok(!JSON.stringify(manifest).includes('daypart'));
- assert.ok(f.canvasCalls.length>0);
+test('brand favicon and install icons stay fixed across all dayparts',()=>{
+ const f=fixture();
+ for(const hour of [4,8,12,18,22]){f.setHour(hour);f.win.OnHaruDaypart.refresh();assert.equal(f.icon.href,'./icons/onharu-brand-48.png');}
+ assert.match(html,/id="onharu-tab-icon"[^>]+href="\.\/icons\/onharu-brand-48\.png"/);
+ assert.match(html,/rel="apple-touch-icon" sizes="180x180" href="\.\/icons\/onharu-brand-180\.png"/);
+ assert.deepEqual(manifest.icons.map(i=>i.src),['./icons/onharu-brand-192.png','./icons/onharu-brand-512.png']);
+ assert.ok(manifest.icons.every(i=>i.purpose==='any maskable'));
+ assert.equal(f.canvasCalls.length,0);
 });
 test('idle timer and foreground events refresh daypart',()=>{
  const f=fixture();assert.equal(f.interval.length,1);assert.equal(f.interval[0].ms,60000);

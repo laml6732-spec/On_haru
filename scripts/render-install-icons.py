@@ -1,22 +1,18 @@
-"""Regenerate On_HARU PWA PNGs from the approved full-bleed sheep-wave art.
-Only app-install icons are updated; never touch the app's launch image or user data.
+"""Regenerate PWA icon sizes from the approved On_HARU master PNG.
+Do not overwrite the historical sheep art or user data.
 """
 from pathlib import Path
 from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 folder = ROOT / "public/legacy/icons"
-source = folder / "onharu-face-wave-source.avif"
+source = folder / "onharu-brand-1024.png"
 with Image.open(source) as art:
     base = art.convert("RGB")
-if base.size != (512, 512):
-    raise SystemExit(f"Expected 512x512 source, got {base.size}")
-for point in [(0, 0), (511, 0), (0, 511), (511, 511)]:
-    if max(base.getpixel(point)) < 30:
-        raise SystemExit(f"Unexpected black corner at {point}")
-for n in (192, 512):
-    image = base.resize((n, n), Image.Resampling.LANCZOS)
-    output = folder / f"onharu-face-wave-{n}.png"
-    image.save(output, format="PNG", optimize=True)
-    check = Image.open(output)
-    assert check.size == (n, n) and check.mode == "RGB"
+assert base.size == (1024, 1024)
+assert all(base.getpixel(p) == (250, 247, 239) for p in [(0,0),(1023,0),(0,1023),(1023,1023)])
+for n in (48, 180, 192, 512):
+    output = folder / f"onharu-brand-{n}.png"
+    base.resize((n,n), Image.Resampling.LANCZOS).save(output, format="PNG", optimize=True)
+    with Image.open(output) as check:
+        assert check.size == (n,n) and check.mode == "RGB"
     print(f"{output}: {n}x{n}, fully opaque")
