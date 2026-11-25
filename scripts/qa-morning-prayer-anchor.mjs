@@ -35,6 +35,8 @@ for(const width of [320,390,1024]) for(const theme of ['light','dark']){
   await page.locator('.tabs [data-page="capture"]').click();
   const field=page.locator('#dayHeadline');
   assert(await field.getAttribute('rows')==='1','Anchor must start from one row');
+  const geometry=await field.evaluate(el=>{const card=el.closest('#konaCarryToday'),c=getComputedStyle(card),box=card.getBoundingClientRect(),r=el.getBoundingClientRect();return {left:r.left-box.left-parseFloat(c.paddingLeft)-parseFloat(c.borderLeftWidth),right:box.right-r.right-parseFloat(c.paddingRight)-parseFloat(c.borderRightWidth)}});
+  assert(Math.abs(geometry.left)<=2&&Math.abs(geometry.right)<=2,'Anchor wastes available card width: '+JSON.stringify(geometry));
   await field.fill('주님을 신뢰하는 하루');await page.waitForTimeout(80);
   const single=await state(field);
   assert(Math.abs(single.height-single.line)<3,'One-line anchor expanded: '+JSON.stringify(single));
@@ -62,6 +64,11 @@ for(const width of [320,390,1024]) for(const theme of ['light','dark']){
   await page.locator('#page-checkin [data-phase="morning"]').click();
   const prayer=page.locator('#morningPrayerPrompt');
   assert(await prayer.isVisible(),'Prayer button is missing from Morning check-in');
+  const scripture=page.locator('#morningScriptureRead');
+  assert(await scripture.isVisible(),'Scripture shortcut missing from Morning check-in');
+  assert((await scripture.innerText()).includes('말씀 읽기'),'Incorrect Korean Scripture label');
+  const scriptureBox=await scripture.boundingBox(),prayerBox=await prayer.boundingBox();
+  assert(scriptureBox.height>=44&&Math.abs(scriptureBox.width-prayerBox.width)<=2&&scriptureBox.y>=prayerBox.y+prayerBox.height,'Scripture secondary action geometry incorrect');
   const button=prayer.locator('button');
   const visual=await button.evaluate(el=>{
    const css=getComputedStyle(el),parent=el.parentElement.getBoundingClientRect(),box=el.getBoundingClientRect();
@@ -79,8 +86,10 @@ for(const width of [320,390,1024]) for(const theme of ['light','dark']){
   await page.screenshot({path:`${out}/${width}-${theme}-morning.png`,animations:'disabled'});
   await page.locator('#page-checkin [data-phase="noon"]').click();
   assert(!(await prayer.isVisible()),'Morning prayer button leaked into Midday');
+  assert(!(await scripture.isVisible()),'Morning Scripture leaked into Midday');
   await page.locator('#page-checkin [data-phase="evening"]').click();
   assert(!(await prayer.isVisible()),'Morning prayer button leaked into Reflection');
+  assert(!(await scripture.isVisible()),'Morning Scripture leaked into Reflection');
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
   assert(overflow<=2,'Horizontal overflow '+overflow+'px');
   await page.locator('#page-checkin [data-phase="morning"]').click();
