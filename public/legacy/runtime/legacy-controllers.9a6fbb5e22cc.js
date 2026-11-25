@@ -3430,6 +3430,21 @@ function openReflectionSettings(){const field=document.getElementById('weeklyRef
 document.getElementById('saveWeeklyReflectionSettings').onclick=()=>{const old=db.settings.weeklyReflectionDay,value=Number(document.getElementById('weeklyReflectionDay').value);if(value!==0&&value!==1)return;db.settings.weeklyReflectionDay=value;if(!save()&&!tutorialPractice){db.settings.weeklyReflectionDay=old;document.getElementById('weeklyReflectionSettingsStatus').textContent=KonaI18n.t("Not saved. Please retry.");return}weeklyOffset=0;closeSheet('weeklyReflectionSettingsModal');renderRecords()};
 const appSettings=document.getElementById('kx-settings');if(appSettings){const button=el('button',KonaI18n.t("Reflection settings"),'mini-btn reflection-settings-open');button.type='button';button.onclick=openReflectionSettings;appSettings.append(button)}
 window.konaOpenArchiveTab=tab=>{if(!['log','week','mood','class'].includes(tab))return;reviewTab=tab;const picker=document.getElementById('kx-archive');if(picker){picker.value=tab;picker.dataset.searchScope=tab}nav('records');document.getElementById('rev-archive')?.click()};
+// Capture uses the same deduplicated record sources as Review; no copied notes.
+window.konaCaptureRecentRecords=d=>{
+ const v=db.days[d]||{};
+ const notes=reviewRecords(d).filter(r=>r.kind!=='check'&&r.kind!=='anchor'&&(String(r.body||'').trim()||String(r.noteTitle||'').trim()||r.tags?.length)).map(r=>({
+  id:r.id,label:r.scheduleLabel||r.title,title:r.noteTitle||'',text:r.body||'',tags:r.tags||[],important:reviewImportant(r),
+  time:r.recordedTime?mins(r.recordedTime):null,
+  open:()=>r.kind==='capture'?window.konaOpenArchiveRecord(d,r.sourceId,true):konaOpenReviewEditor(d,r.id)
+ }));
+ for(const [id,meal] of Object.entries(v.meals||{})){
+  if(!String(meal||'').trim()||konaReviewMirroredMeal(v,id,meal))continue;
+  const e=dayEvents(d).find(x=>x.id===id)||db.events.find(x=>x.id===id);
+  notes.push({id:'meal-'+id,label:e?.title||KonaI18n.t("Meal"),text:String(meal),tags:v.eventNoteTags?.[id]||[],time:validReflectHM(e?.start)?mins(e.start):null,open:()=>konaOpenReviewEditor(d,'meal-'+id)});
+ }
+ return notes;
+};
 window.konaOpenArchiveRecord=(recordDate,recordId,edit=false)=>{const record=reviewRecords(recordDate).find(r=>r.id==='q-'+recordId);if(!record){toast(KonaI18n.t("The original record could not be found."));return false}nav('records');showReviewArchiveRecord(record,edit);return true};
 
 // Today's Reflection shortcut now opens Check-in instead of the former Review editor.
@@ -4069,6 +4084,7 @@ const previousRender=render;render=function(){const r=previousRender.apply(this,
 const root=document.getElementById('page-capture'),records=document.getElementById('page-records');if(!root)return;
 const node=(tag,text,cls)=>{const n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;return n};
 const home=node('section',null,'capture-home');home.id='capture-home';root.append(home);
+let recentDate='',recentExpanded=false;
 function renderHome(){
  if(page!=='capture')return;home.replaceChildren();
  const card=node('section',null,'capture-context'),head=node('div',null,'capture-context-head');head.append(node('h2',date===nowLocal()?KonaI18n.t("Your day"):KonaI18n.t("Selected day")));
@@ -4130,11 +4146,28 @@ function renderHome(){
  if(!due.length)tasks.append(node('p',(KonaI18n.language==='ko'?'등록된 할 일이 없어요.':'No tasks for this day.'),'capture-empty'));
  home.append(tasks);
 
- const allEntries=(db.days[date]?.quickCaptureEntries||[]),entries=allEntries.slice(-3).reverse();
+ // Keep the selected-day scope. The daily anchor is already visible above;
+ // only written notes (not check-ins or bare timer sessions) appear here.
+ if(recentDate!==date){recentDate=date;recentExpanded=false}
+ const allEntries=[...window.konaCaptureRecentRecords(date),...(window.konaCapturePrayerResponses?.(date)||[])]
+  .map((q,index)=>({...q,index})).sort((a,b)=>(b.time??-1)-(a.time??-1)||b.index-a.index);
  const recent=node('section',null,'capture-recent'),recentHead=node('div',null,'capture-recent-head');
- recentHead.append(node('h2',KonaI18n.t("Recent notes")));if(allEntries.length)recentHead.append(node('span',String(allEntries.length)+KonaI18n.t(" saved"),'capture-recent-count'));recent.append(recentHead);
- for(const q of entries){const b=node('button',null,'capture-recent-note');b.type='button';b.classList.toggle('is-important',!!q.important);b.setAttribute('aria-label',KonaI18n.t("Open note and editing options",true));b.append(node('span',q.scheduleTitle||KonaI18n.t("Personal note"),'capture-recent-label'));if(q.title)b.append(node('strong',konaNoteDisplay(q.title,q.tags),'capture-recent-title'));b.append(node('span',q.title?q.text:konaNoteDisplay(q.text,q.tags),'capture-recent-body'));konaApplyNoteTagIcon(b.querySelector('.capture-recent-title,.capture-recent-body'),q.tags);b.onclick=()=>window.konaOpenArchiveRecord?.(date,q.id,true);recent.append(b)}
- if(!entries.length)recent.append(node('p',KonaI18n.t("Notes you save will appear here."),'capture-empty'));home.append(recent)
+ recentHead.append(node('h2',KonaI18n.t("Recent notes")));if(allEntries.length)recentHead.append(node('span',String(allEntries.length)+KonaI18n.t(" saved"),'capture-recent-count'));
+ const list=node('div',null);list.id='captureRecentList';
+ const toggle=node('button',null,'mini-btn capture-recent-more');toggle.type='button';toggle.setAttribute('aria-controls',list.id);
+ toggle.style.cssText='flex:0 0 44px;width:44px;min-width:44px;height:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0;background:transparent;border:0;box-shadow:none;color:inherit';
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),path=document.createElementNS(svg.namespaceURI,'path');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('width','18');svg.setAttribute('height','18');svg.setAttribute('aria-hidden','true');path.setAttribute('fill','none');path.setAttribute('stroke','currentColor');path.setAttribute('stroke-width','1.8');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.append(path);toggle.append(svg);
+ function drawRecent(){
+  list.replaceChildren();const expanded=recentExpanded&&allEntries.length>6,entries=expanded?allEntries:allEntries.slice(0,6);
+  toggle.setAttribute('aria-expanded',String(expanded));
+  const label=KonaI18n.language==='ko'?(expanded?'최근 메모 접기':'최근 메모 모두 보기'):(expanded?'Show fewer notes':'Show all notes');
+  toggle.setAttribute('aria-label',label);toggle.title=label;path.setAttribute('d',expanded?'m6 15 6-6 6 6':'m6 9 6 6 6-6');
+  for(const q of entries){const b=node('button',null,'capture-recent-note');b.type='button';b.classList.toggle('is-important',!!q.important);b.setAttribute('aria-label',KonaI18n.t("Open note and editing options",true));b.append(node('span',q.label||KonaI18n.t("Personal note"),'capture-recent-label'));if(q.title)b.append(node('strong',konaNoteDisplay(q.title,q.tags),'capture-recent-title'));b.append(node('span',q.title?q.text:konaNoteDisplay(q.text,q.tags),'capture-recent-body'));konaApplyNoteTagIcon(b.querySelector('.capture-recent-title,.capture-recent-body'),q.tags);b.onclick=q.open;list.append(b)}
+  if(!entries.length)list.append(node('p',KonaI18n.t("Notes you save will appear here."),'capture-empty'));
+ }
+ toggle.onclick=()=>{recentExpanded=!recentExpanded;drawRecent()};
+ if(allEntries.length>6)recentHead.append(toggle);
+ recent.append(recentHead,list);drawRecent();home.append(recent)
 }
 const label=document.getElementById('qc-submit-label'),submit=document.getElementById('qc-submit');function syncButton(){const text=label?.textContent===KonaI18n.t('Saving...')?'Saving...':KonaI18n.t("Save note");if(submit&&submit.textContent!==text)submit.textContent=text}if(label)new MutationObserver(syncButton).observe(label,{childList:true,subtree:true,characterData:true});syncButton();
 // The ready state should not consume an empty 44px row; meaningful feedback remains visible and announced.
