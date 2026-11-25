@@ -205,6 +205,16 @@
       String(b.time).localeCompare(String(a.time))||
       a.identity.localeCompare(b.identity));
   }
+  // Capture reads the same response feed and opens its original prayer detail.
+  window.konaCapturePrayerResponses=d=>allPrayerRecords().filter(item=>item.type==='response'&&item.date===d&&item.text.trim()).map(item=>({
+    id:item.identity,label:local('기도 응답','Answered prayer'),title:item.title,text:item.text,tags:[],time:null,
+    open:()=>{
+      selectedId=item.prayer.id;addOpen=false;filter='records';search='';
+      $('focusLibraryList').replaceChildren();
+      modal.querySelector('.prayer-card').hidden=false;
+      renderPrayerBox();openSheet('focusLibraryModal');
+    }
+  }));
   function recordRow(item){
     const row=action('','prayer-record-feed-item',()=>{
       if(item.type==='response'){
@@ -502,4 +512,5 @@
   // The legacy script renders Capture/Plan before this integration loads.
   // Populate the shortcut on the very first page load as well as later renders.
   if(document.querySelector('#page-today #pinRow .tasks-overview'))renderPins();
+  if(page==='capture')render();
 })();
