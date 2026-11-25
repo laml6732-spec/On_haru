@@ -4153,7 +4153,7 @@ function renderHome(){
   .map((q,index)=>({...q,index})).sort((a,b)=>(b.time??-1)-(a.time??-1)||b.index-a.index);
  const recent=node('section',null,'capture-recent'),recentHead=node('div',null,'capture-recent-head');
  recentHead.append(node('h2',KonaI18n.t("Recent notes")));if(allEntries.length)recentHead.append(node('span',String(allEntries.length)+KonaI18n.t(" saved"),'capture-recent-count'));
- const list=node('div',null);list.id='captureRecentList';
+ const list=node('div',null);list.id='captureRecentList';list.style.cssText='display:grid;gap:2px;min-width:0';
  const toggle=node('button',null,'mini-btn capture-recent-more');toggle.type='button';toggle.setAttribute('aria-controls',list.id);
  toggle.style.cssText='flex:0 0 44px;width:44px;min-width:44px;height:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0;background:transparent;border:0;box-shadow:none;color:inherit';
  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),path=document.createElementNS(svg.namespaceURI,'path');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('width','18');svg.setAttribute('height','18');svg.setAttribute('aria-hidden','true');path.setAttribute('fill','none');path.setAttribute('stroke','currentColor');path.setAttribute('stroke-width','1.8');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.append(path);toggle.append(svg);
