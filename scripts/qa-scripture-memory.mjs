@@ -1,3 +1,7 @@
+// Verify complete reading-aid coverage before browser QA.
+const aid=JSON.parse(await (await import('node:fs/promises')).readFile('public/legacy/data/scripture-direct-reading.ko.json','utf8'));
+const aidCatalog=JSON.parse(await (await import('node:fs/promises')).readFile('public/legacy/data/scripture-memory-100.json','utf8')).entries;
+if(aid.entries.length!==aidCatalog.length||new Set(aid.entries.map(e=>e.id)).size!==aidCatalog.length||aidCatalog.some(e=>!aid.entries.some(d=>d.id===e.id&&d.reference===e.reference&&d.verses.length===e.verse_end-e.verse_start+1&&d.verses.every((v,i)=>v.number===e.verse_start+i&&typeof v.text==='string'&&v.text.trim()))))throw Error('Incomplete NLT Korean reading aid coverage');
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import path from 'node:path';

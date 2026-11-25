@@ -6,7 +6,7 @@
   const NKRV_DATA_URL='./data/scripture-memory-100.ko-nkrv.json';
   // Default off until licensed public redistribution has been verified AND the asset is deployed.
   const LICENSED_NKRV_DATA_ENABLED=false;
-  const DIRECT_DATA_URL='./data/scripture-direct-reading.ko.json';
+  const DIRECT_DATA_URL='./data/scripture-direct-reading.ko.json?rev=nltread10020261125a';
   const API_BASE='https://api.nlt.to/api/passages';
   const RELAY_PATH='./nlt';
   const DAY_INTERVALS=[1,3,7,14,30];
@@ -300,6 +300,7 @@
           row.append(el('sup','sm-verse-number',String(verse.number)),document.createTextNode(' '+verse.text));
           body.append(row);
         }
+        body.append(el('p','sm-meta',tr('NLT 기반 학습용 해석 · AI 보조 작성 · 공식 성경 번역이 아닙니다.','NLT-based study aid · AI-assisted · not an official Bible translation.')));
         details.append(summary,body);
         details.addEventListener('toggle',()=>{
           directExpanded=details.open;
@@ -534,6 +535,7 @@
           loaded.set(item.id,item.verses);
         }
         directVerses=loaded;
+        if(!overlay.hidden&&screen==='practice')render();
       }
     }catch(error){console.warn('Optional direct-reading text unavailable',error);}
     updateEntries();
