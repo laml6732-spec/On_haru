@@ -65,12 +65,13 @@ test('idle timer and foreground events refresh daypart',()=>{
  f.setHour(12);f.handlers.focus();assert.equal(f.root.dataset.onharuDaypart,'day');
  f.setHour(20);f.interval[0].callback();assert.equal(f.root.dataset.onharuDaypart,'night');
 });
-test('HTML splash remains original and new script precached with matching release',()=>{
- assert.match(html,/id="launchArt"/);
- assert.match(html,/onharu-launch-v3\.png/);
+test('startup has one intro illustration, no artificial splash, and matching release',()=>{
+ assert.doesNotMatch(html,/id="launchScreen"|id="launchArt"|konaLaunchReady/);
+ assert.doesNotMatch(sw,/onharu-launch-v3\.png/);
+ assert.equal((html.match(/class="onharu-intro-art"/g)||[]).length,1);
+ assert.match(html,/id="tutorialLanguage"/);
+ assert.match(html,/id="tutorialWelcome"/);
  assert.match(html,/onharu-daypart-theme/);
- assert.match(html,/data-onharu-daypart="morning"/);
- assert.match(html,/data-onharu-daypart="night"/);
  assert.match(sw,/\.\/runtime\/daypart-theme\.v1\.js/);
  assert.equal(html.match(/name="kona-release" content="([a-z0-9]+)"/)?.[1],sw.match(/const RELEASE='([^']+)'/)?.[1]);
 });
